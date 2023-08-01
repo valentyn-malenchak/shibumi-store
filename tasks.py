@@ -3,11 +3,11 @@ Module to manage shell-oriented subprocesses and organizing executable
 Python code into CLI-invokable tasks.
 """
 
-from invoke import task
+from invoke import Context, task
 
 
 @task(default=True)
-def run(ctx, debug=False):
+def run(ctx: Context, debug: bool = False) -> None:
     """Runs a FastAPI application.
 
     Args:
@@ -27,7 +27,7 @@ def run(ctx, debug=False):
 
 
 @task
-def test(ctx):
+def test(ctx: Context) -> None:
     """Runs unittests.
 
     Args:
@@ -38,7 +38,7 @@ def test(ctx):
 
 
 @task
-def lint(ctx, fix=False):
+def lint(ctx: Context, fix: bool = False) -> None:
     """Runs Ruff linter.
 
     Args:
@@ -53,7 +53,7 @@ def lint(ctx, fix=False):
 
 
 @task
-def format(ctx, check_only=False):
+def format(ctx: Context, check_only: bool = False) -> None:
     """Runs Black formatter.
 
     Args:
@@ -69,8 +69,20 @@ def format(ctx, check_only=False):
 
 
 @task
-def check(ctx):
-    """Runs unittests and linter together.
+def mypy(ctx: Context) -> None:
+    """Runs mypy checker.
+
+    Args:
+        ctx (invoke.Context): The context object representing the current invocation.
+
+    """
+
+    ctx.run("poetry run mypy .")
+
+
+@task
+def check(ctx: Context) -> None:
+    """Runs unittests, linter, mypy and formatter together.
 
     Args:
         ctx (invoke.Context): The context object representing the current invocation.
@@ -78,4 +90,5 @@ def check(ctx):
     """
     lint(ctx)
     format(ctx, check_only=True)
+    mypy(ctx)
     test(ctx)

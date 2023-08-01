@@ -10,7 +10,7 @@ from app.api.v1 import routers
 class App:
     """Main application class for running the FastAPI app."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the App class."""
         self.api = FastAPI()
 
@@ -20,12 +20,12 @@ class App:
         # configure application middlewares
         self.configure_middlewares()
 
-    def configure_routes(self):
+    def configure_routes(self) -> None:
         """Configure the routes for the FastAPI app."""
         for router_ in routers:
             self.api.include_router(router_)
 
-    def configure_middlewares(self):
+    def configure_middlewares(self) -> None:
         """Configure the middlewares for the FastAPI app."""
         self.api.add_middleware(
             CORSMiddleware,
@@ -35,7 +35,7 @@ class App:
             allow_headers=["Authorization"],
         )
 
-    def run(self):
+    def run(self) -> None:
         """Run the FastAPI app."""
         uvicorn.run(self.api, host="0.0.0.0", port=8000)
 

@@ -11,7 +11,7 @@ class BaseTest:
     _client = None
 
     @property
-    def client(self):
+    def client(self) -> TestClient:
         """
         Get the TestClient instance for the FastAPI application.
 
