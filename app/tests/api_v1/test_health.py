@@ -1,6 +1,6 @@
 """Module that contains tests for health routes."""
 
-from http import HTTPStatus
+from fastapi import status
 
 from app.tests import BaseTest
 
@@ -11,5 +11,5 @@ class TestHealth(BaseTest):
     def test_get_health(self) -> None:
         """Test case for the GET health endpoint."""
         response = self.client.get("/health/")
-        assert response.status_code == HTTPStatus.OK
+        assert response.status_code == status.HTTP_200_OK
         assert response.json() == {"status": "healthy"}

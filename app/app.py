@@ -4,7 +4,9 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.v1 import routers
+from app.api.v1 import ROUTERS
+from app.services import SERVICES
+from app.settings import SETTINGS
 
 
 class App:
@@ -15,17 +17,23 @@ class App:
         self.api = FastAPI()
 
         # configure application routes
-        self.configure_routes()
+        self._configure_routes()
 
         # configure application middlewares
-        self.configure_middlewares()
+        self._configure_middlewares()
 
-    def configure_routes(self) -> None:
+        # configure application handlers
+        self._configure_handlers()
+
+        # load application configuration
+        self._load_app_config()
+
+    def _configure_routes(self) -> None:
         """Configure the routes for the FastAPI app."""
-        for router_ in routers:
+        for router_ in ROUTERS:
             self.api.include_router(router_)
 
-    def configure_middlewares(self) -> None:
+    def _configure_middlewares(self) -> None:
         """Configure the middlewares for the FastAPI app."""
         self.api.add_middleware(
             CORSMiddleware,
@@ -35,9 +43,31 @@ class App:
             allow_headers=["Authorization"],
         )
 
+    def _configure_handlers(self) -> None:
+        """Configure the handlers for the FastAPI app."""
+        self.api.add_event_handler("startup", self._startup_services)
+        self.api.add_event_handler("shutdown", self._shutdown_services)
+
+    @staticmethod
+    def _startup_services() -> None:
+        """Startup external services."""
+        for service in SERVICES:
+            service.on_startup()
+
+    @staticmethod
+    def _shutdown_services() -> None:
+        """Shutdown external services."""
+        for service in SERVICES:
+            service.on_shutdown()
+
+    def _load_app_config(self) -> None:
+        """Loads application level configuration."""
+        # store config into FastApi
+        self.api.state.config = SETTINGS
+
     def run(self) -> None:
         """Run the FastAPI app."""
-        uvicorn.run(self.api, host="0.0.0.0", port=8000)
+        uvicorn.run(self.api, host="0.0.0.0", port=8000, reload=SETTINGS.DEBUG)
 
 
 app = App()

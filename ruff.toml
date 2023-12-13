@@ -33,5 +33,5 @@ exclude = [
 # Same as Black.
 line-length = 88
 
-# Assume Python 3.10.
-target-version = "py310"
+# Assume Python 3.11.
+target-version = "py311"
