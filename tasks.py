@@ -6,32 +6,51 @@ Python code into CLI-invokable tasks.
 from invoke import Context, task
 
 
-@task(default=True)
-def run(ctx: Context, debug: bool = False) -> None:
-    """Runs a FastAPI application.
-
-    Args:
-        ctx (invoke.Context): The context object representing the current invocation.
-        debug (bool): If True, run the application in debug mode with auto-reloading.
-
-    Example:
-        invoke run          # Run the application.
-        invoke run --debug  # Run the application in debug mode with auto-reloading.
-
-    """
-    command = "poetry run python -m app.app"
-    if debug:
-        command += " --reload"
-
-    ctx.run(command)
-
-
 @task
-def test(ctx: Context) -> None:
+def install(ctx: Context, group: str | None = None) -> None:
     """Runs unittests.
 
     Args:
         ctx (invoke.Context): The context object representing the current invocation.
+        group (str): Name of poetry group. Defaults to None.
+
+    Example:
+        invoke install              # Installs dependencies for default group.
+        invoke install --group dev  # Installs dependencies for dev group.
+
+    """
+    command = "poetry install"
+
+    if group is not None:
+        command += f" --with {group}"
+
+    ctx.run(command)
+
+
+@task(default=True)
+def run(ctx: Context) -> None:
+    """Runs a FastAPI application.
+
+    Args:
+        ctx (invoke.Context): The context object representing the current invocation.
+
+    Example:
+        invoke run  # Runs the application.
+
+    """
+
+    ctx.run("poetry run python -m app.app")
+
+
+@task
+def test(ctx: Context) -> None:
+    """Runs unit tests.
+
+    Args:
+        ctx (invoke.Context): The context object representing the current invocation.
+
+    Example:
+        invoke test  # Runs unit tests.
 
     """
     ctx.run("poetry run pytest")
@@ -45,6 +64,10 @@ def lint(ctx: Context, fix: bool = False) -> None:
         fix (bool): If True, enables autofix behaviour.
         ctx (invoke.Context): The context object representing the current invocation.
 
+    Example:
+        invoke lint        # Runs linter.
+        invoke lint --fix  # Runs linter with automatically error fix.
+
     """
     command = "poetry run ruff check ."
     if fix:
@@ -54,16 +77,20 @@ def lint(ctx: Context, fix: bool = False) -> None:
 
 @task
 def format(ctx: Context, check_only: bool = False) -> None:
-    """Runs Black formatter.
+    """Runs formatter.
 
     Args:
         check_only (bool): If True, only prints out diffs.
         ctx (invoke.Context): The context object representing the current invocation.
 
+    Example:
+        invoke format               # Runs formatter and automatically fixes errors.
+        invoke format --check_only  # Runs formatter and only shows the list of errors.
+
     """
-    command = "poetry run black ."
+    command = "poetry run ruff format ."
     if check_only:
-        command += " --diff"
+        command += " --diff --check"
 
     ctx.run(command)
 
@@ -74,6 +101,9 @@ def mypy(ctx: Context) -> None:
 
     Args:
         ctx (invoke.Context): The context object representing the current invocation.
+
+    Example:
+        invoke mypy  # Runs static type checker.
 
     """
 
@@ -86,6 +116,9 @@ def check(ctx: Context) -> None:
 
     Args:
         ctx (invoke.Context): The context object representing the current invocation.
+
+    Example:
+        invoke check  # Runs linter, formatter, static type checker and unit tests.
 
     """
     lint(ctx)

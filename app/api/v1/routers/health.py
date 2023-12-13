@@ -1,4 +1,4 @@
-"""Module that contains health router."""
+"""Module that contains health domain router."""
 
 from typing import Dict
 
@@ -8,6 +8,6 @@ router = APIRouter(prefix="/health", tags=["health"])
 
 
 @router.get("/", response_model=dict)
-def health() -> Dict[str, str]:
-    """Health endpoint to check the status of the application."""
+async def health() -> Dict[str, str]:
+    """API which checks the health of the application."""
     return {"status": "healthy"}
