@@ -8,7 +8,7 @@ from invoke import Context, task
 
 @task
 def install(ctx: Context, group: str | None = None) -> None:
-    """Runs unittests.
+    """Installs project's dependencies.
 
     Args:
         ctx (invoke.Context): The context object representing the current invocation.
