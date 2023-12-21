@@ -1,15 +1,16 @@
 """Module that handles application level settings."""
 
-from pydantic import BaseModel
 
 from app.loaders import EnvironmentLoader
+from app.utils.pydantic import ImmutableModel
 
 
-class AppConfig(BaseModel):
+class AppConfig(ImmutableModel):
     """Configuration model for application settings."""
 
     APP_NAME: str = "fastapi-shop"
-    DEBUG: bool = False
+    APP_WORKERS: int = 1
+    APP_DEBUG: bool = False
 
     AUTH_SECRET_KEY: str
     AUTH_REFRESH_SECRET_KEY: str
@@ -24,4 +25,4 @@ class AppConfig(BaseModel):
     MONGODB_NAME: str
 
 
-SETTINGS = AppConfig.model_validate(EnvironmentLoader.load())
+SETTINGS = AppConfig.model_validate(EnvironmentLoader().load())

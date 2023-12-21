@@ -2,8 +2,6 @@
 
 from enum import Enum
 
-JTW_TYPE = "Bearer"
-
 
 class HTTPErrorMessages(Enum):
     """Contains HTTP error messages."""

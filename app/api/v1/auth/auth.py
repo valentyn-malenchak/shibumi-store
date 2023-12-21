@@ -3,40 +3,45 @@ This module provides handling user authentication and authorization
 using FastAPI security features and JWT tokens.
 """
 
-from typing import Annotated
-
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
-from app.api.v1.entities import BaseEntity
-from app.api.v1.entities.users import UserEntity
-from app.api.v1.schemas.users import User
+from app.api.v1.auth.jwt import JWT
+from app.api.v1.auth.password import Password
+from app.api.v1.models.users import User
+from app.api.v1.services.users import UserService
 from app.constants import HTTPErrorMessages
 from app.exceptions import ExpiredTokenError, InvalidTokenError
-from app.utils.jwt import JWT
-from app.utils.password import Password
 
 
-class Authentication(BaseEntity):
-    """Authentication class for handling user authentication."""
+class Authentication:
+    """Class for handling user authentication."""
 
-    @classmethod
-    async def authenticate(cls, username: str, password: str) -> User:
-        """Authenticate a user using username and password.
+    def __init__(self, user_service: UserService = Depends()) -> None:
+        """Initializes the Authentication.
+
+        Args:
+            user_service (UserService): An instance of the User service.
+
+        """
+        self.user_service = user_service
+
+    async def authenticate(self, username: str, password: str) -> User:
+        """Authenticates a user using username and password.
 
         Args:
             username (str): The username of the user.
             password (str): The password of the user.
 
         Returns:
-            User data if authentication is successful.
+            User: User data if authentication is successful.
 
         Raises:
             HTTPException: If authentication fails.
 
         """
 
-        user = await UserEntity().get_user_by_username(username=username)
+        user = await self.user_service.get_item_by_username(username=username)
 
         if user is None or not Password.verify_password(password, user.hashed_password):
             raise HTTPException(
@@ -47,23 +52,32 @@ class Authentication(BaseEntity):
         return user
 
 
-class Authorization(BaseEntity):
-    """Authorization class for handling user authorization."""
+class Authorization:
+    """Class for handling user authorization."""
 
-    _oauth2 = OAuth2PasswordBearer(tokenUrl="/auth/tokens/", scheme_name="JWT")
+    oauth2 = OAuth2PasswordBearer(tokenUrl="/auth/tokens/", scheme_name="JWT")
 
-    @classmethod
-    async def authorize(cls, token: Annotated[str, Depends(_oauth2)]) -> User:
-        """Get the current user based on the provided token.
+    def __init__(self, user_service: UserService = Depends()) -> None:
+        """Initializes the Authorization.
+
+        Args:
+            user_service (UserService): An instance of the User service.
+
+        """
+
+        self.user_service = user_service
+
+    async def authorize(self, token: str) -> User:
+        """Gets the current user based on the provided token.
 
         Args:
             token (str): The JWT token for authentication.
 
         Returns:
-            User data if token is valid.
+            User: User data if token is valid.
 
         Raises:
-            HTTPException: If token is expired or invalid.
+            HTTPException: If token is expired/invalid or user does not exist.
 
         """
         try:
@@ -81,7 +95,9 @@ class Authorization(BaseEntity):
                 detail=HTTPErrorMessages.INVALID_CREDENTIALS.value,
             )
 
-        user = await UserEntity().get_user_by_username(username=token_data.username)
+        user = await self.user_service.get_item_by_username(
+            username=token_data.username
+        )
 
         if user is None:
             raise HTTPException(

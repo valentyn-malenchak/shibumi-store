@@ -13,10 +13,27 @@ class Password:
 
     @staticmethod
     def get_password_hash(password: str) -> str:
-        """Hash a password and return the hash."""
+        """Hashes a password.
+
+        Args:
+            password (str): Plain password.
+
+        Returns:
+            str: Hashed password.
+
+        """
         return Password._crypt_ctx.hash(password)
 
     @staticmethod
     def verify_password(plain_password: str, hashed_password: str) -> bool:
-        """Verify if a plain password matches its hashed counterpart."""
+        """Verifies if a plain password matches its hashed counterpart.
+
+        Args:
+            plain_password (str): Plain password.
+            hashed_password (str): Hashed password.
+
+        Returns:
+            bool: True if passwords match else False.
+
+        """
         return Password._crypt_ctx.verify(plain_password, hashed_password)
