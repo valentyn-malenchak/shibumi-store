@@ -53,7 +53,21 @@ def test(ctx: Context) -> None:
         invoke test  # Runs unit tests.
 
     """
-    ctx.run("poetry run pytest")
+    ctx.run("poetry run pytest -v --cov=app app/")
+
+
+@task
+def coverage_report(ctx: Context) -> None:
+    """Shows unit tests coverage report.
+
+    Args:
+        ctx (invoke.Context): The context object representing the current invocation.
+
+    Example:
+        invoke coverage-report  # Shows coverage report.
+
+    """
+    ctx.run("poetry run coverage report -m")
 
 
 @task

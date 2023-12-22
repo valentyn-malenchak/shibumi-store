@@ -11,7 +11,3 @@ class ExpiredTokenError(AppExceptionError):
 
 class InvalidTokenError(AppExceptionError):
     """Invalid JWT token exception."""
-
-
-class NotInitializedDBError(AppExceptionError):
-    """Not initialized database exception."""
