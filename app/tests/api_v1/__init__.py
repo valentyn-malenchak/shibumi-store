@@ -54,12 +54,14 @@ class BaseTest:
     async def arrange_db(self, set_event_loop: None) -> AsyncGenerator[None, None]:
         """Loads data into DB before acting unit test."""
 
+        service = injector.get(UserService)
+        # Cleans users data before loading data to MongoDB
+        await service.delete_all_items()
+
         # Loads users data
         fixture_file_path = os.path.join("app", "tests", "fixtures", "users.json")
 
         data = self.load_fixture(fixture_file_path)
-
-        service = injector.get(UserService)
 
         await service.create_items(data if isinstance(data, list) else [data])
 
