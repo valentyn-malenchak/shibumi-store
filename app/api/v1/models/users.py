@@ -1,6 +1,8 @@
 """Module that contains users domain models."""
 
-from pydantic import BaseModel
+from datetime import date
+
+from pydantic import BaseModel, EmailStr
 
 from app.api.v1.models.auth import TokenUserModel
 from app.utils.pydantic import ObjectId
@@ -11,9 +13,12 @@ class User(ObjectId):
 
     first_name: str
     last_name: str
+    patronymic_name: str | None
     username: str
-    email: str
+    email: EmailStr
     hashed_password: str
+    phone_number: str
+    birthdate: date
 
     def get_token_data(self) -> TokenUserModel:
         """Extracts user data used for JWT generation."""
@@ -32,5 +37,8 @@ class UserResponseModel(BaseModel):
     id: str
     first_name: str
     last_name: str
+    patronymic_name: str | None
     username: str
-    email: str
+    email: EmailStr
+    phone_number: str
+    birthdate: date

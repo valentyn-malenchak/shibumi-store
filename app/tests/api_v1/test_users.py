@@ -30,8 +30,11 @@ class TestUser(BaseTest):
             "id": "65844f12b6de26578d98c2c8",
             "first_name": "John",
             "last_name": "Smith",
+            "patronymic_name": None,
             "username": "john.smith",
             "email": "john.smith@gmail.com",
+            "phone_number": "+380981111111",
+            "birthdate": "1998-01-01",
         }
 
     @pytest.mark.asyncio

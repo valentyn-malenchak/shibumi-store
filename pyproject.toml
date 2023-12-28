@@ -25,6 +25,7 @@ injector = "^0.21.0"
 pytest-asyncio = "^0.23.2"
 motor-types = "^1.0.0b3"
 pytest-cov = "^4.1.0"
+pydantic = {extras = ["email"], version = "^2.5.3"}
 
 
 [tool.poetry.group.dev.dependencies]

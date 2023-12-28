@@ -3,8 +3,11 @@
     "_id": "65844f12b6de26578d98c2c8",
     "first_name": "John",
     "last_name": "Smith",
-    "email": "john.smith@gmail.com",
+    "patronymic_name": null,
     "username": "john.smith",
+    "email": "john.smith@gmail.com",
+    "phone_number": "+380981111111",
+    "birthdate": "1998-01-01",
     "hashed_password": "$2b$12$jat4Bz9E4.FECQ1NAGJUxe4fqK7gA849chc20stuMvtiKj6qf9riC"
   }
 ]
