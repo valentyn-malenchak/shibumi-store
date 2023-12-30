@@ -1,12 +1,14 @@
 """Contains MongoDB client."""
 
 
+from injector import inject
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from app.settings import SETTINGS
 from app.utils.metas import SingletonMeta
 
 
+@inject
 class MongoDBClient(metaclass=SingletonMeta):
     """MongoDB client singleton."""
 
@@ -27,3 +29,8 @@ class MongoDBClient(metaclass=SingletonMeta):
     def close(self) -> None:
         """Closes MongoDB client."""
         self._client.close()
+
+    @classmethod
+    def get_instance(cls) -> "MongoDBClient":
+        """Gets MongoDB client instance."""
+        return cls()
