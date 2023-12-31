@@ -32,7 +32,7 @@ class UserRepository(BaseRepository):
 
         """
 
-        user = await self._mongo.find_one(
+        user = await self._mongo_service.find_one(
             collection=self._collection_name, filter_={"_id": id_}, session=session
         )
 
@@ -53,7 +53,7 @@ class UserRepository(BaseRepository):
 
         """
 
-        user = await self._mongo.find_one(
+        user = await self._mongo_service.find_one(
             collection=self._collection_name,
             filter_={"username": username},
             session=session,
@@ -76,7 +76,7 @@ class UserRepository(BaseRepository):
 
         """
 
-        return await self._mongo.insert_one(
+        return await self._mongo_service.insert_one(
             collection=self._collection_name, document=item, session=session
         )
 
@@ -98,7 +98,7 @@ class UserRepository(BaseRepository):
 
         """
 
-        return await self._mongo.insert_many(
+        return await self._mongo_service.insert_many(
             collection=self._collection_name,
             documents=items,
             session=session,
@@ -114,4 +114,6 @@ class UserRepository(BaseRepository):
             if operation is transactional. Defaults to None.
 
         """
-        await self._mongo.delete_many(collection=self._collection_name, session=session)
+        await self._mongo_service.delete_many(
+            collection=self._collection_name, session=session
+        )

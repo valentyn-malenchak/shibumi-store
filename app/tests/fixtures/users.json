@@ -7,7 +7,9 @@
     "username": "john.smith",
     "email": "john.smith@gmail.com",
     "phone_number": "+380981111111",
-    "birthdate": "1998-01-01",
-    "hashed_password": "$2b$12$jat4Bz9E4.FECQ1NAGJUxe4fqK7gA849chc20stuMvtiKj6qf9riC"
+    "birthdate": "1998-01-01T00:00:00.000+00:00",
+    "hashed_password": "$2b$12$jat4Bz9E4.FECQ1NAGJUxe4fqK7gA849chc20stuMvtiKj6qf9riC",
+    "created_at": "2023-12-30T13:25:43.895+00:00",
+    "updated_at": null
   }
 ]

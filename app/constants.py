@@ -11,3 +11,4 @@ class HTTPErrorMessages(Enum):
     INVALID_CREDENTIALS = "Invalid credentials."
 
     ENTITY_IS_NOT_FOUND = "{entity} is not found."
+    ENTITY_FIELD_UNIQUENESS = "{entity} with such {field} is already exist."

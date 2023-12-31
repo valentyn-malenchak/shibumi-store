@@ -15,16 +15,16 @@ class BaseRepository(abc.ABC):
 
     _collection_name: str | None = None
 
-    def __init__(self, mongo: MongoDBService = Depends()) -> None:
+    def __init__(self, mongo_service: MongoDBService = Depends()) -> None:
         """Initializes the BaseRepository.
 
         This method sets up the MongoDB service instance for data access.
 
         Args:
-            mongo (MongoDBService): An instance of the MongoDB service.
+            mongo_service (MongoDBService): An instance of the MongoDB service.
 
         """
-        self._mongo = mongo
+        self._mongo_service = mongo_service
 
     @abc.abstractmethod
     async def get_item_by_id(

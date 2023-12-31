@@ -5,6 +5,8 @@ import json
 import os
 from typing import Any, Dict
 
+from app.utils.json import JSONDecoder
+
 
 class BaseLoader(abc.ABC):
     """Base loader."""
@@ -71,4 +73,4 @@ class JSONFileLoader(BaseLoader):
         path = os.path.join(os.getcwd(), self.file_path)
 
         with open(path) as json_file:
-            return json.load(json_file)
+            return json.load(json_file, cls=JSONDecoder)
