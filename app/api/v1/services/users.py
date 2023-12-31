@@ -2,13 +2,17 @@
 
 from typing import Any, Dict, List
 
+import arrow
 from bson import ObjectId
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
 from injector import inject
+from pymongo.errors import DuplicateKeyError
 
-from app.api.v1.models.users import User
+from app.api.v1.auth.password import Password
+from app.api.v1.models.users import CreateUserRequestModel, User
 from app.api.v1.repositories.users import UserRepository
 from app.api.v1.services import BaseService
+from app.constants import HTTPErrorMessages
 
 
 @inject
@@ -51,14 +55,49 @@ class UserService(BaseService):
         """
         return await self.repository.get_item_by_username(username=username)
 
-    async def create_items(self, items: List[Dict[str, Any]]) -> List[ObjectId]:
+    async def create_item(self, item: CreateUserRequestModel) -> User | None:
+        """Creates a new user.
+
+        Args:
+            item (CreateUserRequestModel): The data for the new user.
+
+        Returns:
+            User | None: The created user.
+
+        """
+
+        password = Password.get_password_hash(password=item.password)
+
+        try:
+            id_ = await self.repository.create_item(
+                item={
+                    # Replaces plain password on hashed one
+                    **item.model_dump(exclude={"password"}),
+                    "hashed_password": password,
+                    "birthdate": arrow.get(item.birthdate).datetime,
+                    "created_at": arrow.utcnow().datetime,
+                    "updated_at": None,
+                },
+            )
+
+        except DuplicateKeyError:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=HTTPErrorMessages.ENTITY_FIELD_UNIQUENESS.value.format(
+                    entity="User", field="username"
+                ),
+            )
+
+        return await self.get_item_by_id(id_=id_)
+
+    async def create_items(self, items: List[Dict[str, Any]]) -> List[Any]:
         """Creates new users.
 
         Args:
-            items (List[Dict[str, Any]]): The data for the new items.
+            items (List[Dict[str, Any]]): The data for the new users.
 
         Returns:
-            List[ObjectId]: The created items.
+            List[Any]: The IDs of created users.
 
         """
         return await self.repository.create_items(items=items)

@@ -4,6 +4,10 @@ Python code into CLI-invokable tasks.
 """
 
 from invoke import Context, task
+from mongodb_migrations.cli import MigrationManager
+from mongodb_migrations.config import Configuration, Execution
+
+from app.settings import SETTINGS
 
 
 @task
@@ -27,7 +31,94 @@ def install(ctx: Context, group: str | None = None) -> None:
     ctx.run(command)
 
 
-@task(default=True)
+@task
+def create_migration(ctx: Context, description: str) -> None:
+    """Creates a MongoDB migration script.
+
+    Args:
+        ctx (invoke.Context): The context object representing the current invocation.
+        description (str): Migration script description.
+
+    Example:
+        # Creates an empty migration script.
+        invoke create-migration --description add_index
+
+    """
+    ctx.run(f"poetry run mongodb-migrate-create --description {description}")
+
+
+@task
+def upgrade_migrations(_: Context, to_datetime: str | None = None) -> None:
+    """Upgrades MongoDB migrations.
+
+    Args:
+        _ (invoke.Context): The context object representing the current invocation.
+        to_datetime (str): Defines a prefix of migration upgrade/downgrade
+        operations will reach.
+
+    Example:
+        # Upgrades MongoDB migrations.
+        invoke upgrade-migrations
+
+        # Upgrades MongoDB migrations till '20231231132337'.
+        invoke upgrade-migrations --to-datetime 20231231132337
+
+    """
+
+    config = Configuration(
+        {
+            "mongo_host": SETTINGS.MONGODB_HOST,
+            "mongo_port": SETTINGS.MONGODB_PORT,
+            "mongo_database": SETTINGS.MONGODB_NAME,
+            "mongo_username": SETTINGS.MONGODB_USER,
+            "mongo_password": SETTINGS.MONGODB_PASSWORD,
+            "execution": Execution.MIGRATE,
+            "to_datetime": to_datetime,
+        }
+    )
+
+    manager = MigrationManager(config)
+
+    manager.run()
+
+
+@task
+def downgrade_migrations(_: Context, to_datetime: str | None = None) -> None:
+    """Downgrades MongoDB migration.
+
+    Args:
+        _ (invoke.Context): The context object representing the current invocation.
+        to_datetime (str): Defines a prefix of migration upgrade/downgrade
+        operations will reach.
+
+    Example:
+        # Downgrades MongoDB migrations.
+        invoke downgrade_migrations
+
+        # Downgrades MongoDB migrations till '20231231132337'.
+        invoke downgrade-migrations --to-datetime 20231231132337
+
+
+    """
+
+    config = Configuration(
+        {
+            "mongo_host": SETTINGS.MONGODB_HOST,
+            "mongo_port": SETTINGS.MONGODB_PORT,
+            "mongo_database": SETTINGS.MONGODB_NAME,
+            "mongo_username": SETTINGS.MONGODB_USER,
+            "mongo_password": SETTINGS.MONGODB_PASSWORD,
+            "execution": Execution.DOWNGRADE,
+            "to_datetime": to_datetime,
+        }
+    )
+
+    manager = MigrationManager(config)
+
+    manager.run()
+
+
+@task(default=True, pre=[upgrade_migrations])
 def run(ctx: Context) -> None:
     """Runs a FastAPI application.
 
@@ -42,7 +133,7 @@ def run(ctx: Context) -> None:
     ctx.run("poetry run python -m app.app")
 
 
-@task
+@task(pre=[upgrade_migrations])
 def test(ctx: Context) -> None:
     """Runs unit tests.
 
@@ -126,7 +217,7 @@ def mypy(ctx: Context) -> None:
 
 @task
 def check(ctx: Context) -> None:
-    """Runs unittests, linter, mypy and formatter together.
+    """Runs unit tests, linter, mypy and formatter together.
 
     Args:
         ctx (invoke.Context): The context object representing the current invocation.

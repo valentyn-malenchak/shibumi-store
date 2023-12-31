@@ -2,7 +2,7 @@
 
 from typing import Annotated, Dict
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api.v1.auth.auth import Authentication, Authorization
@@ -16,7 +16,9 @@ from app.api.v1.models.auth import (
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.post("/tokens/", response_model=TokensModel)
+@router.post(
+    "/tokens/", response_model=TokensModel, status_code=status.HTTP_201_CREATED
+)
 async def create_tokens(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     authentication: Authentication = Depends(),
@@ -40,7 +42,11 @@ async def create_tokens(
     return JWT.create_tokens(data=token_data)
 
 
-@router.post("/access-token/", response_model=AccessTokenModel)
+@router.post(
+    "/access-token/",
+    response_model=AccessTokenModel,
+    status_code=status.HTTP_201_CREATED,
+)
 async def refresh_access_token(
     request_body: RefreshTokenRequestModel,
     authorization: Authorization = Depends(),

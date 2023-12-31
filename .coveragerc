@@ -1,3 +1,9 @@
 [run]
 omit =
  */tests/*
+
+[report]
+exclude_lines =
+  # Skip abstract methods
+  @abstractmethod
+  @abc.abstractmethod

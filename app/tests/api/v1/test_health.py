@@ -4,7 +4,7 @@ import pytest
 from fastapi import status
 from httpx import AsyncClient
 
-from app.tests.api_v1 import BaseTest
+from app.tests.api.v1 import BaseTest
 
 
 class TestHealth(BaseTest):

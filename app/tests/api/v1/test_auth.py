@@ -9,7 +9,7 @@ from httpx import AsyncClient
 from jose import ExpiredSignatureError
 
 from app.constants import HTTPErrorMessages
-from app.tests.api_v1 import BaseTest
+from app.tests.api.v1 import BaseTest
 from app.tests.constants import FAKE_USER, JWT, USER
 
 
@@ -28,7 +28,7 @@ class TestAuth(BaseTest):
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
 
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_201_CREATED
         assert set(response.json().keys()) == {
             "access_token",
             "refresh_token",
@@ -104,7 +104,7 @@ class TestAuth(BaseTest):
             json={"refresh_token": JWT},
         )
 
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_201_CREATED
         assert set(response.json().keys()) == {"access_token", "token_type"}
 
     @pytest.mark.asyncio

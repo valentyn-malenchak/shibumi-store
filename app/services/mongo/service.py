@@ -22,16 +22,16 @@ class MongoDBService(BaseService):
     _name: str = "mongo_db"
 
     def __init__(
-        self, mongo: MongoDBClient = Depends(MongoDBClient.get_instance)
+        self, mongo_client: MongoDBClient = Depends(MongoDBClient.get_instance)
     ) -> None:
         """MongoDB service initialization method.
 
         Args:
-            mongo (MongoDBClient): MongoDB client.
+            mongo_client (MongoDBClient): MongoDB client.
 
         """
 
-        self._db: AsyncIOMotorDatabase = mongo.client[SETTINGS.MONGODB_NAME]
+        self._db: AsyncIOMotorDatabase = mongo_client.client[SETTINGS.MONGODB_NAME]
 
     def _get_collection_by_name(self, collection: str) -> AsyncIOMotorCollection:
         """Fetches collection by name.

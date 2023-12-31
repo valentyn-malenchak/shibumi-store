@@ -14,16 +14,16 @@ class TransactionManager:
     """MongoDB transaction context manager."""
 
     def __init__(
-        self, mongo: MongoDBClient = Depends(MongoDBClient.get_instance)
+        self, mongo_client: MongoDBClient = Depends(MongoDBClient.get_instance)
     ) -> None:
         """Transaction context manager initialization method.
 
         Args:
-            mongo (MongoDBClient): MongoDB client.
+            mongo_client (MongoDBClient): MongoDB client.
 
         """
 
-        self._client: AsyncIOMotorClient = mongo.client
+        self._client: AsyncIOMotorClient = mongo_client.client
         self._session: AsyncIOMotorClientSession | None = None
 
     async def __aenter__(self) -> AsyncIOMotorClientSession:
