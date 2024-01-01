@@ -10,7 +10,7 @@ from app.api.v1.auth.jwt import JWT
 from app.api.v1.auth.password import Password
 from app.api.v1.models.users import User
 from app.api.v1.services.users import UserService
-from app.constants import HTTPErrorMessages
+from app.constants import HTTPErrorMessagesEnum
 from app.exceptions import ExpiredTokenError, InvalidTokenError
 
 
@@ -46,7 +46,7 @@ class Authentication:
         if user is None or not Password.verify_password(password, user.hashed_password):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=HTTPErrorMessages.INCORRECT_CREDENTIALS.value,
+                detail=HTTPErrorMessagesEnum.INCORRECT_CREDENTIALS.value,
             )
 
         return user
@@ -86,13 +86,13 @@ class Authorization:
         except ExpiredTokenError:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=HTTPErrorMessages.EXPIRED_TOKEN.value,
+                detail=HTTPErrorMessagesEnum.EXPIRED_TOKEN.value,
             )
 
         except InvalidTokenError:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=HTTPErrorMessages.INVALID_CREDENTIALS.value,
+                detail=HTTPErrorMessagesEnum.INVALID_CREDENTIALS.value,
             )
 
         user = await self.user_service.get_item_by_username(
@@ -102,7 +102,7 @@ class Authorization:
         if user is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=HTTPErrorMessages.ENTITY_IS_NOT_FOUND.value.format(
+                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
                     entity="User"
                 ),
             )

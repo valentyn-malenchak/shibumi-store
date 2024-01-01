@@ -1,6 +1,6 @@
 """Module that handles application level settings."""
 
-
+from app.constants import EnvironmentsEnum
 from app.loaders import EnvironmentLoader
 from app.utils.pydantic import ImmutableModel
 
@@ -9,8 +9,9 @@ class AppConfig(ImmutableModel):
     """Configuration model for application settings."""
 
     APP_NAME: str = "fastapi-shop"
-    APP_WORKERS: int = 1
+    APP_WORKERS: int = 4
     APP_DEBUG: bool = False
+    APP_ENVIRONMENT: EnvironmentsEnum = EnvironmentsEnum.PROD
 
     AUTH_SECRET_KEY: str
     AUTH_REFRESH_SECRET_KEY: str

@@ -8,7 +8,7 @@ from fastapi import status
 from httpx import AsyncClient
 from jose import ExpiredSignatureError
 
-from app.constants import HTTPErrorMessages
+from app.constants import HTTPErrorMessagesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
 from app.tests.api.v1 import BaseTest
 from app.tests.constants import FAKE_USER, JWT, USER
@@ -74,7 +74,7 @@ class TestAuth(BaseTest):
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert response.json() == {
-            "detail": HTTPErrorMessages.INCORRECT_CREDENTIALS.value
+            "detail": HTTPErrorMessagesEnum.INCORRECT_CREDENTIALS.value
         }
 
     @pytest.mark.asyncio
@@ -91,7 +91,7 @@ class TestAuth(BaseTest):
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert response.json() == {
-            "detail": HTTPErrorMessages.INCORRECT_CREDENTIALS.value
+            "detail": HTTPErrorMessagesEnum.INCORRECT_CREDENTIALS.value
         }
 
     @pytest.mark.asyncio
@@ -123,7 +123,7 @@ class TestAuth(BaseTest):
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": HTTPErrorMessages.INVALID_CREDENTIALS.value
+            "detail": HTTPErrorMessagesEnum.INVALID_CREDENTIALS.value
         }
 
     @pytest.mark.asyncio
@@ -138,7 +138,7 @@ class TestAuth(BaseTest):
         )
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
-        assert response.json() == {"detail": HTTPErrorMessages.EXPIRED_TOKEN.value}
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.EXPIRED_TOKEN.value}
 
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=FAKE_USER))
@@ -155,5 +155,7 @@ class TestAuth(BaseTest):
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
-            "detail": HTTPErrorMessages.ENTITY_IS_NOT_FOUND.value.format(entity="User")
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+                entity="User"
+            )
         }

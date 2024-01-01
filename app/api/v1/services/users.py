@@ -11,7 +11,7 @@ from app.api.v1.auth.password import Password
 from app.api.v1.models.users import CreateUserRequestModel, User
 from app.api.v1.repositories.users import UserRepository
 from app.api.v1.services import BaseService
-from app.constants import HTTPErrorMessages
+from app.constants import HTTPErrorMessagesEnum
 
 
 @inject
@@ -82,7 +82,7 @@ class UserService(BaseService):
         except DuplicateKeyError:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=HTTPErrorMessages.ENTITY_FIELD_UNIQUENESS.value.format(
+                detail=HTTPErrorMessagesEnum.ENTITY_FIELD_UNIQUENESS.value.format(
                     entity="User", field="username"
                 ),
             )

@@ -47,7 +47,7 @@ def create_migration(ctx: Context, description: str) -> None:
         invoke create-migration --description add_index
 
     """
-    ctx.run(f"poetry run mongodb-migrate-create --description {description}")
+    ctx.run(f"mongodb-migrate-create --description {description}")
 
 
 @task
@@ -133,7 +133,7 @@ def run(ctx: Context) -> None:
 
     """
 
-    ctx.run("poetry run python -m app.app")
+    ctx.run("python -m app.app")
 
 
 @task(pre=[upgrade_migrations])
@@ -147,7 +147,7 @@ def test(ctx: Context) -> None:
         invoke test  # Runs unit tests.
 
     """
-    ctx.run("poetry run pytest -v --cov=app app/")
+    ctx.run("pytest -v --cov=app app/")
 
 
 @task
@@ -161,7 +161,7 @@ def coverage_report(ctx: Context) -> None:
         invoke coverage-report  # Shows coverage report.
 
     """
-    ctx.run("poetry run coverage report -m")
+    ctx.run("coverage report -m --fail-under=90")
 
 
 @task
@@ -177,7 +177,7 @@ def lint(ctx: Context, fix: bool = False) -> None:
         invoke lint --fix  # Runs linter with automatically error fix.
 
     """
-    command = "poetry run ruff check ."
+    command = "ruff check ."
     if fix:
         command += " --fix"
     ctx.run(command)
@@ -193,10 +193,10 @@ def format(ctx: Context, check_only: bool = False) -> None:
 
     Example:
         invoke format               # Runs formatter and automatically fixes errors.
-        invoke format --check_only  # Runs formatter and only shows the list of errors.
+        invoke format --check-only  # Runs formatter and only shows the list of errors.
 
     """
-    command = "poetry run ruff format ."
+    command = "ruff format ."
     if check_only:
         command += " --diff --check"
 
@@ -215,7 +215,7 @@ def mypy(ctx: Context) -> None:
 
     """
 
-    ctx.run("poetry run mypy .")
+    ctx.run("mypy .")
 
 
 @task
@@ -233,6 +233,7 @@ def check(ctx: Context) -> None:
     format(ctx, check_only=True)
     mypy(ctx)
     test(ctx)
+    coverage_report(ctx)
 
 
 @task
