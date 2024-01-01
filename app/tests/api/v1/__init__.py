@@ -1,8 +1,7 @@
 """Module that contains base test component."""
 
 import asyncio
-import os
-from typing import Any, AsyncGenerator, Generator
+from typing import Any, AsyncGenerator, Generator, List
 from unittest.mock import patch
 
 import pytest
@@ -10,10 +9,10 @@ import pytest_asyncio
 from httpx import AsyncClient
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from app.api.v1.services.users import UserService
 from app.app import app
-from app.injector import injector
 from app.loaders import JSONFileLoader
+from app.services.mongo.constants import MongoCollectionsEnum
+from app.tests.fixtures.manager import FileFixtureManager
 
 
 class BaseTest:
@@ -51,21 +50,26 @@ class BaseTest:
             yield
 
     @pytest_asyncio.fixture
-    async def arrange_db(self, set_event_loop: None) -> AsyncGenerator[None, None]:
-        """Loads data into DB before acting unit test."""
+    async def arrange_db(
+        self,
+        set_event_loop: None,
+        collection_names: List[MongoCollectionsEnum] | None = None,
+    ) -> AsyncGenerator[None, None]:
+        """Loads and clears data in DB before and after acting unit test.
 
-        service = injector.get(UserService)
-        # Cleans users data before loading data to MongoDB
-        await service.delete_all_items()
+        Args:
+            set_event_loop (None.): Event loop fixture.
+            collection_names (List[MongoCollectionsEnum] | None): List of
+            collections to be handled. Defaults to None.
 
-        # Loads users data
-        fixture_file_path = os.path.join("app", "tests", "fixtures", "users.json")
+        """
 
-        data = self.load_fixture(fixture_file_path)
+        file_fixture_manager = FileFixtureManager(collection_names=collection_names)
 
-        await service.create_items(data if isinstance(data, list) else [data])
+        await file_fixture_manager.clear()
+
+        await file_fixture_manager.load()
 
         yield
 
-        # Cleans users data
-        await service.delete_all_items()
+        await file_fixture_manager.clear()

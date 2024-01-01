@@ -1,7 +1,7 @@
 """Module that contains base service abstract class."""
 
 import abc
-from typing import Any, List
+from typing import Any
 
 from bson import ObjectId
 
@@ -34,32 +34,6 @@ class BaseService(abc.ABC):
 
         Returns:
             Any: The ID of created item.
-
-        Raises:
-            NotImplementedError: This method must be implemented by subclasses.
-
-        """
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    async def create_items(self, items: List[Any]) -> List[Any]:
-        """Creates new items.
-
-        Args:
-            items (List[Any]): The data for the new items.
-
-        Returns:
-            List[Any]: The IDs of created items.
-
-        Raises:
-            NotImplementedError: This method must be implemented by subclasses.
-
-        """
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    async def delete_all_items(self) -> None:
-        """Deletes all items.
 
         Raises:
             NotImplementedError: This method must be implemented by subclasses.

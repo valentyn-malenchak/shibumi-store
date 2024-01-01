@@ -13,9 +13,7 @@ from app.services.mongo.client import MongoDBClient
 class TransactionManager:
     """MongoDB transaction context manager."""
 
-    def __init__(
-        self, mongo_client: MongoDBClient = Depends(MongoDBClient.get_instance)
-    ) -> None:
+    def __init__(self, mongo_client: MongoDBClient = Depends(MongoDBClient)) -> None:
         """Transaction context manager initialization method.
 
         Args:

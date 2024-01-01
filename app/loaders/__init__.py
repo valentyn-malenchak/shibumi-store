@@ -26,12 +26,8 @@ class BaseLoader(abc.ABC):
 class EnvironmentLoader(BaseLoader):
     """Environment variables loader."""
 
-    def load(self, variable: str | None = None) -> Dict[str, Any]:
+    def load(self) -> Dict[str, Any]:
         """Loads environment variables.
-
-        Args:
-            variable (str | None): If provided, loads a specific environment
-            variable by name. If not provided, loads all environment variables.
 
         Returns:
             Dict[str, Any]: A dictionary containing environment variables,
@@ -42,8 +38,6 @@ class EnvironmentLoader(BaseLoader):
             single key-value pair.
 
         """
-        if variable is not None:
-            return {variable: os.environ.get(variable)}
         return dict(os.environ)
 
 

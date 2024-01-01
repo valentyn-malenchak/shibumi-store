@@ -1,6 +1,5 @@
 """Module that contains user service abstract class."""
 
-from typing import Any, Dict, List
 
 import arrow
 from bson import ObjectId
@@ -89,19 +88,3 @@ class UserService(BaseService):
             )
 
         return await self.get_item_by_id(id_=id_)
-
-    async def create_items(self, items: List[Dict[str, Any]]) -> List[Any]:
-        """Creates new users.
-
-        Args:
-            items (List[Dict[str, Any]]): The data for the new users.
-
-        Returns:
-            List[Any]: The IDs of created users.
-
-        """
-        return await self.repository.create_items(items=items)
-
-    async def delete_all_items(self) -> None:
-        """Deletes all users."""
-        await self.repository.delete_all_items()
