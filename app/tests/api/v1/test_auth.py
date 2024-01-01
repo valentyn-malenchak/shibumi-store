@@ -9,6 +9,7 @@ from httpx import AsyncClient
 from jose import ExpiredSignatureError
 
 from app.constants import HTTPErrorMessages
+from app.services.mongo.constants import MongoCollectionsEnum
 from app.tests.api.v1 import BaseTest
 from app.tests.constants import FAKE_USER, JWT, USER
 
@@ -17,6 +18,7 @@ class TestAuth(BaseTest):
     """Test class for auth API endpoints in the FastAPI application."""
 
     @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
     async def test_create_tokens(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -60,7 +62,7 @@ class TestAuth(BaseTest):
 
     @pytest.mark.asyncio
     async def test_create_tokens_user_does_not_exist(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient
     ) -> None:
         """Test auth token creation in case user with such username does not exist."""
 
@@ -77,7 +79,7 @@ class TestAuth(BaseTest):
 
     @pytest.mark.asyncio
     async def test_create_tokens_invalid_password(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient
     ) -> None:
         """Test auth token creation in case user with such username does not exist."""
 
@@ -93,6 +95,7 @@ class TestAuth(BaseTest):
         }
 
     @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
     @patch("jose.jwt.decode", Mock(return_value=USER))
     async def test_refresh_access_token(
         self, test_client: AsyncClient, arrange_db: None
@@ -140,7 +143,7 @@ class TestAuth(BaseTest):
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=FAKE_USER))
     async def test_refresh_access_token_user_does_not_exist(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient
     ) -> None:
         """
         Test refreshing access token in case user from refresh token does not exist.

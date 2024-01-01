@@ -8,6 +8,7 @@ from httpx import AsyncClient
 from jose import ExpiredSignatureError
 
 from app.constants import HTTPErrorMessages
+from app.services.mongo.constants import MongoCollectionsEnum
 from app.tests.api.v1 import BaseTest
 from app.tests.constants import FAKE_USER, JWT, USER
 
@@ -17,6 +18,7 @@ class TestUser(BaseTest):
 
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
     async def test_get_me(self, test_client: AsyncClient, arrange_db: None) -> None:
         """Test get me."""
 
@@ -48,7 +50,7 @@ class TestUser(BaseTest):
 
     @pytest.mark.asyncio
     async def test_get_me_invalid_token(self, test_client: AsyncClient) -> None:
-        """Test get me in case refresh token is invalid."""
+        """Test get me in case access token is invalid."""
 
         response = await test_client.get(
             "/users/me/",
@@ -65,7 +67,7 @@ class TestUser(BaseTest):
     async def test_get_me_access_token_is_expired(
         self, test_client: AsyncClient
     ) -> None:
-        """Test get me in case refresh token is expired."""
+        """Test get me in case access token is expired."""
 
         response = await test_client.get(
             "/users/me/", headers={"Authorization": f"Bearer {JWT}"}
@@ -76,11 +78,9 @@ class TestUser(BaseTest):
 
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=FAKE_USER))
-    async def test_get_me_user_does_not_exist(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
+    async def test_get_me_user_does_not_exist(self, test_client: AsyncClient) -> None:
         """
-        Test get me in case user from refresh token does not exist.
+        Test get me in case user from access token does not exist.
         """
 
         response = await test_client.get(
@@ -93,9 +93,7 @@ class TestUser(BaseTest):
         }
 
     @pytest.mark.asyncio
-    async def test_create_users(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
+    async def test_create_users(self, test_client: AsyncClient) -> None:
         """Test create users."""
 
         response = await test_client.post(
@@ -176,6 +174,7 @@ class TestUser(BaseTest):
         ]
 
     @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
     async def test_create_users_username_duplication(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:

@@ -3,11 +3,14 @@ Module to manage shell-oriented subprocesses and organizing executable
 Python code into CLI-invokable tasks.
 """
 
+import asyncio
+
 from invoke import Context, task
 from mongodb_migrations.cli import MigrationManager
 from mongodb_migrations.config import Configuration, Execution
 
 from app.settings import SETTINGS
+from app.tests.fixtures.manager import FileFixtureManager
 
 
 @task
@@ -230,3 +233,20 @@ def check(ctx: Context) -> None:
     format(ctx, check_only=True)
     mypy(ctx)
     test(ctx)
+
+
+@task
+def load_fixtures(_: Context) -> None:
+    """Loads test data from fixture files into MongoDB collections.
+
+    Args:
+        _ (invoke.Context): The context object representing the current invocation.
+
+    Example:
+        invoke load-fixtures  # Loads data from fixtures into Mongo collections.
+
+    """
+
+    file_fixture_manager = FileFixtureManager()
+
+    asyncio.run(file_fixture_manager.load())

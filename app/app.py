@@ -55,8 +55,7 @@ class App(FastAPI):
         """Executes on application shutdown."""
 
         # close MongoDB client
-        mongo_client = MongoDBClient.get_instance()
-        mongo_client.close()
+        MongoDBClient.close()
 
     def run(self) -> None:
         """Run the FastAPI app."""
