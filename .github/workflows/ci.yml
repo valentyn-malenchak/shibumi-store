@@ -1,0 +1,58 @@
+name: CI
+
+on: [push]
+
+env:
+  APP_ENVIRONMENT: dev
+  MONGODB_USER: root
+  MONGODB_PASSWORD: root
+  MONGODB_HOST: 127.0.0.1
+  MONGODB_PORT: 27017
+  MONGODB_NAME: shop
+  AUTH_SECRET_KEY: test
+  AUTH_REFRESH_SECRET_KEY: test
+
+jobs:
+
+  code-quality:
+    name: Check code quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install poetry
+        run: pipx install poetry==1.5.1
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+          cache: poetry
+
+      - name: Install Python dependencies
+        run: poetry install --no-root
+
+      - name: Run Code Formatting
+        run: poetry run invoke format --check-only
+
+      - name: Run Linting
+        run: poetry run invoke lint
+
+      - name: Run Mypy
+        run: poetry run invoke mypy
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.10.0
+        with:
+          mongodb-version: 7.0.1
+          mongodb-db: shop
+          mongodb-replica-set: rs0
+
+      - name: Run Tests
+        run: poetry run invoke test
+        env:
+          CI: true
+
+      - name: Tests Coverage Report
+        run: poetry run invoke coverage-report

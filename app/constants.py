@@ -3,7 +3,14 @@
 from enum import Enum
 
 
-class HTTPErrorMessages(Enum):
+class EnvironmentsEnum(Enum):
+    """Application environments enum."""
+
+    DEV = "dev"
+    PROD = "prod"
+
+
+class HTTPErrorMessagesEnum(Enum):
     """Contains HTTP error messages."""
 
     INCORRECT_CREDENTIALS = "Incorrect username or password."
