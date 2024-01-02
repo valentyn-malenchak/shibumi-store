@@ -1,8 +1,10 @@
 [run]
+relative_files = True
 omit =
  */tests/*
 
 [report]
+fail_under = 90
 exclude_lines =
   # Skip abstract methods
   @abstractmethod
