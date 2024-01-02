@@ -67,11 +67,12 @@ class Authorization:
 
         self.user_service = user_service
 
-    async def authorize(self, token: str) -> User:
+    async def authorize(self, token: str, is_refresh: bool = False) -> User:
         """Gets the current user based on the provided token.
 
         Args:
             token (str): The JWT token for authentication.
+            is_refresh (bool): Defines if token is refresh. Default to False.
 
         Returns:
             User: User data if token is valid.
@@ -81,7 +82,7 @@ class Authorization:
 
         """
         try:
-            token_data = JWT.parse_token(token)
+            token_data = JWT.parse_token(token, is_refresh=is_refresh)
 
         except ExpiredTokenError:
             raise HTTPException(
