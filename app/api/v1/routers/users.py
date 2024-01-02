@@ -10,7 +10,6 @@ from app.api.v1.services.users import UserService
 router = APIRouter(prefix="/users", tags=["users"])
 
 
-# TODO: user shouldn't have an ability to login using refresh token
 @router.get("/me/", response_model=UserResponseModel, status_code=status.HTTP_200_OK)
 async def get_users_me(
     token: str = Depends(Authorization.oauth2),
