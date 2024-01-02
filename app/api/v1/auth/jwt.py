@@ -117,11 +117,12 @@ class JWT:
         return tokens
 
     @staticmethod
-    def parse_token(token: str) -> TokenPayloadModel:
+    def parse_token(token: str, is_refresh: bool = False) -> TokenPayloadModel:
         """Parses and validates a JWT token.
 
         Args:
             token (str): The JWT token to parse.
+            is_refresh (bool): Defines if token is refresh. Default to False.
 
         Returns:
             TokenPayloadModel: The decoded token payload.
@@ -134,7 +135,9 @@ class JWT:
         try:
             payload = jwt.decode(
                 token,
-                SETTINGS.AUTH_SECRET_KEY,
+                SETTINGS.AUTH_SECRET_KEY
+                if is_refresh is False
+                else SETTINGS.AUTH_REFRESH_SECRET_KEY,
                 algorithms=[SETTINGS.AUTH_ALGORITHM],
             )
 

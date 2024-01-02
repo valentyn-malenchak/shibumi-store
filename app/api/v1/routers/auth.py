@@ -62,7 +62,7 @@ async def refresh_access_token(
 
     """
 
-    user = await authorization.authorize(request_body.refresh_token)
+    user = await authorization.authorize(request_body.refresh_token, is_refresh=True)
 
     token_data = user.get_token_data()
 
