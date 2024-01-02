@@ -147,21 +147,10 @@ def test(ctx: Context) -> None:
         invoke test  # Runs unit tests.
 
     """
-    ctx.run("pytest -v --cov=app app/")
-
-
-@task
-def coverage_report(ctx: Context) -> None:
-    """Shows unit tests coverage report.
-
-    Args:
-        ctx (invoke.Context): The context object representing the current invocation.
-
-    Example:
-        invoke coverage-report  # Shows coverage report.
-
-    """
-    ctx.run("coverage report -m --fail-under=90")
+    ctx.run(
+        "pytest -v --cov-report term-missing --cov-report xml "
+        "--cov-report html --cov-branch --cov=app app/"
+    )
 
 
 @task
@@ -169,7 +158,7 @@ def lint(ctx: Context, fix: bool = False) -> None:
     """Runs Ruff linter.
 
     Args:
-        fix (bool): If True, enables autofix behaviour.
+        fix (bool): If True, enables automatically fix behaviour.
         ctx (invoke.Context): The context object representing the current invocation.
 
     Example:
@@ -184,20 +173,20 @@ def lint(ctx: Context, fix: bool = False) -> None:
 
 
 @task
-def format(ctx: Context, check_only: bool = False) -> None:
+def format(ctx: Context, fix: bool = False) -> None:
     """Runs formatter.
 
     Args:
-        check_only (bool): If True, only prints out diffs.
+        fix (bool): If True, enables automatically fix behaviour.
         ctx (invoke.Context): The context object representing the current invocation.
 
     Example:
-        invoke format               # Runs formatter and automatically fixes errors.
-        invoke format --check-only  # Runs formatter and only shows the list of errors.
+        invoke format        # Runs formatter and only shows the list of errors.
+        invoke format --fix  # Runs formatter and automatically fixes errors.
 
     """
     command = "ruff format ."
-    if check_only:
+    if fix is False:
         command += " --diff --check"
 
     ctx.run(command)
@@ -219,21 +208,21 @@ def mypy(ctx: Context) -> None:
 
 
 @task
-def check(ctx: Context) -> None:
+def quality_check(ctx: Context) -> None:
     """Runs unit tests, linter, mypy and formatter together.
 
     Args:
         ctx (invoke.Context): The context object representing the current invocation.
 
     Example:
-        invoke check  # Runs linter, formatter, static type checker and unit tests.
+        invoke quality-check  # Runs linter, formatter, static type checker and
+        unit tests.
 
     """
     lint(ctx)
-    format(ctx, check_only=True)
+    format(ctx)
     mypy(ctx)
     test(ctx)
-    coverage_report(ctx)
 
 
 @task
