@@ -2,16 +2,18 @@
 
 from typing import Annotated, Dict
 
-from fastapi import APIRouter, Depends, status
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import APIRouter, Depends, Security, status
 
-from app.api.v1.auth.auth import Authentication, Authorization
+from app.api.v1.auth.auth import Authentication, StrictAuthorization
 from app.api.v1.auth.jwt import JWT
+from app.api.v1.constants import ScopesEnum
 from app.api.v1.models.auth import (
     AccessTokenModel,
-    RefreshTokenRequestModel,
     TokensModel,
+    TokenUserModel,
 )
+from app.api.v1.models.users import User
+from app.api.v1.services.roles_scopes import RoleScopeService
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -20,26 +22,26 @@ router = APIRouter(prefix="/auth", tags=["auth"])
     "/tokens/", response_model=TokensModel, status_code=status.HTTP_201_CREATED
 )
 async def create_tokens(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-    authentication: Authentication = Depends(),
+    user: Annotated[User, Depends(Authentication())],
+    role_scope_service: RoleScopeService = Depends(),
 ) -> Dict[str, str]:
     """API which creates Access and Refresh tokens for user.
 
     Args:
-        form_data (OAuth2PasswordRequestForm): Form which contains
-        username and password.
-        authentication (Authentication): Authentication handler.
+        user (User): Authenticated user.
+        role_scope_service (RoleScopeService): Roles-scopes service.
 
     Returns:
         Dict[str, str]: Access and Refresh JWTs.
 
     """
 
-    user = await authentication.authenticate(form_data.username, form_data.password)
-
-    token_data = user.get_token_data()
-
-    return JWT.create_tokens(data=token_data)
+    return JWT.encode_tokens(
+        data=TokenUserModel(
+            id=user.id,
+            scopes=await role_scope_service.get_scopes_by_roles(roles=user.roles),
+        )
+    )
 
 
 @router.post(
@@ -48,22 +50,27 @@ async def create_tokens(
     status_code=status.HTTP_201_CREATED,
 )
 async def refresh_access_token(
-    request_body: RefreshTokenRequestModel,
-    authorization: Authorization = Depends(),
+    user: User = Security(
+        StrictAuthorization(is_refresh_token=True),
+        scopes=[ScopesEnum.AUTH_REFRESH_TOKEN.name],
+    ),
+    role_scope_service: RoleScopeService = Depends(),
 ) -> Dict[str, str]:
     """API which refreshes Access token using Refresh token.
 
     Args:
-        request_body (RefreshTokenRequestModel): User's Refresh token.
-        authorization (Authorization): Authorization handler.
+        user (User): Current User object.
+        role_scope_service (RoleScopeService): Roles-scopes service.
 
     Returns:
         Dict[str, str]: New access token.
 
     """
 
-    user = await authorization.authorize(request_body.refresh_token, is_refresh=True)
-
-    token_data = user.get_token_data()
-
-    return JWT.create_tokens(data=token_data, include_refresh=False)
+    return JWT.encode_tokens(
+        data=TokenUserModel(
+            id=user.id,
+            scopes=await role_scope_service.get_scopes_by_roles(roles=user.roles),
+        ),
+        include_refresh=False,
+    )

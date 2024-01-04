@@ -7,3 +7,4 @@ class MongoCollectionsEnum(Enum):
     """MongoDB's collections enumeration."""
 
     USERS = "users"
+    ROLES_SCOPES = "roles_scopes"

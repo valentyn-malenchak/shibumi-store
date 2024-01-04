@@ -1,5 +1,7 @@
 """Module that contains auth domain models."""
 
+from typing import List
+
 from pydantic import BaseModel
 
 
@@ -19,18 +21,11 @@ class TokensModel(AccessTokenModel):
 class TokenUserModel(BaseModel):
     """User data encapsulated to JWT."""
 
-    first_name: str
-    last_name: str
-    username: str
+    id: str
+    scopes: List[str]
 
 
 class TokenPayloadModel(TokenUserModel):
     """JWT payload model."""
 
     exp: int
-
-
-class RefreshTokenRequestModel(BaseModel):
-    """Refresh token request model."""
-
-    refresh_token: str

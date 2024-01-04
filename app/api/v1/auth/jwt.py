@@ -1,4 +1,4 @@
-"""Module that provides utility functions for creating JWT (JSON Web Token)."""
+"""Module that provides utility functions for manipulating JWT (JSON Web Token)."""
 
 from typing import Dict
 
@@ -12,15 +12,13 @@ from app.settings import SETTINGS
 
 
 class JWT:
-    """Utility class for creating JWT tokens."""
+    """Utility class for manipulating JWTs."""
 
     _JTW_TYPE = "Bearer"
 
     @staticmethod
-    def _create_jwt_token(
-        data: TokenUserModel, secret_key: str, expires_delta: int
-    ) -> str:
-        """Creates a JWT token with the provided data and expiration time.
+    def _encode_jwt(data: TokenUserModel, secret_key: str, expires_delta: int) -> str:
+        """Encodes a JWT with the provided data and expiration time.
 
         Args:
             data (TokenUserModel): Data to include in the token payload.
@@ -28,7 +26,7 @@ class JWT:
             expires_delta (int): Expiration time in minutes from the current time.
 
         Returns:
-            str: JWT token.
+            str: JWT.
 
         """
         expires_time = arrow.utcnow().shift(minutes=expires_delta)
@@ -40,10 +38,10 @@ class JWT:
         return jwt.encode(to_encode, secret_key, SETTINGS.AUTH_ALGORITHM)
 
     @staticmethod
-    def _create_access_token(
+    def _encode_access_token(
         data: TokenUserModel, expires_delta: int | None = None
     ) -> str:
-        """Creates an access JWT token with the provided data and expiration time.
+        """Encodes an access JWT with the provided data and expiration time.
 
         Args:
             data (TokenUserModel): Data to include in the token payload.
@@ -52,20 +50,20 @@ class JWT:
                 will be used.
 
         Returns:
-            str: JWT token.
+            str: JWT.
 
         """
-        return JWT._create_jwt_token(
+        return JWT._encode_jwt(
             data,
             SETTINGS.AUTH_SECRET_KEY,
             expires_delta or SETTINGS.AUTH_ACCESS_TOKEN_EXPIRE_MINUTES,
         )
 
     @staticmethod
-    def _create_refresh_token(
+    def _encodes_refresh_token(
         data: TokenUserModel, expires_delta: int | None = None
     ) -> str:
-        """Creates a refresh JWT token with the provided data and expiration time.
+        """Encodes a refresh JWT with the provided data and expiration time.
 
         Args:
             data (TokenUserModel): Data to include in the token payload.
@@ -74,23 +72,23 @@ class JWT:
             will be used.
 
         Returns:
-            str: JWT token.
+            str: JWT.
 
         """
-        return JWT._create_jwt_token(
+        return JWT._encode_jwt(
             data,
             SETTINGS.AUTH_REFRESH_SECRET_KEY,
             expires_delta or SETTINGS.AUTH_REFRESH_TOKEN_EXPIRE_MINUTES,
         )
 
     @staticmethod
-    def create_tokens(
+    def encode_tokens(
         data: TokenUserModel,
         expires_delta: int | None = None,
         *,
         include_refresh: bool = True,
     ) -> Dict[str, str]:
-        """Creates JWT tokens token with the provided data and expiration time.
+        """Encodes JWTs token with the provided data and expiration time.
 
         Args:
             data (TokenUserModel): Data to include in the token payload.
@@ -102,26 +100,26 @@ class JWT:
             Defaults to True.
 
         Returns:
-            Dict[str, str]: JWT token.
+            Dict[str, str]: JWT.
 
         """
 
         tokens = {
-            "access_token": JWT._create_access_token(data, expires_delta),
+            "access_token": JWT._encode_access_token(data, expires_delta),
             "token_type": JWT._JTW_TYPE,
         }
 
         if include_refresh is True:
-            tokens["refresh_token"] = JWT._create_refresh_token(data, expires_delta)
+            tokens["refresh_token"] = JWT._encodes_refresh_token(data, expires_delta)
 
         return tokens
 
     @staticmethod
-    def parse_token(token: str, is_refresh: bool = False) -> TokenPayloadModel:
-        """Parses and validates a JWT token.
+    def decode_token(token: str, is_refresh: bool = False) -> TokenPayloadModel:
+        """Decodes and validates a JWT.
 
         Args:
-            token (str): The JWT token to parse.
+            token (str): The JWT to decode.
             is_refresh (bool): Defines if token is refresh. Default to False.
 
         Returns:

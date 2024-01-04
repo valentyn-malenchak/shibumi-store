@@ -4,7 +4,7 @@ from enum import Enum
 
 
 class EnvironmentsEnum(Enum):
-    """Application environments enum."""
+    """Application environments enumerate."""
 
     DEV = "dev"
     PROD = "prod"
@@ -13,9 +13,10 @@ class EnvironmentsEnum(Enum):
 class HTTPErrorMessagesEnum(Enum):
     """Contains HTTP error messages."""
 
+    NOT_AUTHORIZED = "Not authorized."
     INCORRECT_CREDENTIALS = "Incorrect username or password."
     EXPIRED_TOKEN = "Token is expired."
     INVALID_CREDENTIALS = "Invalid credentials."
+    PERMISSION_DENIED = "Permission denied."
 
-    ENTITY_IS_NOT_FOUND = "{entity} is not found."
     ENTITY_FIELD_UNIQUENESS = "{entity} with such {field} is already exist."

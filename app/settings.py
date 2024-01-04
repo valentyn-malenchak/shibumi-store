@@ -9,7 +9,7 @@ class AppConfig(ImmutableModel):
     """Configuration model for application settings."""
 
     APP_NAME: str = "fastapi-shop"
-    APP_WORKERS: int = 4
+    APP_WORKERS: int = 1
     APP_DEBUG: bool = False
     APP_ENVIRONMENT: EnvironmentsEnum = EnvironmentsEnum.PROD
 

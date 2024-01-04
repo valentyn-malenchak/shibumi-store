@@ -9,3 +9,5 @@ exclude_lines =
   # Skip abstract methods
   @abstractmethod
   @abc.abstractmethod
+  # Skip not implemented methods
+  raise NotImplementedError
