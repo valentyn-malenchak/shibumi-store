@@ -8,6 +8,7 @@ from injector import inject
 from pymongo.errors import DuplicateKeyError
 
 from app.api.v1.auth.password import Password
+from app.api.v1.constants import RolesEnum
 from app.api.v1.models.users import CreateUserRequestModel, User
 from app.api.v1.repositories.users import UserRepository
 from app.api.v1.services import BaseService
@@ -16,10 +17,10 @@ from app.constants import HTTPErrorMessagesEnum
 
 @inject
 class UserService(BaseService):
-    """Base service for encapsulating business logic."""
+    """User service for encapsulating business logic."""
 
     def __init__(self, repository: UserRepository = Depends()) -> None:
-        """Initializes the UserRepository.
+        """Initializes the UserService.
 
         This method sets up the MongoDB service instance for data access.
 
@@ -74,6 +75,7 @@ class UserService(BaseService):
                     **item.model_dump(exclude={"password"}),
                     "hashed_password": password,
                     "birthdate": arrow.get(item.birthdate).datetime,
+                    "roles": [RolesEnum.CUSTOMER.name],
                     "created_at": arrow.utcnow().datetime,
                     "updated_at": None,
                 },

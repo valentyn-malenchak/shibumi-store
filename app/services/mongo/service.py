@@ -1,6 +1,6 @@
 """Module that contains MongoDB service."""
 
-from typing import Any, Iterable, List, Mapping
+from typing import Any, Iterable, List, Mapping, Sequence
 
 from fastapi import Depends
 from injector import inject
@@ -141,3 +141,34 @@ class MongoDBService(BaseService):
         collection_ = self._get_collection_by_name(collection=collection)
 
         await collection_.delete_many(filter={}, session=session)
+
+    async def aggregate(
+        self,
+        collection: str,
+        pipeline: Sequence[Mapping[str, Any]],
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+        cursor_length: int | None = None,
+    ) -> List[Mapping[str, Any]]:
+        """
+        Aggregates a pipeline on chosen collection.
+
+        Args:
+            collection (str): Collection name.
+            pipeline (Mapping[str, Any]): A single command or list of
+            aggregation commands.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+            cursor_length (int | None): Count of documents will be returned by cursor.
+            Defaults to None.
+
+        Returns:
+            List[Mapping[str, Any]]: List of documents.
+
+        """
+
+        collection_ = self._get_collection_by_name(collection=collection)
+
+        cursor = collection_.aggregate(pipeline=pipeline, session=session)
+
+        return await cursor.to_list(length=cursor_length)

@@ -347,6 +347,20 @@ typing-extensions = ">=4.8.0"
 all = ["email-validator (>=2.0.0)", "httpx (>=0.23.0)", "itsdangerous (>=1.1.0)", "jinja2 (>=2.11.2)", "orjson (>=3.2.1)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.5)", "pyyaml (>=5.3.1)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0)", "uvicorn[standard] (>=0.12.0)"]
 
 [[package]]
+name = "freezegun"
+version = "1.4.0"
+description = "Let your Python tests travel through time"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "freezegun-1.4.0-py3-none-any.whl", hash = "sha256:55e0fc3c84ebf0a96a5aa23ff8b53d70246479e9a68863f1fcac5a3e52f19dd6"},
+    {file = "freezegun-1.4.0.tar.gz", hash = "sha256:10939b0ba0ff5adaecf3b06a5c2f73071d9678e507c5eaedb23c761d56ac774b"},
+]
+
+[package.dependencies]
+python-dateutil = ">=2.7"
+
+[[package]]
 name = "h11"
 version = "0.14.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
@@ -1499,5 +1513,5 @@ files = [
 
 [metadata]
 lock-version = "2.0"
-python-versions = "3.12"
-content-hash = "1bbc9731243406948d4958b0e72a417cfa6106814e3f45f2bd19bdffeed608be"
+python-versions = "^3.12"
+content-hash = "7fa3beda9959874102c1674c9d6eae5d604f8a17288ae957895e91698111f961"

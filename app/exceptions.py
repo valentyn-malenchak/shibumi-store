@@ -6,8 +6,8 @@ class AppExceptionError(Exception):
 
 
 class ExpiredTokenError(AppExceptionError):
-    """Expired JWT token exception."""
+    """Expired JWT exception."""
 
 
 class InvalidTokenError(AppExceptionError):
-    """Invalid JWT token exception."""
+    """Invalid JWT exception."""

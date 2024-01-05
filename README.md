@@ -59,7 +59,8 @@ The project is organized with the following directory structure:
 │   │   │   │   ├── __init__.py
 │   │   │   │   ├── users.py
 │   │   │   │   └── ...
-│   │   │   └── __init__.py                    # Collects API routes
+│   │   │   ├── __init__.py                    # Collects API routes
+│   │   │   └── constants.py                   # Constants for API v1
 │   │   └── __init__.py
 │   ├── loaders                                # Data loading modules from different sources (environment, JSON files, etc.)
 │   │   └── __init__.py

@@ -11,7 +11,7 @@ from jose import ExpiredSignatureError
 from app.constants import HTTPErrorMessagesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
 from app.tests.api.v1 import BaseTest
-from app.tests.constants import FAKE_USER, JWT, USER
+from app.tests.constants import FAKE_USER, JWT, USER, USER_NO_SCOPES
 
 
 class TestAuth(BaseTest):
@@ -26,7 +26,11 @@ class TestAuth(BaseTest):
 
         response = await test_client.post(
             "/auth/tokens/",
-            data={"username": "john.smith", "password": "john1234"},
+            data={
+                "username": "john.smith",
+                "password": "john1234",
+                "grant_type": "password",
+            },
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
 
@@ -48,17 +52,13 @@ class TestAuth(BaseTest):
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-        assert response.json() == {
-            "detail": [
-                {
-                    "type": "missing",
-                    "loc": ["body", "password"],
-                    "msg": "Field required",
-                    "input": None,
-                    "url": "https://errors.pydantic.dev/2.5/v/missing",
-                }
-            ]
-        }
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            ("missing", ["body", "grant_type"], "Field required"),
+            ("missing", ["body", "password"], "Field required"),
+        ]
 
     @pytest.mark.asyncio
     async def test_create_tokens_user_does_not_exist(
@@ -68,7 +68,11 @@ class TestAuth(BaseTest):
 
         response = await test_client.post(
             "/auth/tokens/",
-            data={"username": "joe.smith", "password": "john1234"},
+            data={
+                "username": "joe.smith",
+                "password": "john1234",
+                "grant_type": "password",
+            },
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
 
@@ -85,7 +89,11 @@ class TestAuth(BaseTest):
 
         response = await test_client.post(
             "/auth/tokens/",
-            data={"username": "john.smith", "password": "john1234smith"},
+            data={
+                "username": "john.smith",
+                "password": "john1234smith",
+                "grant_type": "password",
+            },
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
 
@@ -103,8 +111,7 @@ class TestAuth(BaseTest):
         """Test refreshing access token."""
 
         response = await test_client.post(
-            "/auth/access-token/",
-            json={"refresh_token": JWT},
+            "/auth/access-token/", headers={"Authorization": f"Bearer {JWT}"}
         )
 
         assert response.status_code == status.HTTP_201_CREATED
@@ -117,11 +124,10 @@ class TestAuth(BaseTest):
         """Test refreshing access token in case refresh token is invalid."""
 
         response = await test_client.post(
-            "/auth/access-token/",
-            json={"refresh_token": JWT},
+            "/auth/access-token/", headers={"Authorization": f"Bearer {JWT}"}
         )
 
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert response.json() == {
             "detail": HTTPErrorMessagesEnum.INVALID_CREDENTIALS.value
         }
@@ -134,7 +140,7 @@ class TestAuth(BaseTest):
         """Test refreshing access token in case refresh token is expired."""
 
         response = await test_client.post(
-            "/auth/access-token/", json={"refresh_token": JWT}
+            "/auth/access-token/", headers={"Authorization": f"Bearer {JWT}"}
         )
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -150,12 +156,27 @@ class TestAuth(BaseTest):
         """
 
         response = await test_client.post(
-            "/auth/access-token/", json={"refresh_token": JWT}
+            "/auth/access-token/", headers={"Authorization": f"Bearer {JWT}"}
         )
 
-        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED.value}
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_refresh_access_token_no_scope(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """
+        Test refreshing access token in case user does not have appropriate scope.
+        """
+
+        response = await test_client.post(
+            "/auth/access-token/", headers={"Authorization": f"Bearer {JWT}"}
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
-                entity="User"
-            )
+            "detail": HTTPErrorMessagesEnum.PERMISSION_DENIED.value
         }
