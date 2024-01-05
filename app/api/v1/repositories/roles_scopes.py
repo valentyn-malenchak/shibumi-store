@@ -33,6 +33,33 @@ class RoleScopeRepository(BaseRepository):
         """
         raise NotImplementedError
 
+    async def get_scopes_by_roles(
+        self, roles: List[str], *, session: AsyncIOMotorClientSession | None = None
+    ) -> List[str]:
+        """Retrieves a list of scopes from the repository by roles name list.
+
+        Args:
+            roles (List[str]): List of roles.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            List[str]: The retrieved scopes.
+
+        """
+
+        scopes = await self._mongo_service.aggregate(
+            collection=self._collection_name,
+            pipeline=[
+                {"$match": {"role": {"$in": roles}}},
+                {"$unwind": "$scopes"},
+                {"$group": {"_id": "$scopes"}},
+            ],
+            session=session,
+        )
+
+        return [scope["_id"] for scope in scopes]
+
     async def create_item(
         self, item: Any, *, session: AsyncIOMotorClientSession | None = None
     ) -> Any:
@@ -89,29 +116,23 @@ class RoleScopeRepository(BaseRepository):
         """
         raise NotImplementedError
 
-    async def get_scopes_by_roles(
-        self, roles: List[str], *, session: AsyncIOMotorClientSession | None = None
-    ) -> List[str]:
-        """Retrieves a list of scopes from the repository by roles name list.
+    async def update_item_by_id(
+        self,
+        id_: ObjectId,
+        item: Dict[str, Any],
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+    ) -> None:
+        """Updates a role-scopes in repository.
 
         Args:
-            roles (List[str]): List of roles.
+            id_ (ObjectId): The unique identifier of the role-scopes.
+            item (Any): Data to update role-scopes.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
-        Returns:
-            List[str]: The retrieved scopes.
+        Raises:
+            NotImplementedError: This method is not implemented.
 
         """
-
-        scopes = await self._mongo_service.aggregate(
-            collection=self._collection_name,
-            pipeline=[
-                {"$match": {"role": {"$in": roles}}},
-                {"$unwind": "$scopes"},
-                {"$group": {"_id": "$scopes"}},
-            ],
-            session=session,
-        )
-
-        return [scope["_id"] for scope in scopes]
+        raise NotImplementedError

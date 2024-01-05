@@ -64,7 +64,7 @@ class UserRepository(BaseRepository):
     async def create_item(
         self, item: Dict[str, Any], *, session: AsyncIOMotorClientSession | None = None
     ) -> Any:
-        """Create a new user in repository.
+        """Creates a new user in repository.
 
         Args:
             item (Dict[str, Any]): The data for the new item.
@@ -101,6 +101,30 @@ class UserRepository(BaseRepository):
         return await self._mongo_service.insert_many(
             collection=self._collection_name,
             documents=items,
+            session=session,
+        )
+
+    async def update_item_by_id(
+        self,
+        id_: ObjectId,
+        item: Dict[str, Any],
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+    ) -> None:
+        """Updates a user in repository.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the user.
+            item (Dict[str, Any]): Data to update user.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        """
+
+        await self._mongo_service.update_one(
+            collection=self._collection_name,
+            filter_={"_id": id_},
+            update={"$set": item},
             session=session,
         )
 

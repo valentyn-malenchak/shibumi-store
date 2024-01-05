@@ -40,6 +40,18 @@ class RoleScopeService(BaseService):
         """
         raise NotImplementedError
 
+    async def get_scopes_by_roles(self, roles: List[str]) -> List[str]:
+        """Retrieves a list of scopes from the repository by roles name list.
+
+        Args:
+            roles (List[str]): List of roles.
+
+        Returns:
+            List[str]: The retrieved scopes.
+
+        """
+        return await self.repository.get_scopes_by_roles(roles=roles)
+
     async def create_item(self, item: Any) -> Any:
         """Creates a new role-scopes.
 
@@ -55,14 +67,18 @@ class RoleScopeService(BaseService):
         """
         raise NotImplementedError
 
-    async def get_scopes_by_roles(self, roles: List[str]) -> List[str]:
-        """Retrieves a list of scopes from the repository by roles name list.
+    async def update_item_by_id(self, id_: ObjectId, item: Any) -> Any:
+        """Updates a role-scopes by its unique identifier.
 
         Args:
-            roles (List[str]): List of roles.
+            id_ (ObjectId): The unique identifier of the role-scopes.
+            item (Any): Data to update role-scopes.
 
         Returns:
-            List[str]: The retrieved scopes.
+            Any: The updated role-scopes.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
 
         """
-        return await self.repository.get_scopes_by_roles(roles=roles)
+        raise NotImplementedError
