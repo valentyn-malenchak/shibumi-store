@@ -40,6 +40,10 @@ The project is organized with the following directory structure:
 │   │   │   │   ├── auth.py                    # Authentication and Authorization handlers
 │   │   │   │   ├── jwt.py                     # JWT handler
 │   │   │   │   └── password.py                # Password handler
+│   │   │   ├── dependencies                   # Domain dependencies
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── users.py
+│   │   │   │   └── ...
 │   │   │   ├── models                         # Pydantic models for API and entities
 │   │   │   │   ├── __init__.py
 │   │   │   │   ├── auth.py
@@ -99,7 +103,6 @@ The project is organized with the following directory structure:
 │   ├── app.py                                 # Configures and runs FastAPI application
 │   ├── constants.py                           # Application level constants
 │   ├── exceptions.py                          # Custom application exceptions
-│   ├── injector.py                            # Dependency injector manager
 │   └── settings.py                            # Defines application settings
 ├── migrations/                                # MongoDB migration scripts
 │   ├── 20231231132337_create_users_username_index.py

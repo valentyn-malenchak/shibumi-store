@@ -17,3 +17,5 @@ FAKE_USER = dict(
 )
 
 JWT = "someverylongtoken."
+
+FROZEN_DATETIME = "2024-01-05T12:08:35.440000"

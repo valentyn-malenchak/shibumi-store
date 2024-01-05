@@ -21,3 +21,4 @@ class ScopesEnum(Enum):
     HEALTH_GET_HEALTH = "Allows to check application health."
     USERS_GET_ME = "Allow to get current user object."
     USERS_CREATE_USERS = "Allows to create a new user."
+    USERS_UPDATE_USERS = "Allows to update user."

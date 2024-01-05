@@ -1,11 +1,18 @@
 """Module that contains users domain routers."""
 
 
+from bson import ObjectId
 from fastapi import APIRouter, Depends, Security, status
 
 from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
-from app.api.v1.models.users import CreateUserRequestModel, User, UserResponseModel
+from app.api.v1.dependencies.users import UserUpdateDependency
+from app.api.v1.models.users import (
+    CreateUserRequestModel,
+    UpdateUserRequestModel,
+    User,
+    UserResponseModel,
+)
 from app.api.v1.services.users import UserService
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -47,3 +54,27 @@ async def create_users(
 
     """
     return await user_service.create_item(item=user_data)
+
+
+@router.patch(
+    "/{user_id}/", response_model=UserResponseModel, status_code=status.HTTP_200_OK
+)
+async def update_users(
+    user_id: str,
+    user_data: UpdateUserRequestModel,
+    _: User = Depends(UserUpdateDependency()),
+    user_service: UserService = Depends(),
+) -> User | None:
+    """API which updates a user object.
+
+    Args:
+        user_id (str): Identifier of user that should be updated.
+        user_data (UpdateUserRequestModel): User data to update.
+        _: Current user object.
+        user_service (UserService): User service.
+
+    Returns:
+        User | None: Updated user object.
+
+    """
+    return await user_service.update_item_by_id(id_=ObjectId(user_id), item=user_data)

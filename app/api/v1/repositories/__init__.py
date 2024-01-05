@@ -50,7 +50,7 @@ class BaseRepository(abc.ABC):
     async def create_item(
         self, item: Any, *, session: AsyncIOMotorClientSession | None = None
     ) -> Any:
-        """Create a new item in repository.
+        """Creates a new item in repository.
 
         Args:
             item (Any): The data for the new item.
@@ -82,6 +82,28 @@ class BaseRepository(abc.ABC):
 
         Returns:
             List[Any]: The IDs of created items.
+
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses.
+
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def update_item_by_id(
+        self,
+        id_: ObjectId,
+        item: Dict[str, Any],
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+    ) -> None:
+        """Updates an item in repository.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the item.
+            item (Any): Data to update item.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
 
         Raises:
             NotImplementedError: This method must be implemented by subclasses.

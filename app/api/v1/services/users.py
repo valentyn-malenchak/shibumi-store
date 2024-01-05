@@ -9,7 +9,7 @@ from pymongo.errors import DuplicateKeyError
 
 from app.api.v1.auth.password import Password
 from app.api.v1.constants import RolesEnum
-from app.api.v1.models.users import CreateUserRequestModel, User
+from app.api.v1.models.users import CreateUserRequestModel, UpdateUserRequestModel, User
 from app.api.v1.repositories.users import UserRepository
 from app.api.v1.services import BaseService
 from app.constants import HTTPErrorMessagesEnum
@@ -88,5 +88,34 @@ class UserService(BaseService):
                     entity="User", field="username"
                 ),
             )
+
+        return await self.get_item_by_id(id_=id_)
+
+    async def update_item_by_id(
+        self, id_: ObjectId, item: UpdateUserRequestModel
+    ) -> User | None:
+        """Updates an item by its unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the user.
+            item (Any): Data to update user.
+
+        Returns:
+            User | None: The updated user.
+
+        """
+
+        password = Password.get_password_hash(password=item.password)
+
+        await self.repository.update_item_by_id(
+            id_=id_,
+            item={
+                # Replaces plain password on hashed one
+                **item.model_dump(exclude={"password"}),
+                "hashed_password": password,
+                "birthdate": arrow.get(item.birthdate).datetime,
+                "updated_at": arrow.utcnow().datetime,
+            },
+        )
 
         return await self.get_item_by_id(id_=id_)

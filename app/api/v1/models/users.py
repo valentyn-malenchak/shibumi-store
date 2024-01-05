@@ -51,3 +51,15 @@ class CreateUserRequestModel(BaseModel):
     password: Annotated[str, StringConstraints(min_length=8, max_length=20)]
     phone_number: PhoneNumber
     birthdate: date
+
+
+class UpdateUserRequestModel(BaseModel):
+    """User updating request model."""
+
+    first_name: str
+    last_name: str
+    patronymic_name: str | None
+    email: EmailStr
+    password: Annotated[str, StringConstraints(min_length=8, max_length=20)]
+    phone_number: PhoneNumber
+    birthdate: date

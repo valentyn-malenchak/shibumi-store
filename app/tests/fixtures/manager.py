@@ -3,9 +3,10 @@
 import os
 from typing import Any, Dict, List
 
+from injector import Injector
+
 from app.api.v1.repositories import BaseRepository
 from app.api.v1.repositories.users import UserRepository
-from app.injector import injector
 from app.loaders import JSONFileLoader
 from app.services.mongo.constants import MongoCollectionsEnum
 from app.services.mongo.transaction_manager import TransactionManager
@@ -14,9 +15,11 @@ from app.services.mongo.transaction_manager import TransactionManager
 class FileFixtureManager:
     """File fixture manager."""
 
+    _injector = Injector()
+
     # contains collection mapping to its repository
     _fixture_repositories: Dict[MongoCollectionsEnum, BaseRepository] = {
-        MongoCollectionsEnum.USERS: injector.get(UserRepository),
+        MongoCollectionsEnum.USERS: _injector.get(UserRepository),
     }
 
     def __init__(
@@ -30,7 +33,7 @@ class FileFixtureManager:
 
         """
 
-        self.transaction_manager = injector.get(TransactionManager)
+        self.transaction_manager = self._injector.get(TransactionManager)
 
         self.collection_names = (
             collection_names

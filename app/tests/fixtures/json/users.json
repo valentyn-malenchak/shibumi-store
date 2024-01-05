@@ -14,5 +14,21 @@
     ],
     "created_at": "2023-12-30T13:25:43.895+00:00",
     "updated_at": null
+  },
+  {
+    "_id": "6598495fdf97a8e0d7e612ae",
+    "first_name": "Bruce",
+    "last_name": "Wayne",
+    "patronymic_name": null,
+    "username": "bruce.wayne",
+    "email": "bruce_wayne@gmail.com",
+    "phone_number": "+111111111111",
+    "birthdate": "1939-03-30T00:00:00.000+00:00",
+    "hashed_password": "$2b$12$Hi3/4nfK3ylx9cnOzuI.hO.WrdB5tEWNk/Rrp9dWWipN7q8RrHA32",
+    "roles": [
+      "CUSTOMER"
+    ],
+    "created_at": "2023-11-11T13:25:43.895+00:00",
+    "updated_at": null
   }
 ]

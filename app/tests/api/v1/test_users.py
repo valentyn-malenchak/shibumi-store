@@ -11,7 +11,7 @@ from jose import ExpiredSignatureError
 from app.constants import HTTPErrorMessagesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
 from app.tests.api.v1 import BaseTest
-from app.tests.constants import FAKE_USER, JWT, USER, USER_NO_SCOPES
+from app.tests.constants import FAKE_USER, FROZEN_DATETIME, JWT, USER, USER_NO_SCOPES
 
 
 class TestUser(BaseTest):
@@ -112,7 +112,7 @@ class TestUser(BaseTest):
         }
 
     @pytest.mark.asyncio
-    @freeze_time("2024-01-05T12:08:35.440000")
+    @freeze_time(FROZEN_DATETIME)
     async def test_create_users_without_authorization(
         self, test_client: AsyncClient
     ) -> None:
@@ -151,7 +151,7 @@ class TestUser(BaseTest):
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=USER))
     @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
-    @freeze_time("2024-01-05T12:08:35.440000")
+    @freeze_time(FROZEN_DATETIME)
     async def test_create_users_with_authorization(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -295,4 +295,192 @@ class TestUser(BaseTest):
             "detail": HTTPErrorMessagesEnum.ENTITY_FIELD_UNIQUENESS.value.format(
                 entity="User", field="username"
             )
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @freeze_time(FROZEN_DATETIME)
+    async def test_update_users(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update users."""
+
+        response = await test_client.patch(
+            "/users/65844f12b6de26578d98c2c8/",
+            headers={"Authorization": f"Bearer {JWT}"},
+            json={
+                "first_name": "John",
+                "last_name": "Smith",
+                "patronymic_name": "Batman",
+                "email": "john.smith+1@gmail.com",
+                "password": "john@1323",
+                "phone_number": "+380980000001",
+                "birthdate": "1999-12-31",
+            },
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert {key: value for key, value in response.json().items()} == {
+            "id": "65844f12b6de26578d98c2c8",
+            "first_name": "John",
+            "last_name": "Smith",
+            "patronymic_name": "Batman",
+            "username": "john.smith",
+            "email": "john.smith+1@gmail.com",
+            "phone_number": "+380980000001",
+            "birthdate": "1999-12-31",
+            "roles": ["CUSTOMER"],
+            "created_at": "2023-12-30T13:25:43.895000",
+            "updated_at": "2024-01-05T12:08:35.440000",
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_update_users_validate_json_data(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update users in case request json data is invalid."""
+
+        response = await test_client.patch(
+            "/users/65844f12b6de26578d98c2c8/",
+            headers={"Authorization": f"Bearer {JWT}"},
+            json={
+                "first_name": "John",
+                "last_name": "Smith",
+                "patronymic_name": "Batman",
+                "email": "john.smith@gmail",
+                "password": "john",
+                "phone_number": "+3809800000013",
+                "birthdate": "1999-12-35",
+            },
+        )
+
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            (
+                "value_error",
+                ["body", "email"],
+                "value is not a valid email address: The part after the @-sign is not "
+                "valid. It should have a period.",
+            ),
+            (
+                "string_too_short",
+                ["body", "password"],
+                "String should have at least 8 characters",
+            ),
+            (
+                "value_error",
+                ["body", "phone_number"],
+                "value is not a valid phone number",
+            ),
+            (
+                "date_from_datetime_parsing",
+                ["body", "birthdate"],
+                "Input should be a valid date or datetime, day value is outside "
+                "expected range",
+            ),
+        ]
+
+    @pytest.mark.asyncio
+    async def test_update_users_no_token(self, test_client: AsyncClient) -> None:
+        """Test update users in case there is no token."""
+
+        response = await test_client.patch(
+            "/users/65844f12b6de26578d98c2c8/",
+            json={
+                "first_name": "John",
+                "last_name": "Smith",
+                "patronymic_name": "Batman",
+                "email": "john.smith+1@gmail.com",
+                "password": "john@1323",
+                "phone_number": "+380980000001",
+                "birthdate": "1999-12-31",
+            },
+        )
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED.value}
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_update_users_no_scope(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update users in case user does not have appropriate scope."""
+
+        response = await test_client.patch(
+            "/users/65844f12b6de26578d98c2c8/",
+            headers={"Authorization": f"Bearer {JWT}"},
+            json={
+                "first_name": "John",
+                "last_name": "Smith",
+                "patronymic_name": None,
+                "username": "john.smith",
+                "email": "john.smith@gmail.com",
+                "password": "joe12345",
+                "phone_number": "+380980000000",
+                "birthdate": "1997-12-07",
+            },
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.PERMISSION_DENIED.value
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=USER))
+    async def test_update_users_request_other_user(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update users in case one user request update for other user."""
+
+        response = await test_client.patch(
+            "/users/6598495fdf97a8e0d7e612ae/",
+            headers={"Authorization": f"Bearer {JWT}"},
+            json={
+                "first_name": "John",
+                "last_name": "Smith",
+                "patronymic_name": "Batman",
+                "email": "john.smith+1@gmail.com",
+                "password": "john@1323",
+                "phone_number": "+380980000001",
+                "birthdate": "1999-12-31",
+            },
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.PERMISSION_DENIED.value
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=USER))
+    async def test_update_users_invalid_identifier(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update users in case of invalid identifier."""
+
+        response = await test_client.patch(
+            "/users/invalid-group-id/",
+            headers={"Authorization": f"Bearer {JWT}"},
+            json={
+                "first_name": "John",
+                "last_name": "Smith",
+                "patronymic_name": "Batman",
+                "email": "john.smith+1@gmail.com",
+                "password": "john@1323",
+                "phone_number": "+380980000001",
+                "birthdate": "1999-12-31",
+            },
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.PERMISSION_DENIED.value
         }
