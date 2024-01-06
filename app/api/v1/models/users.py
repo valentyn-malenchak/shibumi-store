@@ -24,6 +24,13 @@ class User(ObjectId):
     updated_at: datetime | None
 
 
+class CurrentUserModel(BaseModel):
+    """User model for authenticate/authorize operations."""
+
+    object: User
+    scopes: List[str]
+
+
 class UserResponseModel(BaseModel):
     """User response model."""
 

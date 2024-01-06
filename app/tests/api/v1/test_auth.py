@@ -8,6 +8,7 @@ from fastapi import status
 from httpx import AsyncClient
 from jose import ExpiredSignatureError
 
+from app.api.v1.constants import ScopesEnum
 from app.constants import HTTPErrorMessagesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
 from app.tests.api.v1 import BaseTest
@@ -100,6 +101,32 @@ class TestAuth(BaseTest):
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert response.json() == {
             "detail": HTTPErrorMessagesEnum.INCORRECT_CREDENTIALS.value
+        }
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_create_tokens_request_not_permitted_scopes(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test auth token creation in case user request not permitted scopes."""
+
+        response = await test_client.post(
+            "/auth/tokens/",
+            data={
+                "username": "john.smith",
+                "password": "john1234",
+                "scope": [
+                    ScopesEnum.USERS_GET_ME.name,
+                    ScopesEnum.HEALTH_GET_HEALTH.name,
+                ],
+                "grant_type": "password",
+            },
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.PERMISSION_DENIED.value
         }
 
     @pytest.mark.asyncio

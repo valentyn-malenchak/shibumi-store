@@ -12,7 +12,7 @@ from app.api.v1.models.auth import (
     TokensModel,
     TokenUserModel,
 )
-from app.api.v1.models.users import User
+from app.api.v1.models.users import CurrentUserModel
 from app.api.v1.services.roles_scopes import RoleScopeService
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -22,14 +22,12 @@ router = APIRouter(prefix="/auth", tags=["auth"])
     "/tokens/", response_model=TokensModel, status_code=status.HTTP_201_CREATED
 )
 async def create_tokens(
-    user: Annotated[User, Depends(Authentication())],
-    role_scope_service: RoleScopeService = Depends(),
+    current_user: Annotated[CurrentUserModel, Depends(Authentication())],
 ) -> Dict[str, str]:
     """API which creates Access and Refresh tokens for user.
 
     Args:
-        user (User): Authenticated user.
-        role_scope_service (RoleScopeService): Roles-scopes service.
+        current_user (CurrentUserModel): Authenticated user with permitted scopes.
 
     Returns:
         Dict[str, str]: Access and Refresh JWTs.
@@ -37,10 +35,7 @@ async def create_tokens(
     """
 
     return JWT.encode_tokens(
-        data=TokenUserModel(
-            id=user.id,
-            scopes=await role_scope_service.get_scopes_by_roles(roles=user.roles),
-        )
+        data=TokenUserModel(id=current_user.object.id, scopes=current_user.scopes)
     )
 
 
@@ -50,7 +45,7 @@ async def create_tokens(
     status_code=status.HTTP_201_CREATED,
 )
 async def refresh_access_token(
-    user: User = Security(
+    current_user: CurrentUserModel = Security(
         StrictAuthorization(is_refresh_token=True),
         scopes=[ScopesEnum.AUTH_REFRESH_TOKEN.name],
     ),
@@ -59,7 +54,7 @@ async def refresh_access_token(
     """API which refreshes Access token using Refresh token.
 
     Args:
-        user (User): Current User object.
+        current_user (CurrentUserModel): Authorized user with permitted scopes.
         role_scope_service (RoleScopeService): Roles-scopes service.
 
     Returns:
@@ -69,8 +64,10 @@ async def refresh_access_token(
 
     return JWT.encode_tokens(
         data=TokenUserModel(
-            id=user.id,
-            scopes=await role_scope_service.get_scopes_by_roles(roles=user.roles),
+            id=current_user.object.id,
+            scopes=await role_scope_service.get_scopes_by_roles(
+                roles=current_user.object.roles
+            ),
         ),
         include_refresh=False,
     )

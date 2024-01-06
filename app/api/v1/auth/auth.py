@@ -3,6 +3,7 @@ This module provides handling user authentication and authorization
 using FastAPI security features and JWTs.
 """
 
+import abc
 from typing import Annotated
 
 from bson import ObjectId
@@ -17,7 +18,8 @@ from app.api.v1.auth.jwt import JWT
 from app.api.v1.auth.password import Password
 from app.api.v1.constants import ScopesEnum
 from app.api.v1.models.auth import TokenPayloadModel
-from app.api.v1.models.users import User
+from app.api.v1.models.users import CurrentUserModel
+from app.api.v1.services.roles_scopes import RoleScopeService
 from app.api.v1.services.users import UserService
 from app.constants import HTTPErrorMessagesEnum
 from app.exceptions import ExpiredTokenError, InvalidTokenError
@@ -30,18 +32,20 @@ class Authentication:
         self,
         form_data: Annotated[OAuth2PasswordRequestFormStrict, Depends()],
         user_service: UserService = Depends(),
-    ) -> User:
+        role_scope_service: RoleScopeService = Depends(),
+    ) -> CurrentUserModel:
         """Authenticates a user using username and password.
 
         Args:
             form_data (OAuth2PasswordRequestForm): Form which contains
             username and password.
+            role_scope_service (RoleScopeService): Roles-scopes service.
 
         Returns:
-            User: User object if authentication is successful.
+            CurrentUserModel: User object if token is valid and permitted scopes list.
 
         Raises:
-            HTTPException: If authentication fails.
+            HTTPException: If authentication fails or not permitted scope is requested.
 
         """
 
@@ -55,11 +59,22 @@ class Authentication:
                 detail=HTTPErrorMessagesEnum.INCORRECT_CREDENTIALS.value,
             )
 
-        return user
+        permitted_scopes = await role_scope_service.get_scopes_by_roles(
+            roles=user.roles
+        )
+
+        # Verifies requested scopes by user
+        if not all(scope in permitted_scopes for scope in form_data.scopes):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=HTTPErrorMessagesEnum.PERMISSION_DENIED.value,
+            )
+
+        return CurrentUserModel(object=user, scopes=form_data.scopes)
 
 
-class StrictAuthorization:
-    """Class for handling user strict authorization."""
+class BaseAuthorization(abc.ABC):
+    """Base authorization class."""
 
     _oauth2 = OAuth2PasswordBearer(
         tokenUrl="/auth/tokens/",
@@ -114,7 +129,7 @@ class StrictAuthorization:
         token_data: TokenPayloadModel,
         security_scopes: SecurityScopes,
         user_service: UserService,
-    ) -> User:
+    ) -> CurrentUserModel:
         """Authorizes the user.
 
         Args:
@@ -123,7 +138,7 @@ class StrictAuthorization:
             user_service (UserService): An instance of the User service.
 
         Returns:
-            User: User object if token is valid.
+            CurrentUserModel: User object if token is valid and permitted scopes list.
 
         """
 
@@ -135,30 +150,58 @@ class StrictAuthorization:
                 detail=HTTPErrorMessagesEnum.NOT_AUTHORIZED.value,
             )
 
-        # Verify user scopes
-        if not any(scope in token_data.scopes for scope in security_scopes.scopes):
+        # Verifies user scopes
+        if not all(scope in token_data.scopes for scope in security_scopes.scopes):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=HTTPErrorMessagesEnum.PERMISSION_DENIED.value,
             )
 
-        return user
+        return CurrentUserModel(object=user, scopes=token_data.scopes)
+
+    @abc.abstractmethod
+    async def __call__(
+        self,
+        security_scopes: SecurityScopes,
+        token: str | None = Depends(_oauth2),
+        user_service: UserService = Depends(),
+    ) -> CurrentUserModel | None:
+        """Authorizes the user using JWT.
+
+        Args:
+            security_scopes (SecurityScopes): Security scopes list.
+            token (str | None): The JWT for authentication.
+            user_service (UserService): An instance of the User service.
+
+        Returns:
+            CurrentUserModel | None: User object if token is valid and
+            permitted scopes list.
+
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses.
+
+        """
+        raise NotImplementedError
+
+
+class StrictAuthorization(BaseAuthorization):
+    """Class for handling user strict authorization."""
 
     async def __call__(
         self,
         security_scopes: SecurityScopes,
-        token: str = Depends(_oauth2),
+        token: str | None = Depends(BaseAuthorization._oauth2),
         user_service: UserService = Depends(),
-    ) -> User:
-        """Authorizes user using JWT strictly.
+    ) -> CurrentUserModel:
+        """Authorizes the user using JWT strictly.
 
         Args:
             security_scopes (SecurityScopes): Security scopes list.
-            token (str): The JWT for authentication.
+            token (str | None): The JWT for authentication.
             user_service (UserService): An instance of the User service.
 
         Returns:
-            User: User object if token is valid.
+            CurrentUserModel: User object if token is valid and permitted scopes list.
 
         """
 
@@ -177,24 +220,25 @@ class StrictAuthorization:
         )
 
 
-class OptionalAuthorization(StrictAuthorization):
+class OptionalAuthorization(BaseAuthorization):
     """Class for handling user optional authorization."""
 
     async def __call__(
         self,
         security_scopes: SecurityScopes,
-        token: str = Depends(StrictAuthorization._oauth2),
+        token: str | None = Depends(BaseAuthorization._oauth2),
         user_service: UserService = Depends(),
-    ) -> User:
-        """Authorizes user using JWT optionally.
+    ) -> CurrentUserModel | None:
+        """Authorizes the user using JWT optionally.
 
         Args:
             security_scopes (SecurityScopes): Security scopes list.
-            token (str): The JWT for authentication.
+            token (str | None): The JWT for authentication.
             user_service (UserService): An instance of the User service.
 
         Returns:
-            User | None: User object if there is token, and it is valid.
+            CurrentUserModel | None: User object if token is valid and
+            permitted scopes list.
 
         """
 
@@ -208,3 +252,5 @@ class OptionalAuthorization(StrictAuthorization):
                 security_scopes=security_scopes,
                 user_service=user_service,
             )
+
+        return None
