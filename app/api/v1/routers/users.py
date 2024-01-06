@@ -9,6 +9,7 @@ from app.api.v1.constants import ScopesEnum
 from app.api.v1.dependencies.users import UserUpdateDependency
 from app.api.v1.models.users import (
     CreateUserRequestModel,
+    CurrentUserModel,
     UpdateUserRequestModel,
     User,
     UserResponseModel,
@@ -20,24 +21,26 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 @router.get("/me/", response_model=UserResponseModel, status_code=status.HTTP_200_OK)
 async def get_users_me(
-    user: User = Security(StrictAuthorization(), scopes=[ScopesEnum.USERS_GET_ME.name]),
+    current_user: CurrentUserModel = Security(
+        StrictAuthorization(), scopes=[ScopesEnum.USERS_GET_ME.name]
+    ),
 ) -> User:
     """API which returns current user object.
 
     Args:
-        user (User): Current User object.
+        current_user (CurrentUserModel): Authenticated user with permitted scopes.
 
     Returns:
         User: Current user object.
 
     """
-    return user
+    return current_user.object
 
 
 @router.post("/", response_model=UserResponseModel, status_code=status.HTTP_201_CREATED)
 async def create_users(
     user_data: CreateUserRequestModel,
-    _: User | None = Security(
+    _: CurrentUserModel | None = Security(
         OptionalAuthorization(), scopes=[ScopesEnum.USERS_CREATE_USERS.name]
     ),
     user_service: UserService = Depends(),
@@ -46,7 +49,7 @@ async def create_users(
 
     Args:
         user_data (CreateUserRequestModel): User registration data.
-        _: Current user object.
+        _ (CurrentUserModel | None): Authenticated user with permitted scopes or None.
         user_service (UserService): User service.
 
     Returns:

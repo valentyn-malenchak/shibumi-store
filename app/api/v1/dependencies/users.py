@@ -4,7 +4,7 @@ from fastapi import HTTPException, Security, status
 
 from app.api.v1.auth.auth import StrictAuthorization
 from app.api.v1.constants import ScopesEnum
-from app.api.v1.models.users import User
+from app.api.v1.models.users import CurrentUserModel, User
 from app.constants import HTTPErrorMessagesEnum
 
 
@@ -14,7 +14,7 @@ class UserUpdateDependency:
     async def __call__(
         self,
         user_id: str,
-        current_user: User = Security(
+        current_user: CurrentUserModel = Security(
             StrictAuthorization(), scopes=[ScopesEnum.USERS_UPDATE_USERS.name]
         ),
     ) -> User | None:
@@ -22,7 +22,7 @@ class UserUpdateDependency:
 
         Args:
             user_id (str): Identifier of user that should be updated.
-            current_user (User): Current user object.
+            current_user (CurrentUserModel): Authorized user with permitted scopes.
 
         Returns:
             User: Current user object.
@@ -32,10 +32,10 @@ class UserUpdateDependency:
 
         """
 
-        if current_user.id != user_id:
+        if current_user.object.id != user_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=HTTPErrorMessagesEnum.PERMISSION_DENIED.value,
             )
 
-        return current_user
+        return current_user.object
