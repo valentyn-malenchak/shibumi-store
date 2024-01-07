@@ -82,3 +82,15 @@ class RoleScopeService(BaseService):
 
         """
         raise NotImplementedError
+
+    async def delete_item_by_id(self, id_: ObjectId) -> None:
+        """Deletes a role-scopes by its unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the role-scopes.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError

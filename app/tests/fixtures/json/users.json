@@ -8,10 +8,11 @@
     "email": "john.smith@gmail.com",
     "phone_number": "+380981111111",
     "birthdate": "1998-01-01T00:00:00.000+00:00",
-    "hashed_password": "$2b$12$jat4Bz9E4.FECQ1NAGJUxe4fqK7gA849chc20stuMvtiKj6qf9riC",
+    "hashed_password": "$2b$12$BuHaZV2.qZRYojxU.d1oJ.v65KKCgTH6b1MA4ztKxS.J6MnGJ6htC",
     "roles": [
       "CUSTOMER"
     ],
+    "deleted": false,
     "created_at": "2023-12-30T13:25:43.895+00:00",
     "updated_at": null
   },
@@ -28,7 +29,25 @@
     "roles": [
       "CUSTOMER"
     ],
+    "deleted": false,
     "created_at": "2023-11-11T13:25:43.895+00:00",
+    "updated_at": null
+  },
+  {
+    "_id": "659ac89bfe61d8332f6be4c4",
+    "first_name": "Sheila",
+    "last_name": "Fahey",
+    "patronymic_name": null,
+    "username": "sheila.fahey",
+    "email": "sheila.fahey@gmail.com",
+    "phone_number": "+111111111114",
+    "birthdate": "1994-11-14T00:00:00.000+00:00",
+    "hashed_password": "$2b$12$WPb2AXKsUrdZvn.btRFSUugNIKOJ3OVacIyBG/nbHI/KoQwCgcLze",
+    "roles": [
+      "CUSTOMER"
+    ],
+    "deleted": true,
+    "created_at": "2024-01-07T13:25:43.895+00:00",
     "updated_at": null
   }
 ]

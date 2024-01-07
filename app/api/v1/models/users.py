@@ -20,6 +20,7 @@ class User(ObjectId):
     phone_number: str
     birthdate: date
     roles: List[str]
+    deleted: bool
     created_at: datetime
     updated_at: datetime | None
 

@@ -11,7 +11,13 @@ from jose import ExpiredSignatureError
 from app.constants import HTTPErrorMessagesEnum, ValidationErrorMessagesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
 from app.tests.api.v1 import BaseTest
-from app.tests.constants import FAKE_USER, FROZEN_DATETIME, JWT, USER, USER_NO_SCOPES
+from app.tests.constants import (
+    FAKE_USER,
+    FROZEN_DATETIME,
+    TEST_JWT,
+    USER,
+    USER_NO_SCOPES,
+)
 
 
 class TestUser(BaseTest):
@@ -25,7 +31,7 @@ class TestUser(BaseTest):
 
         response = await test_client.get(
             "/users/me/",
-            headers={"Authorization": f"Bearer {JWT}"},
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -58,7 +64,7 @@ class TestUser(BaseTest):
 
         response = await test_client.get(
             "/users/me/",
-            headers={"Authorization": f"Bearer {JWT}"},
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -74,7 +80,7 @@ class TestUser(BaseTest):
         """Test get me in case access token is expired."""
 
         response = await test_client.get(
-            "/users/me/", headers={"Authorization": f"Bearer {JWT}"}
+            "/users/me/", headers={"Authorization": f"Bearer {TEST_JWT}"}
         )
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -88,7 +94,7 @@ class TestUser(BaseTest):
         """
 
         response = await test_client.get(
-            "/users/me/", headers={"Authorization": f"Bearer {JWT}"}
+            "/users/me/", headers={"Authorization": f"Bearer {TEST_JWT}"}
         )
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -103,7 +109,7 @@ class TestUser(BaseTest):
         """Test get me in case user does not have appropriate scope."""
 
         response = await test_client.get(
-            "/users/me/", headers={"Authorization": f"Bearer {JWT}"}
+            "/users/me/", headers={"Authorization": f"Bearer {TEST_JWT}"}
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -159,7 +165,7 @@ class TestUser(BaseTest):
 
         response = await test_client.post(
             "/users/",
-            headers={"Authorization": f"Bearer {JWT}"},
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
             json={
                 "first_name": "Joe",
                 "last_name": "Smith",
@@ -504,7 +510,7 @@ class TestUser(BaseTest):
 
         response = await test_client.post(
             "/users/",
-            headers={"Authorization": f"Bearer {JWT}"},
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
             json={
                 "first_name": "John",
                 "last_name": "Smith",
@@ -561,7 +567,7 @@ class TestUser(BaseTest):
 
         response = await test_client.patch(
             "/users/65844f12b6de26578d98c2c8/",
-            headers={"Authorization": f"Bearer {JWT}"},
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
             json={
                 "first_name": "John",
                 "last_name": "Smith",
@@ -598,7 +604,7 @@ class TestUser(BaseTest):
 
         response = await test_client.patch(
             "/users/65844f12b6de26578d98c2c8/",
-            headers={"Authorization": f"Bearer {JWT}"},
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
             json={
                 "first_name": "John",
                 "last_name": "Smith",
@@ -668,14 +674,14 @@ class TestUser(BaseTest):
 
         response = await test_client.patch(
             "/users/65844f12b6de26578d98c2c8/",
-            headers={"Authorization": f"Bearer {JWT}"},
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
             json={
                 "first_name": "John",
                 "last_name": "Smith",
                 "patronymic_name": None,
                 "username": "john.smith",
                 "email": "john.smith@gmail.com",
-                "password": "joe12345",
+                "password": "Joe12345^",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
             },
@@ -695,7 +701,7 @@ class TestUser(BaseTest):
 
         response = await test_client.patch(
             "/users/6598495fdf97a8e0d7e612ae/",
-            headers={"Authorization": f"Bearer {JWT}"},
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
             json={
                 "first_name": "John",
                 "last_name": "Smith",
@@ -721,7 +727,7 @@ class TestUser(BaseTest):
 
         response = await test_client.patch(
             "/users/invalid-group-id/",
-            headers={"Authorization": f"Bearer {JWT}"},
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
             json={
                 "first_name": "John",
                 "last_name": "Smith",
@@ -731,6 +737,81 @@ class TestUser(BaseTest):
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
             },
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.PERMISSION_DENIED.value
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_delete_users(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test delete users."""
+
+        response = await test_client.delete(
+            "/users/65844f12b6de26578d98c2c8/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    @pytest.mark.asyncio
+    async def test_delete_users_no_token(self, test_client: AsyncClient) -> None:
+        """Test delete users in case there is no token."""
+
+        response = await test_client.delete("/users/65844f12b6de26578d98c2c8/")
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED.value}
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_delete_users_no_scope(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test delete users in case user does not have appropriate scope."""
+
+        response = await test_client.delete(
+            "/users/65844f12b6de26578d98c2c8/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.PERMISSION_DENIED.value
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=USER))
+    async def test_delete_users_request_other_user(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test delete users in case one user request delete other user."""
+
+        response = await test_client.delete(
+            "/users/6598495fdf97a8e0d7e612ae/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.PERMISSION_DENIED.value
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=USER))
+    async def test_delete_users_invalid_identifier(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test delete users in case of invalid identifier."""
+
+        response = await test_client.delete(
+            "/users/invalid-group-id/", headers={"Authorization": f"Bearer {TEST_JWT}"}
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
