@@ -6,7 +6,7 @@ using FastAPI security features and JWTs.
 import abc
 
 from bson import ObjectId
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import (
     OAuth2PasswordBearer,
     OAuth2PasswordRequestFormStrict,
@@ -119,6 +119,7 @@ class BaseAuthorization(abc.ABC):
     async def _authorize_user(
         token_data: TokenPayloadModel,
         security_scopes: SecurityScopes,
+        request: Request,
         user_service: UserService,
     ) -> CurrentUserModel:
         """Authorizes the user.
@@ -126,6 +127,7 @@ class BaseAuthorization(abc.ABC):
         Args:
             token_data (TokenPayloadModel): JWT user data.
             security_scopes (SecurityScopes): Security scopes list.
+            request (Request): Current request object.
             user_service (UserService): An instance of the User service.
 
         Returns:
@@ -148,12 +150,17 @@ class BaseAuthorization(abc.ABC):
                 detail=HTTPErrorMessagesEnum.PERMISSION_DENIED.value,
             )
 
-        return CurrentUserModel(object=user, scopes=token_data.scopes)
+        request.state.current_user = CurrentUserModel(
+            object=user, scopes=token_data.scopes
+        )
+
+        return request.state.current_user
 
     @abc.abstractmethod
     async def __call__(
         self,
         security_scopes: SecurityScopes,
+        request: Request,
         token: str | None = Depends(_oauth2),
         user_service: UserService = Depends(),
     ) -> CurrentUserModel | None:
@@ -161,6 +168,7 @@ class BaseAuthorization(abc.ABC):
 
         Args:
             security_scopes (SecurityScopes): Security scopes list.
+            request (Request): Current request object.
             token (str | None): The JWT for authentication.
             user_service (UserService): An instance of the User service.
 
@@ -178,19 +186,12 @@ class BaseAuthorization(abc.ABC):
 class StrictAuthorization(BaseAuthorization):
     """Class for handling user strict authorization."""
 
-    def __init__(self, is_refresh_token: bool = False) -> None:
-        """Initializes the Strict Authorization.
-
-        Args:
-            is_refresh_token (bool): Defines if refresh token used. Default to False.
-
-        """
-
-        self.is_refresh_token = is_refresh_token
+    _uses_refresh_token: bool = False
 
     async def __call__(
         self,
         security_scopes: SecurityScopes,
+        request: Request,
         token: str | None = Depends(BaseAuthorization._oauth2),
         user_service: UserService = Depends(),
     ) -> CurrentUserModel:
@@ -198,6 +199,7 @@ class StrictAuthorization(BaseAuthorization):
 
         Args:
             security_scopes (SecurityScopes): Security scopes list.
+            request (Request): Current request object.
             token (str | None): The JWT for authentication.
             user_service (UserService): An instance of the User service.
 
@@ -212,13 +214,20 @@ class StrictAuthorization(BaseAuthorization):
                 detail=HTTPErrorMessagesEnum.NOT_AUTHORIZED.value,
             )
 
-        token_data = self._parse_token(token=token, is_refresh=self.is_refresh_token)
+        token_data = self._parse_token(token=token, is_refresh=self._uses_refresh_token)
 
         return await self._authorize_user(
             token_data=token_data,
             security_scopes=security_scopes,
+            request=request,
             user_service=user_service,
         )
+
+
+class StrictRefreshTokenAuthorization(StrictAuthorization):
+    """Class for handling user strict authorization with refresh token usage."""
+
+    _uses_refresh_token: bool = True
 
 
 class OptionalAuthorization(BaseAuthorization):
@@ -227,6 +236,7 @@ class OptionalAuthorization(BaseAuthorization):
     async def __call__(
         self,
         security_scopes: SecurityScopes,
+        request: Request,
         token: str | None = Depends(BaseAuthorization._oauth2),
         user_service: UserService = Depends(),
     ) -> CurrentUserModel | None:
@@ -234,6 +244,7 @@ class OptionalAuthorization(BaseAuthorization):
 
         Args:
             security_scopes (SecurityScopes): Security scopes list.
+            request (Request): Current request object.
             token (str | None): The JWT for authentication.
             user_service (UserService): An instance of the User service.
 
@@ -249,6 +260,7 @@ class OptionalAuthorization(BaseAuthorization):
             return await self._authorize_user(
                 token_data=token_data,
                 security_scopes=security_scopes,
+                request=request,
                 user_service=user_service,
             )
 

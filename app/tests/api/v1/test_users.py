@@ -739,9 +739,9 @@ class TestUser(BaseTest):
             },
         )
 
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.PERMISSION_DENIED.value
+            "detail": HTTPErrorMessagesEnum.INVALID_IDENTIFIER.value
         }
 
     @pytest.mark.asyncio
@@ -814,7 +814,7 @@ class TestUser(BaseTest):
             "/users/invalid-group-id/", headers={"Authorization": f"Bearer {TEST_JWT}"}
         )
 
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.PERMISSION_DENIED.value
+            "detail": HTTPErrorMessagesEnum.INVALID_IDENTIFIER.value
         }

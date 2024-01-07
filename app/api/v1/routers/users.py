@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, Security, status
 
 from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
-from app.api.v1.dependencies.users import UserDeleteDependency, UserUpdateDependency
+from app.api.v1.dependencies.users import UserSpecificDependency
 from app.api.v1.models.users import (
     CreateUserRequestModel,
     CurrentUserModel,
@@ -63,17 +63,19 @@ async def create_users(
     "/{user_id}/", response_model=UserResponseModel, status_code=status.HTTP_200_OK
 )
 async def update_users(
-    user_id: str,
     user_data: UpdateUserRequestModel,
-    _: User = Depends(UserUpdateDependency()),
+    _: CurrentUserModel = Security(
+        StrictAuthorization(), scopes=[ScopesEnum.USERS_UPDATE_USERS.name]
+    ),
+    user_id: str = Depends(UserSpecificDependency()),
     user_service: UserService = Depends(),
 ) -> User | None:
     """API which updates a user object.
 
     Args:
-        user_id (str): Identifier of user that should be updated.
         user_data (UpdateUserRequestModel): User data to update.
         _: Current user object.
+        user_id (str): Identifier of user that should be updated.
         user_service (UserService): User service.
 
     Returns:
@@ -85,15 +87,17 @@ async def update_users(
 
 @router.delete("/{user_id}/", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_users(
-    user_id: str,
-    _: User = Depends(UserDeleteDependency()),
+    _: CurrentUserModel = Security(
+        StrictAuthorization(), scopes=[ScopesEnum.USERS_DELETE_USERS.name]
+    ),
+    user_id: str = Depends(UserSpecificDependency()),
     user_service: UserService = Depends(),
 ) -> None:
     """API which softly deletes a user object.
 
     Args:
-        user_id (str): Identifier of user that should be updated.
         _: Current user object.
+        user_id (str): Identifier of user that should be deleted.
         user_service (UserService): User service.
 
     """
