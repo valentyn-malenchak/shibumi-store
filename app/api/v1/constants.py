@@ -17,8 +17,10 @@ class RolesEnum(Enum):
 class ScopesEnum(Enum):
     """Scopes enumerate."""
 
+    # Scope naming: {domain}_{action}_{entity}
     AUTH_REFRESH_TOKEN = "Allows to refresh Access token using Refresh token."
     HEALTH_GET_HEALTH = "Allows to check application health."
     USERS_GET_ME = "Allow to get current user object."
     USERS_CREATE_USERS = "Allows to create a new user."
     USERS_UPDATE_USERS = "Allows to update user."
+    USERS_DELETE_USERS = "Allows to delete user."

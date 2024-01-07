@@ -4,7 +4,6 @@ using FastAPI security features and JWTs.
 """
 
 import abc
-from typing import Annotated
 
 from bson import ObjectId
 from fastapi import Depends, HTTPException, status
@@ -30,7 +29,7 @@ class Authentication:
 
     async def __call__(
         self,
-        form_data: Annotated[OAuth2PasswordRequestFormStrict, Depends()],
+        form_data: OAuth2PasswordRequestFormStrict = Depends(),
         user_service: UserService = Depends(),
         role_scope_service: RoleScopeService = Depends(),
     ) -> CurrentUserModel:
@@ -51,8 +50,10 @@ class Authentication:
 
         user = await user_service.get_item_by_username(username=form_data.username)
 
-        if user is None or not Password.verify_password(
-            form_data.password, user.hashed_password
+        if (
+            user is None
+            or user.deleted is True
+            or not Password.verify_password(form_data.password, user.hashed_password)
         ):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -82,16 +83,6 @@ class BaseAuthorization(abc.ABC):
         scopes={scope.name: scope.value for scope in ScopesEnum},
         auto_error=False,
     )
-
-    def __init__(self, is_refresh_token: bool = False) -> None:
-        """Initializes the Strict Authorization.
-
-        Args:
-            is_refresh_token (bool): Defines if refresh token used. Default to False.
-
-        """
-
-        self.is_refresh_token = is_refresh_token
 
     @staticmethod
     def _parse_token(token: str, is_refresh: bool = False) -> TokenPayloadModel:
@@ -144,7 +135,7 @@ class BaseAuthorization(abc.ABC):
 
         user = await user_service.get_item_by_id(id_=ObjectId(token_data.id))
 
-        if user is None:
+        if user is None or user.deleted is True:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail=HTTPErrorMessagesEnum.NOT_AUTHORIZED.value,
@@ -186,6 +177,16 @@ class BaseAuthorization(abc.ABC):
 
 class StrictAuthorization(BaseAuthorization):
     """Class for handling user strict authorization."""
+
+    def __init__(self, is_refresh_token: bool = False) -> None:
+        """Initializes the Strict Authorization.
+
+        Args:
+            is_refresh_token (bool): Defines if refresh token used. Default to False.
+
+        """
+
+        self.is_refresh_token = is_refresh_token
 
     async def __call__(
         self,
@@ -243,9 +244,7 @@ class OptionalAuthorization(BaseAuthorization):
         """
 
         if token is not None:
-            token_data = self._parse_token(
-                token=token, is_refresh=self.is_refresh_token
-            )
+            token_data = self._parse_token(token=token)
 
             return await self._authorize_user(
                 token_data=token_data,

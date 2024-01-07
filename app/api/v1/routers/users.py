@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, Security, status
 
 from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
-from app.api.v1.dependencies.users import UserUpdateDependency
+from app.api.v1.dependencies.users import UserDeleteDependency, UserUpdateDependency
 from app.api.v1.models.users import (
     CreateUserRequestModel,
     CurrentUserModel,
@@ -28,7 +28,7 @@ async def get_users_me(
     """API which returns current user object.
 
     Args:
-        current_user (CurrentUserModel): Authenticated user with permitted scopes.
+        current_user (CurrentUserModel): Current authorized user with permitted scopes.
 
     Returns:
         User: Current user object.
@@ -81,3 +81,20 @@ async def update_users(
 
     """
     return await user_service.update_item_by_id(id_=ObjectId(user_id), item=user_data)
+
+
+@router.delete("/{user_id}/", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_users(
+    user_id: str,
+    _: User = Depends(UserDeleteDependency()),
+    user_service: UserService = Depends(),
+) -> None:
+    """API which softly deletes a user object.
+
+    Args:
+        user_id (str): Identifier of user that should be updated.
+        _: Current user object.
+        user_service (UserService): User service.
+
+    """
+    return await user_service.delete_item_by_id(id_=ObjectId(user_id))

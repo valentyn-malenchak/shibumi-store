@@ -9,7 +9,7 @@ from httpx import AsyncClient
 from app.constants import HTTPErrorMessagesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
 from app.tests.api.v1 import BaseTest
-from app.tests.constants import JWT, USER, USER_NO_SCOPES
+from app.tests.constants import TEST_JWT, USER, USER_NO_SCOPES
 
 
 class TestHealth(BaseTest):
@@ -21,7 +21,7 @@ class TestHealth(BaseTest):
     async def test_get_health(self, test_client: AsyncClient, arrange_db: None) -> None:
         """Test get application health."""
         response = await test_client.get(
-            "/health/", headers={"Authorization": f"Bearer {JWT}"}
+            "/health/", headers={"Authorization": f"Bearer {TEST_JWT}"}
         )
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {"status": "healthy"}
@@ -34,7 +34,7 @@ class TestHealth(BaseTest):
     ) -> None:
         """Test get application health in case user does not have appropriate scope."""
         response = await test_client.get(
-            "/health/", headers={"Authorization": f"Bearer {JWT}"}
+            "/health/", headers={"Authorization": f"Bearer {TEST_JWT}"}
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {

@@ -57,3 +57,16 @@ class BaseService(abc.ABC):
 
         """
         raise NotImplementedError
+
+    @abc.abstractmethod
+    async def delete_item_by_id(self, id_: ObjectId) -> Any:
+        """Deletes an item by its unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the item.
+
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses.
+
+        """
+        raise NotImplementedError

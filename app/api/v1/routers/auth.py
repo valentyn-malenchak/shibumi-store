@@ -1,6 +1,6 @@
 """Module that contains auth domain routers."""
 
-from typing import Annotated, Dict
+from typing import Dict
 
 from fastapi import APIRouter, Depends, Security, status
 
@@ -22,12 +22,13 @@ router = APIRouter(prefix="/auth", tags=["auth"])
     "/tokens/", response_model=TokensModel, status_code=status.HTTP_201_CREATED
 )
 async def create_tokens(
-    current_user: Annotated[CurrentUserModel, Depends(Authentication())],
+    current_user: CurrentUserModel = Depends(Authentication()),
 ) -> Dict[str, str]:
     """API which creates Access and Refresh tokens for user.
 
     Args:
-        current_user (CurrentUserModel): Authenticated user with permitted scopes.
+        current_user (CurrentUserModel): Current authenticated user
+        with permitted scopes.
 
     Returns:
         Dict[str, str]: Access and Refresh JWTs.
@@ -54,7 +55,7 @@ async def refresh_access_token(
     """API which refreshes Access token using Refresh token.
 
     Args:
-        current_user (CurrentUserModel): Authorized user with permitted scopes.
+        current_user (CurrentUserModel): Current authorized user with permitted scopes.
         role_scope_service (RoleScopeService): Roles-scopes service.
 
     Returns:

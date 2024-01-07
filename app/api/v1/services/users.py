@@ -76,6 +76,7 @@ class UserService(BaseService):
                     "hashed_password": password,
                     "birthdate": arrow.get(item.birthdate).datetime,
                     "roles": [RolesEnum.CUSTOMER.name],
+                    "deleted": False,
                     "created_at": arrow.utcnow().datetime,
                     "updated_at": None,
                 },
@@ -119,3 +120,15 @@ class UserService(BaseService):
         )
 
         return await self.get_item_by_id(id_=id_)
+
+    async def delete_item_by_id(self, id_: ObjectId) -> None:
+        """Softly deletes a user by its unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the user.
+
+        """
+
+        await self.repository.update_item_by_id(
+            id_=id_, item={"deleted": True, "updated_at": arrow.utcnow().datetime}
+        )
