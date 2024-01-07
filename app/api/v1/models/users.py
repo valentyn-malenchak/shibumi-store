@@ -1,11 +1,11 @@
 """Module that contains users domain models."""
 
 from datetime import date, datetime
-from typing import Annotated, List
+from typing import List
 
-from pydantic import BaseModel, EmailStr, StringConstraints
+from pydantic import BaseModel, EmailStr
 
-from app.utils.pydantic import ObjectId, PhoneNumber
+from app.utils.pydantic import ObjectId, PasswordPolicy, PhoneNumber, UsernamePolicy
 
 
 class User(ObjectId):
@@ -53,9 +53,9 @@ class CreateUserRequestModel(BaseModel):
     first_name: str
     last_name: str
     patronymic_name: str | None
-    username: str
+    username: UsernamePolicy
     email: EmailStr
-    password: Annotated[str, StringConstraints(min_length=8, max_length=20)]
+    password: PasswordPolicy
     phone_number: PhoneNumber
     birthdate: date
 
@@ -67,6 +67,6 @@ class UpdateUserRequestModel(BaseModel):
     last_name: str
     patronymic_name: str | None
     email: EmailStr
-    password: Annotated[str, StringConstraints(min_length=8, max_length=20)]
+    password: PasswordPolicy
     phone_number: PhoneNumber
     birthdate: date

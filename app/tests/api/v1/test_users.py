@@ -8,7 +8,7 @@ from freezegun import freeze_time
 from httpx import AsyncClient
 from jose import ExpiredSignatureError
 
-from app.constants import HTTPErrorMessagesEnum
+from app.constants import HTTPErrorMessagesEnum, ValidationErrorMessagesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
 from app.tests.api.v1 import BaseTest
 from app.tests.constants import FAKE_USER, FROZEN_DATETIME, JWT, USER, USER_NO_SCOPES
@@ -126,7 +126,7 @@ class TestUser(BaseTest):
                 "patronymic_name": None,
                 "username": "joe.smith",
                 "email": "joe.smith@gmail.com",
-                "password": "joe12345",
+                "password": "Joe12345!",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
             },
@@ -166,7 +166,7 @@ class TestUser(BaseTest):
                 "patronymic_name": None,
                 "username": "joe.smith",
                 "email": "joe.smith@gmail.com",
-                "password": "joe12345",
+                "password": "Joe12345!",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
             },
@@ -201,7 +201,7 @@ class TestUser(BaseTest):
                 "last_name": "Smith",
                 "patronymic_name": None,
                 "email": "john.smith@gmail",
-                "password": "joe123",
+                "password": "Joe12345!",
                 "phone_number": "+3809811",
                 "birthdate": "1997-12-34",
             },
@@ -221,11 +221,6 @@ class TestUser(BaseTest):
                 "is not valid. It should have a period.",
             ),
             (
-                "string_too_short",
-                ["body", "password"],
-                "String should have at least 8 characters",
-            ),
-            (
                 "value_error",
                 ["body", "phone_number"],
                 "value is not a valid phone number",
@@ -235,6 +230,264 @@ class TestUser(BaseTest):
                 ["body", "birthdate"],
                 "Input should be a valid date or datetime, day value is "
                 "outside expected range",
+            ),
+        ]
+
+    @pytest.mark.asyncio
+    async def test_create_users_short_password(self, test_client: AsyncClient) -> None:
+        """Test create users in case password is short."""
+
+        response = await test_client.post(
+            "/users/",
+            json={
+                "first_name": "Joe",
+                "last_name": "Smith",
+                "patronymic_name": None,
+                "username": "joe.smith",
+                "email": "joe.smith@gmail.com",
+                "password": "joe12",
+                "phone_number": "+380980000000",
+                "birthdate": "1997-12-07",
+            },
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            (
+                "string_too_short",
+                ["body", "password"],
+                ValidationErrorMessagesEnum.PASSWORD_MIN_LENGTH.value,
+            ),
+        ]
+
+    @pytest.mark.asyncio
+    async def test_create_users_password_with_no_digits(
+        self, test_client: AsyncClient
+    ) -> None:
+        """Test create users in case password doesn't include digits."""
+
+        response = await test_client.post(
+            "/users/",
+            json={
+                "first_name": "Joe",
+                "last_name": "Smith",
+                "patronymic_name": None,
+                "username": "joe.smith",
+                "email": "joe.smith@gmail.com",
+                "password": "joejoejoe",
+                "phone_number": "+380980000000",
+                "birthdate": "1997-12-07",
+            },
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            (
+                "string_without_digit",
+                ["body", "password"],
+                ValidationErrorMessagesEnum.PASSWORD_WITHOUT_DIGIT.value,
+            ),
+        ]
+
+    @pytest.mark.asyncio
+    async def test_create_users_password_with_no_lowercase_letters(
+        self, test_client: AsyncClient
+    ) -> None:
+        """Test create users in case password doesn't include lowercase letters."""
+
+        response = await test_client.post(
+            "/users/",
+            json={
+                "first_name": "Joe",
+                "last_name": "Smith",
+                "patronymic_name": None,
+                "username": "joe.smith",
+                "email": "joe.smith@gmail.com",
+                "password": "JOE12345",
+                "phone_number": "+380980000000",
+                "birthdate": "1997-12-07",
+            },
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            (
+                "string_without_lowercase_letters",
+                ["body", "password"],
+                ValidationErrorMessagesEnum.PASSWORD_WITHOUT_LOWERCASE_LETTER.value,
+            ),
+        ]
+
+    @pytest.mark.asyncio
+    async def test_create_users_password_with_no_uppercase_letters(
+        self, test_client: AsyncClient
+    ) -> None:
+        """Test create users in case password doesn't include uppercase letters."""
+
+        response = await test_client.post(
+            "/users/",
+            json={
+                "first_name": "Joe",
+                "last_name": "Smith",
+                "patronymic_name": None,
+                "username": "joe.smith",
+                "email": "joe.smith@gmail.com",
+                "password": "joe12345",
+                "phone_number": "+380980000000",
+                "birthdate": "1997-12-07",
+            },
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            (
+                "string_without_uppercase_letters",
+                ["body", "password"],
+                ValidationErrorMessagesEnum.PASSWORD_WITHOUT_UPPERCASE_LETTER.value,
+            ),
+        ]
+
+    @pytest.mark.asyncio
+    async def test_create_users_password_with_no_special_characters(
+        self, test_client: AsyncClient
+    ) -> None:
+        """Test create users in case password doesn't include special characters."""
+
+        response = await test_client.post(
+            "/users/",
+            json={
+                "first_name": "Joe",
+                "last_name": "Smith",
+                "patronymic_name": None,
+                "username": "joe.smith",
+                "email": "joe.smith@gmail.com",
+                "password": "Joe12345",
+                "phone_number": "+380980000000",
+                "birthdate": "1997-12-07",
+            },
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            (
+                "string_without_special_characters",
+                ["body", "password"],
+                ValidationErrorMessagesEnum.PASSWORD_WITHOUT_SPECIAL_CHARACTER.value,
+            ),
+        ]
+
+    @pytest.mark.asyncio
+    async def test_create_users_short_username(self, test_client: AsyncClient) -> None:
+        """Test create users in case username is short."""
+
+        response = await test_client.post(
+            "/users/",
+            json={
+                "first_name": "Joe",
+                "last_name": "Smith",
+                "patronymic_name": None,
+                "username": "joe",
+                "email": "joe.smith@gmail.com",
+                "password": "Joe12345!~",
+                "phone_number": "+380980000000",
+                "birthdate": "1997-12-07",
+            },
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            (
+                "string_too_short",
+                ["body", "username"],
+                ValidationErrorMessagesEnum.USERNAME_MIN_LENGTH.value,
+            ),
+        ]
+
+    @pytest.mark.asyncio
+    async def test_create_users_long_username(self, test_client: AsyncClient) -> None:
+        """Test create users in case username is long."""
+
+        response = await test_client.post(
+            "/users/",
+            json={
+                "first_name": "Joe",
+                "last_name": "Smith",
+                "patronymic_name": None,
+                "username": "joe.smith.joe.smith.joe.smith.joe.smith.joe.smith",
+                "email": "joe.smith@gmail.com",
+                "password": "Joe12345!~",
+                "phone_number": "+380980000000",
+                "birthdate": "1997-12-07",
+            },
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            (
+                "string_too_long",
+                ["body", "username"],
+                ValidationErrorMessagesEnum.USERNAME_MAX_LENGTH.value,
+            ),
+        ]
+
+    @pytest.mark.asyncio
+    async def test_create_users_username_contains_not_permitted_characters(
+        self, test_client: AsyncClient
+    ) -> None:
+        """Test create users in case username contains not permitted characters."""
+
+        response = await test_client.post(
+            "/users/",
+            json={
+                "first_name": "Joe",
+                "last_name": "Smith",
+                "patronymic_name": None,
+                "username": "joe@smith",
+                "email": "joe.smith@gmail.com",
+                "password": "Joe12345!~",
+                "phone_number": "+380980000000",
+                "birthdate": "1997-12-07",
+            },
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            (
+                "string_with_not_permitted_characters",
+                ["body", "username"],
+                ValidationErrorMessagesEnum.USERNAME_NOT_ALLOWED_CHARACTERS.value,
             ),
         ]
 
@@ -284,7 +537,7 @@ class TestUser(BaseTest):
                 "patronymic_name": None,
                 "username": "john.smith",
                 "email": "john.smith@gmail.com",
-                "password": "joe12345",
+                "password": "Joe12345!",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
             },
@@ -314,7 +567,7 @@ class TestUser(BaseTest):
                 "last_name": "Smith",
                 "patronymic_name": "Batman",
                 "email": "john.smith+1@gmail.com",
-                "password": "john@1323",
+                "password": "John@1323",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
             },
@@ -351,7 +604,7 @@ class TestUser(BaseTest):
                 "last_name": "Smith",
                 "patronymic_name": "Batman",
                 "email": "john.smith@gmail",
-                "password": "john",
+                "password": "john_12!",
                 "phone_number": "+3809800000013",
                 "birthdate": "1999-12-35",
             },
@@ -368,9 +621,9 @@ class TestUser(BaseTest):
                 "valid. It should have a period.",
             ),
             (
-                "string_too_short",
+                "string_without_uppercase_letters",
                 ["body", "password"],
-                "String should have at least 8 characters",
+                ValidationErrorMessagesEnum.PASSWORD_WITHOUT_UPPERCASE_LETTER.value,
             ),
             (
                 "value_error",
