@@ -31,11 +31,17 @@ class ObjectIDValidator(abc.ABC):
     """Object ID validator."""
 
     @classmethod
-    def validate(cls, id_: str) -> None:
+    def validate(cls, id_: str) -> ObjectId:
         """Validates BSON object id.
 
         Args:
             id_ (str): String identifier.
+
+        Returns:
+            ObjectId: BSON object identifier.
+
+        Raises:
+            HTTPException: If object identifier is invalid.
 
         """
 
@@ -44,3 +50,5 @@ class ObjectIDValidator(abc.ABC):
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail=HTTPErrorMessagesEnum.INVALID_IDENTIFIER.value,
             )
+
+        return ObjectId(id_)
