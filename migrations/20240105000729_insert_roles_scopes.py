@@ -36,7 +36,6 @@ class Migration(BaseMigration):  # type: ignore
                     "scopes": [
                         ScopesEnum.AUTH_REFRESH_TOKEN.name,
                         ScopesEnum.USERS_GET_ME.name,
-                        ScopesEnum.USERS_UPDATE_USERS.name,
                     ],
                 },
                 {
@@ -44,7 +43,6 @@ class Migration(BaseMigration):  # type: ignore
                     "scopes": [
                         ScopesEnum.AUTH_REFRESH_TOKEN.name,
                         ScopesEnum.USERS_GET_ME.name,
-                        ScopesEnum.USERS_UPDATE_USERS.name,
                     ],
                 },
                 {
@@ -52,7 +50,6 @@ class Migration(BaseMigration):  # type: ignore
                     "scopes": [
                         ScopesEnum.AUTH_REFRESH_TOKEN.name,
                         ScopesEnum.USERS_GET_ME.name,
-                        ScopesEnum.USERS_UPDATE_USERS.name,
                     ],
                 },
                 {

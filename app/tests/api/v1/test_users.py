@@ -121,7 +121,7 @@ class TestUser(BaseTest):
 
     @pytest.mark.asyncio
     @freeze_time(FROZEN_DATETIME)
-    async def test_create_users_customer_user_by_unauthenticated_user(
+    async def test_create_users_unauthenticated_user_creates_customer_user(
         self, test_client: AsyncClient
     ) -> None:
         """Test create users in case unauthenticated user creates customer."""
@@ -158,7 +158,7 @@ class TestUser(BaseTest):
         }
 
     @pytest.mark.asyncio
-    async def test_create_users_shop_side_user_by_unauthenticated_user(
+    async def test_create_users_unauthenticated_user_creates_shop_side_user(
         self, test_client: AsyncClient
     ) -> None:
         """Test create users in case unauthenticated user creates shop side user."""
@@ -187,10 +187,10 @@ class TestUser(BaseTest):
     @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
     @freeze_time(FROZEN_DATETIME)
-    async def test_create_users_by_shop_side_user(
+    async def test_create_users_shop_side_user_creates_multi_role_user(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test create users as shop side user."""
+        """Test create users in case shop side user creates multi-role user."""
 
         response = await test_client.post(
             "/users/",
@@ -617,10 +617,10 @@ class TestUser(BaseTest):
     @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
     @freeze_time(FROZEN_DATETIME)
-    async def test_update_users_customer_role_by_customer_user(
+    async def test_update_users_customer_user_updates_self(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test update users in case customer user requests customer role."""
+        """Test update users in case customer user updates self with no role changes."""
 
         response = await test_client.patch(
             "/users/65844f12b6de26578d98c2c8/",
@@ -655,7 +655,7 @@ class TestUser(BaseTest):
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
-    async def test_update_users_shop_side_role_by_customer_user(
+    async def test_update_users_customer_user_update_self_with_shop_side_roles(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
         """Test update users in case customer user requests shop side roles."""
@@ -684,10 +684,10 @@ class TestUser(BaseTest):
     @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
     @freeze_time(FROZEN_DATETIME)
-    async def test_update_users_by_shop_side_user(
+    async def test_update_users_shop_side_user_updates_self(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test update users as shop side user."""
+        """Test update users in case shop side user updates self."""
 
         response = await test_client.patch(
             "/users/659bf67868d14b47475ec11c/",
@@ -836,10 +836,11 @@ class TestUser(BaseTest):
 
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
-    async def test_update_users_request_other_user(
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_update_users_client_user_updates_another_client_user(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test update users in case one user request update for other user."""
+        """Test update users in case client user updates another client user."""
 
         response = await test_client.patch(
             "/users/6598495fdf97a8e0d7e612ae/",
@@ -863,6 +864,132 @@ class TestUser(BaseTest):
 
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_update_users_client_user_updates_shop_side_user(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update users in case client user updates shop side user."""
+
+        response = await test_client.patch(
+            "/users/659c3528d71686302919981c/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+            json={
+                "first_name": "John",
+                "last_name": "Smith",
+                "patronymic_name": "Batman",
+                "email": "john.smith+1@gmail.com",
+                "password": "john@1323",
+                "phone_number": "+380980000001",
+                "birthdate": "1999-12-31",
+                "roles": [RolesEnum.CUSTOMER.value],
+            },
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.USER_ACCESS_DENIED.value
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_update_users_shop_side_user_updates_client_user(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update users in case shop side user updates client user."""
+
+        response = await test_client.patch(
+            "/users/65844f12b6de26578d98c2c8/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+            json={
+                "first_name": "John",
+                "last_name": "Smith",
+                "patronymic_name": "Batman",
+                "email": "john.smith+1@gmail.com",
+                "password": "john@1323",
+                "phone_number": "+380980000001",
+                "birthdate": "1999-12-31",
+                "roles": [RolesEnum.CUSTOMER.value],
+            },
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.CLIENT_USER_ACCESS_DENIED.value
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @freeze_time(FROZEN_DATETIME)
+    async def test_update_users_shop_side_user_updates_another_shop_side_user(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update users in case shop side user updates another shop side user."""
+
+        response = await test_client.patch(
+            "/users/659c3528d71686302919981c/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+            json={
+                "first_name": "Frederique",
+                "last_name": "Langosh",
+                "patronymic_name": "Definitely not Batman",
+                "email": "frederique.langosh@gmail.com",
+                "password": "Freeedo@13223",
+                "phone_number": "+380980000001",
+                "birthdate": "1999-12-31",
+                "roles": [RolesEnum.CONTENT_MANAGER.value],
+            },
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "id": "659c3528d71686302919981c",
+            "first_name": "Frederique",
+            "last_name": "Langosh",
+            "patronymic_name": "Definitely not Batman",
+            "username": "Frederique.Langosh",
+            "email": "frederique.langosh@gmail.com",
+            "phone_number": "+380980000001",
+            "birthdate": "1999-12-31",
+            "roles": ["CONTENT_MANAGER"],
+            "created_at": "2024-01-08T13:56:43.895000",
+            "updated_at": FROZEN_DATETIME,
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_update_users_deleted_user(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update users in case user is deleted."""
+
+        response = await test_client.patch(
+            "/users/659ac89bfe61d8332f6be4c4/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+            json={
+                "first_name": "Frederique",
+                "last_name": "Langosh",
+                "patronymic_name": "Definitely not Batman",
+                "email": "frederique.langosh@gmail.com",
+                "password": "Freeedo@13223",
+                "phone_number": "+380980000001",
+                "birthdate": "1999-12-31",
+                "roles": [RolesEnum.CONTENT_MANAGER.value],
+            },
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+                entity="User"
+            )
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
     async def test_update_users_invalid_identifier(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -891,13 +1018,28 @@ class TestUser(BaseTest):
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
-    async def test_delete_users(
+    async def test_delete_users_client_user_deletes_self(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test delete users."""
+        """Test delete users if case client user deletes self."""
 
         response = await test_client.delete(
             "/users/65844f12b6de26578d98c2c8/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_delete_users_shop_side_user_deletes_self(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test delete users in case shop side user deletes self."""
+
+        response = await test_client.delete(
+            "/users/659bf67868d14b47475ec11c/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -932,10 +1074,11 @@ class TestUser(BaseTest):
 
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
-    async def test_delete_users_request_other_user(
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_delete_users_client_user_deletes_another_client_user(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test delete users in case one user request delete other user."""
+        """Test delete users in case client user deletes another client user."""
 
         response = await test_client.delete(
             "/users/6598495fdf97a8e0d7e612ae/",
@@ -949,6 +1092,75 @@ class TestUser(BaseTest):
 
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_delete_users_client_user_deletes_shop_side_user(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test delete users in case client user deletes shop side user."""
+
+        response = await test_client.delete(
+            "/users/659c3528d71686302919981c/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.USER_ACCESS_DENIED.value
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_delete_users_shop_side_user_deletes_client_user(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test delete users in case shop side user deletes client user."""
+
+        response = await test_client.delete(
+            "/users/65844f12b6de26578d98c2c8/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_delete_users_shop_side_user_deletes_another_shop_side_user(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test delete users in case shop side user deletes another shop side user."""
+
+        response = await test_client.delete(
+            "/users/659c3528d71686302919981c/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_delete_users_deleted_user(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test delete users in case user is deleted."""
+
+        response = await test_client.delete(
+            "/users/659ac89bfe61d8332f6be4c4/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+                entity="User"
+            )
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
     async def test_delete_users_invalid_identifier(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:

@@ -23,12 +23,7 @@ USER_NO_SCOPES = dict(id="65844f12b6de26578d98c2c8", scopes=[], exp=1703194093)
 
 DELETED_USER = dict(
     id="659ac89bfe61d8332f6be4c4",
-    scopes=[
-        ScopesEnum.AUTH_REFRESH_TOKEN.name,
-        ScopesEnum.USERS_GET_ME.name,
-        ScopesEnum.USERS_UPDATE_USERS.name,
-        ScopesEnum.USERS_DELETE_USERS.name,
-    ],
+    scopes=[ScopesEnum.AUTH_REFRESH_TOKEN.name],
     exp=1703194093,
 )
 

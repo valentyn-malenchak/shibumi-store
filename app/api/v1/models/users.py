@@ -25,6 +25,11 @@ class User(ObjectId):
     created_at: datetime
     updated_at: datetime | None
 
+    @property
+    def is_client(self) -> bool:
+        """Shows is user a client or belongs to shop side."""
+        return self.roles == [RolesEnum.CUSTOMER.name]
+
 
 class CurrentUserModel(BaseModel):
     """User model for authenticate/authorize operations."""
