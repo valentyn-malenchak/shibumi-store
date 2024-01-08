@@ -13,7 +13,13 @@ from app.api.v1.constants import ScopesEnum
 from app.constants import HTTPErrorMessagesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
 from app.tests.api.v1 import BaseTest
-from app.tests.constants import DELETED_USER, FAKE_USER, TEST_JWT, USER, USER_NO_SCOPES
+from app.tests.constants import (
+    CUSTOMER_USER,
+    DELETED_USER,
+    FAKE_USER,
+    TEST_JWT,
+    USER_NO_SCOPES,
+)
 
 
 class TestAuth(BaseTest):
@@ -193,7 +199,7 @@ class TestAuth(BaseTest):
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
-    @patch("jose.jwt.decode", Mock(return_value=USER))
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
     async def test_refresh_access_token(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:

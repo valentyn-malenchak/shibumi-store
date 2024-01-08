@@ -20,6 +20,9 @@ class HTTPErrorMessagesEnum(Enum):
     PERMISSION_DENIED = "Permission denied."
     INVALID_IDENTIFIER = "Invalid object identifier."
 
+    USER_ACCESS_DENIED = "Access denied to another user."
+    ROLE_ACCESS_DENIED = "Access denied to use role."
+
     ENTITY_FIELD_UNIQUENESS = "{entity} with such {field} is already exist."
 
 

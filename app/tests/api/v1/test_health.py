@@ -9,14 +9,14 @@ from httpx import AsyncClient
 from app.constants import HTTPErrorMessagesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
 from app.tests.api.v1 import BaseTest
-from app.tests.constants import TEST_JWT, USER, USER_NO_SCOPES
+from app.tests.constants import SHOP_SIDE_USER, TEST_JWT, USER_NO_SCOPES
 
 
 class TestHealth(BaseTest):
     """Test class for health API endpoints in the FastAPI application."""
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER))
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
     async def test_get_health(self, test_client: AsyncClient, arrange_db: None) -> None:
         """Test get application health."""
