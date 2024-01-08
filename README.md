@@ -40,10 +40,6 @@ The project is organized with the following directory structure:
 │   │   │   │   ├── auth.py                    # Authentication and Authorization handlers
 │   │   │   │   ├── jwt.py                     # JWT handler
 │   │   │   │   └── password.py                # Password handler
-│   │   │   ├── dependencies                   # Domain dependencies
-│   │   │   │   ├── __init__.py
-│   │   │   │   ├── users.py
-│   │   │   │   └── ...
 │   │   │   ├── models                         # Pydantic models for API and entities
 │   │   │   │   ├── __init__.py
 │   │   │   │   ├── auth.py
@@ -57,6 +53,10 @@ The project is organized with the following directory structure:
 │   │   │   │   ├── __init__.py
 │   │   │   │   ├── auth.py
 │   │   │   │   ├── health.py
+│   │   │   │   ├── users.py
+│   │   │   │   └── ...
+│   │   │   ├── validators                     # Dependencies to validate data from request
+│   │   │   │   ├── __init__.py
 │   │   │   │   ├── users.py
 │   │   │   │   └── ...
 │   │   │   ├── services                       # API business logic which uses interactions from repositories and auth   

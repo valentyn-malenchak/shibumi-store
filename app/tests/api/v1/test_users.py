@@ -8,14 +8,16 @@ from freezegun import freeze_time
 from httpx import AsyncClient
 from jose import ExpiredSignatureError
 
+from app.api.v1.constants import RolesEnum
 from app.constants import HTTPErrorMessagesEnum, ValidationErrorMessagesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
 from app.tests.api.v1 import BaseTest
 from app.tests.constants import (
+    CUSTOMER_USER,
     FAKE_USER,
     FROZEN_DATETIME,
+    SHOP_SIDE_USER,
     TEST_JWT,
-    USER,
     USER_NO_SCOPES,
 )
 
@@ -24,7 +26,7 @@ class TestUser(BaseTest):
     """Test class for users API endpoints in the FastAPI application."""
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER))
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
     async def test_get_me(self, test_client: AsyncClient, arrange_db: None) -> None:
         """Test get me."""
@@ -44,7 +46,7 @@ class TestUser(BaseTest):
             "email": "john.smith@gmail.com",
             "phone_number": "+380981111111",
             "birthdate": "1998-01-01",
-            "roles": ["CUSTOMER"],
+            "roles": [RolesEnum.CUSTOMER.name],
             "created_at": "2023-12-30T13:25:43.895000",
             "updated_at": None,
         }
@@ -119,10 +121,10 @@ class TestUser(BaseTest):
 
     @pytest.mark.asyncio
     @freeze_time(FROZEN_DATETIME)
-    async def test_create_users_without_authorization(
+    async def test_create_users_customer_user_by_unauthenticated_user(
         self, test_client: AsyncClient
     ) -> None:
-        """Test create users without authorization."""
+        """Test create users in case unauthenticated user creates customer."""
 
         response = await test_client.post(
             "/users/",
@@ -135,6 +137,7 @@ class TestUser(BaseTest):
                 "password": "Joe12345!",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
+                "roles": [RolesEnum.CUSTOMER.value],
             },
         )
 
@@ -149,19 +152,45 @@ class TestUser(BaseTest):
             "email": "joe.smith@gmail.com",
             "phone_number": "+380980000000",
             "birthdate": "1997-12-07",
-            "roles": ["CUSTOMER"],
-            "created_at": "2024-01-05T12:08:35.440000",
+            "roles": [RolesEnum.CUSTOMER.name],
+            "created_at": FROZEN_DATETIME,
             "updated_at": None,
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER))
+    async def test_create_users_shop_side_user_by_unauthenticated_user(
+        self, test_client: AsyncClient
+    ) -> None:
+        """Test create users in case unauthenticated user creates shop side user."""
+
+        response = await test_client.post(
+            "/users/",
+            json={
+                "first_name": "Joe",
+                "last_name": "Smith",
+                "patronymic_name": None,
+                "username": "joe.smith",
+                "email": "joe.smith@gmail.com",
+                "password": "Joe12345!",
+                "phone_number": "+380980000000",
+                "birthdate": "1997-12-07",
+                "roles": [RolesEnum.SUPPORT.value],
+            },
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ROLE_ACCESS_DENIED.value
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
     @freeze_time(FROZEN_DATETIME)
-    async def test_create_users_with_authorization(
+    async def test_create_users_by_shop_side_user(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test create users with authorization."""
+        """Test create users as shop side user."""
 
         response = await test_client.post(
             "/users/",
@@ -175,6 +204,12 @@ class TestUser(BaseTest):
                 "password": "Joe12345!",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
+                "roles": [
+                    RolesEnum.SUPPORT.value,
+                    RolesEnum.CUSTOMER.value,
+                    RolesEnum.CONTENT_MANAGER.value,
+                    RolesEnum.ADMIN.value,
+                ],
             },
         )
 
@@ -189,8 +224,13 @@ class TestUser(BaseTest):
             "email": "joe.smith@gmail.com",
             "phone_number": "+380980000000",
             "birthdate": "1997-12-07",
-            "roles": ["CUSTOMER"],
-            "created_at": "2024-01-05T12:08:35.440000",
+            "roles": [
+                RolesEnum.SUPPORT.name,
+                RolesEnum.CUSTOMER.name,
+                RolesEnum.CONTENT_MANAGER.name,
+                RolesEnum.ADMIN.name,
+            ],
+            "created_at": FROZEN_DATETIME,
             "updated_at": None,
         }
 
@@ -210,6 +250,7 @@ class TestUser(BaseTest):
                 "password": "Joe12345!",
                 "phone_number": "+3809811",
                 "birthdate": "1997-12-34",
+                "roles": ["CEO"],
             },
         )
 
@@ -237,6 +278,12 @@ class TestUser(BaseTest):
                 "Input should be a valid date or datetime, day value is "
                 "outside expected range",
             ),
+            (
+                "enum",
+                ["body", "roles", 0],
+                "Input should be 'Customer', 'Support', 'Warehouse stuff', "
+                "'Content manager', 'Marketing manager' or 'Admin'",
+            ),
         ]
 
     @pytest.mark.asyncio
@@ -254,6 +301,7 @@ class TestUser(BaseTest):
                 "password": "joe12",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
+                "roles": [RolesEnum.CUSTOMER.value],
             },
         )
 
@@ -287,6 +335,7 @@ class TestUser(BaseTest):
                 "password": "joejoejoe",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
+                "roles": [RolesEnum.CUSTOMER.value],
             },
         )
 
@@ -320,6 +369,7 @@ class TestUser(BaseTest):
                 "password": "JOE12345",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
+                "roles": [RolesEnum.CUSTOMER.value],
             },
         )
 
@@ -353,6 +403,7 @@ class TestUser(BaseTest):
                 "password": "joe12345",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
+                "roles": [RolesEnum.CUSTOMER.value],
             },
         )
 
@@ -386,6 +437,7 @@ class TestUser(BaseTest):
                 "password": "Joe12345",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
+                "roles": [RolesEnum.CUSTOMER.value],
             },
         )
 
@@ -417,6 +469,7 @@ class TestUser(BaseTest):
                 "password": "Joe12345!~",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
+                "roles": [RolesEnum.CUSTOMER.value],
             },
         )
 
@@ -448,6 +501,7 @@ class TestUser(BaseTest):
                 "password": "Joe12345!~",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
+                "roles": [RolesEnum.CUSTOMER.value],
             },
         )
 
@@ -481,6 +535,7 @@ class TestUser(BaseTest):
                 "password": "Joe12345!~",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
+                "roles": [RolesEnum.CUSTOMER.value],
             },
         )
 
@@ -498,7 +553,7 @@ class TestUser(BaseTest):
         ]
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
     async def test_create_users_with_authorization_no_scope(
         self, test_client: AsyncClient, arrange_db: None
@@ -520,6 +575,7 @@ class TestUser(BaseTest):
                 "password": "joe12345",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
+                "roles": [RolesEnum.CUSTOMER.value],
             },
         )
 
@@ -546,6 +602,7 @@ class TestUser(BaseTest):
                 "password": "Joe12345!",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
+                "roles": [RolesEnum.CUSTOMER.value],
             },
         )
 
@@ -557,13 +614,13 @@ class TestUser(BaseTest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER))
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
     @freeze_time(FROZEN_DATETIME)
-    async def test_update_users(
+    async def test_update_users_customer_role_by_customer_user(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test update users."""
+        """Test update users in case customer user requests customer role."""
 
         response = await test_client.patch(
             "/users/65844f12b6de26578d98c2c8/",
@@ -576,6 +633,7 @@ class TestUser(BaseTest):
                 "password": "John@1323",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
+                "roles": [RolesEnum.CUSTOMER.value],
             },
         )
 
@@ -589,13 +647,88 @@ class TestUser(BaseTest):
             "email": "john.smith+1@gmail.com",
             "phone_number": "+380980000001",
             "birthdate": "1999-12-31",
-            "roles": ["CUSTOMER"],
+            "roles": [RolesEnum.CUSTOMER.name],
             "created_at": "2023-12-30T13:25:43.895000",
-            "updated_at": "2024-01-05T12:08:35.440000",
+            "updated_at": FROZEN_DATETIME,
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER))
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_update_users_shop_side_role_by_customer_user(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update users in case customer user requests shop side roles."""
+
+        response = await test_client.patch(
+            "/users/65844f12b6de26578d98c2c8/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+            json={
+                "first_name": "John",
+                "last_name": "Smith",
+                "patronymic_name": "Batman",
+                "email": "john.smith+1@gmail.com",
+                "password": "John@1323",
+                "phone_number": "+380980000001",
+                "birthdate": "1999-12-31",
+                "roles": [RolesEnum.CUSTOMER.value, RolesEnum.ADMIN.value],
+            },
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ROLE_ACCESS_DENIED.value
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @freeze_time(FROZEN_DATETIME)
+    async def test_update_users_by_shop_side_user(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update users as shop side user."""
+
+        response = await test_client.patch(
+            "/users/659bf67868d14b47475ec11c/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+            json={
+                "first_name": "Anya",
+                "last_name": "Schoen",
+                "patronymic_name": None,
+                "email": "anya.schoen+1@gmail.com",
+                "password": "Anyaa@1323",
+                "phone_number": "+380980004321",
+                "birthdate": "1999-09-07",
+                "roles": [
+                    RolesEnum.WAREHOUSE_STUFF.value,
+                    RolesEnum.ADMIN.value,
+                    RolesEnum.CUSTOMER.value,
+                ],
+            },
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert {key: value for key, value in response.json().items()} == {
+            "id": "659bf67868d14b47475ec11c",
+            "first_name": "Anya",
+            "last_name": "Schoen",
+            "patronymic_name": None,
+            "username": "anya.schoen",
+            "email": "anya.schoen+1@gmail.com",
+            "phone_number": "+380980004321",
+            "birthdate": "1999-09-07",
+            "roles": [
+                RolesEnum.WAREHOUSE_STUFF.name,
+                RolesEnum.ADMIN.name,
+                RolesEnum.CUSTOMER.name,
+            ],
+            "created_at": "2024-01-08T13:25:43.895000",
+            "updated_at": FROZEN_DATETIME,
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
     async def test_update_users_validate_json_data(
         self, test_client: AsyncClient, arrange_db: None
@@ -613,6 +746,7 @@ class TestUser(BaseTest):
                 "password": "john_12!",
                 "phone_number": "+3809800000013",
                 "birthdate": "1999-12-35",
+                "roles": ["CEO"],
             },
         )
 
@@ -642,6 +776,12 @@ class TestUser(BaseTest):
                 "Input should be a valid date or datetime, day value is outside "
                 "expected range",
             ),
+            (
+                "enum",
+                ["body", "roles", 0],
+                "Input should be 'Customer', 'Support', 'Warehouse stuff', "
+                "'Content manager', 'Marketing manager' or 'Admin'",
+            ),
         ]
 
     @pytest.mark.asyncio
@@ -658,6 +798,7 @@ class TestUser(BaseTest):
                 "password": "john@1323",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
+                "roles": [RolesEnum.CUSTOMER.value],
             },
         )
 
@@ -684,6 +825,7 @@ class TestUser(BaseTest):
                 "password": "Joe12345^",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
+                "roles": [RolesEnum.CUSTOMER.value],
             },
         )
 
@@ -693,7 +835,7 @@ class TestUser(BaseTest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER))
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
     async def test_update_users_request_other_user(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -710,16 +852,17 @@ class TestUser(BaseTest):
                 "password": "john@1323",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
+                "roles": [RolesEnum.CUSTOMER.value],
             },
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.PERMISSION_DENIED.value
+            "detail": HTTPErrorMessagesEnum.USER_ACCESS_DENIED.value
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER))
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
     async def test_update_users_invalid_identifier(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -736,6 +879,7 @@ class TestUser(BaseTest):
                 "password": "john@1323",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
+                "roles": [RolesEnum.CUSTOMER.value],
             },
         )
 
@@ -745,7 +889,7 @@ class TestUser(BaseTest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER))
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
     async def test_delete_users(
         self, test_client: AsyncClient, arrange_db: None
@@ -787,7 +931,7 @@ class TestUser(BaseTest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER))
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
     async def test_delete_users_request_other_user(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -800,11 +944,11 @@ class TestUser(BaseTest):
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.PERMISSION_DENIED.value
+            "detail": HTTPErrorMessagesEnum.USER_ACCESS_DENIED.value
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER))
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
     async def test_delete_users_invalid_identifier(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:

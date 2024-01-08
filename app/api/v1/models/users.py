@@ -5,6 +5,7 @@ from typing import List
 
 from pydantic import BaseModel, EmailStr
 
+from app.api.v1.constants import RolesEnum
 from app.utils.pydantic import ObjectId, PasswordPolicy, PhoneNumber, UsernamePolicy
 
 
@@ -59,6 +60,7 @@ class CreateUserRequestModel(BaseModel):
     password: PasswordPolicy
     phone_number: PhoneNumber
     birthdate: date
+    roles: List[RolesEnum]
 
 
 class UpdateUserRequestModel(BaseModel):
@@ -71,3 +73,4 @@ class UpdateUserRequestModel(BaseModel):
     password: PasswordPolicy
     phone_number: PhoneNumber
     birthdate: date
+    roles: List[RolesEnum]

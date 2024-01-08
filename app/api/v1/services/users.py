@@ -8,7 +8,6 @@ from injector import inject
 from pymongo.errors import DuplicateKeyError
 
 from app.api.v1.auth.password import Password
-from app.api.v1.constants import RolesEnum
 from app.api.v1.models.users import CreateUserRequestModel, UpdateUserRequestModel, User
 from app.api.v1.repositories.users import UserRepository
 from app.api.v1.services import BaseService
@@ -72,10 +71,10 @@ class UserService(BaseService):
             id_ = await self.repository.create_item(
                 item={
                     # Replaces plain password on hashed one
-                    **item.model_dump(exclude={"password"}),
+                    **item.model_dump(exclude={"password", "roles"}),
                     "hashed_password": password,
                     "birthdate": arrow.get(item.birthdate).datetime,
-                    "roles": [RolesEnum.CUSTOMER.name],
+                    "roles": [role.name for role in item.roles],
                     "deleted": False,
                     "created_at": arrow.utcnow().datetime,
                     "updated_at": None,
@@ -112,8 +111,9 @@ class UserService(BaseService):
             id_=id_,
             item={
                 # Replaces plain password on hashed one
-                **item.model_dump(exclude={"password"}),
+                **item.model_dump(exclude={"password", "roles"}),
                 "hashed_password": password,
+                "roles": [role.name for role in item.roles],
                 "birthdate": arrow.get(item.birthdate).datetime,
                 "updated_at": arrow.utcnow().datetime,
             },

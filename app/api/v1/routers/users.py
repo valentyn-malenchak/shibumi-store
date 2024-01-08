@@ -6,7 +6,6 @@ from fastapi import APIRouter, Depends, Security, status
 
 from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
-from app.api.v1.dependencies.users import UserSpecificDependency
 from app.api.v1.models.users import (
     CreateUserRequestModel,
     CurrentUserModel,
@@ -15,6 +14,11 @@ from app.api.v1.models.users import (
     UserResponseModel,
 )
 from app.api.v1.services.users import UserService
+from app.api.v1.validators.users import (
+    CreateUserRolesDependency,
+    UpdateUserRolesDependency,
+    UserSpecificDependency,
+)
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -39,10 +43,10 @@ async def get_users_me(
 
 @router.post("/", response_model=UserResponseModel, status_code=status.HTTP_201_CREATED)
 async def create_users(
-    user_data: CreateUserRequestModel,
     _: CurrentUserModel | None = Security(
         OptionalAuthorization(), scopes=[ScopesEnum.USERS_CREATE_USERS.name]
     ),
+    user_data: CreateUserRequestModel = Depends(CreateUserRolesDependency()),
     user_service: UserService = Depends(),
 ) -> User | None:
     """API which creates a new user.
@@ -63,10 +67,10 @@ async def create_users(
     "/{user_id}/", response_model=UserResponseModel, status_code=status.HTTP_200_OK
 )
 async def update_users(
-    user_data: UpdateUserRequestModel,
     _: CurrentUserModel = Security(
         StrictAuthorization(), scopes=[ScopesEnum.USERS_UPDATE_USERS.name]
     ),
+    user_data: UpdateUserRequestModel = Depends(UpdateUserRolesDependency()),
     user_id: str = Depends(UserSpecificDependency()),
     user_service: UserService = Depends(),
 ) -> User | None:
