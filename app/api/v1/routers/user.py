@@ -10,6 +10,7 @@ from app.api.v1.dependencies.user import (
     CreateUserRolesDependency,
     UpdateUserRolesDependency,
     UserDeleteDependency,
+    UserGetDependency,
     UserUpdateDependency,
 )
 from app.api.v1.models.user import (
@@ -42,6 +43,30 @@ async def get_user_me(
     return current_user.object
 
 
+@router.get(
+    "/{user_id}/", response_model=UserResponseModel, status_code=status.HTTP_200_OK
+)
+async def get_user(
+    _: CurrentUserModel | None = Security(
+        StrictAuthorization(), scopes=[ScopesEnum.USERS_GET_USER.name]
+    ),
+    user_id: ObjectId = Depends(UserGetDependency()),
+    user_service: UserService = Depends(),
+) -> User | None:
+    """API which returns a specific user.
+
+    Args:
+        _: Current user object.
+        user_id (str): Identifier of user that should be returned.
+        user_service (UserService): User service.
+
+    Returns:
+        User | None: User object.
+
+    """
+    return await user_service.get_item_by_id(id_=user_id)
+
+
 @router.post("/", response_model=UserResponseModel, status_code=status.HTTP_201_CREATED)
 async def create_user(
     _: CurrentUserModel | None = Security(
@@ -53,8 +78,8 @@ async def create_user(
     """API which creates a new user.
 
     Args:
-        user_data (CreateUserRequestModel): User registration data.
         _ (CurrentUserModel | None): Authenticated user with permitted scopes or None.
+        user_data (CreateUserRequestModel): User registration data.
         user_service (UserService): User service.
 
     Returns:
@@ -78,9 +103,9 @@ async def update_user(
     """API which updates a user object.
 
     Args:
-        user_data (UpdateUserRequestModel): User data to update.
         _: Current user object.
         user_id (str): Identifier of user that should be updated.
+        user_data (UpdateUserRequestModel): User data to update.
         user_service (UserService): User service.
 
     Returns:

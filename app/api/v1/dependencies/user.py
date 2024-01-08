@@ -17,6 +17,26 @@ from app.api.v1.validators.user import (
 from app.constants import HTTPErrorMessagesEnum
 
 
+class UserGetDependency:
+    """User get dependency."""
+
+    async def __call__(self, user_id: str) -> ObjectId:
+        """Checks if the current user can get requested user.
+
+        Args:
+            user_id (str): Identifier of requested user.
+
+        Returns:
+            ObjectId: BSON object identifier of requested user.
+
+        Raises:
+            HTTPException: If user identifier is invalid.
+
+        """
+
+        return ObjectIDValidator.validate(id_=user_id)
+
+
 class UserUpdateDependency:
     """User update dependency."""
 

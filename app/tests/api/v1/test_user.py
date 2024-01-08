@@ -47,6 +47,7 @@ class TestUser(BaseTest):
             "phone_number": "+380981111111",
             "birthdate": "1998-01-01",
             "roles": [RolesEnum.CUSTOMER.name],
+            "deleted": False,
             "created_at": "2023-12-30T13:25:43.895000",
             "updated_at": None,
         }
@@ -153,6 +154,7 @@ class TestUser(BaseTest):
             "phone_number": "+380980000000",
             "birthdate": "1997-12-07",
             "roles": [RolesEnum.CUSTOMER.name],
+            "deleted": False,
             "created_at": FROZEN_DATETIME,
             "updated_at": None,
         }
@@ -230,6 +232,7 @@ class TestUser(BaseTest):
                 RolesEnum.CONTENT_MANAGER.name,
                 RolesEnum.ADMIN.name,
             ],
+            "deleted": False,
             "created_at": FROZEN_DATETIME,
             "updated_at": None,
         }
@@ -648,6 +651,7 @@ class TestUser(BaseTest):
             "phone_number": "+380980000001",
             "birthdate": "1999-12-31",
             "roles": [RolesEnum.CUSTOMER.name],
+            "deleted": False,
             "created_at": "2023-12-30T13:25:43.895000",
             "updated_at": FROZEN_DATETIME,
         }
@@ -723,6 +727,7 @@ class TestUser(BaseTest):
                 RolesEnum.ADMIN.name,
                 RolesEnum.CUSTOMER.name,
             ],
+            "deleted": False,
             "created_at": "2024-01-08T13:25:43.895000",
             "updated_at": FROZEN_DATETIME,
         }
@@ -953,6 +958,7 @@ class TestUser(BaseTest):
             "phone_number": "+380980000001",
             "birthdate": "1999-12-31",
             "roles": ["CONTENT_MANAGER"],
+            "deleted": False,
             "created_at": "2024-01-08T13:56:43.895000",
             "updated_at": FROZEN_DATETIME,
         }
@@ -1168,6 +1174,78 @@ class TestUser(BaseTest):
 
         response = await test_client.delete(
             "/users/invalid-group-id/", headers={"Authorization": f"Bearer {TEST_JWT}"}
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.INVALID_IDENTIFIER.value
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_get_user(self, test_client: AsyncClient, arrange_db: None) -> None:
+        """Test get user."""
+
+        response = await test_client.get(
+            "/users/659ac89bfe61d8332f6be4c4/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "id": "659ac89bfe61d8332f6be4c4",
+            "first_name": "Sheila",
+            "last_name": "Fahey",
+            "patronymic_name": None,
+            "username": "sheila.fahey",
+            "email": "sheila.fahey@gmail.com",
+            "phone_number": "+111111111114",
+            "birthdate": "1994-11-14",
+            "roles": ["CONTENT_MANAGER"],
+            "deleted": True,
+            "created_at": "2024-01-07T13:25:43.895000",
+            "updated_at": None,
+        }
+
+    @pytest.mark.asyncio
+    async def test_get_user_no_token(self, test_client: AsyncClient) -> None:
+        """Test get user in case there is no token."""
+
+        response = await test_client.get("/users/659ac89bfe61d8332f6be4c4/")
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED.value}
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_get_user_no_scope(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get user in case user does not have a scope."""
+
+        response = await test_client.get(
+            "/users/659ac89bfe61d8332f6be4c4/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.PERMISSION_DENIED.value
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_get_user_invalid_identifier(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get user in case of invalid identifier."""
+
+        response = await test_client.get(
+            "/users/invalid-group-id/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
