@@ -21,6 +21,7 @@ class ScopesEnum(Enum):
     AUTH_REFRESH_TOKEN = "Allows to refresh Access token using Refresh token."
     HEALTH_GET_HEALTH = "Allows to check application health."
     USERS_GET_ME = "Allow to get current user object."
+    USERS_GET_USER = "Allow to get user."
     USERS_CREATE_USER = "Allows to create a new user."
     USERS_UPDATE_USER = "Allows to update user."
     USERS_DELETE_USER = "Allows to delete user."
