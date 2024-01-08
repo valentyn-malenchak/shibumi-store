@@ -7,8 +7,8 @@ from bson import ObjectId
 from fastapi import HTTPException, status
 
 from app.api.v1.constants import RolesEnum
-from app.api.v1.models.users import CurrentUserModel, User
-from app.api.v1.services.users import UserService
+from app.api.v1.models.user import CurrentUserModel, User
+from app.api.v1.services.user import UserService
 from app.api.v1.validators import BaseValidator
 from app.constants import HTTPErrorMessagesEnum
 

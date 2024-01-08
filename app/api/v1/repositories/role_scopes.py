@@ -1,4 +1,4 @@
-"""Module that contains roles scopes repository class."""
+"""Module that contains role scopes repository class."""
 
 from typing import Any, Dict, List
 
@@ -9,8 +9,8 @@ from app.api.v1.repositories import BaseRepository
 from app.services.mongo.constants import MongoCollectionsEnum
 
 
-class RoleScopeRepository(BaseRepository):
-    """Role-scope repository for handling data access operations."""
+class RoleScopesRepository(BaseRepository):
+    """Role-scopes repository for handling data access operations."""
 
     _collection_name: str = MongoCollectionsEnum.ROLES_SCOPES.value
 

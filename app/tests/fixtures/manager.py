@@ -6,7 +6,7 @@ from typing import Any, Dict, List
 from injector import Injector
 
 from app.api.v1.repositories import BaseRepository
-from app.api.v1.repositories.users import UserRepository
+from app.api.v1.repositories.user import UserRepository
 from app.loaders import JSONFileLoader
 from app.services.mongo.constants import MongoCollectionsEnum
 from app.services.mongo.transaction_manager import TransactionManager

@@ -17,8 +17,8 @@ class Migration(BaseMigration):  # type: ignore
                     "scopes": [
                         ScopesEnum.AUTH_REFRESH_TOKEN.name,
                         ScopesEnum.USERS_GET_ME.name,
-                        ScopesEnum.USERS_UPDATE_USERS.name,
-                        ScopesEnum.USERS_DELETE_USERS.name,
+                        ScopesEnum.USERS_UPDATE_USER.name,
+                        ScopesEnum.USERS_DELETE_USER.name,
                     ],
                 },
                 {
@@ -26,9 +26,9 @@ class Migration(BaseMigration):  # type: ignore
                     "scopes": [
                         ScopesEnum.AUTH_REFRESH_TOKEN.name,
                         ScopesEnum.USERS_GET_ME.name,
-                        ScopesEnum.USERS_CREATE_USERS.name,
-                        ScopesEnum.USERS_UPDATE_USERS.name,
-                        ScopesEnum.USERS_DELETE_USERS.name,
+                        ScopesEnum.USERS_CREATE_USER.name,
+                        ScopesEnum.USERS_UPDATE_USER.name,
+                        ScopesEnum.USERS_DELETE_USER.name,
                     ],
                 },
                 {
@@ -58,9 +58,9 @@ class Migration(BaseMigration):  # type: ignore
                         ScopesEnum.AUTH_REFRESH_TOKEN.name,
                         ScopesEnum.HEALTH_GET_HEALTH.name,
                         ScopesEnum.USERS_GET_ME.name,
-                        ScopesEnum.USERS_CREATE_USERS.name,
-                        ScopesEnum.USERS_UPDATE_USERS.name,
-                        ScopesEnum.USERS_DELETE_USERS.name,
+                        ScopesEnum.USERS_CREATE_USER.name,
+                        ScopesEnum.USERS_UPDATE_USER.name,
+                        ScopesEnum.USERS_DELETE_USER.name,
                     ],
                 },
             ]

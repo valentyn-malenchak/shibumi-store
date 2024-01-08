@@ -1,4 +1,4 @@
-"""Module that contains users domain routers."""
+"""Module that contains user domain routers."""
 
 
 from bson import ObjectId
@@ -6,26 +6,26 @@ from fastapi import APIRouter, Depends, Security, status
 
 from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
-from app.api.v1.dependencies.users import (
+from app.api.v1.dependencies.user import (
     CreateUserRolesDependency,
     UpdateUserRolesDependency,
     UserDeleteDependency,
     UserUpdateDependency,
 )
-from app.api.v1.models.users import (
+from app.api.v1.models.user import (
     CreateUserRequestModel,
     CurrentUserModel,
     UpdateUserRequestModel,
     User,
     UserResponseModel,
 )
-from app.api.v1.services.users import UserService
+from app.api.v1.services.user import UserService
 
 router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.get("/me/", response_model=UserResponseModel, status_code=status.HTTP_200_OK)
-async def get_users_me(
+async def get_user_me(
     current_user: CurrentUserModel = Security(
         StrictAuthorization(), scopes=[ScopesEnum.USERS_GET_ME.name]
     ),
@@ -43,9 +43,9 @@ async def get_users_me(
 
 
 @router.post("/", response_model=UserResponseModel, status_code=status.HTTP_201_CREATED)
-async def create_users(
+async def create_user(
     _: CurrentUserModel | None = Security(
-        OptionalAuthorization(), scopes=[ScopesEnum.USERS_CREATE_USERS.name]
+        OptionalAuthorization(), scopes=[ScopesEnum.USERS_CREATE_USER.name]
     ),
     user_data: CreateUserRequestModel = Depends(CreateUserRolesDependency()),
     user_service: UserService = Depends(),
@@ -67,9 +67,9 @@ async def create_users(
 @router.patch(
     "/{user_id}/", response_model=UserResponseModel, status_code=status.HTTP_200_OK
 )
-async def update_users(
+async def update_user(
     _: CurrentUserModel = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.USERS_UPDATE_USERS.name]
+        StrictAuthorization(), scopes=[ScopesEnum.USERS_UPDATE_USER.name]
     ),
     user_id: ObjectId = Depends(UserUpdateDependency()),
     user_data: UpdateUserRequestModel = Depends(UpdateUserRolesDependency()),
@@ -91,9 +91,9 @@ async def update_users(
 
 
 @router.delete("/{user_id}/", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_users(
+async def delete_user(
     _: CurrentUserModel = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.USERS_DELETE_USERS.name]
+        StrictAuthorization(), scopes=[ScopesEnum.USERS_DELETE_USER.name]
     ),
     user_id: ObjectId = Depends(UserDeleteDependency()),
     user_service: UserService = Depends(),

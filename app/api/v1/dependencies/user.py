@@ -3,13 +3,13 @@
 from bson import ObjectId
 from fastapi import Depends, HTTPException, Request, status
 
-from app.api.v1.models.users import (
+from app.api.v1.models.user import (
     CreateUserRequestModel,
     UpdateUserRequestModel,
 )
-from app.api.v1.services.users import UserService
+from app.api.v1.services.user import UserService
 from app.api.v1.validators import ObjectIDValidator
-from app.api.v1.validators.users import (
+from app.api.v1.validators.user import (
     DeletedUserValidator,
     RolesValidator,
     UserSpecificValidator,

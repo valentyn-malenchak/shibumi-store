@@ -17,9 +17,9 @@ from app.api.v1.auth.jwt import JWT
 from app.api.v1.auth.password import Password
 from app.api.v1.constants import ScopesEnum
 from app.api.v1.models.auth import TokenPayloadModel
-from app.api.v1.models.users import CurrentUserModel
-from app.api.v1.services.roles_scopes import RoleScopeService
-from app.api.v1.services.users import UserService
+from app.api.v1.models.user import CurrentUserModel
+from app.api.v1.services.role_scopes import RoleScopesService
+from app.api.v1.services.user import UserService
 from app.constants import HTTPErrorMessagesEnum
 from app.exceptions import ExpiredTokenError, InvalidTokenError
 
@@ -31,14 +31,14 @@ class Authentication:
         self,
         form_data: OAuth2PasswordRequestFormStrict = Depends(),
         user_service: UserService = Depends(),
-        role_scope_service: RoleScopeService = Depends(),
+        role_scope_service: RoleScopesService = Depends(),
     ) -> CurrentUserModel:
         """Authenticates a user using username and password.
 
         Args:
             form_data (OAuth2PasswordRequestForm): Form which contains
             username and password.
-            role_scope_service (RoleScopeService): Roles-scopes service.
+            role_scope_service (RoleScopesService): Roles-scopes service.
 
         Returns:
             CurrentUserModel: User object if token is valid and permitted scopes list.
