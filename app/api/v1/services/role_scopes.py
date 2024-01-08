@@ -1,4 +1,4 @@
-"""Module that contains roles-scopes service abstract class."""
+"""Module that contains role-scopes service abstract class."""
 
 
 from typing import Any, List
@@ -6,20 +6,20 @@ from typing import Any, List
 from bson import ObjectId
 from fastapi import Depends
 
-from app.api.v1.repositories.roles_scopes import RoleScopeRepository
+from app.api.v1.repositories.role_scopes import RoleScopesRepository
 from app.api.v1.services import BaseService
 
 
-class RoleScopeService(BaseService):
-    """Role-scope service for encapsulating business logic."""
+class RoleScopesService(BaseService):
+    """Role-scopes service for encapsulating business logic."""
 
-    def __init__(self, repository: RoleScopeRepository = Depends()) -> None:
-        """Initializes the RoleScopeService.
+    def __init__(self, repository: RoleScopesRepository = Depends()) -> None:
+        """Initializes the role-scopes service.
 
         This method sets up the MongoDB service instance for data access.
 
         Args:
-            repository (RoleScopeRepository): An instance of the User repository.
+            repository (RoleScopesRepository): An instance of the User repository.
 
         """
 

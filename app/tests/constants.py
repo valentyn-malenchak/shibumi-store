@@ -7,8 +7,8 @@ CUSTOMER_USER = dict(
     scopes=[
         ScopesEnum.AUTH_REFRESH_TOKEN.name,
         ScopesEnum.USERS_GET_ME.name,
-        ScopesEnum.USERS_UPDATE_USERS.name,
-        ScopesEnum.USERS_DELETE_USERS.name,
+        ScopesEnum.USERS_UPDATE_USER.name,
+        ScopesEnum.USERS_DELETE_USER.name,
     ],
     exp=1703194093,
 )

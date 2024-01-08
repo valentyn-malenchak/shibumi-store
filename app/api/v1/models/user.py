@@ -1,4 +1,4 @@
-"""Module that contains users domain models."""
+"""Module that contains user domain models."""
 
 from datetime import date, datetime
 from typing import List

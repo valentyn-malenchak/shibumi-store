@@ -6,7 +6,7 @@ from bson import ObjectId
 from injector import inject
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
-from app.api.v1.models.users import User
+from app.api.v1.models.user import User
 from app.api.v1.repositories import BaseRepository
 from app.services.mongo.constants import MongoCollectionsEnum
 

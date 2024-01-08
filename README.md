@@ -42,30 +42,30 @@ The project is organized with the following directory structure:
 │   │   │   │   └── password.py                # Password handler
 │   │   │   ├── dependencies                   # Domain dependencies
 │   │   │   │   ├── __init__.py
-│   │   │   │   ├── users.py
+│   │   │   │   ├── user.py
 │   │   │   │   └── ...
 │   │   │   ├── models                         # Pydantic models for API and entities
 │   │   │   │   ├── __init__.py
 │   │   │   │   ├── auth.py
-│   │   │   │   ├── users.py
+│   │   │   │   ├── user.py
 │   │   │   │   └── ...
 │   │   │   ├── repositories                   # Database entities interactions used in services
 │   │   │   │   ├── __init__.py
-│   │   │   │   ├── users.py
+│   │   │   │   ├── user.py
 │   │   │   │   └── ...
 │   │   │   ├── routers                        # API route handlers
 │   │   │   │   ├── __init__.py
 │   │   │   │   ├── auth.py
 │   │   │   │   ├── health.py
-│   │   │   │   ├── users.py
+│   │   │   │   ├── user.py
 │   │   │   │   └── ...
 │   │   │   ├── validators                     # Validators for request data
 │   │   │   │   ├── __init__.py
-│   │   │   │   ├── users.py
+│   │   │   │   ├── user.py
 │   │   │   │   └── ...
 │   │   │   ├── services                       # API business logic which uses interactions from repositories and auth   
 │   │   │   │   ├── __init__.py
-│   │   │   │   ├── users.py
+│   │   │   │   ├── user.py
 │   │   │   │   └── ...
 │   │   │   ├── __init__.py                    # Collects API routes
 │   │   │   └── constants.py                   # Constants for API v1
@@ -88,7 +88,7 @@ The project is organized with the following directory structure:
 │   │   │   │   ├── __init__.py
 │   │   │   │   ├── test_auth.py
 │   │   │   │   ├── test_health.py
-│   │   │   │   ├── test_users.py
+│   │   │   │   ├── test_user.py
 │   │   │   │   └── ...
 │   │   │   └── __init__.py
 │   │   ├── fixtures                           # Handler JSON file fixtures

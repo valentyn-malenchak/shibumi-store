@@ -4,17 +4,15 @@
 import arrow
 from bson import ObjectId
 from fastapi import Depends, HTTPException, status
-from injector import inject
 from pymongo.errors import DuplicateKeyError
 
 from app.api.v1.auth.password import Password
-from app.api.v1.models.users import CreateUserRequestModel, UpdateUserRequestModel, User
-from app.api.v1.repositories.users import UserRepository
+from app.api.v1.models.user import CreateUserRequestModel, UpdateUserRequestModel, User
+from app.api.v1.repositories.user import UserRepository
 from app.api.v1.services import BaseService
 from app.constants import HTTPErrorMessagesEnum
 
 
-@inject
 class UserService(BaseService):
     """User service for encapsulating business logic."""
 
