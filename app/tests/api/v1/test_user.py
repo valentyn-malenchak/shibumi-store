@@ -1252,3 +1252,243 @@ class TestUser(BaseTest):
         assert response.json() == {
             "detail": HTTPErrorMessagesEnum.INVALID_IDENTIFIER.value
         }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_get_users_list(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get users list."""
+
+        response = await test_client.get(
+            "/users/",
+            params={"page": 1, "page_size": 3},
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "data": [
+                {
+                    "id": "65844f12b6de26578d98c2c8",
+                    "first_name": "John",
+                    "last_name": "Smith",
+                    "patronymic_name": None,
+                    "username": "john.smith",
+                    "email": "john.smith@gmail.com",
+                    "phone_number": "+380981111111",
+                    "birthdate": "1998-01-01",
+                    "roles": ["CUSTOMER"],
+                    "deleted": False,
+                    "created_at": "2023-12-30T13:25:43.895000",
+                    "updated_at": None,
+                },
+                {
+                    "id": "6598495fdf97a8e0d7e612ae",
+                    "first_name": "Bruce",
+                    "last_name": "Wayne",
+                    "patronymic_name": None,
+                    "username": "bruce.wayne",
+                    "email": "bruce_wayne@gmail.com",
+                    "phone_number": "+111111111111",
+                    "birthdate": "1939-03-30",
+                    "roles": ["CUSTOMER"],
+                    "deleted": False,
+                    "created_at": "2023-11-11T13:25:43.895000",
+                    "updated_at": None,
+                },
+                {
+                    "id": "659ac89bfe61d8332f6be4c4",
+                    "first_name": "Sheila",
+                    "last_name": "Fahey",
+                    "patronymic_name": None,
+                    "username": "sheila.fahey",
+                    "email": "sheila.fahey@gmail.com",
+                    "phone_number": "+111111111114",
+                    "birthdate": "1994-11-14",
+                    "roles": ["CONTENT_MANAGER"],
+                    "deleted": True,
+                    "created_at": "2024-01-07T13:25:43.895000",
+                    "updated_at": None,
+                },
+            ],
+            "total": 5,
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_get_users_list_with_filters(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get users list with filters."""
+
+        response = await test_client.get(
+            "/users/",
+            params={
+                "page": 1,
+                "page_size": 1,
+                "deleted": False,
+                "roles": ["Support", "Warehouse stuff"],
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "data": [
+                {
+                    "id": "659bf67868d14b47475ec11c",
+                    "first_name": "Anya",
+                    "last_name": "Schoen",
+                    "patronymic_name": None,
+                    "username": "anya.schoen",
+                    "email": "anya_schoen@gmail.com",
+                    "phone_number": "+123111111111",
+                    "birthdate": "1994-08-04",
+                    "roles": ["SUPPORT", "CONTENT_MANAGER"],
+                    "deleted": False,
+                    "created_at": "2024-01-08T13:25:43.895000",
+                    "updated_at": None,
+                }
+            ],
+            "total": 2,
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_get_users_list_with_search(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get users list with search."""
+
+        response = await test_client.get(
+            "/users/",
+            params={"page": 1, "page_size": 1, "search": "anya"},
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "data": [
+                {
+                    "id": "659bf67868d14b47475ec11c",
+                    "first_name": "Anya",
+                    "last_name": "Schoen",
+                    "patronymic_name": None,
+                    "username": "anya.schoen",
+                    "email": "anya_schoen@gmail.com",
+                    "phone_number": "+123111111111",
+                    "birthdate": "1994-08-04",
+                    "roles": ["SUPPORT", "CONTENT_MANAGER"],
+                    "deleted": False,
+                    "created_at": "2024-01-08T13:25:43.895000",
+                    "updated_at": None,
+                }
+            ],
+            "total": 1,
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_get_users_list_with_sorting(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get users list with sorting."""
+
+        response = await test_client.get(
+            "/users/",
+            params={
+                "page": 1,
+                "page_size": 1,
+                "sort_by": "first_name",
+                "sort_order": "desc",
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "data": [
+                {
+                    "id": "659ac89bfe61d8332f6be4c4",
+                    "first_name": "Sheila",
+                    "last_name": "Fahey",
+                    "patronymic_name": None,
+                    "username": "sheila.fahey",
+                    "email": "sheila.fahey@gmail.com",
+                    "phone_number": "+111111111114",
+                    "birthdate": "1994-11-14",
+                    "roles": ["CONTENT_MANAGER"],
+                    "deleted": True,
+                    "created_at": "2024-01-07T13:25:43.895000",
+                    "updated_at": None,
+                }
+            ],
+            "total": 5,
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_get_users_list_validate_query_params(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get users list in case query parameters are invalid."""
+
+        response = await test_client.get(
+            "/users/",
+            params={
+                "roles": ["Any"],
+                "deleted": "yes",
+                "sort_by": "random_field",
+                "sort_order": "any",
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            (
+                "enum",
+                ["query", "roles", 0],
+                "Input should be 'Customer', 'Support', 'Warehouse stuff', "
+                "'Content manager', 'Marketing manager' or 'Admin'",
+            ),
+            ("enum", ["query", "sort_order"], "Input should be 'asc' or 'desc'"),
+            ("missing", ["query", "page"], "Field required"),
+            ("missing", ["query", "page_size"], "Field required"),
+        ]
+
+    @pytest.mark.asyncio
+    async def test_get_users_list_no_token(self, test_client: AsyncClient) -> None:
+        """Test get users list in case there is no token."""
+
+        response = await test_client.get("/users/", params={"page": 1, "page_size": 20})
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED.value}
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_get_users_list_no_scope(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get users list in case user does not have a scope."""
+
+        response = await test_client.get(
+            "/users/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.PERMISSION_DENIED.value
+        }

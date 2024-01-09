@@ -1,13 +1,57 @@
 """Module that contains base service abstract class."""
 
 import abc
-from typing import Any
+from typing import Any, List
 
 from bson import ObjectId
+
+from app.api.v1.models import PaginationModel, SearchModel, SortingModel
 
 
 class BaseService(abc.ABC):
     """Base service for encapsulating business logic."""
+
+    @abc.abstractmethod
+    async def get_items(
+        self,
+        filter_: Any,
+        search: SearchModel,
+        sorting: SortingModel,
+        pagination: PaginationModel,
+    ) -> List[Any]:
+        """Retrieves a list of items based on parameters.
+
+        Args:
+            filter_ (Any): Parameters for list filtering.
+            search (SearchModel): Parameters for list searching.
+            sorting (SortingModel): Parameters for sorting.
+            pagination (PaginationModel): Parameters for pagination.
+
+        Returns:
+            List[Any]: The retrieved list of items.
+
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses.
+
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def count_documents(self, filter_: Any, search: SearchModel) -> int:
+        """Counts documents based on parameters.
+
+        Args:
+            filter_ (Any): Parameters for list filtering.
+            search (SearchModel): Parameters for list searching.
+
+        Returns:
+            int: Count of documents.
+
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses.
+
+        """
+        raise NotImplementedError
 
     @abc.abstractmethod
     async def get_item_by_id(self, id_: ObjectId) -> Any:

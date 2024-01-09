@@ -60,3 +60,13 @@ class ValidationErrorMessagesEnum(Enum):
         "Username must contain only alphanumeric characters, "
         "hyphen, underscore, or dot."
     )
+
+
+PAGINATION_MAX_PAGE_SIZE = 100
+
+
+class SortingTypesEnum(Enum):
+    """Sorting types enumerate."""
+
+    ASC = "asc"
+    DESC = "desc"

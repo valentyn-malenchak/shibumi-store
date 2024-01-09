@@ -3,7 +3,7 @@
 from string import punctuation
 from typing import Annotated, Any
 
-from pydantic import BaseModel, BeforeValidator, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, BeforeValidator, ConfigDict, Field
 from pydantic_core import PydanticCustomError, core_schema
 from pydantic_extra_types.phone_numbers import PhoneNumber as PydanticPhoneNumber
 
@@ -19,7 +19,9 @@ from app.constants import (
 class ObjectId(BaseModel):
     """Model that handles BSON ObjectID."""
 
-    id: Annotated[str, BeforeValidator(str)] = Field(alias="_id")
+    id: Annotated[str, BeforeValidator(str)] = Field(
+        validation_alias=AliasChoices("_id", "id")
+    )
 
 
 class ImmutableModel(BaseModel):

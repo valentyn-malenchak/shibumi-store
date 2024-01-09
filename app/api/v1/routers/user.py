@@ -1,6 +1,8 @@
 """Module that contains user domain routers."""
 
 
+from typing import Any, Dict
+
 from bson import ObjectId
 from fastapi import APIRouter, Depends, Security, status
 
@@ -13,12 +15,15 @@ from app.api.v1.dependencies.user import (
     UserGetDependency,
     UserUpdateDependency,
 )
+from app.api.v1.models import PaginationModel, SearchModel, SortingModel
 from app.api.v1.models.user import (
     CreateUserRequestModel,
     CurrentUserModel,
     UpdateUserRequestModel,
     User,
     UserResponseModel,
+    UsersFilterModel,
+    UsersListModel,
 )
 from app.api.v1.services.user import UserService
 
@@ -43,11 +48,45 @@ async def get_user_me(
     return current_user.object
 
 
+@router.get("/", response_model=UsersListModel, status_code=status.HTTP_200_OK)
+async def get_users(
+    _: CurrentUserModel = Security(
+        StrictAuthorization(), scopes=[ScopesEnum.USERS_GET_USERS.name]
+    ),
+    filter_: UsersFilterModel = Depends(),
+    search: SearchModel = Depends(),
+    sorting: SortingModel = Depends(),
+    pagination: PaginationModel = Depends(),
+    user_service: UserService = Depends(),
+) -> Dict[str, Any]:
+    """API which returns users list.
+
+    Args:
+        filter_ (UsersFilterModel): Parameters for list filtering.
+        search (SearchModel): Parameters for list searching.
+        sorting (SortingModel): Parameters for sorting.
+        pagination (PaginationModel): Parameters for pagination.
+        _: Current user object.
+        user_service (UserService): User service.
+
+    Returns:
+        UsersListModel: List of user object.
+
+    """
+
+    return dict(
+        data=await user_service.get_items(
+            filter_=filter_, search=search, sorting=sorting, pagination=pagination
+        ),
+        total=await user_service.count_documents(filter_=filter_, search=search),
+    )
+
+
 @router.get(
     "/{user_id}/", response_model=UserResponseModel, status_code=status.HTTP_200_OK
 )
 async def get_user(
-    _: CurrentUserModel | None = Security(
+    _: CurrentUserModel = Security(
         StrictAuthorization(), scopes=[ScopesEnum.USERS_GET_USER.name]
     ),
     user_id: ObjectId = Depends(UserGetDependency()),

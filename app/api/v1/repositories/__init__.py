@@ -1,12 +1,13 @@
 """Module that contains base repository abstract class."""
 
 import abc
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Mapping
 
 from bson import ObjectId
 from fastapi import Depends
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
+from app.constants import SortingTypesEnum
 from app.services.mongo.service import MongoDBService
 
 
@@ -25,6 +26,108 @@ class BaseRepository(abc.ABC):
 
         """
         self._mongo_service = mongo_service
+
+    @abc.abstractmethod
+    async def get_items(  # noqa: PLR0913
+        self,
+        search: str | None,
+        sort_by: str | None,
+        sort_order: SortingTypesEnum,
+        page: int,
+        page_size: int,
+        *args: Any,
+    ) -> List[Any]:
+        """Retrieves a list of items based on parameters.
+
+        Args:
+            search (str | None): Parameters for list searching.
+            sort_by (str | None): Specifies a field for sorting.
+            sort_order (SortingTypesEnum): Defines sort order - ascending or descending.
+            page (int): Page number.
+            page_size (int): Number of items on each page.
+            args (Any): Parameters for list filtering.
+
+        Returns:
+            List[Any]: The retrieved list of items.
+
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses.
+
+        """
+        raise NotImplementedError
+
+    @staticmethod
+    def _calculate_skip(page: int, page_size: int) -> int:
+        """Calculates count of items to skip for reaching page.
+
+        Args:
+            page (int): Page number.
+            page_size (int): Number of items on each page.
+
+        Returns:
+            int: Skip number.
+
+        """
+        return (page - 1) * page_size
+
+    @staticmethod
+    @abc.abstractmethod
+    def _get_list_query_filter(
+        search: str | None, *args: Any
+    ) -> Mapping[str, Any] | None:
+        """Gets a list query filter.
+
+        Args:
+            search (str | None): Parameters for list searching.
+            args (Any): Parameters for list filtering.
+
+        Returns:
+            (Mapping[str, Any] | None): List query filter.
+
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses.
+
+        """
+        raise NotImplementedError
+
+    @staticmethod
+    def _get_list_sorting(
+        sort_by: str | None, sort_order: SortingTypesEnum
+    ) -> List[tuple[str, int]] | None:
+        """Gets list sorting depends on parameters.
+
+        Args:
+            sort_by (str | None): Specifies a field for sorting.
+            sort_order (SortingTypesEnum): Defines sort order - ascending or descending.
+
+        Returns:
+            (List[tuple[str, int]] | None): Sorting.
+
+        """
+        sort_value = 1 if sort_order == SortingTypesEnum.ASC else -1
+
+        return [(sort_by, sort_value)] if sort_by else None
+
+    @abc.abstractmethod
+    async def count_documents(
+        self,
+        search: str | None,
+        *args: Any,
+    ) -> int:
+        """Counts documents based on parameters.
+
+        Args:
+            search (str | None): Parameters for list searching.
+            args (Any): Parameters for list filtering.
+
+        Returns:
+            int: Count of documents.
+
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses.
+
+        """
+        raise NotImplementedError
 
     @abc.abstractmethod
     async def get_item_by_id(

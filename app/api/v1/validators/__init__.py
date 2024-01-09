@@ -18,7 +18,7 @@ class BaseValidator(abc.ABC):
         """Validates data.
 
         Args:
-            *args (Any): Method arguments.
+            args (Any): Method arguments.
 
         Raises:
             NotImplementedError: This method must be implemented by subclasses.

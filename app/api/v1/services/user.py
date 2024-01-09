@@ -1,13 +1,21 @@
 """Module that contains user service abstract class."""
 
 
+from typing import Any, List, Mapping
+
 import arrow
 from bson import ObjectId
 from fastapi import Depends, HTTPException, status
 from pymongo.errors import DuplicateKeyError
 
 from app.api.v1.auth.password import Password
-from app.api.v1.models.user import CreateUserRequestModel, UpdateUserRequestModel, User
+from app.api.v1.models import PaginationModel, SearchModel, SortingModel
+from app.api.v1.models.user import (
+    CreateUserRequestModel,
+    UpdateUserRequestModel,
+    User,
+    UsersFilterModel,
+)
 from app.api.v1.repositories.user import UserRepository
 from app.api.v1.services import BaseService
 from app.constants import HTTPErrorMessagesEnum
@@ -27,6 +35,56 @@ class UserService(BaseService):
         """
 
         self.repository = repository
+
+    async def get_items(
+        self,
+        filter_: UsersFilterModel,
+        search: SearchModel,
+        sorting: SortingModel,
+        pagination: PaginationModel,
+    ) -> List[Mapping[str, Any]]:
+        """Retrieves a list of users based on parameters.
+
+        Args:
+            filter_ (UsersFilterModel): Parameters for list filtering.
+            search (SearchModel): Parameters for list searching.
+            sorting (SortingModel): Parameters for sorting.
+            pagination (PaginationModel): Parameters for pagination.
+
+        Returns:
+            List[Mapping[str, Any]]: The retrieved list of users.
+
+        """
+
+        return await self.repository.get_items(
+            search=search.search,
+            sort_by=sorting.sort_by,
+            sort_order=sorting.sort_order,
+            page=pagination.page,
+            page_size=pagination.page_size,
+            roles=[role.name for role in filter_.roles],
+            deleted=filter_.deleted,
+        )
+
+    async def count_documents(
+        self, filter_: UsersFilterModel, search: SearchModel
+    ) -> int:
+        """Counts documents based on parameters.
+
+        Args:
+            filter_ (UsersFilterModel): Parameters for list filtering.
+            search (SearchModel): Parameters for list searching.
+
+        Returns:
+            int: Count of documents.
+
+        """
+
+        return await self.repository.count_documents(
+            search=search.search,
+            roles=[role.name for role in filter_.roles],
+            deleted=filter_.deleted,
+        )
 
     async def get_item_by_id(self, id_: ObjectId) -> User | None:
         """Retrieves an item by its unique identifier.
