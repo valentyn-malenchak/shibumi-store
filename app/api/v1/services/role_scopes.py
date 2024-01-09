@@ -6,6 +6,7 @@ from typing import Any, List
 from bson import ObjectId
 from fastapi import Depends
 
+from app.api.v1.models import PaginationModel, SearchModel, SortingModel
 from app.api.v1.repositories.role_scopes import RoleScopesRepository
 from app.api.v1.services import BaseService
 
@@ -24,6 +25,46 @@ class RoleScopesService(BaseService):
         """
 
         self.repository = repository
+
+    async def get_items(
+        self,
+        filter_: Any,
+        search: SearchModel,
+        sorting: SortingModel,
+        pagination: PaginationModel,
+    ) -> List[Any]:
+        """Retrieves a list of roles-scopes based on parameters.
+
+        Args:
+            filter_ (Any): Parameters for list filtering.
+            search (SearchModel): Parameters for list searching.
+            sorting (SortingModel): Parameters for sorting.
+            pagination (PaginationModel): Parameters for pagination.
+
+        Returns:
+            List[Any]: The retrieved list of roles-scopes.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
+    async def count_documents(self, filter_: Any, search: SearchModel) -> int:
+        """Counts documents based on parameters.
+
+        Args:
+            filter_ (Any): Parameters for list filtering.
+            search (SearchModel): Parameters for list searching.
+
+        Returns:
+            int: Count of documents.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
 
     async def get_item_by_id(self, id_: ObjectId) -> Any:
         """Retrieves a role-scopes by its unique identifier.

@@ -46,6 +46,77 @@ class MongoDBService(BaseService):
         """
         return self._db[collection]
 
+    async def find(  # noqa: PLR0913
+        self,
+        collection: str,
+        filter_: Mapping[str, Any] | None = None,
+        sort: Sequence[tuple[str, int | str | Mapping[str, Any]]] | None = None,
+        skip: int | None = None,
+        limit: int | None = None,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+    ) -> List[Mapping[str, Any]]:
+        """
+        Finds documents that satisfy the specified query criteria in the chosen
+        collection.
+
+        Args:
+            collection (str): Collection name.
+            filter_ (Mapping[str, Any] | None): Specifies query selection
+            criteria. Defaults to None.
+            sort (Sequence[tuple[str, int | str | Mapping[str, Any]]] | None):
+            Specifies the order in which the query returns matching documents.
+            Defaults to None.
+            skip (int | None): The number of documents to skip in the results set.
+            Defaults to None.
+            limit (int | None): Specifies the maximum number of documents will be
+            returned. Defaults to None.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            List[Mapping[str, Any]]: List of documents.
+
+        """
+
+        collection_ = self._get_collection_by_name(collection=collection)
+
+        cursor = collection_.find(filter=filter_, session=session)
+
+        if sort:
+            cursor = cursor.sort(sort)
+
+        if skip is not None:
+            cursor = cursor.skip(skip)
+
+        if limit is not None:
+            cursor = cursor.limit(limit)
+
+        return await cursor.to_list(length=limit)
+
+    async def count_documents(
+        self, collection: str, filter_: Mapping[str, Any] | None = None
+    ) -> int:
+        """Counts documents in the chosen collection.
+
+        Args:
+            collection (str): Collection name.
+            filter_ (Mapping[str, Any] | None): Specifies query selection
+            criteria. Defaults to None.
+
+        Returns:
+            int: Count of documents.
+
+        """
+
+        collection_ = self._get_collection_by_name(collection=collection)
+
+        return (
+            await collection_.count_documents(filter=filter_)
+            if filter_ is not None
+            else await collection_.count_documents(filter={})
+        )
+
     async def find_one(
         self,
         collection: str,
@@ -54,8 +125,8 @@ class MongoDBService(BaseService):
         session: AsyncIOMotorClientSession | None = None,
     ) -> Mapping[str, Any] | None:
         """
-        Finds one document that satisfies the specified query
-        criteria on chosen the collection.
+        Finds one document that satisfies the specified query criteria in the chosen
+        collection.
 
         Args:
             collection (str): Collection name.
@@ -79,7 +150,7 @@ class MongoDBService(BaseService):
         *,
         session: AsyncIOMotorClientSession | None = None,
     ) -> Any:
-        """Inserts a document for chosen collection.
+        """Inserts a document in the chosen collection.
 
         Args:
             collection (str): Collection name.
@@ -106,7 +177,7 @@ class MongoDBService(BaseService):
         *,
         session: AsyncIOMotorClientSession | None = None,
     ) -> List[Any]:
-        """Inserts multiple documents in bulk for chosen collection.
+        """Inserts multiple documents in bulk in the chosen collection.
 
         Args:
             collection (str): Collection name.
@@ -134,7 +205,7 @@ class MongoDBService(BaseService):
         *,
         session: AsyncIOMotorClientSession | None = None,
     ) -> None:
-        """Updates a document for chosen collection.
+        """Updates a document in the chosen collection.
 
         Args:
             collection (str): Collection name.
@@ -152,7 +223,7 @@ class MongoDBService(BaseService):
     async def delete_many(
         self, collection: str, *, session: AsyncIOMotorClientSession | None = None
     ) -> None:
-        """Deletes all documents from collection.
+        """Deletes all documents from the chosen collection.
 
         Args:
             collection (str): Collection name.
@@ -174,7 +245,7 @@ class MongoDBService(BaseService):
         cursor_length: int | None = None,
     ) -> List[Mapping[str, Any]]:
         """
-        Aggregates a pipeline on chosen collection.
+        Aggregates a pipeline in the chosen collection.
 
         Args:
             collection (str): Collection name.

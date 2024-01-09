@@ -3,9 +3,11 @@
 from datetime import date, datetime
 from typing import List
 
-from pydantic import BaseModel, EmailStr
+from fastapi import Query
+from pydantic import BaseModel, EmailStr, Field
 
 from app.api.v1.constants import RolesEnum
+from app.api.v1.models import ListResponseModel
 from app.utils.pydantic import ObjectId, PasswordPolicy, PhoneNumber, UsernamePolicy
 
 
@@ -38,10 +40,9 @@ class CurrentUserModel(BaseModel):
     scopes: List[str]
 
 
-class UserResponseModel(BaseModel):
+class UserResponseModel(ObjectId):
     """User response model."""
 
-    id: str
     first_name: str
     last_name: str
     patronymic_name: str | None
@@ -53,6 +54,19 @@ class UserResponseModel(BaseModel):
     deleted: bool
     created_at: datetime
     updated_at: datetime | None
+
+
+class UsersFilterModel(BaseModel):
+    """Users list filter model."""
+
+    roles: List[RolesEnum] = Field(Query([]))
+    deleted: bool | None = None
+
+
+class UsersListModel(ListResponseModel):
+    """Users list model."""
+
+    data: List[UserResponseModel]
 
 
 class CreateUserRequestModel(BaseModel):

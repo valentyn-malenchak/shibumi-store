@@ -1,6 +1,6 @@
 """Module that contains user repository class."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Mapping
 
 from bson import ObjectId
 from injector import inject
@@ -8,6 +8,7 @@ from motor.motor_asyncio import AsyncIOMotorClientSession
 
 from app.api.v1.models.user import User
 from app.api.v1.repositories import BaseRepository
+from app.constants import SortingTypesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
 
 
@@ -16,6 +17,99 @@ class UserRepository(BaseRepository):
     """User repository for handling data access operations."""
 
     _collection_name: str = MongoCollectionsEnum.USERS.value
+
+    async def get_items(  # noqa: PLR0913
+        self,
+        search: str | None,
+        sort_by: str | None,
+        sort_order: SortingTypesEnum,
+        page: int,
+        page_size: int,
+        *_: Any,
+        roles: List[str] | None = None,
+        deleted: bool | None = None,
+    ) -> List[Mapping[str, Any]]:
+        """Retrieves a list of users based on parameters.
+
+        Args:
+            search (str | None): Parameters for list searching.
+            sort_by (str | None): Specifies a field for sorting.
+            sort_order (SortingTypesEnum): Defines sort order - ascending or descending.
+            page (int): Page number.
+            page_size (int): Number of items on each page.
+            _ (Any): Parameters for list filtering.
+            roles (List[str] | None): List of roles for filtering. Defaults to None.
+            deleted (bool | None): Deleted status filtering. Defaults to None.
+
+        Returns:
+            List[Mapping[str, Any]]: The retrieved list of users.
+
+        """
+
+        return await self._mongo_service.find(
+            collection=self._collection_name,
+            filter_=self._get_list_query_filter(
+                search=search, roles=roles, deleted=deleted
+            ),
+            sort=self._get_list_sorting(sort_by=sort_by, sort_order=sort_order),
+            skip=self._calculate_skip(page=page, page_size=page_size),
+            limit=page_size,
+        )
+
+    @staticmethod
+    def _get_list_query_filter(
+        search: str | None,
+        *_: Any,
+        roles: List[str] | None = None,
+        deleted: bool | None = None,
+    ) -> Mapping[str, Any] | None:
+        """Gets a list query filter.
+
+        Args:
+            search (str | None): Parameters for list searching.
+            _ (Any): Parameters for list filtering.
+            roles (List[str] | None): List of roles for filtering. Defaults to None.
+            deleted (bool | None): Deleted status filtering. Defaults to None.
+
+        Returns:
+            (Mapping[str, Any] | None): List query filter.
+
+        """
+
+        query_filter = {
+            "roles": {"$in": roles} if roles else None,
+            "deleted": deleted,
+            "$text": {"$search": search} if search else None,
+        }
+
+        return {key: value for key, value in query_filter.items() if value is not None}
+
+    async def count_documents(
+        self,
+        search: str | None,
+        *_: Any,
+        roles: List[str] | None = None,
+        deleted: bool | None = None,
+    ) -> int:
+        """Counts documents based on parameters.
+
+        Args:
+            search (str | None): Parameters for list searching.
+            _ (Any): Parameters for list filtering.
+            roles (List[str] | None): List of roles for filtering. Defaults to None.
+            deleted (bool | None): Deleted status filtering. Defaults to None.
+
+
+        Returns:
+            int: Count of documents.
+
+        """
+        return await self._mongo_service.count_documents(
+            collection=self._collection_name,
+            filter_=self._get_list_query_filter(
+                search=search, roles=roles, deleted=deleted
+            ),
+        )
 
     async def get_item_by_id(
         self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
