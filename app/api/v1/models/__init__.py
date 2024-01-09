@@ -23,7 +23,6 @@ class PaginationModel(BaseModel):
 class SortingModel(BaseModel):
     """Sorting model for lists."""
 
-    # TODO: add fields list
     sort_by: str | None = None
     sort_order: SortingTypesEnum = SortingTypesEnum.ASC
 

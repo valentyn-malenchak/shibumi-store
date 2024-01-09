@@ -49,10 +49,10 @@ class MongoDBService(BaseService):
     async def find(  # noqa: PLR0913
         self,
         collection: str,
+        skip: int,
+        limit: int,
         filter_: Mapping[str, Any] | None = None,
         sort: Sequence[tuple[str, int | str | Mapping[str, Any]]] | None = None,
-        skip: int | None = None,
-        limit: int | None = None,
         *,
         session: AsyncIOMotorClientSession | None = None,
     ) -> List[Mapping[str, Any]]:
@@ -62,15 +62,14 @@ class MongoDBService(BaseService):
 
         Args:
             collection (str): Collection name.
+            skip (int): The number of documents to skip in the results set.
+            limit (int): Specifies the maximum number of documents will be
+            returned.
             filter_ (Mapping[str, Any] | None): Specifies query selection
             criteria. Defaults to None.
             sort (Sequence[tuple[str, int | str | Mapping[str, Any]]] | None):
             Specifies the order in which the query returns matching documents.
             Defaults to None.
-            skip (int | None): The number of documents to skip in the results set.
-            Defaults to None.
-            limit (int | None): Specifies the maximum number of documents will be
-            returned. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
@@ -86,13 +85,7 @@ class MongoDBService(BaseService):
         if sort:
             cursor = cursor.sort(sort)
 
-        if skip is not None:
-            cursor = cursor.skip(skip)
-
-        if limit is not None:
-            cursor = cursor.limit(limit)
-
-        return await cursor.to_list(length=limit)
+        return await cursor.skip(skip).limit(limit).to_list(length=limit)
 
     async def count_documents(
         self, collection: str, filter_: Mapping[str, Any] | None = None

@@ -104,11 +104,9 @@ class BaseRepository(abc.ABC):
             (List[tuple[str, int]] | None): Sorting.
 
         """
-        return (
-            [(sort_by, 1 if sort_order == SortingTypesEnum.ASC else -1)]
-            if sort_by
-            else None
-        )
+        sort_value = 1 if sort_order == SortingTypesEnum.ASC else -1
+
+        return [(sort_by, sort_value)] if sort_by else None
 
     @abc.abstractmethod
     async def count_documents(
