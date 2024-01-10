@@ -48,8 +48,14 @@ class TestAuth(BaseTest):
             "refresh_token",
             "token_type",
         }
-        # Temporary if scope is not requested, it will be empty
-        assert JWT.decode_token(response.json()["access_token"]).scopes == []
+        # If scope is not requested returns all permitted
+        assert set(JWT.decode_token(response.json()["access_token"]).scopes) == {
+            ScopesEnum.AUTH_REFRESH_TOKEN.name,
+            ScopesEnum.USERS_GET_ME.name,
+            ScopesEnum.USERS_UPDATE_USER.name,
+            ScopesEnum.USERS_UPDATE_USER_PASSWORD.name,
+            ScopesEnum.USERS_DELETE_USER.name,
+        }
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
