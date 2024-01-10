@@ -12,7 +12,8 @@ from app.api.v1.dependencies.user import (
     CreateUserRolesDependency,
     UpdateUserRolesDependency,
     UserDeleteDependency,
-    UserGetDependency,
+    UserDependency,
+    UserPasswordUpdateDependency,
     UserUpdateDependency,
 )
 from app.api.v1.models import PaginationModel, SearchModel, SortingModel
@@ -21,6 +22,7 @@ from app.api.v1.models.user import (
     CurrentUserModel,
     UpdateUserRequestModel,
     User,
+    UserPasswordUpdateModel,
     UserResponseModel,
     UsersFilterModel,
     UsersListModel,
@@ -89,21 +91,19 @@ async def get_user(
     _: CurrentUserModel = Security(
         StrictAuthorization(), scopes=[ScopesEnum.USERS_GET_USER.name]
     ),
-    user_id: ObjectId = Depends(UserGetDependency()),
-    user_service: UserService = Depends(),
+    user: User = Depends(UserDependency()),
 ) -> User | None:
     """API which returns a specific user.
 
     Args:
         _: Current user object.
-        user_id (str): Identifier of user that should be returned.
-        user_service (UserService): User service.
+        user (User): User object.
 
     Returns:
-        User | None: User object.
+        User: User object.
 
     """
-    return await user_service.get_item_by_id(id_=user_id)
+    return user
 
 
 @router.post("/", response_model=UserResponseModel, status_code=status.HTTP_201_CREATED)
@@ -152,6 +152,29 @@ async def update_user(
 
     """
     return await user_service.update_item_by_id(id_=user_id, item=user_data)
+
+
+@router.patch("/{user_id}/password/", status_code=status.HTTP_204_NO_CONTENT)
+async def update_user_password(
+    _: CurrentUserModel = Security(
+        StrictAuthorization(), scopes=[ScopesEnum.USERS_UPDATE_USER_PASSWORD.name]
+    ),
+    user: User = Depends(UserDependency()),
+    password: UserPasswordUpdateModel = Depends(UserPasswordUpdateDependency()),
+    user_service: UserService = Depends(),
+) -> None:
+    """API which updates a user password.
+
+    Args:
+        _: Current user object.
+        user (User): User object.
+        password (UserPasswordUpdateModel): Old and new passwords.
+        user_service (UserService): User service.
+
+    """
+    return await user_service.update_item_password(
+        id_=user.id, password=password.new_password
+    )
 
 
 @router.delete("/{user_id}/", status_code=status.HTTP_204_NO_CONTENT)

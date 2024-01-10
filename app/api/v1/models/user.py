@@ -7,11 +7,15 @@ from fastapi import Query
 from pydantic import BaseModel, EmailStr, Field
 
 from app.api.v1.constants import RolesEnum
-from app.api.v1.models import ListResponseModel
-from app.utils.pydantic import ObjectId, PasswordPolicy, PhoneNumber, UsernamePolicy
+from app.api.v1.models import ListResponseModel, ObjectIdModel
+from app.utils.pydantic import (
+    PasswordPolicy,
+    PhoneNumber,
+    UsernamePolicy,
+)
 
 
-class User(ObjectId):
+class User(ObjectIdModel):
     """User model."""
 
     first_name: str
@@ -40,7 +44,7 @@ class CurrentUserModel(BaseModel):
     scopes: List[str]
 
 
-class UserResponseModel(ObjectId):
+class UserResponseModel(ObjectIdModel):
     """User response model."""
 
     first_name: str
@@ -90,7 +94,13 @@ class UpdateUserRequestModel(BaseModel):
     last_name: str
     patronymic_name: str | None
     email: EmailStr
-    password: PasswordPolicy
     phone_number: PhoneNumber
     birthdate: date
     roles: List[RolesEnum]
+
+
+class UserPasswordUpdateModel(BaseModel):
+    """User password update model."""
+
+    old_password: str
+    new_password: PasswordPolicy

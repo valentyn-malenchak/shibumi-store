@@ -238,10 +238,8 @@ class TestUser(BaseTest):
         }
 
     @pytest.mark.asyncio
-    async def test_create_user_validate_json_data(
-        self, test_client: AsyncClient
-    ) -> None:
-        """Test create user in case request json data is invalid."""
+    async def test_create_user_validate_data(self, test_client: AsyncClient) -> None:
+        """Test create user in case request data is invalid."""
 
         response = await test_client.post(
             "/users/",
@@ -633,7 +631,6 @@ class TestUser(BaseTest):
                 "last_name": "Smith",
                 "patronymic_name": "Batman",
                 "email": "john.smith+1@gmail.com",
-                "password": "John@1323",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
                 "roles": [RolesEnum.CUSTOMER.value],
@@ -672,7 +669,6 @@ class TestUser(BaseTest):
                 "last_name": "Smith",
                 "patronymic_name": "Batman",
                 "email": "john.smith+1@gmail.com",
-                "password": "John@1323",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
                 "roles": [RolesEnum.CUSTOMER.value, RolesEnum.ADMIN.value],
@@ -701,7 +697,6 @@ class TestUser(BaseTest):
                 "last_name": "Schoen",
                 "patronymic_name": None,
                 "email": "anya.schoen+1@gmail.com",
-                "password": "Anyaa@1323",
                 "phone_number": "+380980004321",
                 "birthdate": "1999-09-07",
                 "roles": [
@@ -741,14 +736,13 @@ class TestUser(BaseTest):
         """Test update user in case request json data is invalid."""
 
         response = await test_client.patch(
-            "/users/65844f12b6de26578d98c2c8/",
+            "/users/invalid-identifier/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
             json={
                 "first_name": "John",
                 "last_name": "Smith",
                 "patronymic_name": "Batman",
                 "email": "john.smith@gmail",
-                "password": "john_12!",
                 "phone_number": "+3809800000013",
                 "birthdate": "1999-12-35",
                 "roles": ["CEO"],
@@ -760,15 +754,15 @@ class TestUser(BaseTest):
             for error in response.json()["detail"]
         ] == [
             (
+                "object_id",
+                ["path", "user_id"],
+                ValidationErrorMessagesEnum.INVALID_IDENTIFIER.value,
+            ),
+            (
                 "value_error",
                 ["body", "email"],
                 "value is not a valid email address: The part after the @-sign is not "
                 "valid. It should have a period.",
-            ),
-            (
-                "string_without_uppercase_letters",
-                ["body", "password"],
-                ValidationErrorMessagesEnum.PASSWORD_WITHOUT_UPPERCASE_LETTER.value,
             ),
             (
                 "value_error",
@@ -800,7 +794,6 @@ class TestUser(BaseTest):
                 "last_name": "Smith",
                 "patronymic_name": "Batman",
                 "email": "john.smith+1@gmail.com",
-                "password": "john@1323",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
                 "roles": [RolesEnum.CUSTOMER.value],
@@ -827,7 +820,6 @@ class TestUser(BaseTest):
                 "patronymic_name": None,
                 "username": "john.smith",
                 "email": "john.smith@gmail.com",
-                "password": "Joe12345^",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
                 "roles": [RolesEnum.CUSTOMER.value],
@@ -855,7 +847,6 @@ class TestUser(BaseTest):
                 "last_name": "Smith",
                 "patronymic_name": "Batman",
                 "email": "john.smith+1@gmail.com",
-                "password": "john@1323",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
                 "roles": [RolesEnum.CUSTOMER.value],
@@ -883,7 +874,6 @@ class TestUser(BaseTest):
                 "last_name": "Smith",
                 "patronymic_name": "Batman",
                 "email": "john.smith+1@gmail.com",
-                "password": "john@1323",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
                 "roles": [RolesEnum.CUSTOMER.value],
@@ -911,7 +901,6 @@ class TestUser(BaseTest):
                 "last_name": "Smith",
                 "patronymic_name": "Batman",
                 "email": "john.smith+1@gmail.com",
-                "password": "john@1323",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
                 "roles": [RolesEnum.CUSTOMER.value],
@@ -940,7 +929,6 @@ class TestUser(BaseTest):
                 "last_name": "Langosh",
                 "patronymic_name": "Definitely not Batman",
                 "email": "frederique.langosh@gmail.com",
-                "password": "Freeedo@13223",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
                 "roles": [RolesEnum.CONTENT_MANAGER.value],
@@ -979,7 +967,6 @@ class TestUser(BaseTest):
                 "last_name": "Langosh",
                 "patronymic_name": "Definitely not Batman",
                 "email": "frederique.langosh@gmail.com",
-                "password": "Freeedo@13223",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
                 "roles": [RolesEnum.CONTENT_MANAGER.value],
@@ -991,34 +978,6 @@ class TestUser(BaseTest):
             "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
                 entity="User"
             )
-        }
-
-    @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
-    async def test_update_user_invalid_identifier(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
-        """Test update user in case of invalid identifier."""
-
-        response = await test_client.patch(
-            "/users/invalid-group-id/",
-            headers={"Authorization": f"Bearer {TEST_JWT}"},
-            json={
-                "first_name": "John",
-                "last_name": "Smith",
-                "patronymic_name": "Batman",
-                "email": "john.smith+1@gmail.com",
-                "password": "john@1323",
-                "phone_number": "+380980000001",
-                "birthdate": "1999-12-31",
-                "roles": [RolesEnum.CUSTOMER.value],
-            },
-        )
-
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-        assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.INVALID_IDENTIFIER.value
         }
 
     @pytest.mark.asyncio
@@ -1177,9 +1136,16 @@ class TestUser(BaseTest):
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-        assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.INVALID_IDENTIFIER.value
-        }
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            (
+                "object_id",
+                ["path", "user_id"],
+                ValidationErrorMessagesEnum.INVALID_IDENTIFIER.value,
+            )
+        ]
 
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
@@ -1249,8 +1215,35 @@ class TestUser(BaseTest):
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            (
+                "object_id",
+                ["path", "user_id"],
+                ValidationErrorMessagesEnum.INVALID_IDENTIFIER.value,
+            )
+        ]
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_get_user_valid_identifier_no_user(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get user in case of identifier is valid, but there is no such user."""
+
+        response = await test_client.get(
+            "/users/6598495fdf97a8e0d7e612aa/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.INVALID_IDENTIFIER.value
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+                entity="User"
+            )
         }
 
     @pytest.mark.asyncio
@@ -1491,4 +1484,168 @@ class TestUser(BaseTest):
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
             "detail": HTTPErrorMessagesEnum.PERMISSION_DENIED.value
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_update_user_password(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update user password."""
+
+        response = await test_client.patch(
+            "/users/65844f12b6de26578d98c2c8/password/",
+            json={
+                "old_password": "John1234!",
+                "new_password": "NewP@ssw0rd",
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    @pytest.mark.asyncio
+    async def test_update_user_password_no_token(
+        self, test_client: AsyncClient
+    ) -> None:
+        """Test update user password in case there is no token."""
+
+        response = await test_client.patch(
+            "/users/65844f12b6de26578d98c2c8/password/",
+            json={
+                "old_password": "John1234!",
+                "new_password": "NewP@ssw0rd",
+            },
+        )
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED.value}
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_update_user_password_no_scope(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update user password in case user does not have a scope."""
+
+        response = await test_client.patch(
+            "/users/65844f12b6de26578d98c2c8/password/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.PERMISSION_DENIED.value
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_update_user_password_validate_data(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update user password in case request data is invalid."""
+
+        response = await test_client.patch(
+            "/users/invalid-group-id/password/",
+            json={
+                "new_password": "1234!",
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            (
+                "object_id",
+                ["path", "user_id"],
+                ValidationErrorMessagesEnum.INVALID_IDENTIFIER.value,
+            ),
+            (
+                "object_id",
+                ["path", "user_id"],
+                ValidationErrorMessagesEnum.INVALID_IDENTIFIER.value,
+            ),
+            ("missing", ["body", "old_password"], "Field required"),
+            (
+                "string_too_short",
+                ["body", "new_password"],
+                "Password must contain at least eight characters.",
+            ),
+        ]
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_update_user_password_valid_identifier_no_user(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """
+        Test update user password in case of identifier is valid,
+        but there is no such user.
+        """
+
+        response = await test_client.patch(
+            "/users/6598495fdf97a8e0d7e612aa/password/",
+            json={
+                "old_password": "John1234!",
+                "new_password": "J0hn1234!@~",
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+                entity="User"
+            )
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_update_user_password_for_another_user(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update user password in case user updates for another user."""
+
+        response = await test_client.patch(
+            "/users/659bf67868d14b47475ec11c/password/",
+            json={
+                "old_password": "John1234",
+                "new_password": "J0hn1234!@~",
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.USER_ACCESS_DENIED.value
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_update_user_password_invalid_old_password(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update user password in case old password is invalid."""
+
+        response = await test_client.patch(
+            "/users/65844f12b6de26578d98c2c8/password/",
+            json={
+                "old_password": "John1234",
+                "new_password": "J0hn1234!@~",
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.PASSWORD_DOES_NOT_MATCH.value
         }

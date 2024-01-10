@@ -63,7 +63,7 @@ class UserRepository(BaseRepository):
         roles: List[str] | None = None,
         deleted: bool | None = None,
     ) -> Mapping[str, Any] | None:
-        """Gets a list query filter.
+        """Returns a list query filter.
 
         Args:
             search (str | None): Parameters for list searching.

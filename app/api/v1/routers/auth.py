@@ -36,7 +36,7 @@ async def create_tokens(
     """
 
     return JWT.encode_tokens(
-        data=TokenUserModel(id=current_user.object.id, scopes=current_user.scopes)
+        data=TokenUserModel(id=str(current_user.object.id), scopes=current_user.scopes)
     )
 
 
@@ -65,7 +65,7 @@ async def refresh_access_token(
 
     return JWT.encode_tokens(
         data=TokenUserModel(
-            id=current_user.object.id,
+            id=str(current_user.object.id),
             scopes=await role_scope_service.get_scopes_by_roles(
                 roles=current_user.object.roles
             ),

@@ -150,7 +150,7 @@ class UserService(BaseService):
     async def update_item_by_id(
         self, id_: ObjectId, item: UpdateUserRequestModel
     ) -> User | None:
-        """Updates an item by its unique identifier.
+        """Updates a user by its unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the user.
@@ -161,14 +161,10 @@ class UserService(BaseService):
 
         """
 
-        password = Password.get_password_hash(password=item.password)
-
         await self.repository.update_item_by_id(
             id_=id_,
             item={
-                # Replaces plain password on hashed one
-                **item.model_dump(exclude={"password", "roles"}),
-                "hashed_password": password,
+                **item.model_dump(exclude={"roles"}),
                 "roles": [role.name for role in item.roles],
                 "birthdate": arrow.get(item.birthdate).datetime,
                 "updated_at": arrow.utcnow().datetime,
@@ -176,6 +172,25 @@ class UserService(BaseService):
         )
 
         return await self.get_item_by_id(id_=id_)
+
+    async def update_item_password(self, id_: ObjectId, password: str) -> None:
+        """Updates user password by its unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the user.
+            password (str): Password to update.
+
+        """
+
+        password = Password.get_password_hash(password=password)
+
+        await self.repository.update_item_by_id(
+            id_=id_,
+            item={
+                "hashed_password": password,
+                "updated_at": arrow.utcnow().datetime,
+            },
+        )
 
     async def delete_item_by_id(self, id_: ObjectId) -> None:
         """Softly deletes a user by its unique identifier.

@@ -47,7 +47,7 @@ class RoleScopesRepository(BaseRepository):
     def _get_list_query_filter(
         search: str | None, *args: Any
     ) -> Mapping[str, Any] | None:
-        """Gets a list query filter.
+        """Returns a list query filter.
 
         Args:
             search (str | None): Parameters for list searching.

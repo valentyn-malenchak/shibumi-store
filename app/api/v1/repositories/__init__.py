@@ -75,7 +75,7 @@ class BaseRepository(abc.ABC):
     def _get_list_query_filter(
         search: str | None, *args: Any
     ) -> Mapping[str, Any] | None:
-        """Gets a list query filter.
+        """Returns a list query filter.
 
         Args:
             search (str | None): Parameters for list searching.
@@ -94,7 +94,7 @@ class BaseRepository(abc.ABC):
     def _get_list_sorting(
         sort_by: str | None, sort_order: SortingTypesEnum
     ) -> List[tuple[str, int]] | None:
-        """Gets list sorting depends on parameters.
+        """Returns list sorting depends on parameters.
 
         Args:
             sort_by (str | None): Specifies a field for sorting.
