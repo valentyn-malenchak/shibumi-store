@@ -1,9 +1,10 @@
 """Contains Pydantic utilities."""
 
+import abc
 from string import punctuation
-from typing import Annotated, Any
+from typing import Any
 
-from pydantic import AliasChoices, BaseModel, BeforeValidator, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
 from pydantic_core import PydanticCustomError, core_schema
 from pydantic_extra_types.phone_numbers import PhoneNumber as PydanticPhoneNumber
 
@@ -14,14 +15,6 @@ from app.constants import (
     USERNAME_MIN_CHARACTERS_POLICY,
     ValidationErrorMessagesEnum,
 )
-
-
-class ObjectId(BaseModel):
-    """Model that handles BSON ObjectID."""
-
-    id: Annotated[str, BeforeValidator(str)] = Field(
-        validation_alias=AliasChoices("_id", "id")
-    )
 
 
 class ImmutableModel(BaseModel):
@@ -36,8 +29,8 @@ class PhoneNumber(PydanticPhoneNumber):
     phone_format = "E164"
 
 
-class BaseStringType(str):
-    """Base String pydantic type."""
+class BaseType(str):
+    """Base pydantic type."""
 
     @classmethod
     def __get_pydantic_core_schema__(cls, *_: Any) -> core_schema.CoreSchema:
@@ -48,12 +41,13 @@ class BaseStringType(str):
         )
 
     @classmethod
+    @abc.abstractmethod
     def _validate(cls, value: str, _: core_schema.ValidationInfo) -> str:
         """Validates a value."""
         raise NotImplementedError
 
 
-class PasswordPolicy(BaseStringType):
+class PasswordPolicy(BaseType):
     """Password policy pydantic type."""
 
     @classmethod
@@ -104,7 +98,7 @@ class PasswordPolicy(BaseStringType):
         return value
 
 
-class UsernamePolicy(BaseStringType):
+class UsernamePolicy(BaseType):
     """Username policy pydantic type."""
 
     @classmethod

@@ -17,13 +17,13 @@ class UserSpecificValidator(BaseValidator):
     """User specific validator."""
 
     @classmethod
-    def validate(cls, current_user: CurrentUserModel, user_id: str) -> None:
+    def validate(cls, current_user: CurrentUserModel, user_id: ObjectId) -> None:
         """Checks if the current user is the same as requested.
 
         Args:
             current_user (CurrentUserModel): Current authorized
             user with permitted scopes.
-            user_id (str): Identifier of requested user.
+            user_id (ObjectId): BSON object identifier of requested user.
 
         Raises:
             HTTPException: If current and requested users are different.
@@ -37,17 +37,49 @@ class UserSpecificValidator(BaseValidator):
             )
 
 
+class UserValidator(BaseValidator):
+    """User validator."""
+
+    @classmethod
+    async def validate(cls, user_id: ObjectId, user_service: UserService) -> User:
+        """Validates requested user.
+
+        Args:
+            user_id: BSON object identifier of requested user.
+            user_service (UserService): User service.
+
+        Returns:
+            User: User object.
+
+        Raises:
+            HTTPException: If requested user is not found.
+
+        """
+
+        user = await user_service.get_item_by_id(id_=user_id)
+
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+                    entity="User"
+                ),
+            )
+
+        return user
+
+
 class DeletedUserValidator(BaseValidator):
-    """Deleted user validator"""
+    """Deleted user validator."""
 
     @classmethod
     async def validate(
-        cls, object_id: ObjectId, user_service: UserService
+        cls, user_id: ObjectId, user_service: UserService
     ) -> User | None:
         """Validates requested user state.
 
         Args:
-            object_id: BSON object identifier of requested user.
+            user_id: BSON object identifier of requested user.
             user_service (UserService): User service.
 
         Returns:
@@ -58,9 +90,9 @@ class DeletedUserValidator(BaseValidator):
 
         """
 
-        user = await user_service.get_item_by_id(id_=object_id)
+        user = await UserValidator.validate(user_id=user_id, user_service=user_service)
 
-        if user and user.deleted is True:
+        if user.deleted is True:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(

@@ -25,4 +25,5 @@ class ScopesEnum(Enum):
     USERS_GET_USER = "Allow to get user."
     USERS_CREATE_USER = "Allows to create a new user."
     USERS_UPDATE_USER = "Allows to update user."
+    USERS_UPDATE_USER_PASSWORD = "Allows to update user's password."
     USERS_DELETE_USER = "Allows to delete user."

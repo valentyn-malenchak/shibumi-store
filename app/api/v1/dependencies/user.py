@@ -1,52 +1,65 @@
 """Contains user domain dependencies."""
 
+from typing import Annotated
+
 from bson import ObjectId
 from fastapi import Depends, HTTPException, Request, status
 
+from app.api.v1.auth.password import Password
+from app.api.v1.models import ObjectIdAnnotation
 from app.api.v1.models.user import (
     CreateUserRequestModel,
     UpdateUserRequestModel,
+    User,
+    UserPasswordUpdateModel,
 )
 from app.api.v1.services.user import UserService
-from app.api.v1.validators import ObjectIDValidator
 from app.api.v1.validators.user import (
     DeletedUserValidator,
     RolesValidator,
     UserSpecificValidator,
+    UserValidator,
 )
 from app.constants import HTTPErrorMessagesEnum
 
 
-class UserGetDependency:
-    """User get dependency."""
+class UserDependency:
+    """User dependency."""
 
-    async def __call__(self, user_id: str) -> ObjectId:
-        """Checks if the current user can get requested user.
+    async def __call__(
+        self,
+        user_id: Annotated[ObjectId, ObjectIdAnnotation],
+        user_service: UserService = Depends(),
+    ) -> User:
+        """Checks user.
 
         Args:
-            user_id (str): Identifier of requested user.
+            user_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
+            identifier of requested user.
+            user_service (UserService): User service.
 
         Returns:
-            ObjectId: BSON object identifier of requested user.
-
-        Raises:
-            HTTPException: If user identifier is invalid.
+            User: User object.
 
         """
 
-        return ObjectIDValidator.validate(id_=user_id)
+        return await UserValidator.validate(user_id=user_id, user_service=user_service)
 
 
 class UserUpdateDependency:
     """User update dependency."""
 
     async def __call__(
-        self, user_id: str, request: Request, user_service: UserService = Depends()
+        self,
+        user_id: Annotated[ObjectId, ObjectIdAnnotation],
+        request: Request,
+        user_service: UserService = Depends(),
     ) -> ObjectId:
         """Checks if the current user can update requested user.
 
         Args:
-            user_id (str): Identifier of requested user.
+            user_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
+            identifier of requested user.
             request (Request): Current request object.
             user_service (UserService): User service.
 
@@ -59,12 +72,10 @@ class UserUpdateDependency:
 
         """
 
-        object_id = ObjectIDValidator.validate(id_=user_id)
-
         current_user = request.state.current_user
 
         user = await DeletedUserValidator.validate(
-            object_id=object_id, user_service=user_service
+            user_id=user_id, user_service=user_service
         )
 
         if current_user.object.is_client is True:
@@ -76,19 +87,65 @@ class UserUpdateDependency:
                 detail=HTTPErrorMessagesEnum.CLIENT_USER_ACCESS_DENIED.value,
             )
 
-        return object_id
+        return user_id
+
+
+class UserPasswordUpdateDependency:
+    """User password update dependency."""
+
+    async def __call__(
+        self,
+        user_id: Annotated[ObjectId, ObjectIdAnnotation],
+        request: Request,
+        password: UserPasswordUpdateModel,
+    ) -> UserPasswordUpdateModel:
+        """Checks if the current user can update own password.
+
+        Args:
+            user_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
+            identifier of requested user.
+            request (Request): Current request object.
+            password (UserPasswordUpdateModel): Old and new passwords.
+
+        Returns:
+            UserPasswordUpdateModel: Old and new passwords.
+
+        Raises:
+            HTTPException: If old and new passwords doesn't match.
+
+        """
+
+        current_user = request.state.current_user
+
+        # User can update only own password
+        UserSpecificValidator.validate(current_user=current_user, user_id=user_id)
+
+        if not Password.verify_password(
+            plain_password=password.old_password,
+            hashed_password=current_user.object.hashed_password,
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=HTTPErrorMessagesEnum.PASSWORD_DOES_NOT_MATCH.value,
+            )
+
+        return password
 
 
 class UserDeleteDependency:
     """User delete dependency."""
 
     async def __call__(
-        self, user_id: str, request: Request, user_service: UserService = Depends()
+        self,
+        user_id: Annotated[ObjectId, ObjectIdAnnotation],
+        request: Request,
+        user_service: UserService = Depends(),
     ) -> ObjectId:
         """Checks if the current user can delete requested user.
 
         Args:
-            user_id (str): Identifier of requested user.
+            user_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
+            identifier of requested user.
             request (Request): Current request object.
             user_service (UserService): User service.
 
@@ -101,18 +158,14 @@ class UserDeleteDependency:
 
         """
 
-        object_id = ObjectIDValidator.validate(id_=user_id)
-
         current_user = request.state.current_user
 
         if current_user.object.is_client is True:
             UserSpecificValidator.validate(current_user=current_user, user_id=user_id)
 
-        await DeletedUserValidator.validate(
-            object_id=object_id, user_service=user_service
-        )
+        await DeletedUserValidator.validate(user_id=user_id, user_service=user_service)
 
-        return object_id
+        return user_id
 
 
 class CreateUserRolesDependency:

@@ -9,6 +9,7 @@ CUSTOMER_USER = dict(
         ScopesEnum.USERS_GET_ME.name,
         ScopesEnum.USERS_UPDATE_USER.name,
         ScopesEnum.USERS_DELETE_USER.name,
+        ScopesEnum.USERS_UPDATE_USER_PASSWORD.name,
     ],
     exp=1703194093,
 )

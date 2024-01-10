@@ -18,7 +18,6 @@ class HTTPErrorMessagesEnum(Enum):
     EXPIRED_TOKEN = "Token is expired."
     INVALID_CREDENTIALS = "Invalid credentials."
     PERMISSION_DENIED = "Permission denied."
-    INVALID_IDENTIFIER = "Invalid object identifier."
 
     USER_ACCESS_DENIED = "Access denied to another user."
     ROLE_ACCESS_DENIED = "Access denied to use role."
@@ -26,6 +25,8 @@ class HTTPErrorMessagesEnum(Enum):
 
     ENTITY_IS_NOT_FOUND = "{entity} is not found."
     ENTITY_FIELD_UNIQUENESS = "{entity} with such {field} is already exist."
+
+    PASSWORD_DOES_NOT_MATCH = "The current password does not match."
 
 
 # Password policies
@@ -39,6 +40,8 @@ USERNAME_ALLOWED_SPECIAL_CHARACTER = "_-."
 
 class ValidationErrorMessagesEnum(Enum):
     """Contains validation error messages for Pydantic models."""
+
+    INVALID_IDENTIFIER = "Invalid object identifier."
 
     # Password policies
     PASSWORD_MIN_LENGTH = "Password must contain at least eight characters."
