@@ -4,6 +4,7 @@ using FastAPI security features and JWTs.
 """
 
 import abc
+from typing import List
 
 from bson import ObjectId
 from fastapi import Depends, HTTPException, Request, status
@@ -64,14 +65,19 @@ class Authentication:
             roles=user.roles
         )
 
-        # Verifies requested scopes by user
-        if not all(scope in permitted_scopes for scope in form_data.scopes):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=HTTPErrorMessagesEnum.PERMISSION_DENIED.value,
+        if form_data.scopes:
+            # Verifies all requested in form data scopes are permitted
+            BaseAuthorization.verify_scopes(
+                source_scopes=permitted_scopes, required_scopes=form_data.scopes
             )
 
-        return CurrentUserModel(object=user, scopes=form_data.scopes)
+            scopes = form_data.scopes
+
+        else:
+            # If there are no requested scopes returns all permitted
+            scopes = permitted_scopes
+
+        return CurrentUserModel(object=user, scopes=scopes)
 
 
 class BaseAuthorization(abc.ABC):
@@ -116,6 +122,22 @@ class BaseAuthorization(abc.ABC):
             )
 
     @staticmethod
+    def verify_scopes(source_scopes: List[str], required_scopes: List[str]) -> None:
+        """Verifies all required scopes contain in source scopes.
+
+        Args:
+            source_scopes (List[str]): Source scopes.
+            required_scopes (List[str]): Required scopes.
+
+        """
+
+        if not all(scope in source_scopes for scope in required_scopes):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=HTTPErrorMessagesEnum.PERMISSION_DENIED.value,
+            )
+
+    @staticmethod
     async def _authorize_user(
         token_data: TokenPayloadModel,
         security_scopes: SecurityScopes,
@@ -143,12 +165,10 @@ class BaseAuthorization(abc.ABC):
                 detail=HTTPErrorMessagesEnum.NOT_AUTHORIZED.value,
             )
 
-        # Verifies user scopes
-        if not all(scope in token_data.scopes for scope in security_scopes.scopes):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=HTTPErrorMessagesEnum.PERMISSION_DENIED.value,
-            )
+        # Verifies all API security scopes are present in token
+        BaseAuthorization.verify_scopes(
+            source_scopes=token_data.scopes, required_scopes=security_scopes.scopes
+        )
 
         request.state.current_user = CurrentUserModel(
             object=user, scopes=token_data.scopes
