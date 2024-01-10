@@ -1,10 +1,10 @@
 """Contains user domain validators."""
 
 
-from typing import List
+from typing import Any, List
 
 from bson import ObjectId
-from fastapi import HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 
 from app.api.v1.constants import RolesEnum
 from app.api.v1.models.user import CurrentUserModel, User
@@ -13,22 +13,50 @@ from app.api.v1.validators import BaseValidator
 from app.constants import HTTPErrorMessagesEnum
 
 
-class UserSpecificValidator(BaseValidator):
-    """User specific validator."""
+class BaseUserValidator(BaseValidator):
+    """Base user validator."""
 
-    @classmethod
-    def validate(cls, current_user: CurrentUserModel, user_id: ObjectId) -> None:
+    def __init__(self, request: Request, user_service: UserService = Depends()):
+        """Initializes base user validator.
+
+        Args:
+            request (Request): Current request object.
+            user_service (UserService): User service.
+
+        """
+
+        super().__init__(request=request)
+
+        self.user_service = user_service
+
+    async def validate(self, *args: Any) -> Any:
+        """Validates data.
+
+        Args:
+            args (Any): Method arguments.
+
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses.
+
+        """
+        raise NotImplementedError
+
+
+class UserAccessValidator(BaseUserValidator):
+    """User access validator."""
+
+    async def validate(self, user_id: ObjectId) -> None:
         """Checks if the current user is the same as requested.
 
         Args:
-            current_user (CurrentUserModel): Current authorized
-            user with permitted scopes.
             user_id (ObjectId): BSON object identifier of requested user.
 
         Raises:
             HTTPException: If current and requested users are different.
 
         """
+
+        current_user: CurrentUserModel = self.request.state.current_user
 
         if current_user.object.id != user_id:
             raise HTTPException(
@@ -37,16 +65,14 @@ class UserSpecificValidator(BaseValidator):
             )
 
 
-class UserValidator(BaseValidator):
-    """User validator."""
+class UserIdValidator(BaseUserValidator):
+    """User identifier validator."""
 
-    @classmethod
-    async def validate(cls, user_id: ObjectId, user_service: UserService) -> User:
+    async def validate(self, user_id: ObjectId) -> User:
         """Validates requested user.
 
         Args:
             user_id: BSON object identifier of requested user.
-            user_service (UserService): User service.
 
         Returns:
             User: User object.
@@ -56,7 +82,7 @@ class UserValidator(BaseValidator):
 
         """
 
-        user = await user_service.get_item_by_id(id_=user_id)
+        user = await self.user_service.get_item_by_id(id_=user_id)
 
         if user is None:
             raise HTTPException(
@@ -69,18 +95,33 @@ class UserValidator(BaseValidator):
         return user
 
 
-class DeletedUserValidator(BaseValidator):
-    """Deleted user validator."""
+class UserStatusValidator(BaseUserValidator):
+    """User status validator."""
 
-    @classmethod
-    async def validate(
-        cls, user_id: ObjectId, user_service: UserService
-    ) -> User | None:
+    def __init__(
+        self,
+        request: Request,
+        user_service: UserService = Depends(),
+        user_id_validator: UserIdValidator = Depends(),
+    ):
+        """Initializes user status validator.
+
+        Args:
+            request (Request): Current request object.
+            user_service (UserService): User service.
+            user_id_validator (UserIdValidator): User identifier validator.
+
+        """
+
+        super().__init__(request=request, user_service=user_service)
+
+        self.user_id_validator = user_id_validator
+
+    async def validate(self, user_id: ObjectId) -> User:
         """Validates requested user state.
 
         Args:
             user_id: BSON object identifier of requested user.
-            user_service (UserService): User service.
 
         Returns:
             User: User object.
@@ -90,7 +131,7 @@ class DeletedUserValidator(BaseValidator):
 
         """
 
-        user = await UserValidator.validate(user_id=user_id, user_service=user_service)
+        user = await self.user_id_validator.validate(user_id=user_id)
 
         if user.deleted is True:
             raise HTTPException(
@@ -106,21 +147,18 @@ class DeletedUserValidator(BaseValidator):
 class RolesValidator(BaseValidator):
     """Roles validator class."""
 
-    @classmethod
-    def validate(
-        cls, current_user: CurrentUserModel | None, roles: List[RolesEnum]
-    ) -> None:
+    async def validate(self, roles: List[RolesEnum]) -> None:
         """Validates roles depends on current user.
 
         Args:
-            current_user (CurrentUserModel | None): Current authorized
-            user with permitted scopes.
             roles (List[RolesEnum]): Roles list to validate.
 
         Raises:
             HTTPException: Not permitted roles are requested.
 
         """
+
+        current_user = getattr(self.request.state, "current_user", None)
 
         # Unauthenticated users or users with only 'Customer'
         # role can operate only with it
