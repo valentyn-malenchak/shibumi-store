@@ -3,18 +3,17 @@
 
 from typing import Any, Dict
 
-from bson import ObjectId
 from fastapi import APIRouter, Depends, Security, status
 
 from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
 from app.api.v1.dependencies.user import (
     CreateUserRolesDependency,
+    DeleteUserDependency,
+    UpdateUserDependency,
+    UpdateUserPasswordDependency,
     UpdateUserRolesDependency,
-    UserDeleteDependency,
     UserDependency,
-    UserPasswordUpdateDependency,
-    UserUpdateDependency,
 )
 from app.api.v1.models import PaginationModel, SearchModel, SortingModel
 from app.api.v1.models.user import (
@@ -135,7 +134,7 @@ async def update_user(
     _: CurrentUserModel = Security(
         StrictAuthorization(), scopes=[ScopesEnum.USERS_UPDATE_USER.name]
     ),
-    user_id: ObjectId = Depends(UserUpdateDependency()),
+    user: User = Depends(UpdateUserDependency()),
     user_data: UpdateUserRequestModel = Depends(UpdateUserRolesDependency()),
     user_service: UserService = Depends(),
 ) -> User | None:
@@ -143,7 +142,7 @@ async def update_user(
 
     Args:
         _: Current user object.
-        user_id (str): Identifier of user that should be updated.
+        user (User): User object.
         user_data (UpdateUserRequestModel): User data to update.
         user_service (UserService): User service.
 
@@ -151,7 +150,7 @@ async def update_user(
         User | None: Updated user object.
 
     """
-    return await user_service.update_item_by_id(id_=user_id, item=user_data)
+    return await user_service.update_item_by_id(id_=user.id, item=user_data)
 
 
 @router.patch("/{user_id}/password/", status_code=status.HTTP_204_NO_CONTENT)
@@ -160,7 +159,7 @@ async def update_user_password(
         StrictAuthorization(), scopes=[ScopesEnum.USERS_UPDATE_USER_PASSWORD.name]
     ),
     user: User = Depends(UserDependency()),
-    password: UserPasswordUpdateModel = Depends(UserPasswordUpdateDependency()),
+    password: UserPasswordUpdateModel = Depends(UpdateUserPasswordDependency()),
     user_service: UserService = Depends(),
 ) -> None:
     """API which updates a user password.
@@ -182,15 +181,15 @@ async def delete_user(
     _: CurrentUserModel = Security(
         StrictAuthorization(), scopes=[ScopesEnum.USERS_DELETE_USER.name]
     ),
-    user_id: ObjectId = Depends(UserDeleteDependency()),
+    user: User = Depends(DeleteUserDependency()),
     user_service: UserService = Depends(),
 ) -> None:
     """API which softly deletes a user object.
 
     Args:
         _: Current user object.
-        user_id (str): Identifier of user that should be deleted.
+        user (User): User object.
         user_service (UserService): User service.
 
     """
-    return await user_service.delete_item_by_id(id_=user_id)
+    return await user_service.delete_item_by_id(id_=user.id)
