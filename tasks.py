@@ -35,6 +35,20 @@ def install(ctx: Context, group: str | None = None) -> None:
 
 
 @task
+def outdated_packages(ctx: Context) -> None:
+    """Shows a list of outdated packages.
+
+    Args:
+        ctx (invoke.Context): The context object representing the current invocation.
+
+    Example:
+        invoke outdated-packages   # Shows outdated packages.
+
+    """
+    ctx.run("poetry show --outdated")
+
+
+@task
 def create_migration(ctx: Context, description: str) -> None:
     """Creates a MongoDB migration script.
 
@@ -70,8 +84,10 @@ def upgrade_migrations(_: Context, to_datetime: str | None = None) -> None:
 
     config = Configuration(
         {
-            "mongo_host": SETTINGS.MONGODB_HOST,
-            "mongo_port": SETTINGS.MONGODB_PORT,
+            "mongo_url": (
+                f"mongodb://{SETTINGS.MONGODB_HOST}:{SETTINGS.MONGODB_PORT}/"
+                f"{SETTINGS.MONGODB_NAME}?authSource={SETTINGS.MONGO_AUTH_SOURCE}",
+            ),
             "mongo_database": SETTINGS.MONGODB_NAME,
             "mongo_username": SETTINGS.MONGODB_USER,
             "mongo_password": SETTINGS.MONGODB_PASSWORD,
@@ -106,8 +122,10 @@ def downgrade_migrations(_: Context, to_datetime: str | None = None) -> None:
 
     config = Configuration(
         {
-            "mongo_host": SETTINGS.MONGODB_HOST,
-            "mongo_port": SETTINGS.MONGODB_PORT,
+            "mongo_url": (
+                f"mongodb://{SETTINGS.MONGODB_HOST}:{SETTINGS.MONGODB_PORT}/"
+                f"{SETTINGS.MONGODB_NAME}?authSource={SETTINGS.MONGO_AUTH_SOURCE}",
+            ),
             "mongo_database": SETTINGS.MONGODB_NAME,
             "mongo_username": SETTINGS.MONGODB_USER,
             "mongo_password": SETTINGS.MONGODB_PASSWORD,
@@ -208,15 +226,14 @@ def mypy(ctx: Context) -> None:
 
 
 @task
-def quality_check(ctx: Context) -> None:
+def check(ctx: Context) -> None:
     """Runs unit tests, linter, mypy and formatter together.
 
     Args:
         ctx (invoke.Context): The context object representing the current invocation.
 
     Example:
-        invoke quality-check  # Runs linter, formatter, static type checker and
-        unit tests.
+        invoke check  # Runs linter, formatter, static type checker and unit tests.
 
     """
     lint(ctx)
@@ -226,17 +243,45 @@ def quality_check(ctx: Context) -> None:
 
 
 @task
-def load_fixtures(_: Context) -> None:
+def fixture(_: Context) -> None:
     """Loads test data from fixture files into MongoDB collections.
 
     Args:
         _ (invoke.Context): The context object representing the current invocation.
 
     Example:
-        invoke load-fixtures  # Loads data from fixtures into Mongo collections.
+        invoke fixture  # Loads data from fixtures into Mongo collections.
 
     """
 
     file_fixture_manager = FileFixtureManager()
 
     asyncio.run(file_fixture_manager.load())
+
+
+@task
+def build(ctx: Context) -> None:
+    """Builds a new docker image for application.
+
+    Args:
+        ctx: The context object representing the current invocation.
+
+    Example:
+        invoke build  # Builds new application image
+
+    """
+    ctx.run("docker build -t fastapi-shop:latest .")
+
+
+@task
+def compose(ctx: Context) -> None:
+    """Runs a docker-compose.
+
+    Args:
+        ctx: The context object representing the current invocation.
+
+    Example:
+        invoke compose  # Runs a docker-compose
+
+    """
+    ctx.run("docker-compose up -d")

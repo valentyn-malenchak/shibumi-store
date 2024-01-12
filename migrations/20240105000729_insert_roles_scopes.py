@@ -1,5 +1,6 @@
 """Contains a migration that inserts/deletes role scopes."""
 
+import arrow
 from mongodb_migrations.base import BaseMigration
 
 from app.api.v1.constants import RolesEnum, ScopesEnum
@@ -21,6 +22,8 @@ class Migration(BaseMigration):  # type: ignore
                         ScopesEnum.USERS_UPDATE_USER_PASSWORD.name,
                         ScopesEnum.USERS_DELETE_USER.name,
                     ],
+                    "created_at": arrow.utcnow().datetime,
+                    "updated_at": None,
                 },
                 {
                     "role": RolesEnum.SUPPORT.name,
@@ -34,6 +37,8 @@ class Migration(BaseMigration):  # type: ignore
                         ScopesEnum.USERS_UPDATE_USER_PASSWORD.name,
                         ScopesEnum.USERS_DELETE_USER.name,
                     ],
+                    "created_at": arrow.utcnow().datetime,
+                    "updated_at": None,
                 },
                 {
                     "role": RolesEnum.WAREHOUSE_STUFF.name,
@@ -42,6 +47,8 @@ class Migration(BaseMigration):  # type: ignore
                         ScopesEnum.USERS_GET_ME.name,
                         ScopesEnum.USERS_UPDATE_USER_PASSWORD.name,
                     ],
+                    "created_at": arrow.utcnow().datetime,
+                    "updated_at": None,
                 },
                 {
                     "role": RolesEnum.CONTENT_MANAGER.name,
@@ -50,6 +57,8 @@ class Migration(BaseMigration):  # type: ignore
                         ScopesEnum.USERS_GET_ME.name,
                         ScopesEnum.USERS_UPDATE_USER_PASSWORD.name,
                     ],
+                    "created_at": arrow.utcnow().datetime,
+                    "updated_at": None,
                 },
                 {
                     "role": RolesEnum.MARKETING_MANAGER.name,
@@ -58,6 +67,8 @@ class Migration(BaseMigration):  # type: ignore
                         ScopesEnum.USERS_GET_ME.name,
                         ScopesEnum.USERS_UPDATE_USER_PASSWORD.name,
                     ],
+                    "created_at": arrow.utcnow().datetime,
+                    "updated_at": None,
                 },
                 {
                     "role": RolesEnum.ADMIN.name,
@@ -72,6 +83,8 @@ class Migration(BaseMigration):  # type: ignore
                         ScopesEnum.USERS_UPDATE_USER_PASSWORD.name,
                         ScopesEnum.USERS_DELETE_USER.name,
                     ],
+                    "created_at": arrow.utcnow().datetime,
+                    "updated_at": None,
                 },
             ]
         )
