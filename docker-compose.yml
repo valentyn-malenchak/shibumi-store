@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+
+  fastapi-shop:
+    image: fastapi-shop:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi-shop
+    stdin_open: true
+    tty: true
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo
+    environment:
+      - APP_NAME=fastapi-shop
+      - APP_WORKERS=4
+      - APP_DEBUG=true
+      - AUTH_SECRET_KEY=  # Add your secret key here
+      - AUTH_REFRESH_SECRET_KEY=  # Add your refresh secret key here
+      - AUTH_ALGORITHM=HS256
+      - AUTH_ACCESS_TOKEN_EXPIRE_MINUTES = 15
+      - AUTH_REFRESH_TOKEN_EXPIRE_MINUTES = 24 * 60
+      - MONGODB_HOST=mongo
+      - MONGODB_PORT=27017
+      - MONGODB_USER=root
+      - MONGODB_PASSWORD=root
+      - MONGODB_NAME=shop
+      - MONGO_AUTH_SOURCE=admin
+    volumes:
+      - .:/src
+
+  mongo:
+    image: bitnami/mongodb:7.0.5
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongo
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_ROOT_USERNAME=root
+      - MONGODB_ROOT_PASSWORD=root
+      - MONGODB_REPLICA_SET_KEY=replicasetkey123

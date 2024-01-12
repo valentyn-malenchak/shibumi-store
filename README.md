@@ -1,7 +1,7 @@
 # FastAPI Shop
 
 [![Python Version](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-312/)
-[![FastAPI Version](https://img.shields.io/badge/fastapi-0.105.0-green.svg)](https://fastapi.tiangolo.com/)
+[![FastAPI Version](https://img.shields.io/badge/fastapi-0.109.0-green.svg)](https://fastapi.tiangolo.com/)
 [![MongoDB Version](https://img.shields.io/badge/mongodb-7.0-green.svg)](https://www.mongodb.com/)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=valentyn-malenchak_fastapi-shop&metric=coverage)](https://sonarcloud.io/summary/new_code?id=valentyn-malenchak_fastapi-shop)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=valentyn-malenchak_fastapi-shop&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=valentyn-malenchak_fastapi-shop)
