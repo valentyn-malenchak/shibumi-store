@@ -53,28 +53,33 @@ class UsernameDependency:
         self,
         username: str,
         username_validator: UsernameValidator = Depends(),
+        user_status_validator: UserStatusValidator = Depends(),
     ) -> User:
         """Checks user from request.
 
         Args:
             username (str): Username of requested user.
             username_validator (UsernameValidator): Username validator.
+            user_status_validator (UserStatusValidator): User status validator.
 
         Returns:
             User: User object.
 
         """
 
-        return await username_validator.validate(username=username)
+        user = await username_validator.validate(username=username)
+
+        return await user_status_validator.validate(user=user)
 
 
 class UpdateUserDependency:
     """Update user dependency."""
 
-    async def __call__(
+    async def __call__(  # noqa: PLR0913
         self,
         user_id: Annotated[ObjectId, ObjectIdAnnotation],
         request: Request,
+        user_id_validator: UserIdValidator = Depends(),
         user_status_validator: UserStatusValidator = Depends(),
         user_access_validator: UserAccessValidator = Depends(),
     ) -> User:
@@ -84,6 +89,7 @@ class UpdateUserDependency:
             user_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
             identifier of requested user.
             request (Request): Current request object.
+            user_id_validator (UserIdValidator): User identifier validator.
             user_status_validator (UserStatusValidator): User status validator.
             user_access_validator (UserAccessValidator): User access validator.
 
@@ -98,7 +104,9 @@ class UpdateUserDependency:
 
         current_user = request.state.current_user
 
-        user = await user_status_validator.validate(user_id=user_id)
+        user = await user_id_validator.validate(user_id=user_id)
+
+        await user_status_validator.validate(user=user)
 
         if current_user.object.is_client is True:
             await user_access_validator.validate(user_id=user_id)
@@ -159,10 +167,11 @@ class UpdateUserPasswordDependency:
 class DeleteUserDependency:
     """Delete user dependency."""
 
-    async def __call__(
+    async def __call__(  # noqa: PLR0913
         self,
         user_id: Annotated[ObjectId, ObjectIdAnnotation],
         request: Request,
+        user_id_validator: UserIdValidator = Depends(),
         user_status_validator: UserStatusValidator = Depends(),
         user_access_validator: UserAccessValidator = Depends(),
     ) -> User:
@@ -172,6 +181,7 @@ class DeleteUserDependency:
             user_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
             identifier of requested user.
             request (Request): Current request object.
+            user_id_validator (UserIdValidator): User identifier validator.
             user_status_validator (UserStatusValidator): User status validator.
             user_access_validator (UserAccessValidator): User access validator.
 
@@ -189,7 +199,9 @@ class DeleteUserDependency:
         if current_user.object.is_client is True:
             await user_access_validator.validate(user_id=user_id)
 
-        return await user_status_validator.validate(user_id=user_id)
+        user = await user_id_validator.validate(user_id=user_id)
+
+        return await user_status_validator.validate(user=user)
 
 
 class CreateUserRolesDependency:

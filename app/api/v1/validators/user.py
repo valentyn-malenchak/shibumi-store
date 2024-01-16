@@ -128,30 +128,11 @@ class UsernameValidator(BaseUserValidator):
 class UserStatusValidator(BaseUserValidator):
     """User status validator."""
 
-    def __init__(
-        self,
-        request: Request,
-        user_service: UserService = Depends(),
-        user_id_validator: UserIdValidator = Depends(),
-    ):
-        """Initializes user status validator.
-
-        Args:
-            request (Request): Current request object.
-            user_service (UserService): User service.
-            user_id_validator (UserIdValidator): User identifier validator.
-
-        """
-
-        super().__init__(request=request, user_service=user_service)
-
-        self.user_id_validator = user_id_validator
-
-    async def validate(self, user_id: ObjectId) -> User:
+    async def validate(self, user: User) -> User:
         """Validates requested user state.
 
         Args:
-            user_id: BSON object identifier of requested user.
+            user (User): User object.
 
         Returns:
             User: User object.
@@ -160,8 +141,6 @@ class UserStatusValidator(BaseUserValidator):
             HTTPException: If requested user is deleted.
 
         """
-
-        user = await self.user_id_validator.validate(user_id=user_id)
 
         if user.deleted is True:
             raise HTTPException(

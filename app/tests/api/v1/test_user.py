@@ -1683,6 +1683,22 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_request_reset_user_password_user_is_deleted(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test request reset user password in case user is deleted."""
+
+        response = await test_client.post("/users/sheila.fahey/reset-password/")
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+                entity="User"
+            )
+        }
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
     @patch("redis.Redis.setex", lambda *args, **kwargs: None)
     @patch("sendgrid.SendGridAPIClient.send", Mock(side_effect=Exception()))
     async def test_request_reset_user_password_send_grid_error(
@@ -1726,6 +1742,28 @@ class TestUser(BaseAPITest):
 
         response = await test_client.patch(
             "/users/john.smith/reset-password/",
+            json={
+                "token": "U66kv5LtukldDDSANUeAefQmjmeZuIcxC2lwiMUK6ec",
+                "new_password": "J0hn1234!@~",
+            },
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+                entity="User"
+            )
+        }
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_reset_user_password_user_is_deleted(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test reset user password in case user is deleted."""
+
+        response = await test_client.patch(
+            "/users/sheila.fahey/reset-password/",
             json={
                 "token": "U66kv5LtukldDDSANUeAefQmjmeZuIcxC2lwiMUK6ec",
                 "new_password": "J0hn1234!@~",
