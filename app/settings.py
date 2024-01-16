@@ -28,5 +28,8 @@ class AppConfig(ImmutableModel):
     REDIS_PORT: str
     REDIS_PASSWORD: str
 
+    SEND_GRID_API_KEY: str
+    SEND_GRID_SENDER_EMAIL: str
+
 
 SETTINGS = AppConfig.model_validate(EnvironmentLoader().load())

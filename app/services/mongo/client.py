@@ -2,10 +2,11 @@
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
+from app.services.base import BaseClient
 from app.settings import SETTINGS
 
 
-class MongoDBClient:
+class MongoDBClient(BaseClient):
     """MongoDB client."""
 
     _client = AsyncIOMotorClient(

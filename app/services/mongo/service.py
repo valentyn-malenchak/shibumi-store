@@ -21,7 +21,7 @@ class MongoDBService(BaseService):
 
     _name: str = "mongo_db"
 
-    def __init__(self, mongo_client: MongoDBClient = Depends(MongoDBClient)) -> None:
+    def __init__(self, mongo_client: MongoDBClient = Depends()) -> None:
         """MongoDB service initialization method.
 
         Args:
