@@ -12,7 +12,7 @@ from app.api.v1.auth.jwt import JWT
 from app.api.v1.constants import ScopesEnum
 from app.constants import HTTPErrorMessagesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
-from app.tests.api.v1 import BaseTest
+from app.tests.api.v1 import BaseAPITest
 from app.tests.constants import (
     CUSTOMER_USER,
     DELETED_USER,
@@ -22,7 +22,7 @@ from app.tests.constants import (
 )
 
 
-class TestAuth(BaseTest):
+class TestAuth(BaseAPITest):
     """Test class for auth API endpoints in the FastAPI application."""
 
     @pytest.mark.asyncio

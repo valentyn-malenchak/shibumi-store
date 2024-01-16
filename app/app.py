@@ -53,7 +53,7 @@ class App(FastAPI):
     @staticmethod
     async def _shutdown() -> None:
         """Executes on application shutdown."""
-        # close external clients of external services
+        # close clients of external services
         for client in SERVICE_CLIENTS:
             client.close()
 

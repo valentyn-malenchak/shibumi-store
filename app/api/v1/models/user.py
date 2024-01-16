@@ -104,3 +104,10 @@ class UserPasswordUpdateModel(BaseModel):
 
     old_password: str
     new_password: PasswordPolicy
+
+
+class UserPasswordResetModel(BaseModel):
+    """User password reset model."""
+
+    token: str
+    new_password: PasswordPolicy

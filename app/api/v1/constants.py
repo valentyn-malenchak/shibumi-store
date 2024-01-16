@@ -27,3 +27,26 @@ class ScopesEnum(Enum):
     USERS_UPDATE_USER = "Allows to update user."
     USERS_UPDATE_USER_PASSWORD = "Allows to update user's password."
     USERS_DELETE_USER = "Allows to delete user."
+
+
+RESET_PASSWORD_TOKEN_BYTES = 32
+
+RESET_PASSWORD_TOKEN_EXPIRATION_TIME = 3600  # 1 hour
+
+
+class RedisNamesEnum(Enum):
+    """Redis names format enumerate."""
+
+    RESET_PASSWORD = "reset_password_{user_id}"
+
+
+class EmailSubjectsEnum(Enum):
+    """Email subjects enumerate."""
+
+    RESET_PASSWORD = "FastAPI shop - Reset password"
+
+
+class EmailTextEnum(Enum):
+    """Email text enum."""
+
+    RESET_PASSWORD = "Reset password verification token: {token}"

@@ -14,6 +14,7 @@ from app.api.v1.dependencies.user import (
     UpdateUserPasswordDependency,
     UpdateUserRolesDependency,
     UserDependency,
+    UsernameDependency,
 )
 from app.api.v1.models import PaginationModel, SearchModel, SortingModel
 from app.api.v1.models.user import (
@@ -21,6 +22,7 @@ from app.api.v1.models.user import (
     CurrentUserModel,
     UpdateUserRequestModel,
     User,
+    UserPasswordResetModel,
     UserPasswordUpdateModel,
     UserResponseModel,
     UsersFilterModel,
@@ -193,3 +195,37 @@ async def delete_user(
 
     """
     return await user_service.delete_item_by_id(id_=user.id)
+
+
+@router.post("/{username}/reset-password/", status_code=status.HTTP_204_NO_CONTENT)
+async def request_reset_user_password(
+    user: User = Depends(UsernameDependency()),
+    user_service: UserService = Depends(),
+) -> None:
+    """API which requests reset password.
+
+    Args:
+        user (User): User object.
+        user_service (UserService): User service.
+
+    """
+    return await user_service.request_reset_item_password(user=user)
+
+
+@router.patch("/{username}/reset-password/", status_code=status.HTTP_204_NO_CONTENT)
+async def reset_user_password(
+    reset_password: UserPasswordResetModel,
+    user: User = Depends(UsernameDependency()),
+    user_service: UserService = Depends(),
+) -> None:
+    """API which resets password.
+
+    Args:
+        reset_password (UserPasswordResetModel): Reset token with new password.
+        user (User): User object.
+        user_service (UserService): User service.
+
+    """
+    return await user_service.reset_item_password(
+        id_=user.id, token=reset_password.token, password=reset_password.new_password
+    )
