@@ -78,10 +78,10 @@ async def get_users(
     """
 
     return dict(
-        data=await user_service.get_items(
+        data=await user_service.get(
             filter_=filter_, search=search, sorting=sorting, pagination=pagination
         ),
-        total=await user_service.count_documents(filter_=filter_, search=search),
+        total=await user_service.count(filter_=filter_, search=search),
     )
 
 
@@ -126,7 +126,7 @@ async def create_user(
         User | None: Created user object.
 
     """
-    return await user_service.create_item(item=user_data)
+    return await user_service.create(item=user_data)
 
 
 @router.patch(
@@ -152,7 +152,7 @@ async def update_user(
         User | None: Updated user object.
 
     """
-    return await user_service.update_item_by_id(id_=user.id, item=user_data)
+    return await user_service.update_by_id(id_=user.id, item=user_data)
 
 
 @router.patch("/{user_id}/password/", status_code=status.HTTP_204_NO_CONTENT)
@@ -173,7 +173,7 @@ async def update_user_password(
         user_service (UserService): User service.
 
     """
-    return await user_service.update_item_password(
+    return await user_service.update_password(
         id_=user.id, password=password.new_password
     )
 
@@ -194,7 +194,7 @@ async def delete_user(
         user_service (UserService): User service.
 
     """
-    return await user_service.delete_item_by_id(id_=user.id)
+    return await user_service.delete_by_id(id_=user.id)
 
 
 @router.post("/{username}/reset-password/", status_code=status.HTTP_204_NO_CONTENT)
@@ -209,7 +209,7 @@ async def request_reset_user_password(
         user_service (UserService): User service.
 
     """
-    return await user_service.request_reset_item_password(user=user)
+    return await user_service.request_reset_password(user=user)
 
 
 @router.patch("/{username}/reset-password/", status_code=status.HTTP_204_NO_CONTENT)
@@ -226,6 +226,6 @@ async def reset_user_password(
         user_service (UserService): User service.
 
     """
-    return await user_service.reset_item_password(
+    return await user_service.reset_password(
         id_=user.id, token=reset_password.token, password=reset_password.new_password
     )

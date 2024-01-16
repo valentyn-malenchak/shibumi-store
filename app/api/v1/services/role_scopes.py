@@ -26,7 +26,7 @@ class RoleScopesService(BaseService):
 
         self.repository = repository
 
-    async def get_items(
+    async def get(
         self,
         filter_: Any,
         search: SearchModel,
@@ -50,7 +50,7 @@ class RoleScopesService(BaseService):
         """
         raise NotImplementedError
 
-    async def count_documents(self, filter_: Any, search: SearchModel) -> int:
+    async def count(self, filter_: Any, search: SearchModel) -> int:
         """Counts documents based on parameters.
 
         Args:
@@ -66,7 +66,7 @@ class RoleScopesService(BaseService):
         """
         raise NotImplementedError
 
-    async def get_item_by_id(self, id_: ObjectId) -> Any:
+    async def get_by_id(self, id_: ObjectId) -> Any:
         """Retrieves a role-scopes by its unique identifier.
 
         Args:
@@ -93,7 +93,7 @@ class RoleScopesService(BaseService):
         """
         return await self.repository.get_scopes_by_roles(roles=roles)
 
-    async def create_item(self, item: Any) -> Any:
+    async def create(self, item: Any) -> Any:
         """Creates a new role-scopes.
 
         Args:
@@ -108,7 +108,7 @@ class RoleScopesService(BaseService):
         """
         raise NotImplementedError
 
-    async def update_item_by_id(self, id_: ObjectId, item: Any) -> Any:
+    async def update_by_id(self, id_: ObjectId, item: Any) -> Any:
         """Updates a role-scopes by its unique identifier.
 
         Args:
@@ -124,7 +124,7 @@ class RoleScopesService(BaseService):
         """
         raise NotImplementedError
 
-    async def delete_item_by_id(self, id_: ObjectId) -> None:
+    async def delete_by_id(self, id_: ObjectId) -> None:
         """Deletes a role-scopes by its unique identifier.
 
         Args:

@@ -82,7 +82,7 @@ class UserIdValidator(BaseUserValidator):
 
         """
 
-        user = await self.user_service.get_item_by_id(id_=user_id)
+        user = await self.user_service.get_by_id(id_=user_id)
 
         if user is None:
             raise HTTPException(
@@ -112,7 +112,7 @@ class UsernameValidator(BaseUserValidator):
 
         """
 
-        user = await self.user_service.get_item_by_username(username=username)
+        user = await self.user_service.get_by_username(username=username)
 
         if user is None:
             raise HTTPException(

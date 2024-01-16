@@ -49,7 +49,7 @@ class Authentication:
 
         """
 
-        user = await user_service.get_item_by_username(username=form_data.username)
+        user = await user_service.get_by_username(username=form_data.username)
 
         if (
             user is None
@@ -157,7 +157,7 @@ class BaseAuthorization(abc.ABC):
 
         """
 
-        user = await user_service.get_item_by_id(id_=ObjectId(token_data.id))
+        user = await user_service.get_by_id(id_=ObjectId(token_data.id))
 
         if user is None or user.deleted is True:
             raise HTTPException(

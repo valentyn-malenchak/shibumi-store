@@ -58,7 +58,7 @@ class UserService(BaseService):
 
         self.send_email_task = send_email_task
 
-    async def get_items(
+    async def get(
         self,
         filter_: UsersFilterModel,
         search: SearchModel,
@@ -78,7 +78,7 @@ class UserService(BaseService):
 
         """
 
-        return await self.repository.get_items(
+        return await self.repository.get(
             search=search.search,
             sort_by=sorting.sort_by,
             sort_order=sorting.sort_order,
@@ -88,9 +88,7 @@ class UserService(BaseService):
             deleted=filter_.deleted,
         )
 
-    async def count_documents(
-        self, filter_: UsersFilterModel, search: SearchModel
-    ) -> int:
+    async def count(self, filter_: UsersFilterModel, search: SearchModel) -> int:
         """Counts documents based on parameters.
 
         Args:
@@ -102,13 +100,13 @@ class UserService(BaseService):
 
         """
 
-        return await self.repository.count_documents(
+        return await self.repository.count(
             search=search.search,
             roles=[role.name for role in filter_.roles],
             deleted=filter_.deleted,
         )
 
-    async def get_item_by_id(self, id_: ObjectId) -> User | None:
+    async def get_by_id(self, id_: ObjectId) -> User | None:
         """Retrieves an item by its unique identifier.
 
         Args:
@@ -118,9 +116,9 @@ class UserService(BaseService):
             User | None: User object or None.
 
         """
-        return await self.repository.get_item_by_id(id_=id_)
+        return await self.repository.get_by_id(id_=id_)
 
-    async def get_item_by_username(self, username: str) -> User | None:
+    async def get_by_username(self, username: str) -> User | None:
         """Retrieves an item by its username.
 
         Args:
@@ -130,9 +128,9 @@ class UserService(BaseService):
             User | None: User object or None.
 
         """
-        return await self.repository.get_item_by_username(username=username)
+        return await self.repository.get_by_username(username=username)
 
-    async def create_item(self, item: CreateUserRequestModel) -> User | None:
+    async def create(self, item: CreateUserRequestModel) -> User | None:
         """Creates a new user.
 
         Args:
@@ -146,7 +144,7 @@ class UserService(BaseService):
         password = Password.get_password_hash(password=item.password)
 
         try:
-            id_ = await self.repository.create_item(
+            id_ = await self.repository.create(
                 item={
                     # Replaces plain password on hashed one
                     **item.model_dump(exclude={"password", "roles"}),
@@ -167,9 +165,9 @@ class UserService(BaseService):
                 ),
             )
 
-        return await self.get_item_by_id(id_=id_)
+        return await self.get_by_id(id_=id_)
 
-    async def update_item_by_id(
+    async def update_by_id(
         self, id_: ObjectId, item: UpdateUserRequestModel
     ) -> User | None:
         """Updates a user by its unique identifier.
@@ -183,7 +181,7 @@ class UserService(BaseService):
 
         """
 
-        await self.repository.update_item_by_id(
+        await self.repository.update_by_id(
             id_=id_,
             item={
                 **item.model_dump(exclude={"roles"}),
@@ -193,9 +191,9 @@ class UserService(BaseService):
             },
         )
 
-        return await self.get_item_by_id(id_=id_)
+        return await self.get_by_id(id_=id_)
 
-    async def update_item_password(self, id_: ObjectId, password: str) -> None:
+    async def update_password(self, id_: ObjectId, password: str) -> None:
         """Updates user password by its unique identifier.
 
         Args:
@@ -206,7 +204,7 @@ class UserService(BaseService):
 
         password = Password.get_password_hash(password=password)
 
-        await self.repository.update_item_by_id(
+        await self.repository.update_by_id(
             id_=id_,
             item={
                 "hashed_password": password,
@@ -214,7 +212,7 @@ class UserService(BaseService):
             },
         )
 
-    async def delete_item_by_id(self, id_: ObjectId) -> None:
+    async def delete_by_id(self, id_: ObjectId) -> None:
         """Softly deletes a user by its unique identifier.
 
         Args:
@@ -222,11 +220,11 @@ class UserService(BaseService):
 
         """
 
-        await self.repository.update_item_by_id(
+        await self.repository.update_by_id(
             id_=id_, item={"deleted": True, "updated_at": arrow.utcnow().datetime}
         )
 
-    async def request_reset_item_password(self, user: User) -> None:
+    async def request_reset_password(self, user: User) -> None:
         """Requests user's password reset.
 
         Args:
@@ -250,9 +248,7 @@ class UserService(BaseService):
             plain_text_content=EmailTextEnum.RESET_PASSWORD.value.format(token=token),
         )
 
-    async def reset_item_password(
-        self, id_: ObjectId, token: str, password: str
-    ) -> None:
+    async def reset_password(self, id_: ObjectId, token: str, password: str) -> None:
         """Resets user password.
 
         Args:
@@ -274,7 +270,7 @@ class UserService(BaseService):
                 detail=HTTPErrorMessagesEnum.INVALID_RESET_PASSWORD_TOKEN.value,
             )
 
-        await self.update_item_password(id_=id_, password=password)
+        await self.update_password(id_=id_, password=password)
 
         self.redis_service.delete(
             name=RedisNamesEnum.RESET_PASSWORD.value.format(user_id=id_)

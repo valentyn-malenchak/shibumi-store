@@ -18,7 +18,7 @@ class UserRepository(BaseRepository):
 
     _collection_name: str = MongoCollectionsEnum.USERS.value
 
-    async def get_items(  # noqa: PLR0913
+    async def get(  # noqa: PLR0913
         self,
         search: str | None,
         sort_by: str | None,
@@ -84,7 +84,7 @@ class UserRepository(BaseRepository):
 
         return {key: value for key, value in query_filter.items() if value is not None}
 
-    async def count_documents(
+    async def count(
         self,
         search: str | None,
         *_: Any,
@@ -111,7 +111,7 @@ class UserRepository(BaseRepository):
             ),
         )
 
-    async def get_item_by_id(
+    async def get_by_id(
         self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
     ) -> User | None:
         """Retrieves a user from the repository by its unique identifier.
@@ -132,7 +132,7 @@ class UserRepository(BaseRepository):
 
         return User(**user) if user else None
 
-    async def get_item_by_username(
+    async def get_by_username(
         self, username: str, *, session: AsyncIOMotorClientSession | None = None
     ) -> User | None:
         """Retrieves a user from the repository by its username.
@@ -155,7 +155,7 @@ class UserRepository(BaseRepository):
 
         return User(**user) if user else None
 
-    async def create_item(
+    async def create(
         self, item: Dict[str, Any], *, session: AsyncIOMotorClientSession | None = None
     ) -> Any:
         """Creates a new user in repository.
@@ -174,7 +174,7 @@ class UserRepository(BaseRepository):
             collection=self._collection_name, document=item, session=session
         )
 
-    async def create_items(
+    async def create_many(
         self,
         items: List[Dict[str, Any]],
         *,
@@ -198,7 +198,7 @@ class UserRepository(BaseRepository):
             session=session,
         )
 
-    async def update_item_by_id(
+    async def update_by_id(
         self,
         id_: ObjectId,
         item: Dict[str, Any],
@@ -222,7 +222,7 @@ class UserRepository(BaseRepository):
             session=session,
         )
 
-    async def delete_all_items(
+    async def delete_all(
         self, *, session: AsyncIOMotorClientSession | None = None
     ) -> None:
         """Deletes all users from the repository.
