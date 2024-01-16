@@ -7,22 +7,25 @@ from fastapi import status
 from freezegun import freeze_time
 from httpx import AsyncClient
 from jose import ExpiredSignatureError
+from tenacity import wait_none
 
 from app.api.v1.constants import RolesEnum
 from app.constants import HTTPErrorMessagesEnum, ValidationErrorMessagesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
-from app.tests.api.v1 import BaseTest
+from app.services.send_grid.service import SendGridService
+from app.tests.api.v1 import BaseAPITest
 from app.tests.constants import (
     CUSTOMER_USER,
     FAKE_USER,
     FROZEN_DATETIME,
+    REDIS_RESET_PASSWORD_TOKEN,
     SHOP_SIDE_USER,
     TEST_JWT,
     USER_NO_SCOPES,
 )
 
 
-class TestUser(BaseTest):
+class TestUser(BaseAPITest):
     """Test class for user APIs endpoints in the FastAPI application."""
 
     @pytest.mark.asyncio
@@ -1648,4 +1651,156 @@ class TestUser(BaseTest):
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert response.json() == {
             "detail": HTTPErrorMessagesEnum.PASSWORD_DOES_NOT_MATCH.value
+        }
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @patch("redis.Redis.setex", lambda *args, **kwargs: None)
+    @patch("sendgrid.SendGridAPIClient.send", lambda *args, **kwargs: None)
+    async def test_request_reset_user_password(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test request reset user password."""
+
+        response = await test_client.post("/users/john.smith/reset-password/")
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    @pytest.mark.asyncio
+    async def test_request_reset_user_password_user_is_not_found(
+        self, test_client: AsyncClient
+    ) -> None:
+        """Test request reset user password in case user with username is not found."""
+
+        response = await test_client.post("/users/john.smith/reset-password/")
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+                entity="User"
+            )
+        }
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @patch("redis.Redis.setex", lambda *args, **kwargs: None)
+    @patch("sendgrid.SendGridAPIClient.send", Mock(side_effect=Exception()))
+    async def test_request_reset_user_password_send_grid_error(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        test_client: AsyncClient,
+        arrange_db: None,
+    ) -> None:
+        """Test request reset user password in case some error in SendGrid."""
+
+        # Skip waiting between attempts
+        monkeypatch.setattr(SendGridService.send.retry, "wait", wait_none())  # type: ignore
+
+        with pytest.raises(Exception):
+            await test_client.post("/users/john.smith/reset-password/")
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @patch("redis.Redis.get", lambda *args, **kwargs: REDIS_RESET_PASSWORD_TOKEN)
+    @patch("redis.Redis.delete", lambda *args, **kwargs: None)
+    async def test_reset_user_password(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test reset user password."""
+
+        response = await test_client.patch(
+            "/users/john.smith/reset-password/",
+            json={
+                "token": "U66kv5LtukldDDSANUeAefQmjmeZuIcxC2lwiMUK6ec",
+                "new_password": "J0hn1234!@~",
+            },
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    @pytest.mark.asyncio
+    async def test_reset_user_password_user_is_not_found(
+        self, test_client: AsyncClient
+    ) -> None:
+        """Test reset user password in case user with username is not found."""
+
+        response = await test_client.patch(
+            "/users/john.smith/reset-password/",
+            json={
+                "token": "U66kv5LtukldDDSANUeAefQmjmeZuIcxC2lwiMUK6ec",
+                "new_password": "J0hn1234!@~",
+            },
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+                entity="User"
+            )
+        }
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_reset_user_password_validate_json_data(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test reset user password in case request json data is invalid."""
+
+        response = await test_client.patch(
+            "/users/john.smith/reset-password/", json={"new_password": "John1234"}
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            ("missing", ["body", "token"], "Field required"),
+            (
+                "string_without_special_characters",
+                ["body", "new_password"],
+                "Password must contain at least one special character.",
+            ),
+        ]
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @patch("redis.Redis.get", lambda *args, **kwargs: None)
+    async def test_reset_user_password_token_is_expired(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test reset user password in case token is expired."""
+
+        response = await test_client.patch(
+            "/users/john.smith/reset-password/",
+            json={
+                "token": "U66kv5LtukldDDSANUeAefQmjmeZuIcxC2lwiMUK6ec",
+                "new_password": "J0hn1234!@~",
+            },
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.INVALID_RESET_PASSWORD_TOKEN.value
+        }
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @patch("redis.Redis.get", lambda *args, **kwargs: REDIS_RESET_PASSWORD_TOKEN)
+    async def test_reset_user_password_token_is_invalid(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test reset user password in case token is invalid."""
+
+        response = await test_client.patch(
+            "/users/john.smith/reset-password/",
+            json={
+                "token": "U66kv5LtukldDDSANUe",
+                "new_password": "J0hn1234!@~",
+            },
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.INVALID_RESET_PASSWORD_TOKEN.value
         }

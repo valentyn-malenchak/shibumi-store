@@ -28,6 +28,8 @@ class HTTPErrorMessagesEnum(Enum):
 
     PASSWORD_DOES_NOT_MATCH = "The current password does not match."
 
+    INVALID_RESET_PASSWORD_TOKEN = "Invalid or expired reset password token."
+
 
 # Password policies
 PASSWORD_MIN_CHARACTERS_POLICY = 8
@@ -75,5 +77,5 @@ class SortingTypesEnum(Enum):
     DESC = "desc"
 
 
-BACKGROUND_TASK_RETRY = 3
+BACKGROUND_TASK_RETRY_ATTEMPTS = 3
 BACKGROUND_TASK_RETRY_WAIT = 5

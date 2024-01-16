@@ -1,4 +1,4 @@
-"""Module that contains base test component."""
+"""Module that contains base API test component."""
 
 import asyncio
 from typing import Any, AsyncGenerator, Generator, List
@@ -12,11 +12,12 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from app.app import app
 from app.loaders import JSONFileLoader
 from app.services.mongo.constants import MongoCollectionsEnum
+from app.tests import BaseTest
 from app.tests.fixtures.manager import FileFixtureManager
 
 
-class BaseTest:
-    """Test class for API endpoints in the FastAPI application."""
+class BaseAPITest(BaseTest):
+    """Test class for API endpoints of FastAPI application."""
 
     _client = None
     _APP_BASE_URL = "http://test"

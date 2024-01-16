@@ -30,7 +30,7 @@ class RedisService(BaseService):
             name: Name to find.
 
         Returns:
-            ?????: Value.
+            Any: Value.
 
         """
         return self._client.get(name)

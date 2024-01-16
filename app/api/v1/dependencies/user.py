@@ -17,6 +17,7 @@ from app.api.v1.validators.user import (
     RolesValidator,
     UserAccessValidator,
     UserIdValidator,
+    UsernameValidator,
     UserStatusValidator,
 )
 from app.constants import HTTPErrorMessagesEnum
@@ -30,7 +31,7 @@ class UserDependency:
         user_id: Annotated[ObjectId, ObjectIdAnnotation],
         user_id_validator: UserIdValidator = Depends(),
     ) -> User:
-        """Checks user from request.
+        """Checks user from request by id.
 
         Args:
             user_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
@@ -43,6 +44,28 @@ class UserDependency:
         """
 
         return await user_id_validator.validate(user_id=user_id)
+
+
+class UsernameDependency:
+    """Username dependency."""
+
+    async def __call__(
+        self,
+        username: str,
+        username_validator: UsernameValidator = Depends(),
+    ) -> User:
+        """Checks user from request.
+
+        Args:
+            username (str): Username of requested user.
+            username_validator (UsernameValidator): Username validator.
+
+        Returns:
+            User: User object.
+
+        """
+
+        return await username_validator.validate(username=username)
 
 
 class UpdateUserDependency:

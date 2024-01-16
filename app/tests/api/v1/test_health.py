@@ -8,11 +8,11 @@ from httpx import AsyncClient
 
 from app.constants import HTTPErrorMessagesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
-from app.tests.api.v1 import BaseTest
+from app.tests.api.v1 import BaseAPITest
 from app.tests.constants import SHOP_SIDE_USER, TEST_JWT, USER_NO_SCOPES
 
 
-class TestHealth(BaseTest):
+class TestHealth(BaseAPITest):
     """Test class for health API endpoints in the FastAPI application."""
 
     @pytest.mark.asyncio

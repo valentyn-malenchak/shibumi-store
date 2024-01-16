@@ -15,7 +15,7 @@ class BaseTask(abc.ABC):
         """Initialize base background task.
 
         Args:
-            background_tasks (BackgroundTasks): Background task.
+            background_tasks (BackgroundTasks): Background tasks.
 
         """
         self.background_tasks = background_tasks
@@ -42,10 +42,10 @@ class SendEmailTask(BaseTask):
         background_tasks: BackgroundTasks,
         send_grid_service: SendGridService = Depends(),
     ) -> None:
-        """Initialize base background task.
+        """Initialize send email task.
 
         Args:
-            background_tasks (BackgroundTasks): Background task.
+            background_tasks (BackgroundTasks): Background tasks.
             send_grid_service (SendGridService): SendGrid service.
 
         """

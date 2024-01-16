@@ -69,10 +69,10 @@ class UserIdValidator(BaseUserValidator):
     """User identifier validator."""
 
     async def validate(self, user_id: ObjectId) -> User:
-        """Validates requested user.
+        """Validates requested user by id.
 
         Args:
-            user_id: BSON object identifier of requested user.
+            user_id (ObjectId): BSON object identifier of requested user.
 
         Returns:
             User: User object.
@@ -83,6 +83,36 @@ class UserIdValidator(BaseUserValidator):
         """
 
         user = await self.user_service.get_item_by_id(id_=user_id)
+
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+                    entity="User"
+                ),
+            )
+
+        return user
+
+
+class UsernameValidator(BaseUserValidator):
+    """Username validator."""
+
+    async def validate(self, username: str) -> User:
+        """Validates requested user by username.
+
+        Args:
+            username (str): Username of requested user.
+
+        Returns:
+            User: User object.
+
+        Raises:
+            HTTPException: If requested user is not found.
+
+        """
+
+        user = await self.user_service.get_item_by_username(username=username)
 
         if user is None:
             raise HTTPException(
