@@ -24,5 +24,9 @@ class AppConfig(ImmutableModel):
     MONGODB_NAME: str
     MONGO_AUTH_SOURCE: str
 
+    REDIS_HOST: str
+    REDIS_PORT: str
+    REDIS_PASSWORD: str
+
 
 SETTINGS = AppConfig.model_validate(EnvironmentLoader().load())
