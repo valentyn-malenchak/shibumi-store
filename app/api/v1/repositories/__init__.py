@@ -28,7 +28,7 @@ class BaseRepository(abc.ABC):
         self._mongo_service = mongo_service
 
     @abc.abstractmethod
-    async def get_items(  # noqa: PLR0913
+    async def get(  # noqa: PLR0913
         self,
         search: str | None,
         sort_by: str | None,
@@ -109,7 +109,7 @@ class BaseRepository(abc.ABC):
         return [(sort_by, sort_value)] if sort_by else None
 
     @abc.abstractmethod
-    async def count_documents(
+    async def count(
         self,
         search: str | None,
         *args: Any,
@@ -130,7 +130,7 @@ class BaseRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_item_by_id(
+    async def get_by_id(
         self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
     ) -> Any:
         """Retrieves an item from the repository by its unique identifier.
@@ -150,7 +150,7 @@ class BaseRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def create_item(
+    async def create(
         self, item: Any, *, session: AsyncIOMotorClientSession | None = None
     ) -> Any:
         """Creates a new item in repository.
@@ -170,7 +170,7 @@ class BaseRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def create_items(
+    async def create_many(
         self,
         items: List[Dict[str, Any]],
         *,
@@ -193,7 +193,7 @@ class BaseRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def update_item_by_id(
+    async def update_by_id(
         self,
         id_: ObjectId,
         item: Dict[str, Any],
@@ -215,7 +215,7 @@ class BaseRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def delete_all_items(
+    async def delete_all(
         self, *, session: AsyncIOMotorClientSession | None = None
     ) -> None:
         """Deletes all items from the repository.

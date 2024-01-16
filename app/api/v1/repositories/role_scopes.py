@@ -15,7 +15,7 @@ class RoleScopesRepository(BaseRepository):
 
     _collection_name: str = MongoCollectionsEnum.ROLES_SCOPES.value
 
-    async def get_items(  # noqa: PLR0913
+    async def get(  # noqa: PLR0913
         self,
         search: str | None,
         sort_by: str | None,
@@ -62,7 +62,7 @@ class RoleScopesRepository(BaseRepository):
         """
         raise NotImplementedError
 
-    async def count_documents(
+    async def count(
         self,
         search: str | None,
         *args: Any,
@@ -82,7 +82,7 @@ class RoleScopesRepository(BaseRepository):
         """
         raise NotImplementedError
 
-    async def get_item_by_id(
+    async def get_by_id(
         self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
     ) -> Any:
         """Retrieves a role-scopes from the repository by its unique identifier.
@@ -128,7 +128,7 @@ class RoleScopesRepository(BaseRepository):
 
         return [scope["_id"] for scope in scopes]
 
-    async def create_item(
+    async def create(
         self, item: Any, *, session: AsyncIOMotorClientSession | None = None
     ) -> Any:
         """Create a new role-scopes in repository.
@@ -147,7 +147,7 @@ class RoleScopesRepository(BaseRepository):
         """
         raise NotImplementedError
 
-    async def create_items(
+    async def create_many(
         self,
         items: List[Dict[str, Any]],
         *,
@@ -169,7 +169,7 @@ class RoleScopesRepository(BaseRepository):
         """
         raise NotImplementedError
 
-    async def delete_all_items(
+    async def delete_all(
         self, *, session: AsyncIOMotorClientSession | None = None
     ) -> None:
         """Deletes all roles-scopes from the repository.
@@ -184,7 +184,7 @@ class RoleScopesRepository(BaseRepository):
         """
         raise NotImplementedError
 
-    async def update_item_by_id(
+    async def update_by_id(
         self,
         id_: ObjectId,
         item: Dict[str, Any],
