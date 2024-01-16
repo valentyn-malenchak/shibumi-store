@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1 import ROUTERS
-from app.services.mongo.client import MongoDBClient
+from app.services import SERVICE_CLIENTS
 from app.settings import SETTINGS
 
 
@@ -51,11 +51,11 @@ class App(FastAPI):
         self.add_event_handler("shutdown", self._shutdown)
 
     @staticmethod
-    def _shutdown() -> None:
+    async def _shutdown() -> None:
         """Executes on application shutdown."""
-
-        # close MongoDB client
-        MongoDBClient.close()
+        # close external clients of external services
+        for client in SERVICE_CLIENTS:
+            client.close()
 
     def run(self) -> None:
         """Run the FastAPI app."""

@@ -73,3 +73,7 @@ class SortingTypesEnum(Enum):
 
     ASC = "asc"
     DESC = "desc"
+
+
+BACKGROUND_TASK_RETRY = 3
+BACKGROUND_TASK_RETRY_WAIT = 5
