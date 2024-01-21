@@ -28,6 +28,12 @@ DELETED_USER = dict(
     exp=1703194093,
 )
 
+NOT_VERIFIED_EMAIL_USER = dict(
+    id="65ac14f5b9263b2bece37679",
+    scopes=[ScopesEnum.AUTH_REFRESH_TOKEN.name, ScopesEnum.USERS_GET_ME.name],
+    exp=1703194093,
+)
+
 FAKE_USER = dict(
     id="6597f36b349450bbd8e83a52",
     scopes=[],
@@ -38,6 +44,6 @@ TEST_JWT = "someverylongtoken."
 
 FROZEN_DATETIME = "2024-01-05T12:08:35.440000"
 
-REDIS_RESET_PASSWORD_TOKEN = (
+REDIS_VERIFICATION_TOKEN = (
     "bec063a47b1be3b091a77a83e821f57cabafce12c1f0dc64f759592935e36fc6"
 )

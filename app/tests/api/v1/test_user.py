@@ -18,7 +18,8 @@ from app.tests.constants import (
     CUSTOMER_USER,
     FAKE_USER,
     FROZEN_DATETIME,
-    REDIS_RESET_PASSWORD_TOKEN,
+    NOT_VERIFIED_EMAIL_USER,
+    REDIS_VERIFICATION_TOKEN,
     SHOP_SIDE_USER,
     TEST_JWT,
     USER_NO_SCOPES,
@@ -47,6 +48,7 @@ class TestUser(BaseAPITest):
             "patronymic_name": None,
             "username": "john.smith",
             "email": "john.smith@gmail.com",
+            "email_verified": True,
             "phone_number": "+380981111111",
             "birthdate": "1998-01-01",
             "roles": [RolesEnum.CUSTOMER.name],
@@ -124,6 +126,25 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @patch("jose.jwt.decode", Mock(return_value=NOT_VERIFIED_EMAIL_USER))
+    async def test_get_me_user_email_is_not_verified(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get me in case user email is not verified."""
+
+        response = await test_client.get(
+            "/users/me/", headers={"Authorization": f"Bearer {TEST_JWT}"}
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.EMAIL_IS_NOT_VERIFIED.value
+        }
+
+    @pytest.mark.asyncio
+    @patch("redis.Redis.setex", lambda *args, **kwargs: None)
+    @patch("sendgrid.SendGridAPIClient.send", lambda *args, **kwargs: None)
     @freeze_time(FROZEN_DATETIME)
     async def test_create_user_unauthenticated_user_creates_customer_user(
         self, test_client: AsyncClient
@@ -154,6 +175,7 @@ class TestUser(BaseAPITest):
             "patronymic_name": None,
             "username": "joe.smith",
             "email": "joe.smith@gmail.com",
+            "email_verified": False,
             "phone_number": "+380980000000",
             "birthdate": "1997-12-07",
             "roles": [RolesEnum.CUSTOMER.name],
@@ -191,6 +213,8 @@ class TestUser(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @patch("redis.Redis.setex", lambda *args, **kwargs: None)
+    @patch("sendgrid.SendGridAPIClient.send", lambda *args, **kwargs: None)
     @freeze_time(FROZEN_DATETIME)
     async def test_create_user_shop_side_user_creates_multi_role_user(
         self, test_client: AsyncClient, arrange_db: None
@@ -227,6 +251,7 @@ class TestUser(BaseAPITest):
             "patronymic_name": None,
             "username": "joe.smith",
             "email": "joe.smith@gmail.com",
+            "email_verified": False,
             "phone_number": "+380980000000",
             "birthdate": "1997-12-07",
             "roles": [
@@ -633,7 +658,6 @@ class TestUser(BaseAPITest):
                 "first_name": "John",
                 "last_name": "Smith",
                 "patronymic_name": "Batman",
-                "email": "john.smith+1@gmail.com",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
                 "roles": [RolesEnum.CUSTOMER.value],
@@ -647,7 +671,8 @@ class TestUser(BaseAPITest):
             "last_name": "Smith",
             "patronymic_name": "Batman",
             "username": "john.smith",
-            "email": "john.smith+1@gmail.com",
+            "email": "john.smith@gmail.com",
+            "email_verified": True,
             "phone_number": "+380980000001",
             "birthdate": "1999-12-31",
             "roles": [RolesEnum.CUSTOMER.name],
@@ -671,7 +696,6 @@ class TestUser(BaseAPITest):
                 "first_name": "John",
                 "last_name": "Smith",
                 "patronymic_name": "Batman",
-                "email": "john.smith+1@gmail.com",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
                 "roles": [RolesEnum.CUSTOMER.value, RolesEnum.ADMIN.value],
@@ -699,7 +723,6 @@ class TestUser(BaseAPITest):
                 "first_name": "Anya",
                 "last_name": "Schoen",
                 "patronymic_name": None,
-                "email": "anya.schoen+1@gmail.com",
                 "phone_number": "+380980004321",
                 "birthdate": "1999-09-07",
                 "roles": [
@@ -717,7 +740,8 @@ class TestUser(BaseAPITest):
             "last_name": "Schoen",
             "patronymic_name": None,
             "username": "anya.schoen",
-            "email": "anya.schoen+1@gmail.com",
+            "email": "anya_schoen@gmail.com",
+            "email_verified": True,
             "phone_number": "+380980004321",
             "birthdate": "1999-09-07",
             "roles": [
@@ -745,7 +769,6 @@ class TestUser(BaseAPITest):
                 "first_name": "John",
                 "last_name": "Smith",
                 "patronymic_name": "Batman",
-                "email": "john.smith@gmail",
                 "phone_number": "+3809800000013",
                 "birthdate": "1999-12-35",
                 "roles": ["CEO"],
@@ -760,12 +783,6 @@ class TestUser(BaseAPITest):
                 "object_id",
                 ["path", "user_id"],
                 ValidationErrorMessagesEnum.INVALID_IDENTIFIER.value,
-            ),
-            (
-                "value_error",
-                ["body", "email"],
-                "value is not a valid email address: The part after the @-sign is not "
-                "valid. It should have a period.",
             ),
             (
                 "value_error",
@@ -796,7 +813,6 @@ class TestUser(BaseAPITest):
                 "first_name": "John",
                 "last_name": "Smith",
                 "patronymic_name": "Batman",
-                "email": "john.smith+1@gmail.com",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
                 "roles": [RolesEnum.CUSTOMER.value],
@@ -822,7 +838,6 @@ class TestUser(BaseAPITest):
                 "last_name": "Smith",
                 "patronymic_name": None,
                 "username": "john.smith",
-                "email": "john.smith@gmail.com",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
                 "roles": [RolesEnum.CUSTOMER.value],
@@ -849,7 +864,6 @@ class TestUser(BaseAPITest):
                 "first_name": "John",
                 "last_name": "Smith",
                 "patronymic_name": "Batman",
-                "email": "john.smith+1@gmail.com",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
                 "roles": [RolesEnum.CUSTOMER.value],
@@ -876,7 +890,6 @@ class TestUser(BaseAPITest):
                 "first_name": "John",
                 "last_name": "Smith",
                 "patronymic_name": "Batman",
-                "email": "john.smith+1@gmail.com",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
                 "roles": [RolesEnum.CUSTOMER.value],
@@ -903,7 +916,6 @@ class TestUser(BaseAPITest):
                 "first_name": "John",
                 "last_name": "Smith",
                 "patronymic_name": "Batman",
-                "email": "john.smith+1@gmail.com",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
                 "roles": [RolesEnum.CUSTOMER.value],
@@ -931,7 +943,6 @@ class TestUser(BaseAPITest):
                 "first_name": "Frederique",
                 "last_name": "Langosh",
                 "patronymic_name": "Definitely not Batman",
-                "email": "frederique.langosh@gmail.com",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
                 "roles": [RolesEnum.CONTENT_MANAGER.value],
@@ -946,6 +957,7 @@ class TestUser(BaseAPITest):
             "patronymic_name": "Definitely not Batman",
             "username": "Frederique.Langosh",
             "email": "frederique.langosh@gmail.com",
+            "email_verified": True,
             "phone_number": "+380980000001",
             "birthdate": "1999-12-31",
             "roles": ["CONTENT_MANAGER"],
@@ -969,7 +981,6 @@ class TestUser(BaseAPITest):
                 "first_name": "Frederique",
                 "last_name": "Langosh",
                 "patronymic_name": "Definitely not Batman",
-                "email": "frederique.langosh@gmail.com",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
                 "roles": [RolesEnum.CONTENT_MANAGER.value],
@@ -1169,6 +1180,7 @@ class TestUser(BaseAPITest):
             "patronymic_name": None,
             "username": "sheila.fahey",
             "email": "sheila.fahey@gmail.com",
+            "email_verified": True,
             "phone_number": "+111111111114",
             "birthdate": "1994-11-14",
             "roles": ["CONTENT_MANAGER"],
@@ -1273,6 +1285,7 @@ class TestUser(BaseAPITest):
                     "patronymic_name": None,
                     "username": "john.smith",
                     "email": "john.smith@gmail.com",
+                    "email_verified": True,
                     "phone_number": "+380981111111",
                     "birthdate": "1998-01-01",
                     "roles": ["CUSTOMER"],
@@ -1287,6 +1300,7 @@ class TestUser(BaseAPITest):
                     "patronymic_name": None,
                     "username": "bruce.wayne",
                     "email": "bruce_wayne@gmail.com",
+                    "email_verified": True,
                     "phone_number": "+111111111111",
                     "birthdate": "1939-03-30",
                     "roles": ["CUSTOMER"],
@@ -1301,6 +1315,7 @@ class TestUser(BaseAPITest):
                     "patronymic_name": None,
                     "username": "sheila.fahey",
                     "email": "sheila.fahey@gmail.com",
+                    "email_verified": True,
                     "phone_number": "+111111111114",
                     "birthdate": "1994-11-14",
                     "roles": ["CONTENT_MANAGER"],
@@ -1309,7 +1324,7 @@ class TestUser(BaseAPITest):
                     "updated_at": None,
                 },
             ],
-            "total": 5,
+            "total": 6,
         }
 
     @pytest.mark.asyncio
@@ -1341,6 +1356,7 @@ class TestUser(BaseAPITest):
                     "patronymic_name": None,
                     "username": "anya.schoen",
                     "email": "anya_schoen@gmail.com",
+                    "email_verified": True,
                     "phone_number": "+123111111111",
                     "birthdate": "1994-08-04",
                     "roles": ["SUPPORT", "CONTENT_MANAGER"],
@@ -1376,6 +1392,7 @@ class TestUser(BaseAPITest):
                     "patronymic_name": None,
                     "username": "anya.schoen",
                     "email": "anya_schoen@gmail.com",
+                    "email_verified": True,
                     "phone_number": "+123111111111",
                     "birthdate": "1994-08-04",
                     "roles": ["SUPPORT", "CONTENT_MANAGER"],
@@ -1416,6 +1433,7 @@ class TestUser(BaseAPITest):
                     "patronymic_name": None,
                     "username": "sheila.fahey",
                     "email": "sheila.fahey@gmail.com",
+                    "email_verified": True,
                     "phone_number": "+111111111114",
                     "birthdate": "1994-11-14",
                     "roles": ["CONTENT_MANAGER"],
@@ -1424,7 +1442,7 @@ class TestUser(BaseAPITest):
                     "updated_at": None,
                 }
             ],
-            "total": 5,
+            "total": 6,
         }
 
     @pytest.mark.asyncio
@@ -1717,7 +1735,7 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
-    @patch("redis.Redis.get", lambda *args, **kwargs: REDIS_RESET_PASSWORD_TOKEN)
+    @patch("redis.Redis.get", lambda *args, **kwargs: REDIS_VERIFICATION_TOKEN)
     @patch("redis.Redis.delete", lambda *args, **kwargs: None)
     async def test_reset_user_password(
         self, test_client: AsyncClient, arrange_db: None
@@ -1824,7 +1842,7 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
-    @patch("redis.Redis.get", lambda *args, **kwargs: REDIS_RESET_PASSWORD_TOKEN)
+    @patch("redis.Redis.get", lambda *args, **kwargs: REDIS_VERIFICATION_TOKEN)
     async def test_reset_user_password_token_is_invalid(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -1841,4 +1859,213 @@ class TestUser(BaseAPITest):
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == {
             "detail": HTTPErrorMessagesEnum.INVALID_RESET_PASSWORD_TOKEN.value
+        }
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @patch("redis.Redis.setex", lambda *args, **kwargs: None)
+    @patch("sendgrid.SendGridAPIClient.send", lambda *args, **kwargs: None)
+    async def test_request_verify_user_email(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test request verify user email."""
+
+        response = await test_client.post("/users/lila.legro/verify-email/")
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    @pytest.mark.asyncio
+    async def test_request_verify_user_email_user_is_not_found(
+        self, test_client: AsyncClient
+    ) -> None:
+        """Test request verify user email in case user with username is not found."""
+
+        response = await test_client.post("/users/lila.legro/verify-email/")
+
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+                entity="User"
+            )
+        }
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_request_verify_user_email_user_is_deleted(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test request verify user email in case user is deleted."""
+
+        response = await test_client.post("/users/sheila.fahey/verify-email/")
+
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+                entity="User"
+            )
+        }
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_request_verify_user_email_user_email_is_verified(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test request verify user email in case user email is already verified."""
+
+        response = await test_client.post("/users/john.smith/verify-email/")
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.EMAIL_IS_ALREADY_VERIFIED.value
+        }
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @patch("redis.Redis.setex", lambda *args, **kwargs: None)
+    @patch("sendgrid.SendGridAPIClient.send", Mock(side_effect=Exception()))
+    async def test_request_verify_user_email_send_grid_error(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        test_client: AsyncClient,
+        arrange_db: None,
+    ) -> None:
+        """Test request verify user email in case some error in SendGrid."""
+
+        # Skip waiting between attempts
+        monkeypatch.setattr(SendGridService.send.retry, "wait", wait_none())  # type: ignore
+
+        with pytest.raises(Exception):
+            await test_client.post("/users/lila.legro/verify-email/")
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @patch("redis.Redis.get", lambda *args, **kwargs: REDIS_VERIFICATION_TOKEN)
+    @patch("redis.Redis.delete", lambda *args, **kwargs: None)
+    async def test_verify_user_email(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test verify user email."""
+
+        response = await test_client.patch(
+            "/users/lila.legro/verify-email/",
+            json={
+                "token": "U66kv5LtukldDDSANUeAefQmjmeZuIcxC2lwiMUK6ec",
+            },
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    @pytest.mark.asyncio
+    async def test_verify_user_email_user_is_not_found(
+        self, test_client: AsyncClient
+    ) -> None:
+        """Test verify user email in case user with username is not found."""
+
+        response = await test_client.patch(
+            "/users/lila.legro/verify-email/",
+            json={
+                "token": "U66kv5LtukldDDSANUeAefQmjmeZuIcxC2lwiMUK6ec",
+            },
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+                entity="User"
+            )
+        }
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_verify_user_email_user_is_deleted(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test verify user email in case user is deleted."""
+
+        response = await test_client.patch(
+            "/users/sheila.fahey/verify-email/",
+            json={
+                "token": "U66kv5LtukldDDSANUeAefQmjmeZuIcxC2lwiMUK6ec",
+            },
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+                entity="User"
+            )
+        }
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_verify_user_email_user_email_is_verified(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test verify user email in case user email is already verified."""
+
+        response = await test_client.patch(
+            "/users/john.smith/verify-email/",
+            json={
+                "token": "U66kv5LtukldDDSANUeAefQmjmeZuIcxC2lwiMUK6ec",
+            },
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.EMAIL_IS_ALREADY_VERIFIED.value
+        }
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_verify_user_email_validate_json_data(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test verify user email in case request json data is invalid."""
+
+        response = await test_client.patch("/users/lila.legro/verify-email/", json={})
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            ("missing", ["body", "token"], "Field required"),
+        ]
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @patch("redis.Redis.get", lambda *args, **kwargs: None)
+    async def test_verify_user_email_token_is_expired(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test verify user email in case token is expired."""
+
+        response = await test_client.patch(
+            "/users/lila.legro/verify-email/",
+            json={
+                "token": "U66kv5LtukldDDSANUeAefQmjmeZuIcxC2lwiMUK6ec",
+            },
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.INVALID_EMAIL_VERIFICATION_TOKEN.value
+        }
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @patch("redis.Redis.get", lambda *args, **kwargs: REDIS_VERIFICATION_TOKEN)
+    async def test_verify_user_email_token_is_invalid(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test verify user email in case token is invalid."""
+
+        response = await test_client.patch(
+            "/users/lila.legro/verify-email/",
+            json={
+                "token": "U66kv5LtukldDDSANUe",
+            },
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.INVALID_EMAIL_VERIFICATION_TOKEN.value
         }

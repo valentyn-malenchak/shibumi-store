@@ -18,6 +18,8 @@ class HTTPErrorMessagesEnum(Enum):
     EXPIRED_TOKEN = "Token is expired."
     INVALID_CREDENTIALS = "Invalid credentials."
     PERMISSION_DENIED = "Permission denied."
+    EMAIL_IS_NOT_VERIFIED = "Email is not verified."
+    EMAIL_IS_ALREADY_VERIFIED = "Email is already verified."
 
     USER_ACCESS_DENIED = "Access denied to another user."
     ROLE_ACCESS_DENIED = "Access denied to use role."
@@ -29,6 +31,7 @@ class HTTPErrorMessagesEnum(Enum):
     PASSWORD_DOES_NOT_MATCH = "The current password does not match."
 
     INVALID_RESET_PASSWORD_TOKEN = "Invalid or expired reset password token."
+    INVALID_EMAIL_VERIFICATION_TOKEN = "Invalid or expired email verification token."
 
 
 # Password policies

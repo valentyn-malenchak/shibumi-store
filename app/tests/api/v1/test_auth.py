@@ -17,6 +17,7 @@ from app.tests.constants import (
     CUSTOMER_USER,
     DELETED_USER,
     FAKE_USER,
+    NOT_VERIFIED_EMAIL_USER,
     TEST_JWT,
     USER_NO_SCOPES,
 )
@@ -177,6 +178,25 @@ class TestAuth(BaseAPITest):
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    async def test_create_tokens_user_email_is_not_verified(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test auth token creation in case user email is not verified."""
+
+        response = await test_client.post(
+            "/auth/tokens/",
+            data={
+                "username": "lila.legro",
+                "password": "Lila1234!",
+                "grant_type": "password",
+            },
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
     async def test_create_tokens_request_not_permitted_scopes(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -277,6 +297,23 @@ class TestAuth(BaseAPITest):
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED.value}
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @patch("jose.jwt.decode", Mock(return_value=NOT_VERIFIED_EMAIL_USER))
+    async def test_refresh_access_token_user_email_is_not_verified(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test refreshing access token in case user email is not verified."""
+
+        response = await test_client.post(
+            "/auth/access-token/", headers={"Authorization": f"Bearer {TEST_JWT}"}
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.EMAIL_IS_NOT_VERIFIED.value
+        }
 
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
