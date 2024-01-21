@@ -23,6 +23,7 @@ class User(ObjectIdModel):
     patronymic_name: str | None
     username: str
     email: EmailStr
+    email_verified: bool
     hashed_password: str
     phone_number: str
     birthdate: date
@@ -52,6 +53,7 @@ class UserResponseModel(ObjectIdModel):
     patronymic_name: str | None
     username: str
     email: EmailStr
+    email_verified: bool
     phone_number: str
     birthdate: date
     roles: List[str]
@@ -93,7 +95,6 @@ class UpdateUserRequestModel(BaseModel):
     first_name: str
     last_name: str
     patronymic_name: str | None
-    email: EmailStr
     phone_number: PhoneNumber
     birthdate: date
     roles: List[RolesEnum]
@@ -106,8 +107,13 @@ class UserPasswordUpdateModel(BaseModel):
     new_password: PasswordPolicy
 
 
-class UserPasswordResetModel(BaseModel):
-    """User password reset model."""
+class VerificationTokenModel(BaseModel):
+    """Verification token model."""
 
     token: str
+
+
+class UserPasswordResetModel(VerificationTokenModel):
+    """User password reset model."""
+
     new_password: PasswordPolicy

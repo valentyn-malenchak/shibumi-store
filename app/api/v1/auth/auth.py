@@ -165,6 +165,12 @@ class BaseAuthorization(abc.ABC):
                 detail=HTTPErrorMessagesEnum.NOT_AUTHORIZED.value,
             )
 
+        if user.email_verified is False:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=HTTPErrorMessagesEnum.EMAIL_IS_NOT_VERIFIED.value,
+            )
+
         # Verifies all API security scopes are present in token
         BaseAuthorization.verify_scopes(
             source_scopes=token_data.scopes, required_scopes=security_scopes.scopes

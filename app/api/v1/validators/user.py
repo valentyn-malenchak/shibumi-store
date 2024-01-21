@@ -153,7 +153,7 @@ class UserStatusValidator(BaseUserValidator):
         return user
 
 
-class RolesValidator(BaseValidator):
+class RolesValidator(BaseUserValidator):
     """Roles validator class."""
 
     async def validate(self, roles: List[RolesEnum]) -> None:
@@ -170,7 +170,7 @@ class RolesValidator(BaseValidator):
         current_user = getattr(self.request.state, "current_user", None)
 
         # Unauthenticated users or users with only 'Customer'
-        # role can operate only with it
+        # role can operate only with itself
         if (current_user is None or current_user.object.is_client) and roles != [
             RolesEnum.CUSTOMER
         ]:
@@ -178,3 +178,29 @@ class RolesValidator(BaseValidator):
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=HTTPErrorMessagesEnum.ROLE_ACCESS_DENIED.value,
             )
+
+
+class UserEmailVerifiedValidator(BaseUserValidator):
+    """User email verified validator."""
+
+    async def validate(self, user: User) -> User:
+        """Validates if user email is already verified.
+
+        Args:
+            user (User): User object.
+
+        Returns:
+            User: User object.
+
+        Raises:
+            HTTPException: If requested user email is verified.
+
+        """
+
+        if user.email_verified is True:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=HTTPErrorMessagesEnum.EMAIL_IS_ALREADY_VERIFIED.value,
+            )
+
+        return user

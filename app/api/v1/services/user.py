@@ -1,8 +1,6 @@
 """Module that contains user service abstract class."""
 
 
-import hashlib
-import secrets
 from typing import Any, List, Mapping
 
 import arrow
@@ -12,11 +10,10 @@ from pymongo.errors import DuplicateKeyError
 
 from app.api.v1.auth.password import Password
 from app.api.v1.constants import (
-    RESET_PASSWORD_TOKEN_BYTES,
-    RESET_PASSWORD_TOKEN_EXPIRATION_TIME,
     EmailSubjectsEnum,
     EmailTextEnum,
     RedisNamesEnum,
+    RedisNamesTTLEnum,
 )
 from app.api.v1.models import PaginationModel, SearchModel, SortingModel
 from app.api.v1.models.user import (
@@ -30,6 +27,7 @@ from app.api.v1.services import BaseService
 from app.constants import HTTPErrorMessagesEnum
 from app.services.redis.service import RedisService
 from app.tasks import SendEmailTask
+from app.utils.token import VerificationToken
 
 
 class UserService(BaseService):
@@ -148,6 +146,7 @@ class UserService(BaseService):
                 item={
                     # Replaces plain password on hashed one
                     **item.model_dump(exclude={"password", "roles"}),
+                    "email_verified": False,
                     "hashed_password": password,
                     "birthdate": arrow.get(item.birthdate).datetime,
                     "roles": [role.name for role in item.roles],
@@ -165,7 +164,11 @@ class UserService(BaseService):
                 ),
             )
 
-        return await self.get_by_id(id_=id_)
+        user = await self.get_by_id(id_=id_)
+
+        await self.request_verify_email(user=user)  # type: ignore
+
+        return user
 
     async def update_by_id(
         self, id_: ObjectId, item: UpdateUserRequestModel
@@ -194,7 +197,7 @@ class UserService(BaseService):
         return await self.get_by_id(id_=id_)
 
     async def update_password(self, id_: ObjectId, password: str) -> None:
-        """Updates user password by its unique identifier.
+        """Updates user's password by its unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the user.
@@ -208,6 +211,22 @@ class UserService(BaseService):
             id_=id_,
             item={
                 "hashed_password": password,
+                "updated_at": arrow.utcnow().datetime,
+            },
+        )
+
+    async def _update_email_verified(self, id_: ObjectId) -> None:
+        """Updates user's email verification flag.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the user.
+
+        """
+
+        await self.repository.update_by_id(
+            id_=id_,
+            item={
+                "email_verified": True,
                 "updated_at": arrow.utcnow().datetime,
             },
         )
@@ -232,24 +251,24 @@ class UserService(BaseService):
 
         """
 
-        token = secrets.token_urlsafe(RESET_PASSWORD_TOKEN_BYTES)
-
-        hashed_token = hashlib.sha256(token.encode()).hexdigest()
+        token = VerificationToken.generate()
 
         self.redis_service.set(
             name=RedisNamesEnum.RESET_PASSWORD.value.format(user_id=user.id),
-            value=hashed_token,
-            ttl=RESET_PASSWORD_TOKEN_EXPIRATION_TIME,
+            value=token.hash(),
+            ttl=RedisNamesTTLEnum.RESET_PASSWORD.value,
         )
 
         await self.send_email_task(
             to_emails=user.email,
             subject=EmailSubjectsEnum.RESET_PASSWORD.value,
-            plain_text_content=EmailTextEnum.RESET_PASSWORD.value.format(token=token),
+            plain_text_content=EmailTextEnum.RESET_PASSWORD.value.format(
+                token=token.value
+            ),
         )
 
     async def reset_password(self, id_: ObjectId, token: str, password: str) -> None:
-        """Resets user password.
+        """Resets user's password.
 
         Args:
             id_ (ObjectId): The unique identifier of the user.
@@ -258,7 +277,7 @@ class UserService(BaseService):
 
         """
 
-        hashed_token = hashlib.sha256(token.encode()).hexdigest()
+        hashed_token = VerificationToken(token).hash()
 
         cached_token = self.redis_service.get(
             name=RedisNamesEnum.RESET_PASSWORD.value.format(user_id=id_)
@@ -274,4 +293,55 @@ class UserService(BaseService):
 
         self.redis_service.delete(
             name=RedisNamesEnum.RESET_PASSWORD.value.format(user_id=id_)
+        )
+
+    async def request_verify_email(self, user: User) -> None:
+        """Requests user's email verification.
+
+        Args:
+            user (User): User that requests email verification.
+
+        """
+
+        token = VerificationToken.generate()
+
+        self.redis_service.set(
+            name=RedisNamesEnum.EMAIL_VERIFICATION.value.format(user_id=user.id),
+            value=token.hash(),
+            ttl=RedisNamesTTLEnum.EMAIL_VERIFICATION.value,
+        )
+
+        await self.send_email_task(
+            to_emails=user.email,
+            subject=EmailSubjectsEnum.EMAIL_VERIFICATION.value,
+            plain_text_content=EmailTextEnum.EMAIL_VERIFICATION.value.format(
+                token=token.value
+            ),
+        )
+
+    async def verify_email(self, id_: ObjectId, token: str) -> None:
+        """Verifies user's email.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the user.
+            token (str): Verification token.
+
+        """
+
+        hashed_token = VerificationToken(token).hash()
+
+        cached_token = self.redis_service.get(
+            name=RedisNamesEnum.EMAIL_VERIFICATION.value.format(user_id=id_)
+        )
+
+        if cached_token is None or cached_token != hashed_token:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=HTTPErrorMessagesEnum.INVALID_EMAIL_VERIFICATION_TOKEN.value,
+            )
+
+        await self._update_email_verified(id_=id_)
+
+        self.redis_service.delete(
+            name=RedisNamesEnum.EMAIL_VERIFICATION.value.format(user_id=id_)
         )

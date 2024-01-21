@@ -16,6 +16,7 @@ from app.api.v1.models.user import (
 from app.api.v1.validators.user import (
     RolesValidator,
     UserAccessValidator,
+    UserEmailVerifiedValidator,
     UserIdValidator,
     UsernameValidator,
     UserStatusValidator,
@@ -250,3 +251,34 @@ class UpdateUserRolesDependency:
         await roles_validator.validate(roles=user_data.roles)
 
         return user_data
+
+
+class VerifyUserEmailDependency:
+    """Verify user email dependency"""
+
+    async def __call__(
+        self,
+        username: str,
+        username_validator: UsernameValidator = Depends(),
+        user_status_validator: UserStatusValidator = Depends(),
+        user_email_verification_validator: UserEmailVerifiedValidator = Depends(),
+    ) -> User:
+        """Checks user from request.
+
+        Args:
+            username (str): Username of requested user.
+            username_validator (UsernameValidator): Username validator.
+            user_status_validator (UserStatusValidator): User status validator.
+            user_email_verification_validator (UserEmailVerifiedValidator): User email
+            verification validator.
+
+        Returns:
+            User: User object.
+
+        """
+
+        user = await username_validator.validate(username=username)
+
+        await user_status_validator.validate(user=user)
+
+        return await user_email_verification_validator.validate(user=user)

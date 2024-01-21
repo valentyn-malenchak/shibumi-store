@@ -15,6 +15,7 @@ from app.api.v1.dependencies.user import (
     UpdateUserRolesDependency,
     UserDependency,
     UsernameDependency,
+    VerifyUserEmailDependency,
 )
 from app.api.v1.models import PaginationModel, SearchModel, SortingModel
 from app.api.v1.models.user import (
@@ -27,6 +28,7 @@ from app.api.v1.models.user import (
     UserResponseModel,
     UsersFilterModel,
     UsersListModel,
+    VerificationTokenModel,
 )
 from app.api.v1.services.user import UserService
 
@@ -127,6 +129,38 @@ async def create_user(
 
     """
     return await user_service.create(item=user_data)
+
+
+@router.post("/{username}/verify-email/", status_code=status.HTTP_204_NO_CONTENT)
+async def request_verify_user_email(
+    user: User = Depends(VerifyUserEmailDependency()),
+    user_service: UserService = Depends(),
+) -> None:
+    """API which requests user's email verification.
+
+    Args:
+        user (User): User object.
+        user_service (UserService): User service.
+
+    """
+    return await user_service.request_verify_email(user=user)
+
+
+@router.patch("/{username}/verify-email/", status_code=status.HTTP_204_NO_CONTENT)
+async def verify_user_email(
+    verify_email: VerificationTokenModel,
+    user: User = Depends(VerifyUserEmailDependency()),
+    user_service: UserService = Depends(),
+) -> None:
+    """API which verifies user's email.
+
+    Args:
+        verify_email (VerificationTokenModel): Email verification token.
+        user (User): User object.
+        user_service (UserService): User service.
+
+    """
+    return await user_service.verify_email(id_=user.id, token=verify_email.token)
 
 
 @router.patch(
