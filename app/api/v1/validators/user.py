@@ -153,7 +153,7 @@ class UserStatusValidator(BaseUserValidator):
         return user
 
 
-class RolesValidator(BaseUserValidator):
+class UserRolesValidator(BaseUserValidator):
     """Roles validator class."""
 
     async def validate(self, roles: List[RolesEnum]) -> None:
