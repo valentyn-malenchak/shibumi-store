@@ -13,7 +13,7 @@ from app.api.v1.dependencies.user import (
     UpdateUserDependency,
     UpdateUserPasswordDependency,
     UpdateUserRolesDependency,
-    UserDependency,
+    UserIdDependency,
     UsernameDependency,
     VerifyUserEmailDependency,
 )
@@ -94,7 +94,7 @@ async def get_user(
     _: CurrentUserModel = Security(
         StrictAuthorization(), scopes=[ScopesEnum.USERS_GET_USER.name]
     ),
-    user: User = Depends(UserDependency()),
+    user: User = Depends(UserIdDependency()),
 ) -> User | None:
     """API which returns a specific user.
 
@@ -194,7 +194,7 @@ async def update_user_password(
     _: CurrentUserModel = Security(
         StrictAuthorization(), scopes=[ScopesEnum.USERS_UPDATE_USER_PASSWORD.name]
     ),
-    user: User = Depends(UserDependency()),
+    user: User = Depends(UserIdDependency()),
     password: UserPasswordUpdateModel = Depends(UpdateUserPasswordDependency()),
     user_service: UserService = Depends(),
 ) -> None:
