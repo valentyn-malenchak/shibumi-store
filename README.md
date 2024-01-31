@@ -1,13 +1,21 @@
-# FastAPI Shop
+# Shibumi Store
 
 [![Python Version](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-312/)
 [![FastAPI Version](https://img.shields.io/badge/fastapi-0.109.0-green.svg)](https://fastapi.tiangolo.com/)
 [![MongoDB Version](https://img.shields.io/badge/mongodb-7.0-green.svg)](https://www.mongodb.com/)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=valentyn-malenchak_fastapi-shop&metric=coverage)](https://sonarcloud.io/summary/new_code?id=valentyn-malenchak_fastapi-shop)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=valentyn-malenchak_fastapi-shop&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=valentyn-malenchak_fastapi-shop)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=valentyn-malenchak_shibumi-store&metric=coverage)](https://sonarcloud.io/summary/new_code?id=valentyn-malenchak_shibumi-store)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=valentyn-malenchak_shibumi-store&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=valentyn-malenchak_shibumi-store)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-Welcome to the FastAPI Shop Project - a high-performance backend for e-commerce platform.
+Welcome to the "Shibumi Store" Project - a high-performance backend for e-commerce platform. Code name is SHIBU.
+
+## What is Shibumi?
+Shibumi (渋み) (noun) or Shibui (渋い) (adjective) are Japanese words which refer to a particular aesthetic or beauty of simple, subtle, and unobtrusive beauty. Shibumi includes the following essential qualities:
+
+- Shibui objects appear to be simple overall, but they include subtle details, such as textures, that balance simplicity with complexity. 
+- This balance of simplicity and complexity ensures that one does not tire of a shibumi object but constantly finds new meanings and enriched beauty that cause its aesthetic value to grow over the years.
+- Shibui objects are not necessarily imperfect or asymmetrical, though they can include these qualities.
+- Shibumi walks a fine line between contrasting aesthetic concepts such as elegant and rough or spontaneous and restrained.
 
 ## Technology Stack
 
@@ -127,38 +135,22 @@ The project is organized with the following directory structure:
 
 ### 1. Clone the repository:
 ```bash
-git clone https://github.com/valentyn-malenchak/fastapi-shop.git
+git clone https://github.com/valentyn-malenchak/shibumi-store.git
 ```
 
-### 2. Install poetry following the instructions:
-`https://python-poetry.org/docs/#installation`
+### 2. Add environment variables in [docker-compose](docker-compose.yml) marked with appropriate comments.
 
-### 3. Install MongoDB:
-`https://www.mongodb.com/docs/manual/installation/`
-
-### 4. Create and activate a virtual environment:
+### 3. Build the application container:
 ```bash
-poetry shell
+invoke build
 ```
 
-### 5. Install the project dependencies specified in `pyproject.toml`:
+### 4. Run the application:
 ```bash
-# For production
-invoke install
-# For development
-invoke install --group dev
+invoke compose
 ```
 
-### 6. Add environment variables listed in [AppConfig](app/settings.py) class
-
-### 7. Run the application:
-```bash
-invoke
-# or
-invoke run
-```
-
-## Other application [cli](tasks.py) commands
+## Other useful [cli](tasks.py) commands
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

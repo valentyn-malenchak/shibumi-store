@@ -7,7 +7,7 @@ from app.utils.pydantic import ImmutableModel
 class AppConfig(ImmutableModel):
     """Configuration model for application settings."""
 
-    APP_NAME: str = "fastapi-shop"
+    APP_NAME: str = "shibumi-store"
     APP_WORKERS: int = 1
     APP_DEBUG: bool = False
 

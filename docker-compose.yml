@@ -2,12 +2,12 @@ version: '3'
 
 services:
 
-  fastapi-shop:
-    image: fastapi-shop:latest
+  shibumi-store:
+    image: shibumi-store:latest
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: fastapi-shop
+    container_name: shibumi-store
     stdin_open: true
     tty: true
     ports:
@@ -16,7 +16,7 @@ services:
       - mongo
       - redis
     environment:
-      - APP_NAME=fastapi-shop
+      - APP_NAME=shibumi-store
       - APP_WORKERS=4
       - APP_DEBUG=true
       - AUTH_SECRET_KEY=  # Add your secret key here

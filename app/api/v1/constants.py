@@ -46,8 +46,8 @@ class RedisNamesTTLEnum(Enum):
 class EmailSubjectsEnum(Enum):
     """Email subjects enumerate."""
 
-    EMAIL_VERIFICATION = "FastAPI shop - Email verification"
-    RESET_PASSWORD = "FastAPI shop - Reset password"
+    EMAIL_VERIFICATION = "Shibumi Store - Email verification"
+    RESET_PASSWORD = "Shibumi Store - Reset password"
 
 
 class EmailTextEnum(Enum):
