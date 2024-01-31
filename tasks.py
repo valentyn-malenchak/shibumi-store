@@ -270,7 +270,7 @@ def build(ctx: Context) -> None:
         invoke build  # Builds new application image
 
     """
-    ctx.run("docker build -t fastapi-shop:latest .")
+    ctx.run("docker build -t shibumi-store:latest .")
 
 
 @task
