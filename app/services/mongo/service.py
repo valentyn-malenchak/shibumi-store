@@ -83,13 +83,13 @@ class MongoDBService(BaseService):
 
         cursor = collection_.find(filter=filter_, session=session)
 
-        if sort:
+        if sort is not None:
             cursor = cursor.sort(sort)
 
-        if skip:
+        if skip is not None:
             cursor = cursor.skip(skip)
 
-        if limit:
+        if limit is not None:
             cursor = cursor.limit(limit)
 
         return await cursor.to_list(length=limit)

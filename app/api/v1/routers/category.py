@@ -29,7 +29,7 @@ async def get_categories(
         category_service (CategoryService): Category service.
 
     Returns:
-        Dict[str, Any]: List of child categories.
+        Dict[str, Any]: List of categories.
 
     """
 
