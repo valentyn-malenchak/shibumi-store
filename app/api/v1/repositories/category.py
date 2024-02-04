@@ -6,6 +6,7 @@ from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
 from app.api.v1.repositories import BaseRepository
+from app.constants import SortingTypesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
 
 
@@ -36,6 +37,7 @@ class CategoryRepository(BaseRepository):
         return await self._mongo_service.find(
             collection=self._collection_name,
             filter_=self._get_list_query_filter(path=path),
+            sort=self._get_list_sorting(sort_by="_id", sort_order=SortingTypesEnum.ASC),
             session=session,
         )
 

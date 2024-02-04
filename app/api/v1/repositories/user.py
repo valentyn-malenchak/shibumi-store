@@ -129,7 +129,7 @@ class UserRepository(BaseRepository):
             if operation is transactional. Defaults to None.
 
         Returns:
-            Mapping[str, Any] | None: User object or None.
+            Mapping[str, Any] | None: User document or None.
 
         """
 
@@ -148,7 +148,7 @@ class UserRepository(BaseRepository):
             if operation is transactional. Defaults to None.
 
         Returns:
-            Mapping[str, Any] | None: User object or None.
+            Mapping[str, Any] | None: User document or None.
 
         """
 
