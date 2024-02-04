@@ -49,8 +49,8 @@ class MongoDBService(BaseService):
     async def find(  # noqa: PLR0913
         self,
         collection: str,
-        skip: int,
-        limit: int,
+        skip: int | None = None,
+        limit: int | None = None,
         filter_: Mapping[str, Any] | None = None,
         sort: Sequence[tuple[str, int | str | Mapping[str, Any]]] | None = None,
         *,
@@ -63,8 +63,9 @@ class MongoDBService(BaseService):
         Args:
             collection (str): Collection name.
             skip (int): The number of documents to skip in the results set.
+            Defaults to None.
             limit (int): Specifies the maximum number of documents will be
-            returned.
+            returned. Defaults to None.
             filter_ (Mapping[str, Any] | None): Specifies query selection
             criteria. Defaults to None.
             sort (Sequence[tuple[str, int | str | Mapping[str, Any]]] | None):
@@ -85,10 +86,20 @@ class MongoDBService(BaseService):
         if sort:
             cursor = cursor.sort(sort)
 
-        return await cursor.skip(skip).limit(limit).to_list(length=limit)
+        if skip:
+            cursor = cursor.skip(skip)
+
+        if limit:
+            cursor = cursor.limit(limit)
+
+        return await cursor.to_list(length=limit)
 
     async def count_documents(
-        self, collection: str, filter_: Mapping[str, Any] | None = None
+        self,
+        collection: str,
+        filter_: Mapping[str, Any] | None = None,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
     ) -> int:
         """Counts documents in the chosen collection.
 
@@ -96,6 +107,8 @@ class MongoDBService(BaseService):
             collection (str): Collection name.
             filter_ (Mapping[str, Any] | None): Specifies query selection
             criteria. Defaults to None.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
 
         Returns:
             int: Count of documents.
@@ -105,9 +118,9 @@ class MongoDBService(BaseService):
         collection_ = self._get_collection_by_name(collection=collection)
 
         return (
-            await collection_.count_documents(filter=filter_)
+            await collection_.count_documents(filter=filter_, session=session)
             if filter_ is not None
-            else await collection_.count_documents(filter={})
+            else await collection_.count_documents(filter={}, session=session)
         )
 
     async def find_one(

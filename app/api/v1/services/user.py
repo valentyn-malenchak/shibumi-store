@@ -114,7 +114,10 @@ class UserService(BaseService):
             User | None: User object or None.
 
         """
-        return await self.repository.get_by_id(id_=id_)
+
+        user = await self.repository.get_by_id(id_=id_)
+
+        return User(**user) if user is not None else None
 
     async def get_by_username(self, username: str) -> User | None:
         """Retrieves an item by its username.
@@ -126,7 +129,10 @@ class UserService(BaseService):
             User | None: User object or None.
 
         """
-        return await self.repository.get_by_username(username=username)
+
+        user = await self.repository.get_by_username(username=username)
+
+        return User(**user) if user is not None else None
 
     async def create(self, item: CreateUserRequestModel) -> User | None:
         """Creates a new user.

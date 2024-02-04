@@ -1,10 +1,10 @@
-"""Contains a migration that creates text index for users collection."""
+"""Contains a migration that creates/drops text index for users collection."""
 
 from mongodb_migrations.base import BaseMigration
 
 
 class Migration(BaseMigration):  # type: ignore
-    """Migration that creates text index for users collection."""
+    """Migration that creates/drops text index for users collection."""
 
     def upgrade(self) -> None:
         """Creates a text index."""

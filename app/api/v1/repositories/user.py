@@ -6,7 +6,6 @@ from bson import ObjectId
 from injector import inject
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
-from app.api.v1.models.user import User
 from app.api.v1.repositories import BaseRepository
 from app.constants import SortingTypesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
@@ -28,6 +27,7 @@ class UserRepository(BaseRepository):
         *_: Any,
         roles: List[str] | None = None,
         deleted: bool | None = None,
+        session: AsyncIOMotorClientSession | None = None,
     ) -> List[Mapping[str, Any]]:
         """Retrieves a list of users based on parameters.
 
@@ -40,6 +40,8 @@ class UserRepository(BaseRepository):
             _ (Any): Parameters for list filtering.
             roles (List[str] | None): List of roles for filtering. Defaults to None.
             deleted (bool | None): Deleted status filtering. Defaults to None.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
 
         Returns:
             List[Mapping[str, Any]]: The retrieved list of users.
@@ -54,6 +56,7 @@ class UserRepository(BaseRepository):
             sort=self._get_list_sorting(sort_by=sort_by, sort_order=sort_order),
             skip=self._calculate_skip(page=page, page_size=page_size),
             limit=page_size,
+            session=session,
         )
 
     @staticmethod
@@ -62,8 +65,8 @@ class UserRepository(BaseRepository):
         *_: Any,
         roles: List[str] | None = None,
         deleted: bool | None = None,
-    ) -> Mapping[str, Any] | None:
-        """Returns a list query filter.
+    ) -> Mapping[str, Any]:
+        """Returns a query filter for list.
 
         Args:
             search (str | None): Parameters for list searching.
@@ -72,7 +75,7 @@ class UserRepository(BaseRepository):
             deleted (bool | None): Deleted status filtering. Defaults to None.
 
         Returns:
-            (Mapping[str, Any] | None): List query filter.
+            (Mapping[str, Any]): List query filter.
 
         """
 
@@ -90,6 +93,7 @@ class UserRepository(BaseRepository):
         *_: Any,
         roles: List[str] | None = None,
         deleted: bool | None = None,
+        session: AsyncIOMotorClientSession | None = None,
     ) -> int:
         """Counts documents based on parameters.
 
@@ -98,6 +102,8 @@ class UserRepository(BaseRepository):
             _ (Any): Parameters for list filtering.
             roles (List[str] | None): List of roles for filtering. Defaults to None.
             deleted (bool | None): Deleted status filtering. Defaults to None.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
 
 
         Returns:
@@ -109,11 +115,12 @@ class UserRepository(BaseRepository):
             filter_=self._get_list_query_filter(
                 search=search, roles=roles, deleted=deleted
             ),
+            session=session,
         )
 
     async def get_by_id(
         self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
-    ) -> User | None:
+    ) -> Mapping[str, Any] | None:
         """Retrieves a user from the repository by its unique identifier.
 
         Args:
@@ -122,19 +129,17 @@ class UserRepository(BaseRepository):
             if operation is transactional. Defaults to None.
 
         Returns:
-            User | None: User object or None.
+            Mapping[str, Any] | None: User object or None.
 
         """
 
-        user = await self._mongo_service.find_one(
+        return await self._mongo_service.find_one(
             collection=self._collection_name, filter_={"_id": id_}, session=session
         )
 
-        return User(**user) if user else None
-
     async def get_by_username(
         self, username: str, *, session: AsyncIOMotorClientSession | None = None
-    ) -> User | None:
+    ) -> Mapping[str, Any] | None:
         """Retrieves a user from the repository by its username.
 
         Args:
@@ -143,17 +148,15 @@ class UserRepository(BaseRepository):
             if operation is transactional. Defaults to None.
 
         Returns:
-            User | None: User object or None.
+            Mapping[str, Any] | None: User object or None.
 
         """
 
-        user = await self._mongo_service.find_one(
+        return await self._mongo_service.find_one(
             collection=self._collection_name,
             filter_={"username": username},
             session=session,
         )
-
-        return User(**user) if user else None
 
     async def create(
         self, item: Dict[str, Any], *, session: AsyncIOMotorClientSession | None = None

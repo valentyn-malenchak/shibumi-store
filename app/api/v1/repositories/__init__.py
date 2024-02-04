@@ -35,7 +35,8 @@ class BaseRepository(abc.ABC):
         sort_order: SortingTypesEnum,
         page: int,
         page_size: int,
-        *args: Any,
+        *_: Any,
+        session: AsyncIOMotorClientSession | None = None,
     ) -> List[Any]:
         """Retrieves a list of items based on parameters.
 
@@ -45,7 +46,9 @@ class BaseRepository(abc.ABC):
             sort_order (SortingTypesEnum): Defines sort order - ascending or descending.
             page (int): Page number.
             page_size (int): Number of items on each page.
-            args (Any): Parameters for list filtering.
+            _ (Any): Parameters for list filtering.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
 
         Returns:
             List[Any]: The retrieved list of items.
@@ -72,17 +75,15 @@ class BaseRepository(abc.ABC):
 
     @staticmethod
     @abc.abstractmethod
-    def _get_list_query_filter(
-        search: str | None, *args: Any
-    ) -> Mapping[str, Any] | None:
-        """Returns a list query filter.
+    def _get_list_query_filter(search: str | None, *_: Any) -> Mapping[str, Any]:
+        """Returns a query filter for list.
 
         Args:
             search (str | None): Parameters for list searching.
-            args (Any): Parameters for list filtering.
+            _ (Any): Parameters for list filtering.
 
         Returns:
-            (Mapping[str, Any] | None): List query filter.
+            (Mapping[str, Any]): List query filter.
 
         Raises:
             NotImplementedError: This method must be implemented by subclasses.
@@ -112,13 +113,16 @@ class BaseRepository(abc.ABC):
     async def count(
         self,
         search: str | None,
-        *args: Any,
+        *_: Any,
+        session: AsyncIOMotorClientSession | None = None,
     ) -> int:
         """Counts documents based on parameters.
 
         Args:
             search (str | None): Parameters for list searching.
-            args (Any): Parameters for list filtering.
+            _ (Any): Parameters for list filtering.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
 
         Returns:
             int: Count of documents.

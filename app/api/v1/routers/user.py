@@ -67,11 +67,11 @@ async def get_users(
     """API which returns users list.
 
     Args:
+        _ (CurrentUserModel): Current user object.
         filter_ (UsersFilterModel): Parameters for list filtering.
         search (SearchModel): Parameters for list searching.
         sorting (SortingModel): Parameters for sorting.
         pagination (PaginationModel): Parameters for pagination.
-        _: Current user object.
         user_service (UserService): User service.
 
     Returns:
@@ -99,7 +99,7 @@ async def get_user(
     """API which returns a specific user.
 
     Args:
-        _: Current user object.
+        _ (CurrentUserModel): Current user object.
         user (User): User object.
 
     Returns:
@@ -177,7 +177,7 @@ async def update_user(
     """API which updates a user object.
 
     Args:
-        _: Current user object.
+        _ (CurrentUserModel): Current user object.
         user (User): User object.
         user_data (UpdateUserRequestModel): User data to update.
         user_service (UserService): User service.
@@ -201,7 +201,7 @@ async def update_user_password(
     """API which updates a user password.
 
     Args:
-        _: Current user object.
+        _ (CurrentUserModel): Current user object.
         user (User): User object.
         password (UserPasswordUpdateModel): Old and new passwords.
         user_service (UserService): User service.
@@ -223,7 +223,7 @@ async def delete_user(
     """API which softly deletes a user object.
 
     Args:
-        _: Current user object.
+        _ (CurrentUserModel): Current user object.
         user (User): User object.
         user_service (UserService): User service.
 
