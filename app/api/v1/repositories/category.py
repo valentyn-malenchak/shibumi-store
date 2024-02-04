@@ -1,4 +1,4 @@
-"""Module that contains role scopes repository class."""
+"""Module that contains categories repository class."""
 
 from typing import Any, Dict, List, Mapping
 
@@ -9,77 +9,93 @@ from app.api.v1.repositories import BaseRepository
 from app.services.mongo.constants import MongoCollectionsEnum
 
 
-class RoleScopesRepository(BaseRepository):
-    """Role-scopes repository for handling data access operations."""
+class CategoryRepository(BaseRepository):
+    """Category repository for handling data access operations."""
 
-    _collection_name: str = MongoCollectionsEnum.ROLES_SCOPES.value
+    _collection_name: str = MongoCollectionsEnum.CATEGORIES.value
 
     async def get(
-        self, *_: Any, session: AsyncIOMotorClientSession | None = None
+        self,
+        *_: Any,
+        path: str | None = None,
+        session: AsyncIOMotorClientSession | None = None,
     ) -> List[Any]:
-        """Retrieves a list of roles-scopes based on parameters.
+        """Retrieves a list of categories based on parameters.
 
         Args:
-            _ (Any): Parameters for list filtering, searching, sorting and pagination.
+            _ (Any): Parameters for list searching, sorting and pagination.
+            path (str | None): Category tree path filtering. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
         Returns:
-            List[Any]: The retrieved list of roles-scopes.
-
-        Raises:
-            NotImplementedError: This method is not implemented.
+            List[Any]: The retrieved list of categories.
 
         """
-        raise NotImplementedError
+
+        return await self._mongo_service.find(
+            collection=self._collection_name,
+            filter_=self._get_list_query_filter(path=path),
+            session=session,
+        )
 
     @staticmethod
-    def _get_list_query_filter(*_: Any) -> Mapping[str, Any]:
+    def _get_list_query_filter(*_: Any, path: str | None = None) -> Mapping[str, Any]:
         """Returns a query filter for list.
 
         Args:
-            _ (Any): Parameters for list filtering and searching.
+            _ (Any): Parameters for list searching.
+            path (str | None): Category tree path filtering. Defaults to None.
 
         Returns:
             (Mapping[str, Any]): List query filter.
 
-        Raises:
-            NotImplementedError: This method is not implemented.
-
         """
-        raise NotImplementedError
+
+        query_filter = {}
+
+        if path is not None:
+            query_filter["path"] = {"$regex": f"^{path}"}
+
+        return query_filter
 
     async def count(
-        self, *_: Any, session: AsyncIOMotorClientSession | None = None
+        self,
+        *_: Any,
+        path: str | None = None,
+        session: AsyncIOMotorClientSession | None = None,
     ) -> int:
         """Counts documents based on parameters.
 
         Args:
-            _ (Any): Parameters for list filtering and searching.
+            _ (Any): Parameters for list filtering.
+            path (str | None): Category tree path filtering. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
         Returns:
             int: Count of documents.
 
-        Raises:
-            NotImplementedError: This method is not implemented.
-
         """
-        raise NotImplementedError
+        return await self._mongo_service.count_documents(
+            collection=self._collection_name,
+            filter_=self._get_list_query_filter(path=path),
+            session=session,
+        )
 
     async def get_by_id(
         self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
     ) -> Any:
-        """Retrieves a role-scopes from the repository by its unique identifier.
+        """Retrieves a category from the repository by its unique identifier.
 
         Args:
-            id_ (ObjectId): The unique identifier of the role-scopes.
+            id_ (ObjectId): The unique identifier of the category.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
         Returns:
-            Any: The retrieved role-scopes.
+            Any: The retrieved category.
+
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -87,45 +103,18 @@ class RoleScopesRepository(BaseRepository):
         """
         raise NotImplementedError
 
-    async def get_scopes_by_roles(
-        self, roles: List[str], *, session: AsyncIOMotorClientSession | None = None
-    ) -> List[str]:
-        """Retrieves a list of scopes from the repository by roles name list.
-
-        Args:
-            roles (List[str]): List of roles.
-            session (AsyncIOMotorClientSession | None): Defines a client session
-            if operation is transactional. Defaults to None.
-
-        Returns:
-            List[str]: The retrieved scopes.
-
-        """
-
-        scopes = await self._mongo_service.aggregate(
-            collection=self._collection_name,
-            pipeline=[
-                {"$match": {"role": {"$in": roles}}},
-                {"$unwind": "$scopes"},
-                {"$group": {"_id": "$scopes"}},
-            ],
-            session=session,
-        )
-
-        return [scope["_id"] for scope in scopes]
-
     async def create(
         self, item: Any, *, session: AsyncIOMotorClientSession | None = None
     ) -> Any:
-        """Create a new role-scopes in repository.
+        """Creates a new category in repository.
 
         Args:
-            item (Any): The data for the new role-scopes.
+            item (Any): The data for the new category.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
         Returns:
-            Any: The ID of created role-scopes.
+            Any: The ID of created category.
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -139,15 +128,15 @@ class RoleScopesRepository(BaseRepository):
         *,
         session: AsyncIOMotorClientSession | None = None,
     ) -> List[Any]:
-        """Creates bulk roles-scopes in the repository.
+        """Creates bulk categories in the repository.
 
         Args:
-            items (List[Dict[str, Any]]): Roles-scopes to be created.
+            items (List[Dict[str, Any]]): Categories to be created.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
         Returns:
-            List[Any]: The IDs of created roles-scopes.
+            List[Any]: The IDs of created categories.
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -158,7 +147,7 @@ class RoleScopesRepository(BaseRepository):
     async def delete_all(
         self, *, session: AsyncIOMotorClientSession | None = None
     ) -> None:
-        """Deletes all roles-scopes from the repository.
+        """Deletes all categories from the repository.
 
         Args:
             session (AsyncIOMotorClientSession | None): Defines a client session
@@ -177,11 +166,11 @@ class RoleScopesRepository(BaseRepository):
         *,
         session: AsyncIOMotorClientSession | None = None,
     ) -> None:
-        """Updates a role-scopes in repository.
+        """Updates a category in repository.
 
         Args:
-            id_ (ObjectId): The unique identifier of the role-scopes.
-            item (Any): Data to update role-scopes.
+            id_ (ObjectId): The unique identifier of the category.
+            item (Any): Data to update category.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 

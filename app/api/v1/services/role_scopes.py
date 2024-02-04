@@ -20,7 +20,8 @@ class RoleScopesService(BaseService):
         This method sets up the MongoDB service instance for data access.
 
         Args:
-            repository (RoleScopesRepository): An instance of the User repository.
+            repository (RoleScopesRepository): An instance of the Role-Scopes
+            repository.
 
         """
 

@@ -18,8 +18,10 @@ class ScopesEnum(Enum):
     """Scopes enumerate."""
 
     # Scope naming: {domain}_{action}_{entity}
-    AUTH_REFRESH_TOKEN = "Allows to refresh Access token using Refresh token."
+
     HEALTH_GET_HEALTH = "Allows to check application health."
+
+    AUTH_REFRESH_TOKEN = "Allows to refresh Access token using Refresh token."
     USERS_GET_ME = "Allows to get current user object."
     USERS_GET_USERS = "Allows to get users list."
     USERS_GET_USER = "Allow to get user."
@@ -27,6 +29,8 @@ class ScopesEnum(Enum):
     USERS_UPDATE_USER = "Allows to update user."
     USERS_UPDATE_USER_PASSWORD = "Allows to update user's password."
     USERS_DELETE_USER = "Allows to delete user."
+
+    CATEGORIES_GET_CATEGORIES = "Allows to get categories list."
 
 
 class RedisNamesEnum(Enum):
