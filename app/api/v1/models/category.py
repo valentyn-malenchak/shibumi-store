@@ -35,6 +35,7 @@ class CategoriesFilterModel(BaseModel):
     """Categories list filter model."""
 
     path: str | None = None
+    leafs: bool = False
 
 
 class CategoriesListModel(ListResponseModel):

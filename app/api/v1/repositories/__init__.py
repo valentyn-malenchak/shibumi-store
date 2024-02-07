@@ -73,9 +73,10 @@ class BaseRepository(abc.ABC):
         """
         return (page - 1) * page_size
 
-    @staticmethod
     @abc.abstractmethod
-    def _get_list_query_filter(search: str | None, *_: Any) -> Mapping[str, Any]:
+    async def _get_list_query_filter(
+        self, search: str | None, *_: Any
+    ) -> Mapping[str, Any]:
         """Returns a query filter for list.
 
         Args:

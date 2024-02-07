@@ -50,7 +50,7 @@ class UserRepository(BaseRepository):
 
         return await self._mongo_service.find(
             collection=self._collection_name,
-            filter_=self._get_list_query_filter(
+            filter_=await self._get_list_query_filter(
                 search=search, roles=roles, deleted=deleted
             ),
             sort=self._get_list_sorting(sort_by=sort_by, sort_order=sort_order),
@@ -60,7 +60,7 @@ class UserRepository(BaseRepository):
         )
 
     @staticmethod
-    def _get_list_query_filter(
+    async def _get_list_query_filter(
         search: str | None,
         *_: Any,
         roles: List[str] | None = None,
@@ -112,7 +112,7 @@ class UserRepository(BaseRepository):
         """
         return await self._mongo_service.count_documents(
             collection=self._collection_name,
-            filter_=self._get_list_query_filter(
+            filter_=await self._get_list_query_filter(
                 search=search, roles=roles, deleted=deleted
             ),
             session=session,

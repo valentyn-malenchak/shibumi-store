@@ -19,6 +19,7 @@ class CategoryRepository(BaseRepository):
         self,
         *_: Any,
         path: str | None = None,
+        leafs: bool = False,
         session: AsyncIOMotorClientSession | None = None,
     ) -> List[Any]:
         """Retrieves a list of categories based on parameters.
@@ -26,6 +27,8 @@ class CategoryRepository(BaseRepository):
         Args:
             _ (Any): Parameters for list searching, sorting and pagination.
             path (str | None): Category tree path filtering. Defaults to None.
+            leafs (bool): Defines if only leaf categories will be returned.
+            Defaults to False.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
@@ -36,28 +39,38 @@ class CategoryRepository(BaseRepository):
 
         return await self._mongo_service.find(
             collection=self._collection_name,
-            filter_=self._get_list_query_filter(path=path),
+            filter_=await self._get_list_query_filter(path=path, leafs=leafs),
             sort=self._get_list_sorting(sort_by="_id", sort_order=SortingTypesEnum.ASC),
             session=session,
         )
 
-    @staticmethod
-    def _get_list_query_filter(*_: Any, path: str | None = None) -> Mapping[str, Any]:
+    async def _get_list_query_filter(
+        self, *_: Any, path: str | None = None, leafs: bool = False
+    ) -> Mapping[str, Any]:
         """Returns a query filter for list.
 
         Args:
             _ (Any): Parameters for list searching.
             path (str | None): Category tree path filtering. Defaults to None.
+            leafs (bool): Defines if only leaf categories will be returned.
+            Defaults to False.
 
         Returns:
             (Mapping[str, Any]): List query filter.
 
         """
 
-        query_filter = {}
+        query_filter: Dict[str, Any] = {}
 
         if path is not None:
             query_filter["path"] = {"$regex": f"^{path}"}
+
+        if leafs is True:
+            parent_ids = await self._mongo_service.distinct(
+                self._collection_name, "parent_id", filter_={"parent_id": {"$ne": None}}
+            )
+
+            query_filter["_id"] = {"$nin": parent_ids}
 
         return query_filter
 
@@ -65,6 +78,7 @@ class CategoryRepository(BaseRepository):
         self,
         *_: Any,
         path: str | None = None,
+        leafs: bool = False,
         session: AsyncIOMotorClientSession | None = None,
     ) -> int:
         """Counts documents based on parameters.
@@ -74,6 +88,8 @@ class CategoryRepository(BaseRepository):
             path (str | None): Category tree path filtering. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            leafs (bool): Defines if only leaf categories will be returned.
+            Defaults to False.
 
         Returns:
             int: Count of documents.
@@ -81,7 +97,7 @@ class CategoryRepository(BaseRepository):
         """
         return await self._mongo_service.count_documents(
             collection=self._collection_name,
-            filter_=self._get_list_query_filter(path=path),
+            filter_=await self._get_list_query_filter(path=path, leafs=leafs),
             session=session,
         )
 
