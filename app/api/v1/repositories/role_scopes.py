@@ -34,7 +34,7 @@ class RoleScopesRepository(BaseRepository):
         raise NotImplementedError
 
     @staticmethod
-    def _get_list_query_filter(*_: Any) -> Mapping[str, Any]:
+    async def _get_list_query_filter(*_: Any) -> Mapping[str, Any]:
         """Returns a query filter for list.
 
         Args:

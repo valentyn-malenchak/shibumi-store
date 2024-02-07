@@ -40,7 +40,7 @@ class TestCategory(BaseAPITest):
             )
             is True
         )
-        assert all(item in response.json().items() for item in dict(total=31).items())
+        assert response.json()["total"] == 31  # noqa: PLR2004
 
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
@@ -70,7 +70,7 @@ class TestCategory(BaseAPITest):
             )
             is True
         )
-        assert all(item in response.json().items() for item in dict(total=31).items())
+        assert response.json()["total"] == 31  # noqa: PLR2004
 
     @pytest.mark.asyncio
     async def test_get_categories_list_with_filters(
@@ -80,7 +80,7 @@ class TestCategory(BaseAPITest):
 
         response = await test_client.get(
             "/categories/",
-            params={"path": "/electronics/computers/"},
+            params={"path": "/electronics/computers", "leafs": True},
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -89,4 +89,4 @@ class TestCategory(BaseAPITest):
             "/electronics/computers/laptops",
             "/electronics/computers/all-in-one",
         }
-        assert all(item in response.json().items() for item in dict(total=3).items())
+        assert response.json()["total"] == 3  # noqa: PLR2004

@@ -123,6 +123,34 @@ class MongoDBService(BaseService):
             else await collection_.count_documents(filter={}, session=session)
         )
 
+    async def distinct(
+        self,
+        collection: str,
+        field: str,
+        filter_: Mapping[str, Any] | None = None,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+    ) -> List[Any]:
+        """Finds the distinct values for a specified field across chosen collection and
+        returns the results in an array.
+
+        Args:
+            collection (str): Collection name.
+            field (str): The field for which to return distinct values.
+            filter_ (Mapping[str, Any] | None): Specifies query selection
+            criteria. Defaults to None.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            List[Any]: List of distinct values.
+
+        """
+
+        collection_ = self._get_collection_by_name(collection=collection)
+
+        return await collection_.distinct(field, filter=filter_, session=session)
+
     async def find_one(
         self,
         collection: str,
