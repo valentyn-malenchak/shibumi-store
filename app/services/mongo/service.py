@@ -52,6 +52,7 @@ class MongoDBService(BaseService):
         skip: int | None = None,
         limit: int | None = None,
         filter_: Mapping[str, Any] | None = None,
+        projection: Mapping[str, Any] | None = None,
         sort: Sequence[tuple[str, int | str | Mapping[str, Any]]] | None = None,
         *,
         session: AsyncIOMotorClientSession | None = None,
@@ -68,6 +69,9 @@ class MongoDBService(BaseService):
             returned. Defaults to None.
             filter_ (Mapping[str, Any] | None): Specifies query selection
             criteria. Defaults to None.
+            projection (Mapping[str, Any] | None): Specifies list of field names that
+            should be returned in the result set or a dict specifying the fields
+            to include or exclude. Defaults to None.
             sort (Sequence[tuple[str, int | str | Mapping[str, Any]]] | None):
             Specifies the order in which the query returns matching documents.
             Defaults to None.
@@ -81,7 +85,9 @@ class MongoDBService(BaseService):
 
         collection_ = self._get_collection_by_name(collection=collection)
 
-        cursor = collection_.find(filter=filter_, session=session)
+        cursor = collection_.find(
+            filter=filter_, projection=projection, session=session
+        )
 
         if sort is not None:
             cursor = cursor.sort(sort)
