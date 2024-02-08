@@ -80,5 +80,12 @@ class SortingTypesEnum(Enum):
     DESC = "desc"
 
 
+class ProjectionTypesEnum(Enum):
+    """Projection types enumerate."""
+
+    INCLUDE = 1
+    EXCLUDE = 0
+
+
 BACKGROUND_TASK_RETRY_ATTEMPTS = 3
 BACKGROUND_TASK_RETRY_WAIT = 5
