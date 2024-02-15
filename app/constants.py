@@ -18,6 +18,8 @@ class HTTPErrorMessagesEnum(Enum):
     EXPIRED_TOKEN = "Token is expired."
     INVALID_CREDENTIALS = "Invalid credentials."
     PERMISSION_DENIED = "Permission denied."
+    REQUIRED_FIELD = "Field required."
+    INVALID_FIELD_TYPE = "Field should be a valid {type_}."
     EMAIL_IS_NOT_VERIFIED = "Email is not verified."
     EMAIL_IS_ALREADY_VERIFIED = "Email is already verified."
 
@@ -32,6 +34,10 @@ class HTTPErrorMessagesEnum(Enum):
 
     INVALID_RESET_PASSWORD_TOKEN = "Invalid or expired reset password token."
     INVALID_EMAIL_VERIFICATION_TOKEN = "Invalid or expired email verification token."
+
+    LEAF_PRODUCT_CATEGORY_REQUIRED = (
+        "Invalid category. Operation is allowed only for 'leaf' categories."
+    )
 
 
 # Password policies

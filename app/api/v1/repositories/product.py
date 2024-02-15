@@ -1,4 +1,4 @@
-"""Module that contains role scopes repository class."""
+"""Module that contains product repository class."""
 
 from typing import Any, Dict, List, Mapping
 
@@ -9,15 +9,17 @@ from app.api.v1.repositories import BaseRepository
 from app.services.mongo.constants import MongoCollectionsEnum
 
 
-class RoleScopesRepository(BaseRepository):
-    """Role-scopes repository for handling data access operations."""
+class ProductRepository(BaseRepository):
+    """Product repository for handling data access operations."""
 
-    _collection_name: str = MongoCollectionsEnum.ROLES_SCOPES.value
+    _collection_name: str = MongoCollectionsEnum.PRODUCTS.value
 
     async def get(
-        self, *_: Any, session: AsyncIOMotorClientSession | None = None
+        self,
+        *_: Any,
+        session: AsyncIOMotorClientSession | None = None,
     ) -> List[Any]:
-        """Retrieves a list of roles-scopes based on parameters.
+        """Retrieves a list of products based on parameters.
 
         Args:
             _ (Any): Parameters for list filtering, searching, sorting and pagination.
@@ -25,7 +27,7 @@ class RoleScopesRepository(BaseRepository):
             if operation is transactional. Defaults to None.
 
         Returns:
-            List[Any]: The retrieved list of roles-scopes.
+            List[Any]: The retrieved list of products.
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -70,68 +72,40 @@ class RoleScopesRepository(BaseRepository):
 
     async def get_by_id(
         self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
-    ) -> Any:
-        """Retrieves a role-scopes from the repository by its unique identifier.
+    ) -> Mapping[str, Any] | None:
+        """Retrieves a product from the repository by its unique identifier.
 
         Args:
-            id_ (ObjectId): The unique identifier of the role-scopes.
+            id_ (ObjectId): The unique identifier of the product.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
         Returns:
-            Any: The retrieved role-scopes.
-
-        Raises:
-            NotImplementedError: This method is not implemented.
-
-        """
-        raise NotImplementedError
-
-    async def get_scopes_by_roles(
-        self, roles: List[str], *, session: AsyncIOMotorClientSession | None = None
-    ) -> List[str]:
-        """Retrieves a list of scopes from the repository by roles name list.
-
-        Args:
-            roles (List[str]): List of roles.
-            session (AsyncIOMotorClientSession | None): Defines a client session
-            if operation is transactional. Defaults to None.
-
-        Returns:
-            List[str]: The retrieved scopes.
+            Mapping[str, Any] | None: The retrieved product.
 
         """
 
-        scopes = await self._mongo_service.aggregate(
-            collection=self._collection_name,
-            pipeline=[
-                {"$match": {"role": {"$in": roles}}},
-                {"$unwind": "$scopes"},
-                {"$group": {"_id": "$scopes"}},
-            ],
-            session=session,
+        return await self._mongo_service.find_one(
+            collection=self._collection_name, filter_={"_id": id_}, session=session
         )
 
-        return [scope["_id"] for scope in scopes]
-
     async def create(
-        self, item: Any, *, session: AsyncIOMotorClientSession | None = None
+        self, item: Dict[str, Any], *, session: AsyncIOMotorClientSession | None = None
     ) -> Any:
-        """Create a new role-scopes in repository.
+        """Creates a new product in repository.
 
         Args:
-            item (Any): The data for the new role-scopes.
+            item (Dict[str, Any]): The data for the new product.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
         Returns:
-            Any: The ID of created role-scopes.
-
-        Raises:
-            NotImplementedError: This method is not implemented.
+            Any: The ID of created product.
 
         """
-        raise NotImplementedError
+        return await self._mongo_service.insert_one(
+            collection=self._collection_name, document=item, session=session
+        )
 
     async def create_many(
         self,
@@ -139,15 +113,15 @@ class RoleScopesRepository(BaseRepository):
         *,
         session: AsyncIOMotorClientSession | None = None,
     ) -> List[Any]:
-        """Creates bulk roles-scopes in the repository.
+        """Creates bulk products in the repository.
 
         Args:
-            items (List[Dict[str, Any]]): Roles-scopes to be created.
+            items (List[Dict[str, Any]]): Products to be created.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
         Returns:
-            List[Any]: The IDs of created roles-scopes.
+            List[Any]: The IDs of created products.
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -158,7 +132,7 @@ class RoleScopesRepository(BaseRepository):
     async def delete_all(
         self, *, session: AsyncIOMotorClientSession | None = None
     ) -> None:
-        """Deletes all roles-scopes from the repository.
+        """Deletes all products from the repository.
 
         Args:
             session (AsyncIOMotorClientSession | None): Defines a client session
@@ -177,11 +151,11 @@ class RoleScopesRepository(BaseRepository):
         *,
         session: AsyncIOMotorClientSession | None = None,
     ) -> None:
-        """Updates a role-scopes in repository.
+        """Updates a product in repository.
 
         Args:
-            id_ (ObjectId): The unique identifier of the role-scopes.
-            item (Dict[str, Any]): Data to update role-scopes.
+            id_ (ObjectId): The unique identifier of the product.
+            item (Dict[str, Any]): Data to update product.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 

@@ -1,4 +1,4 @@
-"""Module that contains categories repository class."""
+"""Module that contains category repository class."""
 
 from typing import Any, Dict, List, Mapping
 
@@ -104,7 +104,7 @@ class CategoryRepository(BaseRepository):
 
     async def get_by_id(
         self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
-    ) -> Any:
+    ) -> Mapping[str, Any] | None:
         """Retrieves a category from the repository by its unique identifier.
 
         Args:
@@ -113,14 +113,59 @@ class CategoryRepository(BaseRepository):
             if operation is transactional. Defaults to None.
 
         Returns:
-            Any: The retrieved category.
-
-
-        Raises:
-            NotImplementedError: This method is not implemented.
+            Mapping[str, Any] | None: The retrieved category.
 
         """
-        raise NotImplementedError
+
+        return await self._mongo_service.find_one(
+            collection=self._collection_name, filter_={"_id": id_}, session=session
+        )
+
+    async def get_extended_by_id(
+        self,
+        id_: ObjectId,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+    ) -> Mapping[str, Any] | None:
+        """Retrieves a category with related data from the repository by its unique
+        identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the category.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            Mapping[str, Any] | None: The retrieved category.
+
+        """
+
+        result = await self._mongo_service.aggregate(
+            collection=self._collection_name,
+            pipeline=[
+                {"$match": {"_id": id_}},
+                {
+                    "$lookup": {
+                        "from": "parameters",
+                        "localField": "parameters",
+                        "foreignField": "_id",
+                        "as": "parameters",
+                    }
+                },
+                {
+                    "$lookup": {
+                        "from": "categories",
+                        "localField": "_id",
+                        "foreignField": "parent_id",
+                        "as": "children",
+                    }
+                },
+                {"$addFields": {"has_children": {"$gt": [{"$size": "$children"}, 0]}}},
+            ],
+            session=session,
+        )
+
+        return result[0] if result else None
 
     async def create(
         self, item: Any, *, session: AsyncIOMotorClientSession | None = None
@@ -189,7 +234,7 @@ class CategoryRepository(BaseRepository):
 
         Args:
             id_ (ObjectId): The unique identifier of the category.
-            item (Any): Data to update category.
+            item (Dict[str, Any]): Data to update category.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
