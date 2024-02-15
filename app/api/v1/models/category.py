@@ -41,6 +41,8 @@ class CategoryResponseModel(ObjectIdModel):
     parent_id: Annotated[ObjectId, ObjectIdAnnotation] | None
     path: str  # used as "Materialized Path" pattern
     path_name: str
+    created_at: datetime
+    updated_at: datetime | None
 
 
 class CategoriesFilterModel(BaseModel):

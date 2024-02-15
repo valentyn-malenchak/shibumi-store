@@ -18,8 +18,6 @@ class HTTPErrorMessagesEnum(Enum):
     EXPIRED_TOKEN = "Token is expired."
     INVALID_CREDENTIALS = "Invalid credentials."
     PERMISSION_DENIED = "Permission denied."
-    REQUIRED_FIELD = "Field required."
-    INVALID_FIELD_TYPE = "Field should be a valid {type_}."
     EMAIL_IS_NOT_VERIFIED = "Email is not verified."
     EMAIL_IS_ALREADY_VERIFIED = "Email is already verified."
 
@@ -53,6 +51,8 @@ class ValidationErrorMessagesEnum(Enum):
     """Contains validation error messages for Pydantic models."""
 
     INVALID_IDENTIFIER = "Invalid object identifier."
+    REQUIRED_FIELD = "Field required."
+    INVALID_FIELD_TYPE = "Field should be a valid {type_}."
 
     # Password policies
     PASSWORD_MIN_LENGTH = "Password must contain at least eight characters."

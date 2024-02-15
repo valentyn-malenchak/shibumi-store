@@ -10,7 +10,7 @@ from app.api.v1.constants import ProductParameterTypesEnum
 from app.api.v1.services.product import ProductService
 from app.api.v1.validators import BaseValidator
 from app.api.v1.validators.category import LeafCategoryValidator
-from app.constants import HTTPErrorMessagesEnum
+from app.constants import ValidationErrorMessagesEnum
 
 
 class BaseProductValidator(BaseValidator):
@@ -95,7 +95,7 @@ class ProductParametersValidator(BaseProductValidator):
                             "parameters",
                             parameter.machine_name,
                         ],
-                        "msg": HTTPErrorMessagesEnum.REQUIRED_FIELD.value,
+                        "msg": ValidationErrorMessagesEnum.REQUIRED_FIELD.value,
                     }
                 )
 
@@ -119,7 +119,7 @@ class ProductParametersValidator(BaseProductValidator):
                             "parameters",
                             parameter.machine_name,
                         ],
-                        "msg": HTTPErrorMessagesEnum.INVALID_FIELD_TYPE.value.format(
+                        "msg": ValidationErrorMessagesEnum.INVALID_FIELD_TYPE.value.format(  # noqa: E501
                             type_=type_.value.__name__
                         ),
                         "input": value,
