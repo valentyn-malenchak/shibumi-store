@@ -6,7 +6,7 @@ from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
 from app.api.v1.repositories import BaseRepository
-from app.constants import ProjectionTypesEnum, SortingTypesEnum
+from app.constants import ProjectionValuesEnum, SortingTypesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
 
 
@@ -21,7 +21,8 @@ class CategoryRepository(BaseRepository):
         path: str | None = None,
         leafs: bool = False,
         session: AsyncIOMotorClientSession | None = None,
-    ) -> List[Any]:
+        **__: Any,
+    ) -> List[Mapping[str, Any]]:
         """Retrieves a list of categories based on parameters.
 
         Args:
@@ -31,22 +32,27 @@ class CategoryRepository(BaseRepository):
             Defaults to False.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            __ (Any): Parameters for list filtering.
 
         Returns:
-            List[Any]: The retrieved list of categories.
+            List[Mapping[str, Any]]: The retrieved list of categories.
 
         """
 
         return await self._mongo_service.find(
             collection=self._collection_name,
             filter_=await self._get_list_query_filter(path=path, leafs=leafs),
-            projection={"parameters": ProjectionTypesEnum.EXCLUDE.value},
+            projection={"parameters": ProjectionValuesEnum.EXCLUDE.value},
             sort=self._get_list_sorting(sort_by="_id", sort_order=SortingTypesEnum.ASC),
             session=session,
         )
 
     async def _get_list_query_filter(
-        self, *_: Any, path: str | None = None, leafs: bool = False
+        self,
+        *_: Any,
+        path: str | None = None,
+        leafs: bool = False,
+        **__: Any,
     ) -> Mapping[str, Any]:
         """Returns a query filter for list.
 
@@ -55,6 +61,7 @@ class CategoryRepository(BaseRepository):
             path (str | None): Category tree path filtering. Defaults to None.
             leafs (bool): Defines if only leaf categories will be returned.
             Defaults to False.
+            __ (Any): Parameters for list filtering.
 
         Returns:
             (Mapping[str, Any]): List query filter.
@@ -81,16 +88,18 @@ class CategoryRepository(BaseRepository):
         path: str | None = None,
         leafs: bool = False,
         session: AsyncIOMotorClientSession | None = None,
+        **__: Any,
     ) -> int:
         """Counts documents based on parameters.
 
         Args:
-            _ (Any): Parameters for list filtering.
+            _ (Any): Parameters for list searching.
             path (str | None): Category tree path filtering. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
             leafs (bool): Defines if only leaf categories will be returned.
             Defaults to False.
+            __ (Any): Parameters for list filtering.
 
         Returns:
             int: Count of documents.
@@ -100,25 +109,6 @@ class CategoryRepository(BaseRepository):
             collection=self._collection_name,
             filter_=await self._get_list_query_filter(path=path, leafs=leafs),
             session=session,
-        )
-
-    async def get_by_id(
-        self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
-    ) -> Mapping[str, Any] | None:
-        """Retrieves a category from the repository by its unique identifier.
-
-        Args:
-            id_ (ObjectId): The unique identifier of the category.
-            session (AsyncIOMotorClientSession | None): Defines a client session
-            if operation is transactional. Defaults to None.
-
-        Returns:
-            Mapping[str, Any] | None: The retrieved category.
-
-        """
-
-        return await self._mongo_service.find_one(
-            collection=self._collection_name, filter_={"_id": id_}, session=session
         )
 
     async def get_extended_by_id(
@@ -166,80 +156,3 @@ class CategoryRepository(BaseRepository):
         )
 
         return result[0] if result else None
-
-    async def create(
-        self, item: Any, *, session: AsyncIOMotorClientSession | None = None
-    ) -> Any:
-        """Creates a new category in repository.
-
-        Args:
-            item (Any): The data for the new category.
-            session (AsyncIOMotorClientSession | None): Defines a client session
-            if operation is transactional. Defaults to None.
-
-        Returns:
-            Any: The ID of created category.
-
-        Raises:
-            NotImplementedError: This method is not implemented.
-
-        """
-        raise NotImplementedError
-
-    async def create_many(
-        self,
-        items: List[Dict[str, Any]],
-        *,
-        session: AsyncIOMotorClientSession | None = None,
-    ) -> List[Any]:
-        """Creates bulk categories in the repository.
-
-        Args:
-            items (List[Dict[str, Any]]): Categories to be created.
-            session (AsyncIOMotorClientSession | None): Defines a client session
-            if operation is transactional. Defaults to None.
-
-        Returns:
-            List[Any]: The IDs of created categories.
-
-        Raises:
-            NotImplementedError: This method is not implemented.
-
-        """
-        raise NotImplementedError
-
-    async def delete_all(
-        self, *, session: AsyncIOMotorClientSession | None = None
-    ) -> None:
-        """Deletes all categories from the repository.
-
-        Args:
-            session (AsyncIOMotorClientSession | None): Defines a client session
-            if operation is transactional. Defaults to None.
-
-        Raises:
-            NotImplementedError: This method is not implemented.
-
-        """
-        raise NotImplementedError
-
-    async def update_by_id(
-        self,
-        id_: ObjectId,
-        item: Dict[str, Any],
-        *,
-        session: AsyncIOMotorClientSession | None = None,
-    ) -> None:
-        """Updates a category in repository.
-
-        Args:
-            id_ (ObjectId): The unique identifier of the category.
-            item (Dict[str, Any]): Data to update category.
-            session (AsyncIOMotorClientSession | None): Defines a client session
-            if operation is transactional. Defaults to None.
-
-        Raises:
-            NotImplementedError: This method is not implemented.
-
-        """
-        raise NotImplementedError

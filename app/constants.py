@@ -86,8 +86,15 @@ class SortingTypesEnum(Enum):
     DESC = "desc"
 
 
-class ProjectionTypesEnum(Enum):
-    """Projection types enumerate."""
+class SortingValuesEnum(Enum):
+    """Sorting values enum."""
+
+    ASC = 1
+    DESC = -1
+
+
+class ProjectionValuesEnum(Enum):
+    """Projection values enumerate."""
 
     INCLUDE = 1
     EXCLUDE = 0

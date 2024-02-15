@@ -65,7 +65,7 @@ class SortingModel(BaseModel):
     """Sorting model for lists."""
 
     sort_by: str | None = None
-    sort_order: SortingTypesEnum = SortingTypesEnum.ASC
+    sort_order: SortingTypesEnum | None = None
 
 
 class ListResponseModel(BaseModel):

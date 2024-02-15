@@ -103,7 +103,7 @@ class BaseService(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def delete_by_id(self, id_: ObjectId) -> Any:
+    async def delete_by_id(self, id_: ObjectId) -> None:
         """Deletes an item by its unique identifier.
 
         Args:
