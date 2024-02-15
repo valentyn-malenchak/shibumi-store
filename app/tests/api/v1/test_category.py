@@ -35,6 +35,8 @@ class TestCategory(BaseAPITest):
                     "parent_id",
                     "path",
                     "path_name",
+                    "created_at",
+                    "updated_at",
                 }.issubset(dictionary.keys())
                 for dictionary in response.json()["data"]
             )
@@ -65,6 +67,8 @@ class TestCategory(BaseAPITest):
                     "parent_id",
                     "path",
                     "path_name",
+                    "created_at",
+                    "updated_at",
                 }.issubset(dictionary.keys())
                 for dictionary in response.json()["data"]
             )
