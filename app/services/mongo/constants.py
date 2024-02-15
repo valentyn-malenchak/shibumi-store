@@ -9,3 +9,4 @@ class MongoCollectionsEnum(Enum):
     USERS = "users"
     ROLES_SCOPES = "roles_scopes"
     CATEGORIES = "categories"
+    PRODUCTS = "products"

@@ -209,7 +209,7 @@ class BaseRepository(abc.ABC):
 
         Args:
             id_ (ObjectId): The unique identifier of the item.
-            item (Any): Data to update item.
+            item (Dict[str, Any]): Data to update item.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 

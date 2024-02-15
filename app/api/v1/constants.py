@@ -33,6 +33,8 @@ class ScopesEnum(Enum):
 
     CATEGORIES_GET_CATEGORIES = "Allows to get categories list."
 
+    PRODUCTS_CREATE_PRODUCT = "Allows to create a new product."
+
 
 class RedisNamesEnum(Enum):
     """Redis names format enumerate."""
@@ -60,3 +62,12 @@ class EmailTextEnum(Enum):
 
     EMAIL_VERIFICATION = "Email verification token: {token}"
     RESET_PASSWORD = "Reset password verification token: {token}"
+
+
+class ProductParameterTypesEnum(Enum):
+    """Product parameter types enumerate."""
+
+    STR = str
+    INT = int
+    BOOL = bool
+    LIST = list

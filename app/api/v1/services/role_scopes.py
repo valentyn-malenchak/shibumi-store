@@ -1,4 +1,4 @@
-"""Module that contains role-scopes service abstract class."""
+"""Module that contains role-scopes service class."""
 
 
 from typing import Any, List
@@ -16,8 +16,6 @@ class RoleScopesService(BaseService):
 
     def __init__(self, repository: RoleScopesRepository = Depends()) -> None:
         """Initializes the role-scopes service.
-
-        This method sets up the MongoDB service instance for data access.
 
         Args:
             repository (RoleScopesRepository): An instance of the Role-Scopes

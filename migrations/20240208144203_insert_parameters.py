@@ -126,7 +126,7 @@ class Migration(BaseMigration):  # type: ignore
                 {
                     "machine_name": "class",
                     "name": "Class",
-                    "type": "STR",
+                    "type": "LIST",
                     "created_at": arrow.utcnow().datetime,
                     "updated_at": None,
                 },

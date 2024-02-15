@@ -1,4 +1,4 @@
-"""Module that contains user service abstract class."""
+"""Module that contains user service class."""
 
 
 from typing import Any, List, Mapping
@@ -40,8 +40,6 @@ class UserService(BaseService):
         send_email_task: SendEmailTask = Depends(),
     ) -> None:
         """Initializes the UserService.
-
-        This method sets up the MongoDB service instance for data access.
 
         Args:
             repository (UserRepository): An instance of the User repository.
