@@ -44,11 +44,12 @@ class BaseCategoryValidator(BaseValidator):
 class CategoryIdValidator(BaseCategoryValidator):
     """Category identifier validator."""
 
-    async def validate(self, category_id: ObjectId) -> Category:
+    async def validate(self, category_id: ObjectId, extended: bool = False) -> Category:
         """Validates requested category by id.
 
         Args:
             category_id (ObjectId): BSON object identifier of requested category.
+            extended (bool): Defines if category related data should be returned.
 
         Returns:
             Category: Category object.
@@ -58,7 +59,11 @@ class CategoryIdValidator(BaseCategoryValidator):
 
         """
 
-        category = await self.category_service.get_by_id(id_=category_id)
+        category = (
+            await self.category_service.get_extended_by_id(id_=category_id)
+            if extended is True
+            else await self.category_service.get_by_id(id_=category_id)
+        )
 
         if category is None:
             raise HTTPException(
@@ -107,7 +112,9 @@ class LeafCategoryValidator(BaseCategoryValidator):
 
         """
 
-        category = await self.category_id_validator.validate(category_id=category_id)
+        category = await self.category_id_validator.validate(
+            category_id=category_id, extended=True
+        )
 
         if category.has_children is True:
             raise HTTPException(

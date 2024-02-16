@@ -32,7 +32,6 @@ class ScopesEnum(Enum):
     USERS_DELETE_USER = "Allows to delete user."
 
     CATEGORIES_GET_CATEGORIES = "Allows to get categories list."
-    CATEGORIES_GET_CATEGORY = "Allows to get category."
 
     PRODUCTS_CREATE_PRODUCT = "Allows to create a new product."
 

@@ -167,7 +167,9 @@ class TestUser(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_201_CREATED
-        assert self._exclude_fields(response.json(), exclude_keys=["id"]) == {
+        assert {
+            key: value for key, value in response.json().items() if key != "id"
+        } == {
             "first_name": "Joe",
             "last_name": "Smith",
             "patronymic_name": None,
@@ -241,7 +243,9 @@ class TestUser(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_201_CREATED
-        assert self._exclude_fields(response.json(), exclude_keys=["id"]) == {
+        assert {
+            key: value for key, value in response.json().items() if key != "id"
+        } == {
             "first_name": "Joe",
             "last_name": "Smith",
             "patronymic_name": None,
@@ -1240,7 +1244,7 @@ class TestUser(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
-    async def test_get_user_not_found(
+    async def test_get_user_valid_identifier_no_user(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
         """Test get user in case of identifier is valid, but there is no such user."""
@@ -1599,7 +1603,7 @@ class TestUser(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
-    async def test_update_user_password_user_not_found(
+    async def test_update_user_password_valid_identifier_no_user(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
         """

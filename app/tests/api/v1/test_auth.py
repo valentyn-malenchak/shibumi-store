@@ -52,12 +52,11 @@ class TestAuth(BaseAPITest):
         # If scope is not requested returns all permitted
         assert set(JWT.decode_token(response.json()["access_token"]).scopes) == {
             ScopesEnum.AUTH_REFRESH_TOKEN.name,
+            ScopesEnum.CATEGORIES_GET_CATEGORIES.name,
             ScopesEnum.USERS_GET_ME.name,
             ScopesEnum.USERS_UPDATE_USER.name,
             ScopesEnum.USERS_UPDATE_USER_PASSWORD.name,
             ScopesEnum.USERS_DELETE_USER.name,
-            ScopesEnum.CATEGORIES_GET_CATEGORIES.name,
-            ScopesEnum.CATEGORIES_GET_CATEGORY.name,
         }
 
     @pytest.mark.asyncio
