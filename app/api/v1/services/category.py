@@ -69,22 +69,6 @@ class CategoryService(BaseService):
 
         return Category(**category) if category is not None else None
 
-    async def get_extended_by_id(self, id_: ObjectId) -> Category | None:
-        """Retrieves a category with related data by its unique identifier.
-
-        Args:
-            id_ (ObjectId): The unique identifier of the category.
-
-        Returns:
-            Category | None: The retrieved category with related data or None if
-            not found.
-
-        """
-
-        category = await self.repository.get_extended_by_id(id_=id_)
-
-        return Category(**category) if category is not None else None
-
     async def create(self, item: Any) -> Any:
         """Creates a new category.
 

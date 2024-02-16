@@ -120,7 +120,7 @@ async def create_user(
     """API which creates a new user.
 
     Args:
-        _ (CurrentUserModel | None): Authenticated user with permitted scopes or None.
+        _ (CurrentUserModel | None): Current user object or None.
         user_data (CreateUserRequestModel): User registration data.
         user_service (UserService): User service.
 

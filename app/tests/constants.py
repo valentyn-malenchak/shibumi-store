@@ -11,6 +11,7 @@ CUSTOMER_USER = dict(
         ScopesEnum.USERS_DELETE_USER.name,
         ScopesEnum.USERS_UPDATE_USER_PASSWORD.name,
         ScopesEnum.CATEGORIES_GET_CATEGORIES.name,
+        ScopesEnum.CATEGORIES_GET_CATEGORY.name,
     ],
     exp=1703194093,
 )
