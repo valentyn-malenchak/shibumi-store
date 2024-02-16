@@ -93,27 +93,24 @@ class TestCategory(BaseAPITest):
         assert response.status_code == status.HTTP_200_OK
         assert self._exclude_fields(
             response.json(),
-            exclude_keys=["id", "created_at", "updated_at"],
+            exclude_keys=["id", "parent_id", "created_at", "updated_at"],
         ) == {
             "data": [
                 {
                     "name": "Desktop Computers",
                     "description": "Desktop PCs",
-                    "parent_id": "65cf841f1dffeb826ec8fc8a",
                     "path": "/electronics/computers/desktops",
                     "path_name": "desktops",
                 },
                 {
                     "name": "Laptop Computers",
                     "description": "Laptop PCs",
-                    "parent_id": "65cf841f1dffeb826ec8fc8a",
                     "path": "/electronics/computers/laptops",
                     "path_name": "laptops",
                 },
                 {
                     "name": "All-in-One Computers",
                     "description": "All-in-One PCs",
-                    "parent_id": "65cf841f1dffeb826ec8fc8a",
                     "path": "/electronics/computers/all-in-one",
                     "path_name": "all-in-one",
                 },
