@@ -33,8 +33,8 @@ class Category(ObjectIdModel):
     updated_at: datetime | None
 
 
-class CategoryResponseModel(ObjectIdModel):
-    """Category response model."""
+class ShortCategoryResponseModel(ObjectIdModel):
+    """Short category response model."""
 
     name: str
     description: str
@@ -43,6 +43,12 @@ class CategoryResponseModel(ObjectIdModel):
     path_name: str
     created_at: datetime
     updated_at: datetime | None
+
+
+class ExtendedCategoryResponseModel(ShortCategoryResponseModel):
+    """Extended category response model."""
+
+    parameters: List[Parameter]
 
 
 class CategoriesFilterModel(BaseModel):
@@ -55,4 +61,4 @@ class CategoriesFilterModel(BaseModel):
 class CategoriesListModel(ListResponseModel):
     """Categories list model."""
 
-    data: List[CategoryResponseModel]
+    data: List[ShortCategoryResponseModel]

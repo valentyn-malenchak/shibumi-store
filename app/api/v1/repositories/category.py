@@ -111,11 +111,8 @@ class CategoryRepository(BaseRepository):
             session=session,
         )
 
-    async def get_extended_by_id(
-        self,
-        id_: ObjectId,
-        *,
-        session: AsyncIOMotorClientSession | None = None,
+    async def get_by_id(
+        self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
     ) -> Mapping[str, Any] | None:
         """Retrieves a category with related data from the repository by its unique
         identifier.

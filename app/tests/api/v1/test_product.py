@@ -92,9 +92,8 @@ class TestProduct(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_201_CREATED
-        assert {
-            key: value for key, value in response.json().items() if key != "id"
-        } == {
+
+        assert self._exclude_fields(response.json(), exclude_keys=["id"]) == {
             "name": "ASUS TUF Gaming F15",
             "synopsis": "Display 15.6 IPS (1920x1080) Full HD 144 Hz / "
             "Intel Core i5-12500H (2.5 - 4.5 ГГц) / RAM 16 ГБ / "
