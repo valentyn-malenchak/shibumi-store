@@ -40,7 +40,7 @@ services:
     command: /bin/sh -c "invoke upgrade-migrations; python -m app.app"
 
   mongo:
-    image: bitnami/mongodb:7.0.5
+    image: bitnami/mongodb:7.0.5-debian-11-r22
     container_name: mongodb
     restart: always
     ports:
