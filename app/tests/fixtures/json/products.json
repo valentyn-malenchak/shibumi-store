@@ -1,0 +1,68 @@
+[
+  {
+    "_id": "6597f143c064f4099808ad26",
+    "name": "ASUS TUF Gaming F15",
+    "synopsis": "Display 15.6 IPS (1920x1080) Full HD 144 Hz / Intel Core i5-12500H (2.5 - 4.5 GHz) / RAM 16 GB / SSD 512 GB / nVidia GeForce RTX 3050, 4 GB / LAN / Wi-Fi / Bluetooth / webcamera / no OS / 2.2 kg / black",
+    "description": "Very cool laptop.",
+    "quantity": 12,
+    "category_id": "65cfa99cc7bfdee273d4bb23",
+    "available": true,
+    "html_body": null,
+    "parameters": {
+      "brand": "Asus",
+      "cpu": "Intel Core i5-12500H",
+      "cpu_cores_number": 12,
+      "graphics_card": "GeForce RTX 3050",
+      "graphics_card_type": "Discrete",
+      "motherboard_chipset": null,
+      "vram": "4 GB",
+      "ram": "16 GB",
+      "ram_slots": 2,
+      "ram_type": "DDR4",
+      "hdd": null,
+      "hdd_space": null,
+      "ssd": "Kingston",
+      "ssd_space": "512 GB",
+      "class": [
+        "Gaming"
+      ],
+      "has_wifi": true,
+      "has_bluetooth": true,
+      "no_wireless_connection": false,
+      "os": null,
+      "year": 2024,
+      "warranty": "2 years",
+      "country_of_production": "Taiwan",
+      "screen_type": "IPS",
+      "screen_resolution": "1920x1080",
+      "screen_refresh_rate": "144 Hz",
+      "screen_size": "15.6\"",
+      "battery_capacity": "56 watt*hours",
+      "has_fingerprint_identification": false,
+      "has_keyboard_backlight": false,
+      "has_touch_screen": false,
+      "color": "black",
+      "custom_field": "some_value"
+    },
+    "created_at": "2024-01-05T12:08:35.440000",
+    "updated_at": null
+  },
+  {
+    "_id": "65d22fd0a83d80b9f0bd3e38",
+    "name": "Xiaomi Mi Power Bank (BHR6109CN)",
+    "synopsis": "20000 mAh 22.5W Fast Charge PB2022ZM",
+    "description": "Very cool power bank.",
+    "quantity": 2,
+    "category_id": "65d22ec472406fd55bea79b7",
+    "available": false,
+    "html_body": null,
+    "parameters": {
+      "brand": "Xiaomi",
+      "year": 2023,
+      "warranty": "2 years",
+      "country_of_production": "China"
+    },
+    "created_at": "2024-02-18T16:26:56.913000",
+    "updated_at": null
+  }
+]

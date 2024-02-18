@@ -17,7 +17,9 @@ class TestHealth(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
     async def test_get_health(self, test_client: AsyncClient, arrange_db: None) -> None:
         """Test get application health."""
         response = await test_client.get(
@@ -28,7 +30,9 @@ class TestHealth(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
     async def test_get_health_no_scope(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:

@@ -107,5 +107,23 @@
     "deleted": false,
     "created_at": "2024-01-20T13:56:43.895+00:00",
     "updated_at": null
+  },
+  {
+    "_id": "6597f14332e631f7fed1a114",
+    "first_name": "Admin",
+    "last_name": "Admin",
+    "patronymic_name": null,
+    "username": "admin",
+    "email": "admin@gmail.com",
+    "email_verified": true,
+    "phone_number": "+380980000000",
+    "birthdate": "1997-01-01T00:00:00.000+00:00",
+    "hashed_password": "$2b$12$OkH.nDmcaCW9S28wqcZ41emHDmWHkB1Z5tjSGo/DZ5sUyYGVd.e5W",
+    "roles": [
+      "ADMIN"
+    ],
+    "deleted": false,
+    "created_at": "2023-12-30T13:25:43.895+00:00",
+    "updated_at": null
   }
 ]

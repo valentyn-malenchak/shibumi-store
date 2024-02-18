@@ -7,10 +7,11 @@ from bson import ObjectId
 from fastapi import Depends, HTTPException, Request, status
 
 from app.api.v1.constants import ProductParameterTypesEnum
+from app.api.v1.models.product import Product
 from app.api.v1.services.product import ProductService
 from app.api.v1.validators import BaseValidator
 from app.api.v1.validators.category import LeafCategoryValidator
-from app.constants import ValidationErrorMessagesEnum
+from app.constants import HTTPErrorMessagesEnum, ValidationErrorMessagesEnum
 
 
 class BaseProductValidator(BaseValidator):
@@ -131,4 +132,59 @@ class ProductParametersValidator(BaseProductValidator):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=self._errors,
+            )
+
+
+class ProductIdValidator(BaseProductValidator):
+    """Product identifier validator."""
+
+    async def validate(self, product_id: ObjectId) -> Product:
+        """Validates requested product by id.
+
+        Args:
+            product_id (ObjectId): BSON object identifier of requested product.
+
+        Returns:
+            Product: Product object.
+
+        Raises:
+            HTTPException: If requested product is not found.
+
+        """
+
+        product = await self.product_service.get_by_id(id_=product_id)
+
+        if product is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+                    entity="Product"
+                ),
+            )
+
+        return product
+
+
+class ProductAccessValidator(BaseProductValidator):
+    """Product access validator."""
+
+    async def validate(self, product: Product) -> None:
+        """Checks if the current user has access to product.
+
+        Args:
+            product (Product): Product object.
+
+        Raises:
+            HTTPException: If current user don't have access to product.
+
+        """
+
+        current_user = getattr(self.request.state, "current_user", None)
+
+        if (
+            current_user is None or current_user.object.is_client
+        ) and product.available is False:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=HTTPErrorMessagesEnum.PRODUCT_ACCESS_DENIED.value,
             )

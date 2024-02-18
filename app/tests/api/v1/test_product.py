@@ -11,6 +11,7 @@ from app.constants import HTTPErrorMessagesEnum, ValidationErrorMessagesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
 from app.tests.api.v1 import BaseAPITest
 from app.tests.constants import (
+    CUSTOMER_USER,
     FROZEN_DATETIME,
     SHOP_SIDE_USER,
     TEST_JWT,
@@ -23,7 +24,9 @@ class TestProduct(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
     @freeze_time(FROZEN_DATETIME)
     async def test_create_product(
         self, test_client: AsyncClient, arrange_db: None
@@ -45,9 +48,9 @@ class TestProduct(BaseAPITest):
             json={
                 "name": "ASUS TUF Gaming F15",
                 "synopsis": "Display 15.6 IPS (1920x1080) Full HD 144 Hz / "
-                "Intel Core i5-12500H (2.5 - 4.5 ГГц) / RAM 16 ГБ / "
-                "SSD 512 ГБ / nVidia GeForce RTX 3050, 4 ГБ / LAN / "
-                "Wi-Fi / Bluetooth / webcamera / no OS / 2.2 кг / black",
+                "Intel Core i5-12500H (2.5 - 4.5 GHz) / RAM 16 GB / "
+                "SSD 512 GB / nVidia GeForce RTX 3050, 4 GB / LAN / "
+                "Wi-Fi / Bluetooth / webcamera / no OS / 2.2 kg / black",
                 "description": "Very cool laptop.",
                 "quantity": 12,
                 "category_id": category_id,
@@ -96,9 +99,9 @@ class TestProduct(BaseAPITest):
         assert self._exclude_fields(response.json(), exclude_keys=["id"]) == {
             "name": "ASUS TUF Gaming F15",
             "synopsis": "Display 15.6 IPS (1920x1080) Full HD 144 Hz / "
-            "Intel Core i5-12500H (2.5 - 4.5 ГГц) / RAM 16 ГБ / "
-            "SSD 512 ГБ / nVidia GeForce RTX 3050, 4 ГБ / LAN / "
-            "Wi-Fi / Bluetooth / webcamera / no OS / 2.2 кг / black",
+            "Intel Core i5-12500H (2.5 - 4.5 GHz) / RAM 16 GB / "
+            "SSD 512 GB / nVidia GeForce RTX 3050, 4 GB / LAN / "
+            "Wi-Fi / Bluetooth / webcamera / no OS / 2.2 kg / black",
             "description": "Very cool laptop.",
             "quantity": 12,
             "category_id": category_id,
@@ -193,7 +196,9 @@ class TestProduct(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
     async def test_create_product_user_no_scope(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -223,7 +228,9 @@ class TestProduct(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
     async def test_create_product_validate_data(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -261,7 +268,9 @@ class TestProduct(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
     async def test_create_product_category_does_not_exist(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -293,7 +302,9 @@ class TestProduct(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
     async def test_create_product_category_is_not_leaf(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -333,7 +344,9 @@ class TestProduct(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize("arrange_db", [MongoCollectionsEnum.USERS], indirect=True)
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
     async def test_create_product_category_validate_product_parameters(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -354,9 +367,9 @@ class TestProduct(BaseAPITest):
             json={
                 "name": "ASUS TUF Gaming F15",
                 "synopsis": "Display 15.6 IPS (1920x1080) Full HD 144 Hz / "
-                "Intel Core i5-12500H (2.5 - 4.5 ГГц) / RAM 16 ГБ / "
-                "SSD 512 ГБ / nVidia GeForce RTX 3050, 4 ГБ / LAN / "
-                "Wi-Fi / Bluetooth / webcamera / no OS / 2.2 кг / black",
+                "Intel Core i5-12500H (2.5 - 4.5 GHz) / RAM 16 GB / "
+                "SSD 512 GB / nVidia GeForce RTX 3050, 4 GB / LAN / "
+                "Wi-Fi / Bluetooth / webcamera / no OS / 2.2 kg / black",
                 "description": "Very cool laptop.",
                 "quantity": 12,
                 "category_id": category_id,
@@ -446,3 +459,270 @@ class TestProduct(BaseAPITest):
                 ValidationErrorMessagesEnum.REQUIRED_FIELD.value,
             ),
         ]
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.PRODUCTS,)],
+        indirect=True,
+    )
+    async def test_get_product_no_token(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get product in case there is no token."""
+
+        response = await test_client.get("/products/6597f143c064f4099808ad26/")
+
+        assert response.status_code == status.HTTP_200_OK
+
+        assert response.json() == {
+            "id": "6597f143c064f4099808ad26",
+            "name": "ASUS TUF Gaming F15",
+            "synopsis": "Display 15.6 IPS (1920x1080) Full HD 144 Hz / "
+            "Intel Core i5-12500H (2.5 - 4.5 GHz) / RAM 16 GB / "
+            "SSD 512 GB / nVidia GeForce RTX 3050, 4 GB / LAN / "
+            "Wi-Fi / Bluetooth / webcamera / no OS / 2.2 kg / black",
+            "description": "Very cool laptop.",
+            "quantity": 12,
+            "category_id": "65cfa99cc7bfdee273d4bb23",
+            "available": True,
+            "html_body": None,
+            "parameters": {
+                "brand": "Asus",
+                "cpu": "Intel Core i5-12500H",
+                "cpu_cores_number": 12,
+                "graphics_card": "GeForce RTX 3050",
+                "graphics_card_type": "Discrete",
+                "motherboard_chipset": None,
+                "vram": "4 GB",
+                "ram": "16 GB",
+                "ram_slots": 2,
+                "ram_type": "DDR4",
+                "hdd": None,
+                "hdd_space": None,
+                "ssd": "Kingston",
+                "ssd_space": "512 GB",
+                "class": ["Gaming"],
+                "has_wifi": True,
+                "has_bluetooth": True,
+                "no_wireless_connection": False,
+                "os": None,
+                "year": 2024,
+                "warranty": "2 years",
+                "country_of_production": "Taiwan",
+                "screen_type": "IPS",
+                "screen_resolution": "1920x1080",
+                "screen_refresh_rate": "144 Hz",
+                "screen_size": '15.6"',
+                "battery_capacity": "56 watt*hours",
+                "has_fingerprint_identification": False,
+                "has_keyboard_backlight": False,
+                "has_touch_screen": False,
+                "color": "black",
+                "custom_field": "some_value",
+            },
+            "created_at": "2024-01-05T12:08:35.440000",
+            "updated_at": None,
+        }
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.PRODUCTS,)],
+        indirect=True,
+    )
+    async def test_get_product_no_token_unavailable_product(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get product in case there is no token and product is unavailable."""
+
+        response = await test_client.get("/products/65d22fd0a83d80b9f0bd3e38/")
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.PRODUCT_ACCESS_DENIED.value
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
+        indirect=True,
+    )
+    async def test_get_product_authorized_user(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get product in case user is authorized."""
+
+        response = await test_client.get(
+            "/products/6597f143c064f4099808ad26/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "id": "6597f143c064f4099808ad26",
+            "name": "ASUS TUF Gaming F15",
+            "synopsis": "Display 15.6 IPS (1920x1080) Full HD 144 Hz / "
+            "Intel Core i5-12500H (2.5 - 4.5 GHz) / RAM 16 GB / "
+            "SSD 512 GB / nVidia GeForce RTX 3050, 4 GB / LAN / "
+            "Wi-Fi / Bluetooth / webcamera / no OS / 2.2 kg / black",
+            "description": "Very cool laptop.",
+            "quantity": 12,
+            "category_id": "65cfa99cc7bfdee273d4bb23",
+            "available": True,
+            "html_body": None,
+            "parameters": {
+                "brand": "Asus",
+                "cpu": "Intel Core i5-12500H",
+                "cpu_cores_number": 12,
+                "graphics_card": "GeForce RTX 3050",
+                "graphics_card_type": "Discrete",
+                "motherboard_chipset": None,
+                "vram": "4 GB",
+                "ram": "16 GB",
+                "ram_slots": 2,
+                "ram_type": "DDR4",
+                "hdd": None,
+                "hdd_space": None,
+                "ssd": "Kingston",
+                "ssd_space": "512 GB",
+                "class": ["Gaming"],
+                "has_wifi": True,
+                "has_bluetooth": True,
+                "no_wireless_connection": False,
+                "os": None,
+                "year": 2024,
+                "warranty": "2 years",
+                "country_of_production": "Taiwan",
+                "screen_type": "IPS",
+                "screen_resolution": "1920x1080",
+                "screen_refresh_rate": "144 Hz",
+                "screen_size": '15.6"',
+                "battery_capacity": "56 watt*hours",
+                "has_fingerprint_identification": False,
+                "has_keyboard_backlight": False,
+                "has_touch_screen": False,
+                "color": "black",
+                "custom_field": "some_value",
+            },
+            "created_at": "2024-01-05T12:08:35.440000",
+            "updated_at": None,
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
+        indirect=True,
+    )
+    async def test_get_product_customer_user_unavailable_product(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get product in case user is authorized, but product is unavailable."""
+
+        response = await test_client.get(
+            "/products/65d22fd0a83d80b9f0bd3e38/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.PRODUCT_ACCESS_DENIED.value
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
+        indirect=True,
+    )
+    async def test_get_product_shop_side_user_unavailable_product(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """
+        Test get product in case user is from shop side and product is unavailable.
+        """
+
+        response = await test_client.get(
+            "/products/65d22fd0a83d80b9f0bd3e38/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "id": "65d22fd0a83d80b9f0bd3e38",
+            "name": "Xiaomi Mi Power Bank (BHR6109CN)",
+            "synopsis": "20000 mAh 22.5W Fast Charge PB2022ZM",
+            "description": "Very cool power bank.",
+            "quantity": 2,
+            "category_id": "65d22ec472406fd55bea79b7",
+            "available": False,
+            "html_body": None,
+            "parameters": {
+                "brand": "Xiaomi",
+                "year": 2023,
+                "warranty": "2 years",
+                "country_of_production": "China",
+            },
+            "created_at": "2024-02-18T16:26:56.913000",
+            "updated_at": None,
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
+    async def test_get_product_no_scope(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get product in case user does not have a scope."""
+
+        response = await test_client.get(
+            "/products/659ac89bfe61d8332f6be4c4/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.PERMISSION_DENIED.value
+        }
+
+    @pytest.mark.asyncio
+    async def test_get_product_invalid_identifier(
+        self, test_client: AsyncClient
+    ) -> None:
+        """Test get product in case of invalid identifier."""
+
+        response = await test_client.get("/products/invalid-group-id/")
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            (
+                "object_id",
+                ["path", "product_id"],
+                ValidationErrorMessagesEnum.INVALID_IDENTIFIER.value,
+            )
+        ]
+
+    @pytest.mark.asyncio
+    async def test_get_product_not_found(self, test_client: AsyncClient) -> None:
+        """
+        Test get product in case of identifier is valid, but there is no such product.
+        """
+
+        response = await test_client.get("/products/6598495fdf97a8e0d7e612aa/")
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+                entity="Product"
+            )
+        }

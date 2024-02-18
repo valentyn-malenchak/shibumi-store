@@ -95,7 +95,7 @@ async def get_user(
         StrictAuthorization(), scopes=[ScopesEnum.USERS_GET_USER.name]
     ),
     user: User = Depends(UserIdDependency()),
-) -> User | None:
+) -> User:
     """API which returns a specific user.
 
     Args:

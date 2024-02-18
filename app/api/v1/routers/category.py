@@ -55,12 +55,12 @@ async def get_category(
         OptionalAuthorization(), scopes=[ScopesEnum.CATEGORIES_GET_CATEGORY.name]
     ),
     category: Category = Depends(CategoryIdDependency()),
-) -> Category | None:
+) -> Category:
     """API which returns a specific category.
 
     Args:
         _ (CurrentUserModel | None): Current user object or None.
-        category (User): Category object.
+        category (Category): Category object.
 
     Returns:
         Category: Category object.

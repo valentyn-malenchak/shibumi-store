@@ -36,6 +36,7 @@ class HTTPErrorMessagesEnum(Enum):
     LEAF_PRODUCT_CATEGORY_REQUIRED = (
         "Invalid category. Operation is allowed only for 'leaf' categories."
     )
+    PRODUCT_ACCESS_DENIED = "Access denied to product."
 
 
 # Password policies
