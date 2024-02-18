@@ -6,6 +6,7 @@ from typing import Any, Dict, List
 from injector import Injector
 
 from app.api.v1.repositories import BaseRepository
+from app.api.v1.repositories.product import ProductRepository
 from app.api.v1.repositories.user import UserRepository
 from app.loaders import JSONFileLoader
 from app.services.mongo.constants import MongoCollectionsEnum
@@ -20,6 +21,7 @@ class FileFixtureManager:
     # contains collection mapping to its repository
     _fixture_repositories: Dict[MongoCollectionsEnum, BaseRepository] = {
         MongoCollectionsEnum.USERS: _injector.get(UserRepository),
+        MongoCollectionsEnum.PRODUCTS: _injector.get(ProductRepository),
     }
 
     def __init__(

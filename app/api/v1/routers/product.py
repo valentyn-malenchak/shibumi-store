@@ -3,9 +3,12 @@
 
 from fastapi import APIRouter, Depends, Security, status
 
-from app.api.v1.auth.auth import StrictAuthorization
+from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
-from app.api.v1.dependencies.product import CreateProductDependency
+from app.api.v1.dependencies.product import (
+    CreateProductDependency,
+    GetProductDependency,
+)
 from app.api.v1.models.product import (
     CreateProductRequestModel,
     Product,
@@ -39,3 +42,27 @@ async def create_product(
 
     """
     return await product_service.create(item=product_data)
+
+
+@router.get(
+    "/{product_id}/",
+    response_model=ProductResponseModel,
+    status_code=status.HTTP_200_OK,
+)
+async def get_product(
+    _: CurrentUserModel | None = Security(
+        OptionalAuthorization(), scopes=[ScopesEnum.PRODUCTS_GET_PRODUCT.name]
+    ),
+    product: Product = Depends(GetProductDependency()),
+) -> Product:
+    """API which returns a specific product.
+
+    Args:
+        _ (CurrentUserModel | None): Current user object or None.
+        product (Product): Product object.
+
+    Returns:
+        Product: Product object.
+
+    """
+    return product

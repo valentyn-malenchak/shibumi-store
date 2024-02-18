@@ -1,17 +1,17 @@
 """Module that contains base API test component."""
 
 import asyncio
-from typing import Any, AsyncGenerator, Generator, List
+from typing import Any, AsyncGenerator, Generator
 from unittest.mock import patch
 
 import pytest
 import pytest_asyncio
+from _pytest.fixtures import SubRequest
 from httpx import AsyncClient
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from app.app import app
 from app.loaders import JSONFileLoader
-from app.services.mongo.constants import MongoCollectionsEnum
 from app.tests import BaseTest
 from app.tests.fixtures.manager import FileFixtureManager
 
@@ -52,20 +52,17 @@ class BaseAPITest(BaseTest):
 
     @pytest_asyncio.fixture
     async def arrange_db(
-        self,
-        set_event_loop: None,
-        collection_names: List[MongoCollectionsEnum] | None = None,
+        self, request: SubRequest, set_event_loop: None
     ) -> AsyncGenerator[None, None]:
         """Loads and clears data in DB before and after acting unit test.
 
         Args:
+            request (SubRequest): Fixture request.
             set_event_loop (None.): Event loop fixture.
-            collection_names (List[MongoCollectionsEnum] | None): List of
-            collections to be handled. Defaults to None.
 
         """
 
-        file_fixture_manager = FileFixtureManager(collection_names=collection_names)
+        file_fixture_manager = FileFixtureManager(collection_names=request.param)
 
         await file_fixture_manager.clear()
 
