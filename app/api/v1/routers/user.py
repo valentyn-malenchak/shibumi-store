@@ -75,7 +75,7 @@ async def get_users(
         user_service (UserService): User service.
 
     Returns:
-        UsersListModel: List of user object.
+        UsersListModel: List of users object.
 
     """
 

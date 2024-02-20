@@ -42,7 +42,7 @@ class CategoryRepository(BaseRepository):
         return await self._mongo_service.find(
             collection=self._collection_name,
             filter_=await self._get_list_query_filter(path=path, leafs=leafs),
-            projection={"parameters": ProjectionValuesEnum.EXCLUDE.value},
+            projection=self._get_list_query_projection(),
             sort=self._get_list_sorting(sort_by="_id", sort_order=SortingTypesEnum.ASC),
             session=session,
         )
@@ -81,6 +81,16 @@ class CategoryRepository(BaseRepository):
             query_filter["_id"] = {"$nin": parent_ids}
 
         return query_filter
+
+    @staticmethod
+    def _get_list_query_projection() -> Mapping[str, Any] | None:
+        """Returns a query projection for list.
+
+        Returns:
+            Mapping[str, Any] | None: List query projection or None.
+
+        """
+        return {"parameters": ProjectionValuesEnum.EXCLUDE.value}
 
     async def count(
         self,
@@ -133,7 +143,7 @@ class CategoryRepository(BaseRepository):
                 {"$match": {"_id": id_}},
                 {
                     "$lookup": {
-                        "from": "parameters",
+                        "from": MongoCollectionsEnum.PARAMETERS.value,
                         "localField": "parameters",
                         "foreignField": "_id",
                         "as": "parameters",

@@ -48,6 +48,16 @@ class UserRepository(BaseRepository):
 
         return query_filter
 
+    @staticmethod
+    def _get_list_query_projection() -> Mapping[str, Any] | None:
+        """Returns a query projection for list.
+
+        Returns:
+            Mapping[str, Any] | None: List query projection or None.
+
+        """
+        return None
+
     async def get_by_username(
         self, username: str, *, session: AsyncIOMotorClientSession | None = None
     ) -> Mapping[str, Any] | None:

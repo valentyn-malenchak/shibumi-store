@@ -35,6 +35,7 @@ class ScopesEnum(Enum):
     CATEGORIES_GET_CATEGORY = "Allows to get category."
 
     PRODUCTS_CREATE_PRODUCT = "Allows to create a new product."
+    PRODUCTS_GET_PRODUCTS = "Allows to get products list."
     PRODUCTS_GET_PRODUCT = "Allows to get product."
 
 

@@ -188,3 +188,29 @@ class ProductAccessValidator(BaseProductValidator):
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=HTTPErrorMessagesEnum.PRODUCT_ACCESS_DENIED.value,
             )
+
+
+class ProductsAccessFilterValidator(BaseProductValidator):
+    """Products access filter validator."""
+
+    async def validate(self, available: bool | None) -> None:
+        """Checks if the current user has access to not available products.
+
+        Args:
+            available (available: bool | None): Product availability filter.
+
+        Raises:
+            HTTPException: If current user don't have access to not available filter
+            products.
+
+        """
+
+        current_user = getattr(self.request.state, "current_user", None)
+
+        if (
+            current_user is None or current_user.object.is_client
+        ) and available is not True:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=HTTPErrorMessagesEnum.PRODUCTS_AVAILABLE_FILTER_ACCESS_DENIED.value,
+            )
