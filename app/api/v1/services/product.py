@@ -1,14 +1,18 @@
 """Module that contains product service class."""
 
 
-from typing import Any, List
+from typing import Any, List, Mapping
 
 import arrow
 from bson import ObjectId
 from fastapi import Depends
 
 from app.api.v1.models import PaginationModel, SearchModel, SortingModel
-from app.api.v1.models.product import CreateProductRequestModel, Product
+from app.api.v1.models.product import (
+    CreateProductRequestModel,
+    Product,
+    ProductsFilterModel,
+)
 from app.api.v1.repositories.product import ProductRepository
 from app.api.v1.services import BaseService
 
@@ -28,43 +32,53 @@ class ProductService(BaseService):
 
     async def get(
         self,
-        filter_: Any,
+        filter_: ProductsFilterModel,
         search: SearchModel,
         sorting: SortingModel,
         pagination: PaginationModel,
-    ) -> List[Any]:
+    ) -> List[Mapping[str, Any]]:
         """Retrieves a list of products based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering.
+            filter_ (ProductsFilterModel): Parameters for list filtering.
             search (SearchModel): Parameters for list searching.
             sorting (SortingModel): Parameters for sorting.
             pagination (PaginationModel): Parameters for pagination.
 
         Returns:
-            List[Any]: The retrieved list of products.
-
-        Raises:
-            NotImplementedError: This method is not implemented.
+            List[Mapping[str, Any]]: The retrieved list of products.
 
         """
-        raise NotImplementedError
 
-    async def count(self, filter_: Any, search: SearchModel) -> int:
+        return await self.repository.get(
+            search=search.search,
+            sort_by=sorting.sort_by,
+            sort_order=sorting.sort_order,
+            page=pagination.page,
+            page_size=pagination.page_size,
+            category_id=filter_.category_id,
+            available=filter_.available,
+            parameters=filter_.parameters,
+        )
+
+    async def count(self, filter_: ProductsFilterModel, search: SearchModel) -> int:
         """Counts documents based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering.
+            filter_ (ProductsFilterModel): Parameters for list filtering.
             search (SearchModel): Parameters for list searching.
 
         Returns:
             int: Count of documents.
 
-        Raises:
-            NotImplementedError: This method is not implemented.
-
         """
-        raise NotImplementedError
+
+        return await self.repository.count(
+            search=search.search,
+            category_id=filter_.category_id,
+            available=filter_.available,
+            parameters=filter_.parameters,
+        )
 
     async def get_by_id(self, id_: ObjectId) -> Product | None:
         """Retrieves a product by its unique identifier.

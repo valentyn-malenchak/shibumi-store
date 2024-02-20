@@ -58,6 +58,7 @@ class BaseRepository(abc.ABC):
         return await self._mongo_service.find(
             collection=self._collection_name,
             filter_=await self._get_list_query_filter(search, **filters),
+            projection=self._get_list_query_projection(),
             sort=self._get_list_sorting(sort_by=sort_by, sort_order=sort_order),
             skip=self._calculate_skip(page=page, page_size=page_size),
             limit=page_size,
@@ -95,6 +96,23 @@ class BaseRepository(abc.ABC):
         Returns:
             Mapping[str, Any]: List query filter.
 
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses.
+
+        """
+        raise NotImplementedError
+
+    @staticmethod
+    @abc.abstractmethod
+    def _get_list_query_projection() -> Mapping[str, Any] | None:
+        """Returns a query projection for list.
+
+        Returns:
+            Mapping[str, Any] | None: List query projection or None.
+
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses.
+
         """
         raise NotImplementedError
 
@@ -113,18 +131,14 @@ class BaseRepository(abc.ABC):
             List[tuple[str, int]] | None: Sorting.
 
         """
-        return (
-            [
-                (
-                    sort_by,
-                    SortingValuesEnum.DESC.value
-                    if sort_order == SortingTypesEnum.DESC
-                    else SortingValuesEnum.ASC.value,
-                )
-            ]
-            if sort_by is not None
-            else None
+
+        sort_value = (
+            SortingValuesEnum.DESC.value
+            if sort_order == SortingTypesEnum.DESC
+            else SortingValuesEnum.ASC.value
         )
+
+        return [(sort_by, sort_value)] if sort_by is not None else None
 
     async def count(
         self,

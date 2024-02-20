@@ -7,16 +7,7 @@ from bson import ObjectId
 from pydantic import BaseModel
 
 from app.api.v1.models import ListResponseModel, ObjectIdAnnotation, ObjectIdModel
-
-
-class Parameter(ObjectIdModel):
-    """Parameter model."""
-
-    name: str
-    machine_name: str
-    type: str
-    created_at: datetime
-    updated_at: datetime | None
+from app.api.v1.models.parameter import Parameter
 
 
 class Category(ObjectIdModel):

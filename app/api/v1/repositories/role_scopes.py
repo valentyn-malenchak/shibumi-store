@@ -30,6 +30,19 @@ class RoleScopesRepository(BaseRepository):
         """
         raise NotImplementedError
 
+    @staticmethod
+    def _get_list_query_projection() -> Mapping[str, Any] | None:
+        """Returns a query projection for list.
+
+        Returns:
+            Mapping[str, Any] | None: List query projection or None.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
     async def get_scopes_by_roles(
         self, roles: List[str], *, session: AsyncIOMotorClientSession | None = None
     ) -> List[str]:

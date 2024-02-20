@@ -95,24 +95,30 @@ class TestCategory(BaseAPITest):
         assert response.status_code == status.HTTP_200_OK
         assert self._exclude_fields(
             response.json(),
-            exclude_keys=["id", "parent_id", "created_at", "updated_at"],
+            exclude_keys=["created_at", "updated_at"],
         ) == {
             "data": [
                 {
+                    "id": "65d24f2a260fb739c605b28c",
                     "name": "Desktop Computers",
                     "description": "Desktop PCs",
+                    "parent_id": "65d24f2a260fb739c605b28b",
                     "path": "/electronics/computers/desktops",
                     "path_name": "desktops",
                 },
                 {
+                    "id": "65d24f2a260fb739c605b28d",
                     "name": "Laptop Computers",
                     "description": "Laptop PCs",
+                    "parent_id": "65d24f2a260fb739c605b28b",
                     "path": "/electronics/computers/laptops",
                     "path_name": "laptops",
                 },
                 {
+                    "id": "65d24f2a260fb739c605b28e",
                     "name": "All-in-One Computers",
                     "description": "All-in-One PCs",
+                    "parent_id": "65d24f2a260fb739c605b28b",
                     "path": "/electronics/computers/all-in-one",
                     "path_name": "all-in-one",
                 },
@@ -124,22 +130,14 @@ class TestCategory(BaseAPITest):
     async def test_get_category_no_token(self, test_client: AsyncClient) -> None:
         """Test get category in case there is no token."""
 
-        categories = await test_client.get("/categories/")
-
-        category_id = next(
-            category["id"]
-            for category in categories.json()["data"]
-            if category["path"] == "/electronics"
-        )
-
-        response = await test_client.get(f"/categories/{category_id}/")
+        response = await test_client.get("/categories/65d24f2a260fb739c605b28a/")
 
         assert response.status_code == status.HTTP_200_OK
-
         assert self._exclude_fields(
             response.json(),
-            exclude_keys=["id", "created_at", "updated_at"],
+            exclude_keys=["created_at", "updated_at"],
         ) == {
+            "id": "65d24f2a260fb739c605b28a",
             "name": "Electronics",
             "description": "Electronic devices",
             "parent_id": None,
@@ -158,26 +156,19 @@ class TestCategory(BaseAPITest):
     ) -> None:
         """Test get category in case user is authorized."""
 
-        categories = await test_client.get("/categories/")
-
-        category_id = next(
-            category["id"]
-            for category in categories.json()["data"]
-            if category["path"]
-            == "/electronics/accessories/mobile-accessories/power-banks"
-        )
-
         response = await test_client.get(
-            f"/categories/{category_id}/",
+            "/categories/65d24f2a260fb739c605b2a7/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
+
         assert response.status_code == status.HTTP_200_OK
         assert self._exclude_fields(
             response.json(),
-            exclude_keys=["id", "parent_id", "created_at", "updated_at"],
+            exclude_keys=["id", "created_at", "updated_at"],
         ) == {
             "name": "Power Banks",
             "description": "Power banks for mobile devices",
+            "parent_id": "65d24f2a260fb739c605b2a3",
             "path": "/electronics/accessories/mobile-accessories/power-banks",
             "path_name": "power-banks",
             "parameters": [

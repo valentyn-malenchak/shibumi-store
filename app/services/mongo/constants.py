@@ -1,4 +1,4 @@
-"""Module that contains MongoDB contants."""
+"""Module that contains MongoDB constants."""
 
 from enum import Enum
 
@@ -10,3 +10,4 @@ class MongoCollectionsEnum(Enum):
     ROLES_SCOPES = "roles_scopes"
     CATEGORIES = "categories"
     PRODUCTS = "products"
+    PARAMETERS = "parameters"

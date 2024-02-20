@@ -33,16 +33,6 @@ class TestProduct(BaseAPITest):
     ) -> None:
         """Test create product."""
 
-        categories = await test_client.get(
-            "/categories/", headers={"Authorization": f"Bearer {TEST_JWT}"}
-        )
-
-        category_id = next(
-            category["id"]
-            for category in categories.json()["data"]
-            if category["path"] == "/electronics/computers/laptops"
-        )
-
         response = await test_client.post(
             "/products/",
             json={
@@ -53,7 +43,7 @@ class TestProduct(BaseAPITest):
                 "Wi-Fi / Bluetooth / webcamera / no OS / 2.2 kg / black",
                 "description": "Very cool laptop.",
                 "quantity": 12,
-                "category_id": category_id,
+                "category_id": "65d24f2a260fb739c605b28d",
                 "available": True,
                 "html_body": None,
                 "parameters": {
@@ -104,7 +94,7 @@ class TestProduct(BaseAPITest):
             "Wi-Fi / Bluetooth / webcamera / no OS / 2.2 kg / black",
             "description": "Very cool laptop.",
             "quantity": 12,
-            "category_id": category_id,
+            "category_id": "65d24f2a260fb739c605b28d",
             "available": True,
             "html_body": None,
             "parameters": {
@@ -310,16 +300,6 @@ class TestProduct(BaseAPITest):
     ) -> None:
         """Test create product in case request category is not a tree leaf."""
 
-        categories = await test_client.get(
-            "/categories/", headers={"Authorization": f"Bearer {TEST_JWT}"}
-        )
-
-        category_id = next(
-            category["id"]
-            for category in categories.json()["data"]
-            if category["path"] == "/electronics"
-        )
-
         response = await test_client.post(
             "/products/",
             json={
@@ -327,7 +307,7 @@ class TestProduct(BaseAPITest):
                 "synopsis": "Cool.",
                 "description": "Very cool laptop.",
                 "quantity": 12,
-                "category_id": category_id,
+                "category_id": "65d24f2a260fb739c605b28a",
                 "available": True,
                 "html_body": None,
                 "parameters": {
@@ -352,16 +332,6 @@ class TestProduct(BaseAPITest):
     ) -> None:
         """Test create product in case product parameters are invalid."""
 
-        categories = await test_client.get(
-            "/categories/", headers={"Authorization": f"Bearer {TEST_JWT}"}
-        )
-
-        category_id = next(
-            category["id"]
-            for category in categories.json()["data"]
-            if category["path"] == "/electronics/computers/laptops"
-        )
-
         response = await test_client.post(
             "/products/",
             json={
@@ -372,7 +342,7 @@ class TestProduct(BaseAPITest):
                 "Wi-Fi / Bluetooth / webcamera / no OS / 2.2 kg / black",
                 "description": "Very cool laptop.",
                 "quantity": 12,
-                "category_id": category_id,
+                "category_id": "65d24f2a260fb739c605b28d",
                 "available": True,
                 "html_body": None,
                 "parameters": {
@@ -484,7 +454,7 @@ class TestProduct(BaseAPITest):
             "Wi-Fi / Bluetooth / webcamera / no OS / 2.2 kg / black",
             "description": "Very cool laptop.",
             "quantity": 12,
-            "category_id": "65cfa99cc7bfdee273d4bb23",
+            "category_id": "65d24f2a260fb739c605b28d",
             "available": True,
             "html_body": None,
             "parameters": {
@@ -570,7 +540,7 @@ class TestProduct(BaseAPITest):
             "Wi-Fi / Bluetooth / webcamera / no OS / 2.2 kg / black",
             "description": "Very cool laptop.",
             "quantity": 12,
-            "category_id": "65cfa99cc7bfdee273d4bb23",
+            "category_id": "65d24f2a260fb739c605b28d",
             "available": True,
             "html_body": None,
             "parameters": {
@@ -659,7 +629,7 @@ class TestProduct(BaseAPITest):
             "synopsis": "20000 mAh 22.5W Fast Charge PB2022ZM",
             "description": "Very cool power bank.",
             "quantity": 2,
-            "category_id": "65d22ec472406fd55bea79b7",
+            "category_id": "65d24f2a260fb739c605b2a7",
             "available": False,
             "html_body": None,
             "parameters": {
