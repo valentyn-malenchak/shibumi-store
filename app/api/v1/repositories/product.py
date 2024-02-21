@@ -48,7 +48,7 @@ class ProductRepository(BaseRepository):
         if available is not None:
             query_filter["available"] = available
 
-        if parameters is not None:
+        if parameters:
             for name, values in parameters.items():
                 query_filter[f"parameters.{name}"] = (
                     values[0] if len(values) == 1 else {"$in": values}

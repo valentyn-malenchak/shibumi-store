@@ -3,8 +3,8 @@
 from typing import Annotated, Any, Dict, List
 
 from bson import ObjectId
-from fastapi import Depends, Request
-from pydantic import BaseModel, create_model
+from fastapi import Depends, HTTPException, Request, status
+from pydantic import BaseModel, ValidationError, create_model
 
 from app.api.v1.constants import ProductParameterTypesEnum
 from app.api.v1.models import ObjectIdAnnotation
@@ -120,6 +120,9 @@ class ProductsFilterDependency:
         Returns:
             ProductsFilterModel: Products filter object.
 
+        Raises:
+            HTTPException: If product parameters filter is invalid.
+
         """
 
         await products_access_filter_validator.validate(available=filter_.available)
@@ -138,12 +141,19 @@ class ProductsFilterDependency:
             "ProductsParameters", **fields, __base__=BaseModel
         )
 
-        query_params = parameters_model(
-            **{
-                query_param: request.query_params.getlist(query_param)
-                for query_param in request.query_params.keys()
-            }
-        ).model_dump(exclude_unset=True)
+        try:
+            query_params = parameters_model(
+                **{
+                    query_param: request.query_params.getlist(query_param)
+                    for query_param in request.query_params.keys()
+                }
+            ).model_dump(exclude_unset=True)
+
+        except ValidationError as error:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=error.errors(),
+            )
 
         return ProductsFilterModel(
             category_id=filter_.category_id,

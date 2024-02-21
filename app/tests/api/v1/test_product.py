@@ -696,3 +696,414 @@ class TestProduct(BaseAPITest):
                 entity="Product"
             )
         }
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.PRODUCTS,)], indirect=True
+    )
+    async def test_get_products_list_no_token(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get products list in case there is no token."""
+
+        response = await test_client.get(
+            "/products/",
+            params={"page": 1, "page_size": 2, "available": True},
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "data": [
+                {
+                    "id": "6597f143c064f4099808ad26",
+                    "name": "ASUS TUF Gaming F15",
+                    "synopsis": "Display 15.6 IPS (1920x1080) Full HD 144 Hz / "
+                    "Intel Core i5-12500H (2.5 - 4.5 GHz) / RAM 16 GB / SSD 512 GB / "
+                    "nVidia GeForce RTX 3050, 4 GB / LAN / Wi-Fi / Bluetooth / "
+                    "webcamera / no OS / 2.2 kg / black",
+                    "quantity": 12,
+                    "category_id": "65d24f2a260fb739c605b28d",
+                    "available": True,
+                    "created_at": "2024-01-05T12:08:35.440000",
+                    "updated_at": None,
+                },
+                {
+                    "id": "65a7f143c064f4099808ad27",
+                    "name": "MSI GS66 Stealth",
+                    "synopsis": "Display 15.6 IPS (1920x1080) Full HD 240 Hz / "
+                    "Intel Core i9-12900H (2.5 - 5.0 GHz) / RAM 32 GB / "
+                    "SSD 1 TB / nVidia GeForce RTX 3080, 8 GB / LAN / Wi-Fi "
+                    "/ Bluetooth / webcam / Windows 11 Home / 2.1 kg / black",
+                    "quantity": 8,
+                    "category_id": "65d24f2a260fb739c605b28d",
+                    "available": True,
+                    "created_at": "2024-02-10T14:20:00",
+                    "updated_at": None,
+                },
+            ],
+            "total": 19,
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
+        indirect=True,
+    )
+    async def test_get_products_list_customer_user(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get products list in case user is customer."""
+
+        response = await test_client.get(
+            "/products/",
+            params={"page": 3, "page_size": 1, "available": True},
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "data": [
+                {
+                    "id": "65b7f143c064f4099808ad28",
+                    "name": "Lenovo Legion 7i",
+                    "synopsis": "Display 15.6 IPS (2560x1440) Quad HD 165 Hz / "
+                    "Intel Core i7-12700H (2.5 - 4.8 GHz) / RAM 64 GB / "
+                    "SSD 2 TB / NVIDIA GeForce RTX 3080 Ti, 16 GB / LAN / Wi-Fi 6 "
+                    "/ Bluetooth 5.1 / webcam / Windows 11 Pro / 2.5 kg / black",
+                    "quantity": 15,
+                    "category_id": "65d24f2a260fb739c605b28d",
+                    "available": True,
+                    "created_at": "2024-03-02T09:45:00",
+                    "updated_at": None,
+                }
+            ],
+            "total": 19,
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
+        indirect=True,
+    )
+    async def test_get_products_list_shop_side_user(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get products list in case user is from shop side."""
+
+        response = await test_client.get(
+            "/products/",
+            params={"page": 7, "page_size": 2},
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "data": [
+                {
+                    "id": "65d22fd0a83d80b9f0bd3e38",
+                    "name": "Xiaomi Mi Power Bank (BHR6109CN)",
+                    "synopsis": "20000 mAh 22.5W Fast Charge PB2022ZM",
+                    "quantity": 2,
+                    "category_id": "65d24f2a260fb739c605b2a7",
+                    "available": False,
+                    "created_at": "2024-02-18T16:26:56.913000",
+                    "updated_at": None,
+                },
+                {
+                    "id": "65d22fd0a83d80b9f0bd3e39",
+                    "name": "Anker PowerCore 26800mAh Portable Charger",
+                    "synopsis": "26800mAh 3-Port USB Power Bank",
+                    "quantity": 5,
+                    "category_id": "65d24f2a260fb739c605b2a7",
+                    "available": True,
+                    "created_at": "2024-02-19T09:15:00",
+                    "updated_at": None,
+                },
+            ],
+            "total": 20,
+        }
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.PRODUCTS,)], indirect=True
+    )
+    async def test_get_products_list_with_filters(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get products list with filters."""
+
+        response = await test_client.get(
+            "/products/",
+            params={
+                "page": 1,
+                "page_size": 20,
+                "available": True,
+                "category_id": "65d24f2a260fb739c605b28d",
+                "brand": ["Asus", "Lenovo", "Dell"],
+                "class": ["Gaming", "High-Performance"],
+                "cpu": "Intel Core i5-12500H",
+                "cpu_cores_number": 12,
+                "has_bluetooth": True,
+            },
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "data": [
+                {
+                    "id": "6597f143c064f4099808ad26",
+                    "name": "ASUS TUF Gaming F15",
+                    "synopsis": "Display 15.6 IPS (1920x1080) Full HD 144 Hz / "
+                    "Intel Core i5-12500H (2.5 - 4.5 GHz) / RAM 16 GB / SSD 512 GB "
+                    "/ nVidia GeForce RTX 3050, 4 GB / LAN / Wi-Fi / Bluetooth / "
+                    "webcamera / no OS / 2.2 kg / black",
+                    "quantity": 12,
+                    "category_id": "65d24f2a260fb739c605b28d",
+                    "available": True,
+                    "created_at": "2024-01-05T12:08:35.440000",
+                    "updated_at": None,
+                }
+            ],
+            "total": 1,
+        }
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.PRODUCTS,)], indirect=True
+    )
+    async def test_get_products_list_with_search(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get products list with search."""
+
+        response = await test_client.get(
+            "/products/",
+            params={
+                "page": 1,
+                "page_size": 20,
+                "available": True,
+                "search": "portable charger",
+            },
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "data": [
+                {
+                    "id": "65d22fd0a83d80b9f0bd3e40",
+                    "name": "RAVPower Portable Charger 20000mAh",
+                    "synopsis": "20000mAh Power Bank with 18W PD and QC 3.0",
+                    "quantity": 10,
+                    "category_id": "65d24f2a260fb739c605b2a7",
+                    "available": True,
+                    "created_at": "2024-02-20T11:30:00",
+                    "updated_at": None,
+                },
+                {
+                    "id": "65d22fd0a83d80b9f0bd3e41",
+                    "name": "Samsung Wireless Charger Portable Battery",
+                    "synopsis": "10000mAh Wireless Power Bank with USB-C, Silver",
+                    "quantity": 8,
+                    "category_id": "65d24f2a260fb739c605b2a7",
+                    "available": True,
+                    "created_at": "2024-02-21T14:20:00",
+                    "updated_at": None,
+                },
+                {
+                    "id": "65d22fd0a83d80b9f0bd3e39",
+                    "name": "Anker PowerCore 26800mAh Portable Charger",
+                    "synopsis": "26800mAh 3-Port USB Power Bank",
+                    "quantity": 5,
+                    "category_id": "65d24f2a260fb739c605b2a7",
+                    "available": True,
+                    "created_at": "2024-02-19T09:15:00",
+                    "updated_at": None,
+                },
+            ],
+            "total": 3,
+        }
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.PRODUCTS,)], indirect=True
+    )
+    async def test_get_products_list_with_sorting(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get products list with sorting."""
+
+        response = await test_client.get(
+            "/products/",
+            params={
+                "page": 1,
+                "page_size": 2,
+                "available": True,
+                "category_id": "65d24f2a260fb739c605b28d",
+                "sort_by": "parameters.cpu_cores_number",
+                "sort_order": "asc",
+            },
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "data": [
+                {
+                    "id": "65d7f143c064f4099808ad30",
+                    "name": "HP Envy x360",
+                    "synopsis": "Display 13.3 IPS (1920x1080) Full HD Touchscreen / "
+                    "AMD Ryzen 7 5700U (1.8 - 4.3 GHz) / RAM 8 GB / SSD 256 GB / "
+                    "AMD Radeon Graphics / Wi-Fi 6 / Bluetooth 5.2 / webcam / "
+                    "Windows 11 Home / 1.3 kg / silver",
+                    "quantity": 18,
+                    "category_id": "65d24f2a260fb739c605b28d",
+                    "available": True,
+                    "created_at": "2024-04-05T10:15:00",
+                    "updated_at": None,
+                },
+                {
+                    "id": "65c7f143c064f4099808ad29",
+                    "name": "Acer Predator Helios 300",
+                    "synopsis": "Display 17.3 IPS (1920x1080) Full HD 144 Hz / "
+                    "Intel Core i7-11800H (2.3 - 4.6 GHz) / RAM 32 GB / "
+                    "SSD 1 TB / NVIDIA GeForce RTX 3070, 8 GB / LAN / Wi-Fi 6 / "
+                    "Bluetooth 5.0 / webcam / Windows 10 Home / 3.1 kg / black",
+                    "quantity": 20,
+                    "category_id": "65d24f2a260fb739c605b28d",
+                    "available": True,
+                    "created_at": "2024-03-15T14:30:00",
+                    "updated_at": None,
+                },
+            ],
+            "total": 12,
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
+    async def test_get_products_list_no_scope(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get products list in case user does not have a scope."""
+
+        response = await test_client.get(
+            "/products/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.PERMISSION_DENIED.value
+        }
+
+    @pytest.mark.asyncio
+    async def test_get_products_list_validate_base_filters(
+        self, test_client: AsyncClient
+    ) -> None:
+        """Test get products list in case base query parameters are invalid."""
+
+        response = await test_client.get(
+            "/products/",
+            params={
+                "available": "maybe",
+                "sort_by": "random_field",
+                "sort_order": "any",
+            },
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            (
+                "bool_parsing",
+                ["query", "available"],
+                "Input should be a valid boolean, unable to interpret input",
+            ),
+            ("enum", ["query", "sort_order"], "Input should be 'asc' or 'desc'"),
+            ("missing", ["query", "page"], "Field required"),
+            ("missing", ["query", "page_size"], "Field required"),
+        ]
+
+    @pytest.mark.asyncio
+    async def test_get_products_list_validate_product_parameters_filters(
+        self, test_client: AsyncClient
+    ) -> None:
+        """Test get products list in case product parameters filter are invalid."""
+
+        response = await test_client.get(
+            "/products/",
+            params={
+                "page": 1,
+                "page_size": 2,
+                "available": True,
+                "has_wifi": "sure",
+                "cpu_cores_number": "two",
+            },
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            (
+                "int_parsing",
+                ["cpu_cores_number", 0],
+                "Input should be a valid integer, unable to parse string as an integer",
+            ),
+            (
+                "bool_parsing",
+                ["has_wifi", 0],
+                "Input should be a valid boolean, unable to interpret input",
+            ),
+        ]
+
+    @pytest.mark.asyncio
+    async def test_get_products_list_no_token_not_available_products(
+        self, test_client: AsyncClient
+    ) -> None:
+        """
+        Test get products list in case there is no token and user requests
+        not available products.
+        """
+
+        response = await test_client.get(
+            "/products/",
+            params={"page": 1, "page_size": 2},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.PRODUCTS_NOT_AVAILABLE_ACCESS_DENIED.value
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
+    async def test_get_products_list_customer_user_not_available_products(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """
+        Test get products list in case user is customer and requests not available
+        products.
+        """
+
+        response = await test_client.get(
+            "/products/",
+            params={"page": 3, "page_size": 1, "available": False},
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.PRODUCTS_NOT_AVAILABLE_ACCESS_DENIED.value
+        }
