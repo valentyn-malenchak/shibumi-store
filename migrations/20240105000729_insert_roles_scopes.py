@@ -4,6 +4,7 @@ import arrow
 from mongodb_migrations.base import BaseMigration
 
 from app.api.v1.constants import RolesEnum, ScopesEnum
+from app.services.mongo.constants import MongoCollectionsEnum
 
 
 class Migration(BaseMigration):  # type: ignore
@@ -11,7 +12,7 @@ class Migration(BaseMigration):  # type: ignore
 
     def upgrade(self) -> None:
         """Inserts roles scopes."""
-        self.db["roles_scopes"].insert_many(
+        self.db[MongoCollectionsEnum.ROLES_SCOPES.value].insert_many(
             [
                 {
                     "role": RolesEnum.CUSTOMER.name,
@@ -117,4 +118,4 @@ class Migration(BaseMigration):  # type: ignore
 
     def downgrade(self) -> None:
         """Drops roles scopes."""
-        self.db["roles_scopes"].delete_many(filter={})
+        self.db[MongoCollectionsEnum.ROLES_SCOPES.value].delete_many(filter={})

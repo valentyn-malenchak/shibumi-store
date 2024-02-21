@@ -3,6 +3,8 @@
 import arrow
 from mongodb_migrations.base import BaseMigration
 
+from app.services.mongo.constants import MongoCollectionsEnum
+
 
 class Migration(BaseMigration):  # type: ignore
     """Migration that updates categories by adding/removing parameters field."""
@@ -409,7 +411,7 @@ class Migration(BaseMigration):  # type: ignore
         # all existing parameters
         parameters = {
             parameter["machine_name"]: parameter["_id"]
-            for parameter in self.db["parameters"].find(
+            for parameter in self.db[MongoCollectionsEnum.PARAMETERS.value].find(
                 filter={}, projection={"_id": 1, "machine_name": 1}
             )
         }
@@ -425,7 +427,7 @@ class Migration(BaseMigration):  # type: ignore
         }
 
         for category_path, category_parameters in categories_parameter_ids.items():
-            self.db["categories"].update_one(
+            self.db[MongoCollectionsEnum.CATEGORIES.value].update_one(
                 filter={"path": category_path},
                 update={
                     "$set": {
@@ -437,7 +439,7 @@ class Migration(BaseMigration):  # type: ignore
 
     def downgrade(self) -> None:
         """Updates categories by removing parameters field."""
-        self.db["categories"].update_many(
+        self.db[MongoCollectionsEnum.CATEGORIES.value].update_many(
             filter={},
             update={"$unset": {"parameters": ""}, "$set": {"updated_at": None}},
         )

@@ -4,6 +4,8 @@ import arrow
 from bson import ObjectId
 from mongodb_migrations.base import BaseMigration
 
+from app.services.mongo.constants import MongoCollectionsEnum
+
 
 class Migration(BaseMigration):  # type: ignore
     """Migration that inserts/deletes categories."""
@@ -44,7 +46,7 @@ class Migration(BaseMigration):  # type: ignore
         power_banks_id = ObjectId("65d24f2a260fb739c605b2a7")
         mounts_holders_id = ObjectId("65d24f2a260fb739c605b2a8")
 
-        self.db["categories"].insert_many(
+        self.db[MongoCollectionsEnum.CATEGORIES.value].insert_many(
             [
                 {
                     "_id": electronics_id,
@@ -375,4 +377,4 @@ class Migration(BaseMigration):  # type: ignore
 
     def downgrade(self) -> None:
         """Drops categories."""
-        self.db["categories"].delete_many(filter={})
+        self.db[MongoCollectionsEnum.CATEGORIES.value].delete_many(filter={})
