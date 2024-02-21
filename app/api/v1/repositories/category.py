@@ -151,7 +151,7 @@ class CategoryRepository(BaseRepository):
                 },
                 {
                     "$lookup": {
-                        "from": "categories",
+                        "from": MongoCollectionsEnum.CATEGORIES.value,
                         "localField": "_id",
                         "foreignField": "parent_id",
                         "as": "children",

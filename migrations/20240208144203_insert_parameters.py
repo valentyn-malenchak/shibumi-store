@@ -3,13 +3,15 @@
 import arrow
 from mongodb_migrations.base import BaseMigration
 
+from app.services.mongo.constants import MongoCollectionsEnum
+
 
 class Migration(BaseMigration):  # type: ignore
     """Migration that inserts/deletes parameters."""
 
     def upgrade(self) -> None:
         """Inserts parameters."""
-        self.db["parameters"].insert_many(
+        self.db[MongoCollectionsEnum.PARAMETERS.value].insert_many(
             [
                 {
                     "machine_name": "brand",
@@ -893,4 +895,4 @@ class Migration(BaseMigration):  # type: ignore
 
     def downgrade(self) -> None:
         """Drops parameters."""
-        self.db["parameters"].delete_many(filter={})
+        self.db[MongoCollectionsEnum.PARAMETERS.value].delete_many(filter={})

@@ -2,13 +2,15 @@
 
 from mongodb_migrations.base import BaseMigration
 
+from app.services.mongo.constants import MongoCollectionsEnum
+
 
 class Migration(BaseMigration):  # type: ignore
     """Migration that creates/drops text index for users collection."""
 
     def upgrade(self) -> None:
         """Creates a text index."""
-        self.db["users"].create_index(
+        self.db[MongoCollectionsEnum.USERS.value].create_index(
             [
                 ("first_name", "text"),
                 ("last_name", "text"),
@@ -21,6 +23,6 @@ class Migration(BaseMigration):  # type: ignore
 
     def downgrade(self) -> None:
         """Drops a text index."""
-        self.db["users"].drop_index(
+        self.db[MongoCollectionsEnum.USERS.value].drop_index(
             "first_name_text_last_name_text_patronymic_name_text_username_text_email_text_phone_number_text"
         )
