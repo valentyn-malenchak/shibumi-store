@@ -4,22 +4,39 @@
 from typing import Any, List, Mapping
 
 from bson import ObjectId
-from fastapi import Depends
+from fastapi import BackgroundTasks, Depends
 
 from app.api.v1.repositories.parameter import ParameterRepository
 from app.api.v1.services import BaseService
+from app.services.mongo.transaction_manager import TransactionManager
+from app.services.redis.service import RedisService
 
 
 class ParameterService(BaseService):
     """Parameter service for encapsulating business logic."""
 
-    def __init__(self, repository: ParameterRepository = Depends()) -> None:
+    def __init__(
+        self,
+        background_tasks: BackgroundTasks,
+        repository: ParameterRepository = Depends(),
+        redis_service: RedisService = Depends(),
+        transaction_manager: TransactionManager = Depends(),
+    ) -> None:
         """Initializes the parameter service.
 
         Args:
+            background_tasks (BackgroundTasks): Background tasks.
             repository (ParameterRepository): An instance of the Parameter repository.
+            redis_service (RedisService): Redis service.
+            transaction_manager (TransactionManager): Transaction manager.
 
         """
+
+        super().__init__(
+            background_tasks=background_tasks,
+            redis_service=redis_service,
+            transaction_manager=transaction_manager,
+        )
 
         self.repository = repository
 

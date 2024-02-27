@@ -5,7 +5,7 @@ from typing import Any, List, Mapping
 
 import arrow
 from bson import ObjectId
-from fastapi import Depends, HTTPException, status
+from fastapi import BackgroundTasks, Depends, HTTPException, status
 from pymongo.errors import DuplicateKeyError
 
 from app.api.v1.auth.password import Password
@@ -25,34 +25,43 @@ from app.api.v1.models.user import (
 from app.api.v1.repositories.user import UserRepository
 from app.api.v1.services import BaseService
 from app.constants import HTTPErrorMessagesEnum
+from app.services.mongo.transaction_manager import TransactionManager
 from app.services.redis.service import RedisService
-from app.tasks import SendEmailTask
+from app.services.send_grid.service import SendGridService
 from app.utils.token import VerificationToken
 
 
 class UserService(BaseService):
     """User service for encapsulating business logic."""
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
+        background_tasks: BackgroundTasks,
         repository: UserRepository = Depends(),
         redis_service: RedisService = Depends(),
-        send_email_task: SendEmailTask = Depends(),
+        transaction_manager: TransactionManager = Depends(),
+        send_grid_service: SendGridService = Depends(),
     ) -> None:
         """Initializes the UserService.
 
         Args:
+            background_tasks (BackgroundTasks): Background tasks.
             repository (UserRepository): An instance of the User repository.
             redis_service (RedisService): Redis service.
-            send_email_task (SendEmailTask): Send email task.
+            transaction_manager (TransactionManager): Transaction manager.
+            send_grid_service (SendGridService): SendGrid service.
 
         """
 
+        super().__init__(
+            background_tasks=background_tasks,
+            redis_service=redis_service,
+            transaction_manager=transaction_manager,
+        )
+
         self.repository = repository
 
-        self.redis_service = redis_service
-
-        self.send_email_task = send_email_task
+        self.send_grid_service = send_grid_service
 
     async def get(
         self,
@@ -263,7 +272,8 @@ class UserService(BaseService):
             ttl=RedisNamesTTLEnum.RESET_PASSWORD.value,
         )
 
-        await self.send_email_task(
+        self.background_tasks.add_task(
+            self.send_grid_service.send,
             to_emails=user.email,
             subject=EmailSubjectsEnum.RESET_PASSWORD.value,
             plain_text_content=EmailTextEnum.RESET_PASSWORD.value.format(
@@ -315,7 +325,8 @@ class UserService(BaseService):
             ttl=RedisNamesTTLEnum.EMAIL_VERIFICATION.value,
         )
 
-        await self.send_email_task(
+        self.background_tasks.add_task(
+            self.send_grid_service.send,
             to_emails=user.email,
             subject=EmailSubjectsEnum.EMAIL_VERIFICATION.value,
             plain_text_content=EmailTextEnum.EMAIL_VERIFICATION.value.format(

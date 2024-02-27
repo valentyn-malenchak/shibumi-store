@@ -4,24 +4,41 @@
 from typing import Any, List
 
 from bson import ObjectId
-from fastapi import Depends
+from fastapi import BackgroundTasks, Depends
 
 from app.api.v1.models import PaginationModel, SearchModel, SortingModel
 from app.api.v1.repositories.role_scopes import RoleScopesRepository
 from app.api.v1.services import BaseService
+from app.services.mongo.transaction_manager import TransactionManager
+from app.services.redis.service import RedisService
 
 
 class RoleScopesService(BaseService):
     """Role-scopes service for encapsulating business logic."""
 
-    def __init__(self, repository: RoleScopesRepository = Depends()) -> None:
+    def __init__(
+        self,
+        background_tasks: BackgroundTasks,
+        repository: RoleScopesRepository = Depends(),
+        redis_service: RedisService = Depends(),
+        transaction_manager: TransactionManager = Depends(),
+    ) -> None:
         """Initializes the role-scopes service.
 
         Args:
+            background_tasks (BackgroundTasks): Background tasks.
             repository (RoleScopesRepository): An instance of the Role-Scopes
             repository.
+            redis_service (RedisService): Redis service.
+            transaction_manager (TransactionManager): Transaction manager.
 
         """
+
+        super().__init__(
+            background_tasks=background_tasks,
+            redis_service=redis_service,
+            transaction_manager=transaction_manager,
+        )
 
         self.repository = repository
 

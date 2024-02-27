@@ -11,3 +11,4 @@ class MongoCollectionsEnum(Enum):
     CATEGORIES = "categories"
     PRODUCTS = "products"
     PARAMETERS = "parameters"
+    PARAMETERS_VALUES = "parameters_values"
