@@ -1,11 +1,12 @@
 """Module that contains parameter service class."""
 
-
+import json
 from typing import Any, List, Mapping
 
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
 
+from app.api.v1.constants import RedisNamesEnum, RedisNamesTTLEnum
 from app.api.v1.repositories.parameter import ParameterRepository
 from app.api.v1.services import BaseService
 from app.services.mongo.transaction_manager import TransactionManager
@@ -50,7 +51,23 @@ class ParameterService(BaseService):
             List[Mapping[str, Any]]: The retrieved list of parameters.
 
         """
-        return await self.repository.get()
+
+        cached_parameters = self.redis_service.get(
+            name=RedisNamesEnum.PRODUCT_PARAMETERS_LIST.value
+        )
+
+        if cached_parameters is not None:
+            return json.loads(cached_parameters)  # type: ignore
+
+        parameters = await self.repository.get()
+
+        self.redis_service.set(
+            name=RedisNamesEnum.PRODUCT_PARAMETERS_LIST.value,
+            value=json.dumps(parameters),
+            ttl=RedisNamesTTLEnum.PRODUCT_PARAMETERS_LIST.value,
+        )
+
+        return parameters
 
     async def count(self, *_: Any) -> int:
         """Counts documents based on parameters.
