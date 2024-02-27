@@ -4,23 +4,40 @@
 from typing import Any, List
 
 from bson import ObjectId
-from fastapi import Depends
+from fastapi import BackgroundTasks, Depends
 
 from app.api.v1.models.category import CategoriesFilterModel, Category
 from app.api.v1.repositories.category import CategoryRepository
 from app.api.v1.services import BaseService
+from app.services.mongo.transaction_manager import TransactionManager
+from app.services.redis.service import RedisService
 
 
 class CategoryService(BaseService):
     """Category service for encapsulating business logic."""
 
-    def __init__(self, repository: CategoryRepository = Depends()) -> None:
+    def __init__(
+        self,
+        background_tasks: BackgroundTasks,
+        repository: CategoryRepository = Depends(),
+        redis_service: RedisService = Depends(),
+        transaction_manager: TransactionManager = Depends(),
+    ) -> None:
         """Initializes the category service.
 
         Args:
+            background_tasks (BackgroundTasks): Background tasks.
             repository (CategoryRepository): An instance of the Category repository.
+            redis_service (RedisService): Redis service.
+            transaction_manager (TransactionManager): Transaction manager.
 
         """
+
+        super().__init__(
+            background_tasks=background_tasks,
+            redis_service=redis_service,
+            transaction_manager=transaction_manager,
+        )
 
         self.repository = repository
 

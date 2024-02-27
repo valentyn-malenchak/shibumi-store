@@ -237,11 +237,12 @@ class MongoDBService(BaseService):
 
         return result.inserted_ids
 
-    async def update_one(
+    async def update_one(  # noqa: PLR0913
         self,
         collection: str,
         filter_: Mapping[str, Any],
         update: Mapping[str, Any],
+        upsert: bool = False,
         *,
         session: AsyncIOMotorClientSession | None = None,
     ) -> None:
@@ -251,6 +252,7 @@ class MongoDBService(BaseService):
             collection (str): Collection name.
             filter_ (Mapping[str, Any]): Specifies query selection criteria.
             update (Mapping[str, Any]): Data to be updated.
+            upsert (bool): Use update or insert. Defaults to False.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
@@ -258,7 +260,9 @@ class MongoDBService(BaseService):
 
         collection_ = self._get_collection_by_name(collection=collection)
 
-        await collection_.update_one(filter=filter_, update=update, session=session)
+        await collection_.update_one(
+            filter=filter_, update=update, upsert=upsert, session=session
+        )
 
     async def delete_many(
         self, collection: str, *, session: AsyncIOMotorClientSession | None = None

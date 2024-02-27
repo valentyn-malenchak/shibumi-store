@@ -5,7 +5,7 @@ from typing import Any, List, Mapping
 
 import arrow
 from bson import ObjectId
-from fastapi import Depends
+from fastapi import BackgroundTasks, Depends
 
 from app.api.v1.models import PaginationModel, SearchModel, SortingModel
 from app.api.v1.models.product import (
@@ -15,18 +15,35 @@ from app.api.v1.models.product import (
 )
 from app.api.v1.repositories.product import ProductRepository
 from app.api.v1.services import BaseService
+from app.services.mongo.transaction_manager import TransactionManager
+from app.services.redis.service import RedisService
 
 
 class ProductService(BaseService):
     """Product service for encapsulating business logic."""
 
-    def __init__(self, repository: ProductRepository = Depends()) -> None:
+    def __init__(
+        self,
+        background_tasks: BackgroundTasks,
+        repository: ProductRepository = Depends(),
+        redis_service: RedisService = Depends(),
+        transaction_manager: TransactionManager = Depends(),
+    ) -> None:
         """Initializes the product service.
 
         Args:
+            background_tasks (BackgroundTasks): Background tasks.
             repository (ProductRepository): An instance of the Product repository.
+            redis_service (RedisService): Redis service.
+            transaction_manager (TransactionManager): Transaction manager.
 
         """
+
+        super().__init__(
+            background_tasks=background_tasks,
+            redis_service=redis_service,
+            transaction_manager=transaction_manager,
+        )
 
         self.repository = repository
 
@@ -114,6 +131,10 @@ class ProductService(BaseService):
             },
         )
 
+        self.background_tasks.add_task(
+            self.calculate_parameters_values, category_id=item.category_id
+        )
+
         return await self.get_by_id(id_=id_)
 
     async def update_by_id(self, id_: ObjectId, item: Any) -> Any:
@@ -143,3 +164,15 @@ class ProductService(BaseService):
 
         """
         raise NotImplementedError
+
+    async def calculate_parameters_values(self, category_id: ObjectId) -> None:
+        """Calculates list of values for specific product category parameter.
+
+        Args:
+            category_id (ObjectId): The unique identifier of the category.
+
+        """
+        async with self.transaction_manager as session:
+            await self.repository.calculate_parameters_values(
+                category_id=category_id, session=session
+            )

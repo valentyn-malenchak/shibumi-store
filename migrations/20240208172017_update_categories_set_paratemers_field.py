@@ -286,6 +286,7 @@ class Migration(BaseMigration):  # type: ignore
                 "power_of_the_power_supply",
                 "installed_fans_number",
                 "body_type",
+                "front_panel_connectors",
                 "color",
                 "voltage",
                 "view",

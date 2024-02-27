@@ -4,12 +4,36 @@ import abc
 from typing import Any, List
 
 from bson import ObjectId
+from fastapi import BackgroundTasks, Depends
 
 from app.api.v1.models import PaginationModel, SearchModel, SortingModel
+from app.services.mongo.transaction_manager import TransactionManager
+from app.services.redis.service import RedisService
 
 
 class BaseService(abc.ABC):
     """Base service for encapsulating business logic."""
+
+    def __init__(
+        self,
+        background_tasks: BackgroundTasks,
+        redis_service: RedisService = Depends(),
+        transaction_manager: TransactionManager = Depends(),
+    ) -> None:
+        """Initializes the BaseService.
+
+        Args:
+            background_tasks (BackgroundTasks): Background tasks.
+            redis_service (RedisService): Redis service.
+            transaction_manager (TransactionManager): Transaction manager.
+
+        """
+
+        self.background_tasks = background_tasks
+
+        self.redis_service = redis_service
+
+        self.transaction_manager = transaction_manager
 
     @abc.abstractmethod
     async def get(

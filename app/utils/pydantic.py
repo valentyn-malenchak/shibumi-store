@@ -112,7 +112,7 @@ class UsernamePolicy(BaseType):
             str: Username.
 
         Raises:
-            ValueError: If username doesn't meet the requirements.
+            PydanticCustomError: If username doesn't meet the requirements.
 
         """
 
