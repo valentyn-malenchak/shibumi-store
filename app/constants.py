@@ -2,6 +2,8 @@
 
 from enum import Enum
 
+API_V1_PREFIX = "/api/v1"
+
 
 class EnvironmentsEnum(Enum):
     """Application environments enumerate."""
