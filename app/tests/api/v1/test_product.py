@@ -710,6 +710,8 @@ class TestProduct(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.PRODUCTS,)], indirect=True
     )
+    @patch("redis.Redis.get", lambda *args, **kwargs: None)
+    @patch("redis.Redis.setex", lambda *args, **kwargs: None)
     async def test_get_products_list_no_token(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -762,6 +764,8 @@ class TestProduct(BaseAPITest):
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
         indirect=True,
     )
+    @patch("redis.Redis.get", lambda *args, **kwargs: None)
+    @patch("redis.Redis.setex", lambda *args, **kwargs: None)
     async def test_get_products_list_customer_user(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -801,6 +805,8 @@ class TestProduct(BaseAPITest):
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
         indirect=True,
     )
+    @patch("redis.Redis.get", lambda *args, **kwargs: None)
+    @patch("redis.Redis.setex", lambda *args, **kwargs: None)
     async def test_get_products_list_shop_side_user(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -845,6 +851,8 @@ class TestProduct(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.PRODUCTS,)], indirect=True
     )
+    @patch("redis.Redis.get", lambda *args, **kwargs: None)
+    @patch("redis.Redis.setex", lambda *args, **kwargs: None)
     async def test_get_products_list_with_filters(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -890,6 +898,8 @@ class TestProduct(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.PRODUCTS,)], indirect=True
     )
+    @patch("redis.Redis.get", lambda *args, **kwargs: None)
+    @patch("redis.Redis.setex", lambda *args, **kwargs: None)
     async def test_get_products_list_with_search(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -949,6 +959,8 @@ class TestProduct(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.PRODUCTS,)], indirect=True
     )
+    @patch("redis.Redis.get", lambda *args, **kwargs: None)
+    @patch("redis.Redis.setex", lambda *args, **kwargs: None)
     async def test_get_products_list_with_sorting(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -1052,6 +1064,11 @@ class TestProduct(BaseAPITest):
         ]
 
     @pytest.mark.asyncio
+    @patch(
+        "redis.Redis.get",
+        lambda *args, **kwargs: '[{"machine_name":"cpu_cores_number"'
+        ',"type":"INT"},{"machine_name":"has_wifi","type":"BOOL"}]',
+    )
     async def test_get_products_list_validate_product_parameters_filters(
         self, test_client: AsyncClient
     ) -> None:

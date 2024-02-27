@@ -44,6 +44,7 @@ class RedisNamesEnum(Enum):
 
     EMAIL_VERIFICATION = "email_verification_{user_id}"
     RESET_PASSWORD = "reset_password_{user_id}"
+    PRODUCT_PARAMETERS_LIST = "product_parameters"
 
 
 class RedisNamesTTLEnum(Enum):
@@ -51,6 +52,7 @@ class RedisNamesTTLEnum(Enum):
 
     EMAIL_VERIFICATION = 3600  # 1 hour
     RESET_PASSWORD = 3600  # 1 hour
+    PRODUCT_PARAMETERS_LIST = 3600  # 1 hour
 
 
 class EmailSubjectsEnum(Enum):
