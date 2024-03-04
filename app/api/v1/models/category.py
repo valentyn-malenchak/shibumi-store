@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Annotated, List
 
 from bson import ObjectId
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from app.api.v1.models import ListResponseModel, ObjectIdAnnotation, ObjectIdModel
 from app.api.v1.models.parameter import Parameter
@@ -53,3 +53,9 @@ class CategoriesListModel(ListResponseModel):
     """Categories list model."""
 
     data: List[ShortCategoryResponseModel]
+
+
+class ParametersValuesResponseModel(ObjectIdModel):
+    """Parameters values response model."""
+
+    model_config = ConfigDict(extra="allow")

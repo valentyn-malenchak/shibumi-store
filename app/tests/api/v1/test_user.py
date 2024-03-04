@@ -683,7 +683,7 @@ class TestUser(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_200_OK
-        assert {key: value for key, value in response.json().items()} == {
+        assert response.json() == {
             "id": "65844f12b6de26578d98c2c8",
             "first_name": "John",
             "last_name": "Smith",
@@ -756,7 +756,7 @@ class TestUser(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_200_OK
-        assert {key: value for key, value in response.json().items()} == {
+        assert response.json() == {
             "id": "659bf67868d14b47475ec11c",
             "first_name": "Anya",
             "last_name": "Schoen",

@@ -1,7 +1,7 @@
 """Module that contains category service class."""
 
 
-from typing import Any, List
+from typing import Any, List, Mapping
 
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
@@ -128,3 +128,18 @@ class CategoryService(BaseService):
 
         """
         raise NotImplementedError
+
+    async def get_product_parameters_values_by_category(
+        self, id_: ObjectId
+    ) -> Mapping[str, Any] | None:
+        """Retrieves a parameters values by category identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the category.
+
+        Returns:
+             Mapping[str, Any] | None: The retrieved category or None if not found.
+
+        """
+
+        return await self.repository.get_product_parameters_values_by_category(id_=id_)

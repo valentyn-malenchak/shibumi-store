@@ -97,7 +97,7 @@ class ProductRepository(BaseRepository):
             "parameters": ProjectionValuesEnum.EXCLUDE.value,
         }
 
-    async def calculate_parameters_values(
+    async def calculate_product_parameters_values_by_category(
         self,
         category_id: ObjectId,
         *,

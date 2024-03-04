@@ -132,7 +132,8 @@ class ProductService(BaseService):
         )
 
         self.background_tasks.add_task(
-            self.calculate_parameters_values, category_id=item.category_id
+            self.calculate_product_parameters_values_by_category,
+            category_id=item.category_id,
         )
 
         return await self.get_by_id(id_=id_)
@@ -165,7 +166,9 @@ class ProductService(BaseService):
         """
         raise NotImplementedError
 
-    async def calculate_parameters_values(self, category_id: ObjectId) -> None:
+    async def calculate_product_parameters_values_by_category(
+        self, category_id: ObjectId
+    ) -> None:
         """Calculates list of values for specific product category parameter.
 
         Args:
@@ -173,6 +176,6 @@ class ProductService(BaseService):
 
         """
         async with self.transaction_manager as session:
-            await self.repository.calculate_parameters_values(
+            await self.repository.calculate_product_parameters_values_by_category(
                 category_id=category_id, session=session
             )

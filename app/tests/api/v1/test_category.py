@@ -43,7 +43,7 @@ class TestCategory(BaseAPITest):
                     "created_at",
                     "updated_at",
                 }
-                == set(dictionary.keys())
+                == dictionary.keys()
                 for dictionary in response.json()["data"]
             )
             is True
@@ -78,7 +78,7 @@ class TestCategory(BaseAPITest):
                     "created_at",
                     "updated_at",
                 }
-                == set(dictionary.keys())
+                == dictionary.keys()
                 for dictionary in response.json()["data"]
             )
             is True

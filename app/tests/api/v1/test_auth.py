@@ -46,7 +46,7 @@ class TestAuth(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_201_CREATED
-        assert set(response.json().keys()) == {
+        assert response.json().keys() == {
             "access_token",
             "refresh_token",
             "token_type",
@@ -90,7 +90,7 @@ class TestAuth(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_201_CREATED
-        assert set(response.json().keys()) == {
+        assert response.json().keys() == {
             "access_token",
             "refresh_token",
             "token_type",
@@ -253,7 +253,7 @@ class TestAuth(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_201_CREATED
-        assert set(response.json().keys()) == {"access_token", "token_type"}
+        assert response.json().keys() == {"access_token", "token_type"}
 
     @pytest.mark.asyncio
     async def test_refresh_access_token_invalid_token(

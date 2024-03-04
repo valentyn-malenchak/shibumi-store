@@ -1,6 +1,6 @@
 """Module that contains category domain routers."""
 
-from typing import Any, Dict
+from typing import Any, Dict, Mapping
 
 from fastapi import APIRouter, Depends, Security, status
 
@@ -12,6 +12,7 @@ from app.api.v1.models.category import (
     CategoriesListModel,
     Category,
     ExtendedCategoryResponseModel,
+    ParametersValuesResponseModel,
 )
 from app.api.v1.models.user import CurrentUserModel
 from app.api.v1.services.category import CategoryService
@@ -67,3 +68,32 @@ async def get_category(
 
     """
     return category
+
+
+@router.get(
+    "/{category_id}/parameters-values/",
+    response_model=ParametersValuesResponseModel | None,
+    status_code=status.HTTP_200_OK,
+)
+async def get_product_parameters_values_by_category(
+    _: CurrentUserModel | None = Security(
+        OptionalAuthorization(),
+        scopes=[ScopesEnum.CATEGORIES_GET_PARAMETERS_VALUES_BY_CATEGORY.name],
+    ),
+    category: Category = Depends(CategoryIdDependency()),
+    category_service: CategoryService = Depends(),
+) -> Mapping[str, Any] | None:
+    """API which returns product parameters values by category identifier.
+
+    Args:
+        _ (CurrentUserModel | None): Current user object or None.
+        category (Category): Category object.
+        category_service (CategoryService): Category service.
+
+    Returns:
+         Mapping[str, Any] | None: Parameters values.
+
+    """
+    return await category_service.get_product_parameters_values_by_category(
+        id_=category.id
+    )

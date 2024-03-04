@@ -163,3 +163,24 @@ class CategoryRepository(BaseRepository):
         )
 
         return result[0] if result else None
+
+    async def get_product_parameters_values_by_category(
+        self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
+    ) -> Mapping[str, Any] | None:
+        """Retrieves parameters values data from the repository by category identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the category.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            Mapping[str, Any] | None: The retrieved parameters values.
+
+        """
+
+        return await self._mongo_service.find_one(
+            collection=MongoCollectionsEnum.PARAMETERS_VALUES.value,
+            filter_={"_id": id_},
+            session=session,
+        )
