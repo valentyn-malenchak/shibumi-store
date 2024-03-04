@@ -1,0 +1,219 @@
+[
+  {
+    "_id": "65d24f2a260fb739c605b28d",
+    "battery_capacity": [
+      "43 watt*hours",
+      "45 watt*hours",
+      "49.9 watt*hours",
+      "56 watt*hours",
+      "58 watt*hours",
+      "68 watt*hours",
+      "70 watt*hours",
+      "80 watt*hours",
+      "86 watt*hours",
+      "99.9 watt*hours"
+    ],
+    "brand": [
+      "Acer",
+      "Alienware",
+      "Apple",
+      "Asus",
+      "Dell",
+      "HP",
+      "Huawei",
+      "Lenovo",
+      "Microsoft",
+      "MSI",
+      "Razer",
+      "Samsung"
+    ],
+    "class": [
+      "Affordable",
+      "Convertible",
+      "Gaming",
+      "High-Performance",
+      "Multimedia",
+      "Premium",
+      "Ultrabook"
+    ],
+    "color": [
+      "black",
+      "emerald green",
+      "lunar light",
+      "mystic bronze",
+      "platinum",
+      "silver"
+    ],
+    "country_of_production": [
+      "China",
+      "South Korea",
+      "Taiwan"
+    ],
+    "cpu": [
+      "AMD Ryzen 7 5700U",
+      "Apple M2 Chip",
+      "Intel Core i5-12400H",
+      "Intel Core i5-12500H",
+      "Intel Core i7-11800H",
+      "Intel Core i7-1260U",
+      "Intel Core i7-12700H",
+      "Intel Core i7-12700U",
+      "Intel Core i7-1270U",
+      "Intel Core i9-12900H",
+      "Intel Core i9-12900HK"
+    ],
+    "cpu_cores_number": [
+      8,
+      12,
+      14
+    ],
+    "graphics_card": [
+      "AMD Radeon Graphics",
+      "Apple Integrated GPU",
+      "GeForce RTX 3050",
+      "GeForce RTX 3050 Ti",
+      "GeForce RTX 3070",
+      "GeForce RTX 3080",
+      "GeForce RTX 3080 Ti",
+      "GeForce RTX 3090",
+      "Intel Iris Xe Graphics",
+      "Intel UHD Graphics",
+      "NVIDIA GeForce MX450"
+    ],
+    "graphics_card_type": [
+      "Discrete",
+      "Integrated"
+    ],
+    "has_bluetooth": [
+      true
+    ],
+    "has_fingerprint_identification": [
+      false,
+      true
+    ],
+    "has_keyboard_backlight": [
+      false,
+      true
+    ],
+    "has_touch_screen": [
+      false,
+      true
+    ],
+    "has_wifi": [
+      true
+    ],
+    "hdd": [
+      null
+    ],
+    "hdd_space": [
+      null
+    ],
+    "motherboard_chipset": [
+      null
+    ],
+    "no_wireless_connection": [
+      false
+    ],
+    "os": [
+      "macOS Monterey",
+      "Windows 10 Home",
+      "Windows 11 Home",
+      "Windows 11 Pro",
+      null
+    ],
+    "ram": [
+      "12 GB",
+      "16 GB",
+      "32 GB",
+      "64 GB",
+      "8 GB"
+    ],
+    "ram_slots": [
+      2,
+      4
+    ],
+    "ram_type": [
+      "DDR4",
+      "DDR5",
+      "LPDDR4X",
+      "LPDDR5"
+    ],
+    "screen_refresh_rate": [
+      "120 Hz",
+      "144 Hz",
+      "165 Hz",
+      "240 Hz",
+      "60 Hz"
+    ],
+    "screen_resolution": [
+      "1920x1080",
+      "2400x1600",
+      "2560x1440",
+      "2560x1600",
+      "3000x2000",
+      "3840x2160"
+    ],
+    "screen_size": [
+      "13.3\"",
+      "14\"",
+      "14.4\"",
+      "15.6\"",
+      "17.3\""
+    ],
+    "screen_type": [
+      "IPS",
+      "OLED",
+      "Super AMOLED"
+    ],
+    "ssd": [
+      "Apple",
+      "Kingston",
+      "Samsung",
+      "Toshiba",
+      "Western Digital"
+    ],
+    "ssd_space": [
+      "1 TB",
+      "2 TB",
+      "256 GB",
+      "512 GB"
+    ],
+    "vram": [
+      "16 GB",
+      "2 GB",
+      "4 GB",
+      "8 GB",
+      "Shared"
+    ],
+    "warranty": [
+      "1 year",
+      "2 years",
+      "3 years"
+    ],
+    "year": [
+      2024
+    ]
+  },
+  {
+    "_id": "65d24f2a260fb739c605b2a7",
+    "brand": [
+      "Anker",
+      "RAVPower",
+      "Samsung",
+      "Xiaomi"
+    ],
+    "country_of_production": [
+      "China",
+      "South Korea"
+    ],
+    "warranty": [
+      "1 year",
+      "18 months",
+      "2 years"
+    ],
+    "year": [
+      2023,
+      2024
+    ]
+  }
+]

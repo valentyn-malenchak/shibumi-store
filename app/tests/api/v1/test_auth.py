@@ -60,6 +60,7 @@ class TestAuth(BaseAPITest):
             ScopesEnum.USERS_DELETE_USER.name,
             ScopesEnum.CATEGORIES_GET_CATEGORIES.name,
             ScopesEnum.CATEGORIES_GET_CATEGORY.name,
+            ScopesEnum.CATEGORIES_GET_PARAMETERS_VALUES_BY_CATEGORY.name,
             ScopesEnum.PRODUCTS_GET_PRODUCTS.name,
             ScopesEnum.PRODUCTS_GET_PRODUCT.name,
         }
