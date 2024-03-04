@@ -66,5 +66,5 @@ class JSONFileLoader(BaseLoader):
 
         path = os.path.join(os.getcwd(), self.file_path)
 
-        with open(path) as json_file:
+        with open(path, encoding="utf-8") as json_file:
             return json.load(json_file, cls=JSONDecoder)
