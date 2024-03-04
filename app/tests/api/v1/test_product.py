@@ -141,6 +141,47 @@ class TestProduct(BaseAPITest):
             "updated_at": None,
         }
 
+        # Check if background task calculates appropriate parameters-values
+        response = await test_client.get(
+            f"{API_V1_PREFIX}/categories/65d24f2a260fb739c605b28d/parameters-values/"
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "id": "65d24f2a260fb739c605b28d",
+            "battery_capacity": ["56 watt*hours"],
+            "brand": ["Asus"],
+            "class": ["Gaming"],
+            "color": ["black"],
+            "country_of_production": ["Taiwan"],
+            "cpu": ["Intel Core i5-12500H"],
+            "cpu_cores_number": [12],
+            "graphics_card": ["GeForce RTX 3050"],
+            "graphics_card_type": ["Discrete"],
+            "has_bluetooth": [True],
+            "has_fingerprint_identification": [False],
+            "has_keyboard_backlight": [False],
+            "has_touch_screen": [False],
+            "has_wifi": [True],
+            "hdd": [None],
+            "hdd_space": [None],
+            "motherboard_chipset": [None],
+            "no_wireless_connection": [False],
+            "os": [None],
+            "ram": ["16 GB"],
+            "ram_slots": [2],
+            "ram_type": ["DDR4"],
+            "screen_refresh_rate": ["144 Hz"],
+            "screen_resolution": ["1920x1080"],
+            "screen_size": ['15.6"'],
+            "screen_type": ["IPS"],
+            "ssd": ["Kingston"],
+            "ssd_space": ["512 GB"],
+            "vram": ["4 GB"],
+            "warranty": ["2 years"],
+            "year": [2024],
+        }
+
     @pytest.mark.asyncio
     async def test_create_product_no_token(self, test_client: AsyncClient) -> None:
         """Test create product in case there is no token."""

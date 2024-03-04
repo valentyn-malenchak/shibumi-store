@@ -6,6 +6,7 @@ from typing import Any, Dict, List
 from injector import Injector
 
 from app.api.v1.repositories import BaseRepository
+from app.api.v1.repositories.parameters_values import ParametersValuesRepository
 from app.api.v1.repositories.product import ProductRepository
 from app.api.v1.repositories.user import UserRepository
 from app.loaders import JSONFileLoader
@@ -22,6 +23,9 @@ class FileFixtureManager:
     _fixture_repositories: Dict[MongoCollectionsEnum, BaseRepository] = {
         MongoCollectionsEnum.USERS: _injector.get(UserRepository),
         MongoCollectionsEnum.PRODUCTS: _injector.get(ProductRepository),
+        MongoCollectionsEnum.PARAMETERS_VALUES: _injector.get(
+            ParametersValuesRepository
+        ),
     }
 
     def __init__(
@@ -75,7 +79,8 @@ class FileFixtureManager:
         """Clear collections from loaded data."""
 
         async with self.transaction_manager as session:
-            for collection in self.collection_names:
+            # clean all collections which have fixtures
+            for collection in list(self._fixture_repositories.keys()):
                 repository = self._fixture_repositories[collection]
 
                 await repository.delete_all(session=session)
