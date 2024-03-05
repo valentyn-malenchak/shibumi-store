@@ -12,7 +12,7 @@ from app.services.mongo.constants import MongoCollectionsEnum
 class ParameterRepository(BaseRepository):
     """Parameter repository for handling data access operations."""
 
-    _collection_name: str = MongoCollectionsEnum.PARAMETERS.value
+    _collection_name: str = MongoCollectionsEnum.PARAMETERS
 
     @staticmethod
     async def _get_list_query_filter(*_: Any, **__: Any) -> Mapping[str, Any]:
@@ -66,7 +66,7 @@ class ParameterRepository(BaseRepository):
 
         """
         return {
-            "_id": ProjectionValuesEnum.EXCLUDE.value,
-            "machine_name": ProjectionValuesEnum.INCLUDE.value,
-            "type": ProjectionValuesEnum.INCLUDE.value,
+            "_id": ProjectionValuesEnum.EXCLUDE,
+            "machine_name": ProjectionValuesEnum.INCLUDE,
+            "type": ProjectionValuesEnum.INCLUDE,
         }

@@ -28,8 +28,8 @@ class SendGridService(BaseService):
         self._client = send_grid_client.client
 
     @retry(
-        stop=stop_after_attempt(AppConstants.BACKGROUND_TASK_RETRY_ATTEMPTS.value),
-        wait=wait_fixed(AppConstants.BACKGROUND_TASK_RETRY_WAIT.value),
+        stop=stop_after_attempt(AppConstants.BACKGROUND_TASK_RETRY_ATTEMPTS),
+        wait=wait_fixed(AppConstants.BACKGROUND_TASK_RETRY_WAIT),
     )
     def send(self, to_emails: str, subject: str, plain_text_content: str) -> None:
         """Sends an email using SendGrid.

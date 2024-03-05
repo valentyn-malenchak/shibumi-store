@@ -9,7 +9,7 @@ from app.services.mongo.constants import MongoCollectionsEnum
 class ParametersValuesRepository(BaseRepository):
     """Parameters values repository for handling data access operations."""
 
-    _collection_name: str = MongoCollectionsEnum.PARAMETERS_VALUES.value
+    _collection_name: str = MongoCollectionsEnum.PARAMETERS_VALUES
 
     @staticmethod
     async def _get_list_query_filter(*_: Any, **__: Any) -> Mapping[str, Any]:

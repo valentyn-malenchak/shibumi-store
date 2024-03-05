@@ -127,7 +127,7 @@ class UpdateUserDependency:
         elif user and user.is_client is True:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=HTTPErrorMessagesEnum.CLIENT_USER_ACCESS_DENIED.value,
+                detail=HTTPErrorMessagesEnum.CLIENT_USER_ACCESS_DENIED,
             )
 
         return user
@@ -171,7 +171,7 @@ class UpdateUserPasswordDependency:
         ):
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail=HTTPErrorMessagesEnum.PASSWORD_DOES_NOT_MATCH.value,
+                detail=HTTPErrorMessagesEnum.PASSWORD_DOES_NOT_MATCH,
             )
 
         return password

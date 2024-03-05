@@ -35,7 +35,7 @@ class App(FastAPI):
     def _configure_routes(self) -> None:
         """Configure the routes for the FastAPI app."""
         for router_ in ROUTERS:
-            self.include_router(router_, prefix=AppConstants.API_V1_PREFIX.value)
+            self.include_router(router_, prefix=AppConstants.API_V1_PREFIX)
 
     def _configure_middlewares(self) -> None:
         """Configure the middlewares for the FastAPI app."""

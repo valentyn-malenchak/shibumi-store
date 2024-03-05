@@ -1,9 +1,9 @@
 """Module that provides application level constants."""
 
-from enum import Enum
+from enum import IntEnum, StrEnum
 
 
-class AppConstants(Enum):
+class AppConstants:
     """Application level constants enum."""
 
     API_V1_PREFIX = "/api/v1"
@@ -14,14 +14,7 @@ class AppConstants(Enum):
     BACKGROUND_TASK_RETRY_WAIT = 5
 
 
-class EnvironmentsEnum(Enum):
-    """Application environments enumerate."""
-
-    DEV = "dev"
-    PROD = "prod"
-
-
-class HTTPErrorMessagesEnum(Enum):
+class HTTPErrorMessagesEnum(StrEnum):
     """Contains HTTP error messages."""
 
     NOT_AUTHORIZED = "Not authorized."
@@ -51,7 +44,7 @@ class HTTPErrorMessagesEnum(Enum):
     PRODUCTS_NOT_AVAILABLE_ACCESS_DENIED = "Access denied to not available products."
 
 
-class ValidationErrorMessagesEnum(Enum):
+class ValidationErrorMessagesEnum(StrEnum):
     """Contains validation error messages for Pydantic models."""
 
     INVALID_IDENTIFIER = "Invalid object identifier."
@@ -80,21 +73,21 @@ class ValidationErrorMessagesEnum(Enum):
     )
 
 
-class SortingTypesEnum(Enum):
+class SortingTypesEnum(StrEnum):
     """Sorting types enumerate."""
 
     ASC = "asc"
     DESC = "desc"
 
 
-class SortingValuesEnum(Enum):
+class SortingValuesEnum(IntEnum):
     """Sorting values enum."""
 
     ASC = 1
     DESC = -1
 
 
-class ProjectionValuesEnum(Enum):
+class ProjectionValuesEnum(IntEnum):
     """Projection values enumerate."""
 
     INCLUDE = 1

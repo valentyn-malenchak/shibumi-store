@@ -10,8 +10,8 @@ class Migration(BaseMigration):  # type: ignore
 
     def upgrade(self) -> None:
         """Creates a category_id index."""
-        self.db[MongoCollectionsEnum.PRODUCTS.value].create_index("category_id")
+        self.db[MongoCollectionsEnum.PRODUCTS].create_index("category_id")
 
     def downgrade(self) -> None:
         """Drops a category_id index."""
-        self.db[MongoCollectionsEnum.PRODUCTS.value].drop_index("category_id_1")
+        self.db[MongoCollectionsEnum.PRODUCTS].drop_index("category_id_1")

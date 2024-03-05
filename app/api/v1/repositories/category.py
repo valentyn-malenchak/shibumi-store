@@ -13,7 +13,7 @@ from app.services.mongo.constants import MongoCollectionsEnum
 class CategoryRepository(BaseRepository):
     """Category repository for handling data access operations."""
 
-    _collection_name: str = MongoCollectionsEnum.CATEGORIES.value
+    _collection_name: str = MongoCollectionsEnum.CATEGORIES
 
     async def get(
         self,
@@ -90,7 +90,7 @@ class CategoryRepository(BaseRepository):
             Mapping[str, Any] | None: List query projection or None.
 
         """
-        return {"parameters": ProjectionValuesEnum.EXCLUDE.value}
+        return {"parameters": ProjectionValuesEnum.EXCLUDE}
 
     async def count(
         self,
@@ -143,7 +143,7 @@ class CategoryRepository(BaseRepository):
                 {"$match": {"_id": id_}},
                 {
                     "$lookup": {
-                        "from": MongoCollectionsEnum.PARAMETERS.value,
+                        "from": MongoCollectionsEnum.PARAMETERS,
                         "localField": "parameters",
                         "foreignField": "_id",
                         "as": "parameters",
@@ -151,7 +151,7 @@ class CategoryRepository(BaseRepository):
                 },
                 {
                     "$lookup": {
-                        "from": MongoCollectionsEnum.CATEGORIES.value,
+                        "from": MongoCollectionsEnum.CATEGORIES,
                         "localField": "_id",
                         "foreignField": "parent_id",
                         "as": "children",
@@ -180,7 +180,7 @@ class CategoryRepository(BaseRepository):
         """
 
         return await self._mongo_service.find_one(
-            collection=MongoCollectionsEnum.PARAMETERS_VALUES.value,
+            collection=MongoCollectionsEnum.PARAMETERS_VALUES,
             filter_={"_id": id_},
             session=session,
         )

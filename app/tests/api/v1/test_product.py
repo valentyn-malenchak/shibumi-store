@@ -38,7 +38,7 @@ class TestProduct(BaseAPITest):
         """Test create product."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX.value}/products/",
+            f"{AppConstants.API_V1_PREFIX}/products/",
             json={
                 "name": "ASUS TUF Gaming F15",
                 "synopsis": "Display 15.6 IPS (1920x1080) Full HD 144 Hz / "
@@ -143,7 +143,7 @@ class TestProduct(BaseAPITest):
 
         # Check if background task calculates appropriate parameters-values
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX.value}/categories/65d24f2a260fb739c605b28d/parameters-values/"
+            f"{AppConstants.API_V1_PREFIX}/categories/65d24f2a260fb739c605b28d/parameters-values/"
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -187,7 +187,7 @@ class TestProduct(BaseAPITest):
         """Test create product in case there is no token."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX.value}/products/",
+            f"{AppConstants.API_V1_PREFIX}/products/",
             json={
                 "name": "ASUS TUF Gaming F15",
                 "synopsis": None,
@@ -203,14 +203,14 @@ class TestProduct(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
-        assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED.value}
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED}
 
     @pytest.mark.asyncio
     async def test_create_product_invalid_token(self, test_client: AsyncClient) -> None:
         """Test create product in case token is invalid."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX.value}/products/",
+            f"{AppConstants.API_V1_PREFIX}/products/",
             json={
                 "name": "ASUS TUF Gaming F15",
                 "synopsis": None,
@@ -227,9 +227,7 @@ class TestProduct(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
-        assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.INVALID_CREDENTIALS.value
-        }
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.INVALID_CREDENTIALS}
 
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
@@ -242,7 +240,7 @@ class TestProduct(BaseAPITest):
         """Test create product in case user does not have appropriate scope."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX.value}/products/",
+            f"{AppConstants.API_V1_PREFIX}/products/",
             json={
                 "name": "ASUS TUF Gaming F15",
                 "synopsis": None,
@@ -259,9 +257,7 @@ class TestProduct(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.PERMISSION_DENIED.value
-        }
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
 
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
@@ -274,7 +270,7 @@ class TestProduct(BaseAPITest):
         """Test create product in case request data is invalid."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX.value}/products/",
+            f"{AppConstants.API_V1_PREFIX}/products/",
             json={
                 "synopsis": None,
                 "description": "Very cool laptop.",
@@ -299,7 +295,7 @@ class TestProduct(BaseAPITest):
             (
                 "object_id",
                 ["body", "category_id"],
-                ValidationErrorMessagesEnum.INVALID_IDENTIFIER.value,
+                ValidationErrorMessagesEnum.INVALID_IDENTIFIER,
             ),
             ("missing", ["body", "html_body"], "Field required"),
         ]
@@ -315,7 +311,7 @@ class TestProduct(BaseAPITest):
         """Test create product in case request category does not exist."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX.value}/products/",
+            f"{AppConstants.API_V1_PREFIX}/products/",
             json={
                 "name": "ASUS TUF Gaming F15",
                 "synopsis": "Cool.",
@@ -350,7 +346,7 @@ class TestProduct(BaseAPITest):
         """Test create product in case request category is not a tree leaf."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX.value}/products/",
+            f"{AppConstants.API_V1_PREFIX}/products/",
             json={
                 "name": "ASUS TUF Gaming F15",
                 "synopsis": "Cool.",
@@ -369,7 +365,7 @@ class TestProduct(BaseAPITest):
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.LEAF_PRODUCT_CATEGORY_REQUIRED.value
+            "detail": HTTPErrorMessagesEnum.LEAF_PRODUCT_CATEGORY_REQUIRED
         }
 
     @pytest.mark.asyncio
@@ -383,7 +379,7 @@ class TestProduct(BaseAPITest):
         """Test create product in case product parameters are invalid."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX.value}/products/",
+            f"{AppConstants.API_V1_PREFIX}/products/",
             json={
                 "name": "ASUS TUF Gaming F15",
                 "synopsis": "Display 15.6 IPS (1920x1080) Full HD 144 Hz / "
@@ -467,17 +463,17 @@ class TestProduct(BaseAPITest):
             (
                 "missing",
                 ["body", "parameters", "has_fingerprint_identification"],
-                ValidationErrorMessagesEnum.REQUIRED_FIELD.value,
+                ValidationErrorMessagesEnum.REQUIRED_FIELD,
             ),
             (
                 "missing",
                 ["body", "parameters", "has_keyboard_backlight"],
-                ValidationErrorMessagesEnum.REQUIRED_FIELD.value,
+                ValidationErrorMessagesEnum.REQUIRED_FIELD,
             ),
             (
                 "missing",
                 ["body", "parameters", "has_touch_screen"],
-                ValidationErrorMessagesEnum.REQUIRED_FIELD.value,
+                ValidationErrorMessagesEnum.REQUIRED_FIELD,
             ),
         ]
 
@@ -493,7 +489,7 @@ class TestProduct(BaseAPITest):
         """Test get product in case there is no token."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX.value}/products/6597f143c064f4099808ad26/"
+            f"{AppConstants.API_V1_PREFIX}/products/6597f143c064f4099808ad26/"
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -561,12 +557,12 @@ class TestProduct(BaseAPITest):
         """Test get product in case there is no token and product is unavailable."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX.value}/products/65d22fd0a83d80b9f0bd3e38/"
+            f"{AppConstants.API_V1_PREFIX}/products/65d22fd0a83d80b9f0bd3e38/"
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.PRODUCT_ACCESS_DENIED.value
+            "detail": HTTPErrorMessagesEnum.PRODUCT_ACCESS_DENIED
         }
 
     @pytest.mark.asyncio
@@ -582,7 +578,7 @@ class TestProduct(BaseAPITest):
         """Test get product in case user is authorized."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX.value}/products/6597f143c064f4099808ad26/",
+            f"{AppConstants.API_V1_PREFIX}/products/6597f143c064f4099808ad26/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -651,13 +647,13 @@ class TestProduct(BaseAPITest):
         """Test get product in case user is authorized, but product is unavailable."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX.value}/products/65d22fd0a83d80b9f0bd3e38/",
+            f"{AppConstants.API_V1_PREFIX}/products/65d22fd0a83d80b9f0bd3e38/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.PRODUCT_ACCESS_DENIED.value
+            "detail": HTTPErrorMessagesEnum.PRODUCT_ACCESS_DENIED
         }
 
     @pytest.mark.asyncio
@@ -675,7 +671,7 @@ class TestProduct(BaseAPITest):
         """
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX.value}/products/65d22fd0a83d80b9f0bd3e38/",
+            f"{AppConstants.API_V1_PREFIX}/products/65d22fd0a83d80b9f0bd3e38/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -711,14 +707,12 @@ class TestProduct(BaseAPITest):
         """Test get product in case user does not have a scope."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX.value}/products/659ac89bfe61d8332f6be4c4/",
+            f"{AppConstants.API_V1_PREFIX}/products/659ac89bfe61d8332f6be4c4/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.PERMISSION_DENIED.value
-        }
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
 
     @pytest.mark.asyncio
     async def test_get_product_invalid_identifier(
@@ -727,7 +721,7 @@ class TestProduct(BaseAPITest):
         """Test get product in case of invalid identifier."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX.value}/products/invalid-group-id/"
+            f"{AppConstants.API_V1_PREFIX}/products/invalid-group-id/"
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -738,7 +732,7 @@ class TestProduct(BaseAPITest):
             (
                 "object_id",
                 ["path", "product_id"],
-                ValidationErrorMessagesEnum.INVALID_IDENTIFIER.value,
+                ValidationErrorMessagesEnum.INVALID_IDENTIFIER,
             )
         ]
 
@@ -749,7 +743,7 @@ class TestProduct(BaseAPITest):
         """
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX.value}/products/6598495fdf97a8e0d7e612aa/"
+            f"{AppConstants.API_V1_PREFIX}/products/6598495fdf97a8e0d7e612aa/"
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -771,7 +765,7 @@ class TestProduct(BaseAPITest):
         """Test get products list in case there is no token."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX.value}/products/",
+            f"{AppConstants.API_V1_PREFIX}/products/",
             params={"page": 1, "page_size": 2, "available": True},
         )
 
@@ -825,7 +819,7 @@ class TestProduct(BaseAPITest):
         """Test get products list in case user is customer."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX.value}/products/",
+            f"{AppConstants.API_V1_PREFIX}/products/",
             params={"page": 3, "page_size": 1, "available": True},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -866,7 +860,7 @@ class TestProduct(BaseAPITest):
         """Test get products list in case user is from shop side."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX.value}/products/",
+            f"{AppConstants.API_V1_PREFIX}/products/",
             params={"page": 7, "page_size": 2},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -912,7 +906,7 @@ class TestProduct(BaseAPITest):
         """Test get products list with filters."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX.value}/products/",
+            f"{AppConstants.API_V1_PREFIX}/products/",
             params={
                 "page": 1,
                 "page_size": 20,
@@ -959,7 +953,7 @@ class TestProduct(BaseAPITest):
         """Test get products list with search."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX.value}/products/",
+            f"{AppConstants.API_V1_PREFIX}/products/",
             params={
                 "page": 1,
                 "page_size": 20,
@@ -1020,7 +1014,7 @@ class TestProduct(BaseAPITest):
         """Test get products list with sorting."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX.value}/products/",
+            f"{AppConstants.API_V1_PREFIX}/products/",
             params={
                 "page": 1,
                 "page_size": 2,
@@ -1077,14 +1071,12 @@ class TestProduct(BaseAPITest):
         """Test get products list in case user does not have a scope."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX.value}/products/",
+            f"{AppConstants.API_V1_PREFIX}/products/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.PERMISSION_DENIED.value
-        }
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
 
     @pytest.mark.asyncio
     async def test_get_products_list_validate_base_filters(
@@ -1093,7 +1085,7 @@ class TestProduct(BaseAPITest):
         """Test get products list in case base query parameters are invalid."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX.value}/products/",
+            f"{AppConstants.API_V1_PREFIX}/products/",
             params={
                 "available": "maybe",
                 "sort_by": "random_field",
@@ -1128,7 +1120,7 @@ class TestProduct(BaseAPITest):
         """Test get products list in case product parameters filter are invalid."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX.value}/products/",
+            f"{AppConstants.API_V1_PREFIX}/products/",
             params={
                 "page": 1,
                 "page_size": 2,
@@ -1165,13 +1157,13 @@ class TestProduct(BaseAPITest):
         """
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX.value}/products/",
+            f"{AppConstants.API_V1_PREFIX}/products/",
             params={"page": 1, "page_size": 2},
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.PRODUCTS_NOT_AVAILABLE_ACCESS_DENIED.value
+            "detail": HTTPErrorMessagesEnum.PRODUCTS_NOT_AVAILABLE_ACCESS_DENIED
         }
 
     @pytest.mark.asyncio
@@ -1188,12 +1180,12 @@ class TestProduct(BaseAPITest):
         """
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX.value}/products/",
+            f"{AppConstants.API_V1_PREFIX}/products/",
             params={"page": 3, "page_size": 1, "available": False},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.PRODUCTS_NOT_AVAILABLE_ACCESS_DENIED.value
+            "detail": HTTPErrorMessagesEnum.PRODUCTS_NOT_AVAILABLE_ACCESS_DENIED
         }

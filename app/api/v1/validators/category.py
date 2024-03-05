@@ -112,7 +112,7 @@ class LeafCategoryValidator(BaseCategoryValidator):
         if category.has_children is True:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=HTTPErrorMessagesEnum.LEAF_PRODUCT_CATEGORY_REQUIRED.value,
+                detail=HTTPErrorMessagesEnum.LEAF_PRODUCT_CATEGORY_REQUIRED,
             )
 
         return category

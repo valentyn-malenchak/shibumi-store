@@ -19,7 +19,7 @@ from app.services.mongo.service import MongoDBService
 class ProductRepository(BaseRepository):
     """Product repository for handling data access operations."""
 
-    _collection_name: str = MongoCollectionsEnum.PRODUCTS.value
+    _collection_name: str = MongoCollectionsEnum.PRODUCTS
 
     def __init__(
         self,
@@ -92,9 +92,9 @@ class ProductRepository(BaseRepository):
         """
 
         return {
-            "description": ProjectionValuesEnum.EXCLUDE.value,
-            "html_body": ProjectionValuesEnum.EXCLUDE.value,
-            "parameters": ProjectionValuesEnum.EXCLUDE.value,
+            "description": ProjectionValuesEnum.EXCLUDE,
+            "html_body": ProjectionValuesEnum.EXCLUDE,
+            "parameters": ProjectionValuesEnum.EXCLUDE,
         }
 
     async def calculate_product_parameters_values_by_category(
@@ -164,7 +164,7 @@ class ProductRepository(BaseRepository):
         )
 
         result = await self._mongo_service.aggregate(
-            collection=MongoCollectionsEnum.PRODUCTS.value,
+            collection=MongoCollectionsEnum.PRODUCTS,
             pipeline=pipeline,
             session=session,
         )
@@ -185,7 +185,7 @@ class ProductRepository(BaseRepository):
             }
 
             await self._mongo_service.update_one(
-                collection=MongoCollectionsEnum.PARAMETERS_VALUES.value,
+                collection=MongoCollectionsEnum.PARAMETERS_VALUES,
                 filter_={"_id": parameters_values["_id"]},
                 update={"$set": parameters_values},
                 upsert=True,

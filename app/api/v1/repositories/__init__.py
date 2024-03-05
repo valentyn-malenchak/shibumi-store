@@ -133,9 +133,9 @@ class BaseRepository(abc.ABC):
         """
 
         sort_value = (
-            SortingValuesEnum.DESC.value
+            SortingValuesEnum.DESC
             if sort_order == SortingTypesEnum.DESC
-            else SortingValuesEnum.ASC.value
+            else SortingValuesEnum.ASC
         )
 
         return [(sort_by, sort_value)] if sort_by is not None else None

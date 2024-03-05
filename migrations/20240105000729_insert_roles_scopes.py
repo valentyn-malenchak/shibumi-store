@@ -12,7 +12,7 @@ class Migration(BaseMigration):  # type: ignore
 
     def upgrade(self) -> None:
         """Inserts roles scopes."""
-        self.db[MongoCollectionsEnum.ROLES_SCOPES.value].insert_many(
+        self.db[MongoCollectionsEnum.ROLES_SCOPES].insert_many(
             [
                 {
                     "role": RolesEnum.CUSTOMER.name,
@@ -124,4 +124,4 @@ class Migration(BaseMigration):  # type: ignore
 
     def downgrade(self) -> None:
         """Drops roles scopes."""
-        self.db[MongoCollectionsEnum.ROLES_SCOPES.value].delete_many(filter={})
+        self.db[MongoCollectionsEnum.ROLES_SCOPES].delete_many(filter={})

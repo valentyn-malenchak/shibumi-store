@@ -269,13 +269,13 @@ class UserService(BaseService):
         self.redis_service.set(
             name=RedisNamesEnum.RESET_PASSWORD.value.format(user_id=user.id),
             value=token.hash(),
-            ttl=RedisNamesTTLEnum.RESET_PASSWORD.value,
+            ttl=RedisNamesTTLEnum.RESET_PASSWORD,
         )
 
         self.background_tasks.add_task(
             self.send_grid_service.send,
             to_emails=user.email,
-            subject=EmailSubjectsEnum.RESET_PASSWORD.value,
+            subject=EmailSubjectsEnum.RESET_PASSWORD,
             plain_text_content=EmailTextEnum.RESET_PASSWORD.value.format(
                 token=token.value
             ),
@@ -300,7 +300,7 @@ class UserService(BaseService):
         if cached_token is None or cached_token != hashed_token:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=HTTPErrorMessagesEnum.INVALID_RESET_PASSWORD_TOKEN.value,
+                detail=HTTPErrorMessagesEnum.INVALID_RESET_PASSWORD_TOKEN,
             )
 
         await self.update_password(id_=id_, password=password)
@@ -322,13 +322,13 @@ class UserService(BaseService):
         self.redis_service.set(
             name=RedisNamesEnum.EMAIL_VERIFICATION.value.format(user_id=user.id),
             value=token.hash(),
-            ttl=RedisNamesTTLEnum.EMAIL_VERIFICATION.value,
+            ttl=RedisNamesTTLEnum.EMAIL_VERIFICATION,
         )
 
         self.background_tasks.add_task(
             self.send_grid_service.send,
             to_emails=user.email,
-            subject=EmailSubjectsEnum.EMAIL_VERIFICATION.value,
+            subject=EmailSubjectsEnum.EMAIL_VERIFICATION,
             plain_text_content=EmailTextEnum.EMAIL_VERIFICATION.value.format(
                 token=token.value
             ),
@@ -352,7 +352,7 @@ class UserService(BaseService):
         if cached_token is None or cached_token != hashed_token:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=HTTPErrorMessagesEnum.INVALID_EMAIL_VERIFICATION_TOKEN.value,
+                detail=HTTPErrorMessagesEnum.INVALID_EMAIL_VERIFICATION_TOKEN,
             )
 
         await self._update_email_verified(id_=id_)
