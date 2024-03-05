@@ -6,7 +6,7 @@ from fastapi import Depends
 from sendgrid.helpers.mail import Mail  # type: ignore
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from app.constants import BACKGROUND_TASK_RETRY_ATTEMPTS, BACKGROUND_TASK_RETRY_WAIT
+from app.constants import AppConstants
 from app.services.base import BaseService
 from app.services.send_grid.client import SendGridClient
 from app.settings import SETTINGS
@@ -28,8 +28,8 @@ class SendGridService(BaseService):
         self._client = send_grid_client.client
 
     @retry(
-        stop=stop_after_attempt(BACKGROUND_TASK_RETRY_ATTEMPTS),
-        wait=wait_fixed(BACKGROUND_TASK_RETRY_WAIT),
+        stop=stop_after_attempt(AppConstants.BACKGROUND_TASK_RETRY_ATTEMPTS.value),
+        wait=wait_fixed(AppConstants.BACKGROUND_TASK_RETRY_WAIT.value),
     )
     def send(self, to_emails: str, subject: str, plain_text_content: str) -> None:
         """Sends an email using SendGrid.

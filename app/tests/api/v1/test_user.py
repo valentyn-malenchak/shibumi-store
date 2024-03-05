@@ -11,7 +11,7 @@ from tenacity import wait_none
 
 from app.api.v1.constants import RolesEnum
 from app.constants import (
-    API_V1_PREFIX,
+    AppConstants,
     HTTPErrorMessagesEnum,
     ValidationErrorMessagesEnum,
 )
@@ -42,7 +42,7 @@ class TestUser(BaseAPITest):
         """Test get me."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/users/me/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/me/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -67,7 +67,9 @@ class TestUser(BaseAPITest):
     async def test_get_me_no_token(self, test_client: AsyncClient) -> None:
         """Test get me in case there is no token."""
 
-        response = await test_client.get(f"{API_V1_PREFIX}/users/me/")
+        response = await test_client.get(
+            f"{AppConstants.API_V1_PREFIX.value}/users/me/"
+        )
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED.value}
@@ -77,7 +79,7 @@ class TestUser(BaseAPITest):
         """Test get me in case access token is invalid."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/users/me/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/me/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -94,7 +96,7 @@ class TestUser(BaseAPITest):
         """Test get me in case access token is expired."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/users/me/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/me/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -109,7 +111,7 @@ class TestUser(BaseAPITest):
         """
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/users/me/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/me/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -127,7 +129,7 @@ class TestUser(BaseAPITest):
         """Test get me in case user does not have appropriate scope."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/users/me/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/me/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -147,7 +149,7 @@ class TestUser(BaseAPITest):
         """Test get me in case user email is not verified."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/users/me/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/me/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -166,7 +168,7 @@ class TestUser(BaseAPITest):
         """Test create user in case unauthenticated user creates customer."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/users/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/",
             json={
                 "first_name": "Joe",
                 "last_name": "Smith",
@@ -203,7 +205,7 @@ class TestUser(BaseAPITest):
         """Test create user in case unauthenticated user creates shop side user."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/users/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/",
             json={
                 "first_name": "Joe",
                 "last_name": "Smith",
@@ -236,7 +238,7 @@ class TestUser(BaseAPITest):
         """Test create user in case shop side user creates multi-role user."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/users/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
             json={
                 "first_name": "Joe",
@@ -282,7 +284,7 @@ class TestUser(BaseAPITest):
         """Test create user in case request data is invalid."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/users/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/",
             json={
                 "first_name": "John",
                 "last_name": "Smith",
@@ -332,7 +334,7 @@ class TestUser(BaseAPITest):
         """Test create user in case password is short."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/users/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/",
             json={
                 "first_name": "Joe",
                 "last_name": "Smith",
@@ -366,7 +368,7 @@ class TestUser(BaseAPITest):
         """Test create user in case password doesn't include digits."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/users/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/",
             json={
                 "first_name": "Joe",
                 "last_name": "Smith",
@@ -400,7 +402,7 @@ class TestUser(BaseAPITest):
         """Test create user in case password doesn't include lowercase letters."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/users/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/",
             json={
                 "first_name": "Joe",
                 "last_name": "Smith",
@@ -434,7 +436,7 @@ class TestUser(BaseAPITest):
         """Test create user in case password doesn't include uppercase letters."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/users/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/",
             json={
                 "first_name": "Joe",
                 "last_name": "Smith",
@@ -468,7 +470,7 @@ class TestUser(BaseAPITest):
         """Test create user in case password doesn't include special characters."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/users/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/",
             json={
                 "first_name": "Joe",
                 "last_name": "Smith",
@@ -500,7 +502,7 @@ class TestUser(BaseAPITest):
         """Test create user in case username is short."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/users/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/",
             json={
                 "first_name": "Joe",
                 "last_name": "Smith",
@@ -532,7 +534,7 @@ class TestUser(BaseAPITest):
         """Test create user in case username is long."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/users/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/",
             json={
                 "first_name": "Joe",
                 "last_name": "Smith",
@@ -566,7 +568,7 @@ class TestUser(BaseAPITest):
         """Test create user in case username contains not permitted characters."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/users/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/",
             json={
                 "first_name": "Joe",
                 "last_name": "Smith",
@@ -607,7 +609,7 @@ class TestUser(BaseAPITest):
         """
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/users/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
             json={
                 "first_name": "John",
@@ -637,7 +639,7 @@ class TestUser(BaseAPITest):
         """Test create user in case user with such username is already exist."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/users/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/",
             json={
                 "first_name": "John",
                 "last_name": "Smith",
@@ -670,7 +672,7 @@ class TestUser(BaseAPITest):
         """Test update user in case customer user updates self with no role changes."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/65844f12b6de26578d98c2c8/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/65844f12b6de26578d98c2c8/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
             json={
                 "first_name": "John",
@@ -710,7 +712,7 @@ class TestUser(BaseAPITest):
         """Test update user in case customer user requests shop side roles."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/65844f12b6de26578d98c2c8/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/65844f12b6de26578d98c2c8/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
             json={
                 "first_name": "John",
@@ -739,7 +741,7 @@ class TestUser(BaseAPITest):
         """Test update user in case shop side user updates self."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/659bf67868d14b47475ec11c/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/659bf67868d14b47475ec11c/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
             json={
                 "first_name": "Anya",
@@ -787,7 +789,7 @@ class TestUser(BaseAPITest):
         """Test update user in case request json data is invalid."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/invalid-identifier/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/invalid-identifier/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
             json={
                 "first_name": "John",
@@ -832,7 +834,7 @@ class TestUser(BaseAPITest):
         """Test update user in case there is no token."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/65844f12b6de26578d98c2c8/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/65844f12b6de26578d98c2c8/",
             json={
                 "first_name": "John",
                 "last_name": "Smith",
@@ -857,7 +859,7 @@ class TestUser(BaseAPITest):
         """Test update user in case user does not have appropriate scope."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/65844f12b6de26578d98c2c8/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/65844f12b6de26578d98c2c8/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
             json={
                 "first_name": "John",
@@ -886,7 +888,7 @@ class TestUser(BaseAPITest):
         """Test update user in case client user updates another client user."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/6598495fdf97a8e0d7e612ae/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/6598495fdf97a8e0d7e612ae/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
             json={
                 "first_name": "John",
@@ -914,7 +916,7 @@ class TestUser(BaseAPITest):
         """Test update user in case client user updates shop side user."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/659c3528d71686302919981c/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/659c3528d71686302919981c/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
             json={
                 "first_name": "John",
@@ -942,7 +944,7 @@ class TestUser(BaseAPITest):
         """Test update user in case shop side user updates client user."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/65844f12b6de26578d98c2c8/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/65844f12b6de26578d98c2c8/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
             json={
                 "first_name": "John",
@@ -971,7 +973,7 @@ class TestUser(BaseAPITest):
         """Test update user in case shop side user updates another shop side user."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/659c3528d71686302919981c/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/659c3528d71686302919981c/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
             json={
                 "first_name": "Frederique",
@@ -1011,7 +1013,7 @@ class TestUser(BaseAPITest):
         """Test update user in case user is deleted."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/659ac89bfe61d8332f6be4c4/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/659ac89bfe61d8332f6be4c4/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
             json={
                 "first_name": "Frederique",
@@ -1041,7 +1043,7 @@ class TestUser(BaseAPITest):
         """Test delete user if case client user deletes self."""
 
         response = await test_client.delete(
-            f"{API_V1_PREFIX}/users/65844f12b6de26578d98c2c8/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/65844f12b6de26578d98c2c8/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -1058,7 +1060,7 @@ class TestUser(BaseAPITest):
         """Test delete user in case shop side user deletes self."""
 
         response = await test_client.delete(
-            f"{API_V1_PREFIX}/users/659bf67868d14b47475ec11c/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/659bf67868d14b47475ec11c/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -1069,7 +1071,7 @@ class TestUser(BaseAPITest):
         """Test delete user in case there is no token."""
 
         response = await test_client.delete(
-            f"{API_V1_PREFIX}/users/65844f12b6de26578d98c2c8/"
+            f"{AppConstants.API_V1_PREFIX.value}/users/65844f12b6de26578d98c2c8/"
         )
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -1086,7 +1088,7 @@ class TestUser(BaseAPITest):
         """Test delete user in case user does not have appropriate scope."""
 
         response = await test_client.delete(
-            f"{API_V1_PREFIX}/users/65844f12b6de26578d98c2c8/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/65844f12b6de26578d98c2c8/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -1106,7 +1108,7 @@ class TestUser(BaseAPITest):
         """Test delete user in case client user deletes another client user."""
 
         response = await test_client.delete(
-            f"{API_V1_PREFIX}/users/6598495fdf97a8e0d7e612ae/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/6598495fdf97a8e0d7e612ae/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -1126,7 +1128,7 @@ class TestUser(BaseAPITest):
         """Test delete user in case client user deletes shop side user."""
 
         response = await test_client.delete(
-            f"{API_V1_PREFIX}/users/659c3528d71686302919981c/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/659c3528d71686302919981c/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -1146,7 +1148,7 @@ class TestUser(BaseAPITest):
         """Test delete user in case shop side user deletes client user."""
 
         response = await test_client.delete(
-            f"{API_V1_PREFIX}/users/65844f12b6de26578d98c2c8/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/65844f12b6de26578d98c2c8/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -1163,7 +1165,7 @@ class TestUser(BaseAPITest):
         """Test delete user in case shop side user deletes another shop side user."""
 
         response = await test_client.delete(
-            f"{API_V1_PREFIX}/users/659c3528d71686302919981c/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/659c3528d71686302919981c/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -1180,7 +1182,7 @@ class TestUser(BaseAPITest):
         """Test delete user in case user is deleted."""
 
         response = await test_client.delete(
-            f"{API_V1_PREFIX}/users/659ac89bfe61d8332f6be4c4/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/659ac89bfe61d8332f6be4c4/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -1202,7 +1204,7 @@ class TestUser(BaseAPITest):
         """Test delete user in case of invalid identifier."""
 
         response = await test_client.delete(
-            f"{API_V1_PREFIX}/users/invalid-group-id/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/invalid-group-id/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -1227,7 +1229,7 @@ class TestUser(BaseAPITest):
         """Test get user."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/users/659ac89bfe61d8332f6be4c4/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/659ac89bfe61d8332f6be4c4/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -1253,7 +1255,7 @@ class TestUser(BaseAPITest):
         """Test get user in case there is no token."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/users/659ac89bfe61d8332f6be4c4/"
+            f"{AppConstants.API_V1_PREFIX.value}/users/659ac89bfe61d8332f6be4c4/"
         )
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -1270,7 +1272,7 @@ class TestUser(BaseAPITest):
         """Test get user in case user does not have a scope."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/users/659ac89bfe61d8332f6be4c4/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/659ac89bfe61d8332f6be4c4/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -1290,7 +1292,7 @@ class TestUser(BaseAPITest):
         """Test get user in case of invalid identifier."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/users/invalid-group-id/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/invalid-group-id/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -1317,7 +1319,7 @@ class TestUser(BaseAPITest):
         """Test get user in case of identifier is valid, but there is no such user."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/users/6598495fdf97a8e0d7e612aa/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/6598495fdf97a8e0d7e612aa/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -1339,7 +1341,7 @@ class TestUser(BaseAPITest):
         """Test get users list."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/users/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/",
             params={"page": 1, "page_size": 3},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -1407,7 +1409,7 @@ class TestUser(BaseAPITest):
         """Test get users list with filters."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/users/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/",
             params={
                 "page": 1,
                 "page_size": 1,
@@ -1450,7 +1452,7 @@ class TestUser(BaseAPITest):
         """Test get users list with search."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/users/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/",
             params={"page": 1, "page_size": 1, "search": "anya"},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -1488,7 +1490,7 @@ class TestUser(BaseAPITest):
         """Test get users list with sorting."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/users/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/",
             params={
                 "page": 1,
                 "page_size": 1,
@@ -1531,7 +1533,7 @@ class TestUser(BaseAPITest):
         """Test get users list in case query parameters are invalid."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/users/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/",
             params={
                 "roles": ["Any"],
                 "deleted": "yes",
@@ -1562,7 +1564,8 @@ class TestUser(BaseAPITest):
         """Test get users list in case there is no token."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/users/", params={"page": 1, "page_size": 20}
+            f"{AppConstants.API_V1_PREFIX.value}/users/",
+            params={"page": 1, "page_size": 20},
         )
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -1579,7 +1582,7 @@ class TestUser(BaseAPITest):
         """Test get users list in case user does not have a scope."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/users/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -1599,7 +1602,7 @@ class TestUser(BaseAPITest):
         """Test update user password."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/65844f12b6de26578d98c2c8/password/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/65844f12b6de26578d98c2c8/password/",
             json={
                 "old_password": "John1234!",
                 "new_password": "NewP@ssw0rd",
@@ -1616,7 +1619,7 @@ class TestUser(BaseAPITest):
         """Test update user password in case there is no token."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/65844f12b6de26578d98c2c8/password/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/65844f12b6de26578d98c2c8/password/",
             json={
                 "old_password": "John1234!",
                 "new_password": "NewP@ssw0rd",
@@ -1637,7 +1640,7 @@ class TestUser(BaseAPITest):
         """Test update user password in case user does not have a scope."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/65844f12b6de26578d98c2c8/password/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/65844f12b6de26578d98c2c8/password/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -1657,7 +1660,7 @@ class TestUser(BaseAPITest):
         """Test update user password in case request data is invalid."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/invalid-group-id/password/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/invalid-group-id/password/",
             json={
                 "new_password": "1234!",
             },
@@ -1701,7 +1704,7 @@ class TestUser(BaseAPITest):
         """
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/6598495fdf97a8e0d7e612aa/password/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/6598495fdf97a8e0d7e612aa/password/",
             json={
                 "old_password": "John1234!",
                 "new_password": "J0hn1234!@~",
@@ -1727,7 +1730,7 @@ class TestUser(BaseAPITest):
         """Test update user password in case user updates for another user."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/659bf67868d14b47475ec11c/password/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/659bf67868d14b47475ec11c/password/",
             json={
                 "old_password": "John1234",
                 "new_password": "J0hn1234!@~",
@@ -1751,7 +1754,7 @@ class TestUser(BaseAPITest):
         """Test update user password in case old password is invalid."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/65844f12b6de26578d98c2c8/password/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/65844f12b6de26578d98c2c8/password/",
             json={
                 "old_password": "John1234",
                 "new_password": "J0hn1234!@~",
@@ -1776,7 +1779,7 @@ class TestUser(BaseAPITest):
         """Test request reset user password."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/users/john.smith/reset-password/"
+            f"{AppConstants.API_V1_PREFIX.value}/users/john.smith/reset-password/"
         )
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
@@ -1788,7 +1791,7 @@ class TestUser(BaseAPITest):
         """Test request reset user password in case user with username is not found."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/users/john.smith/reset-password/"
+            f"{AppConstants.API_V1_PREFIX.value}/users/john.smith/reset-password/"
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -1808,7 +1811,7 @@ class TestUser(BaseAPITest):
         """Test request reset user password in case user is deleted."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/users/sheila.fahey/reset-password/"
+            f"{AppConstants.API_V1_PREFIX.value}/users/sheila.fahey/reset-password/"
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -1836,7 +1839,9 @@ class TestUser(BaseAPITest):
         monkeypatch.setattr(SendGridService.send.retry, "wait", wait_none())  # type: ignore
 
         with pytest.raises(Exception):
-            await test_client.post(f"{API_V1_PREFIX}/users/john.smith/reset-password/")
+            await test_client.post(
+                f"{AppConstants.API_V1_PREFIX.value}/users/john.smith/reset-password/"
+            )
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize(
@@ -1850,7 +1855,7 @@ class TestUser(BaseAPITest):
         """Test reset user password."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/john.smith/reset-password/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/john.smith/reset-password/",
             json={
                 "token": "U66kv5LtukldDDSANUeAefQmjmeZuIcxC2lwiMUK6ec",
                 "new_password": "J0hn1234!@~",
@@ -1866,7 +1871,7 @@ class TestUser(BaseAPITest):
         """Test reset user password in case user with username is not found."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/john.smith/reset-password/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/john.smith/reset-password/",
             json={
                 "token": "U66kv5LtukldDDSANUeAefQmjmeZuIcxC2lwiMUK6ec",
                 "new_password": "J0hn1234!@~",
@@ -1890,7 +1895,7 @@ class TestUser(BaseAPITest):
         """Test reset user password in case user is deleted."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/sheila.fahey/reset-password/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/sheila.fahey/reset-password/",
             json={
                 "token": "U66kv5LtukldDDSANUeAefQmjmeZuIcxC2lwiMUK6ec",
                 "new_password": "J0hn1234!@~",
@@ -1914,7 +1919,7 @@ class TestUser(BaseAPITest):
         """Test reset user password in case request json data is invalid."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/john.smith/reset-password/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/john.smith/reset-password/",
             json={"new_password": "John1234"},
         )
 
@@ -1942,7 +1947,7 @@ class TestUser(BaseAPITest):
         """Test reset user password in case token is expired."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/john.smith/reset-password/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/john.smith/reset-password/",
             json={
                 "token": "U66kv5LtukldDDSANUeAefQmjmeZuIcxC2lwiMUK6ec",
                 "new_password": "J0hn1234!@~",
@@ -1965,7 +1970,7 @@ class TestUser(BaseAPITest):
         """Test reset user password in case token is invalid."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/john.smith/reset-password/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/john.smith/reset-password/",
             json={
                 "token": "U66kv5LtukldDDSANUe",
                 "new_password": "J0hn1234!@~",
@@ -1989,7 +1994,7 @@ class TestUser(BaseAPITest):
         """Test request verify user email."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/users/lila.legro/verify-email/"
+            f"{AppConstants.API_V1_PREFIX.value}/users/lila.legro/verify-email/"
         )
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
@@ -2001,7 +2006,7 @@ class TestUser(BaseAPITest):
         """Test request verify user email in case user with username is not found."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/users/lila.legro/verify-email/"
+            f"{AppConstants.API_V1_PREFIX.value}/users/lila.legro/verify-email/"
         )
 
         assert response.json() == {
@@ -2020,7 +2025,7 @@ class TestUser(BaseAPITest):
         """Test request verify user email in case user is deleted."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/users/sheila.fahey/verify-email/"
+            f"{AppConstants.API_V1_PREFIX.value}/users/sheila.fahey/verify-email/"
         )
 
         assert response.json() == {
@@ -2039,7 +2044,7 @@ class TestUser(BaseAPITest):
         """Test request verify user email in case user email is already verified."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/users/john.smith/verify-email/"
+            f"{AppConstants.API_V1_PREFIX.value}/users/john.smith/verify-email/"
         )
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -2065,7 +2070,9 @@ class TestUser(BaseAPITest):
         monkeypatch.setattr(SendGridService.send.retry, "wait", wait_none())  # type: ignore
 
         with pytest.raises(Exception):
-            await test_client.post(f"{API_V1_PREFIX}/users/lila.legro/verify-email/")
+            await test_client.post(
+                f"{AppConstants.API_V1_PREFIX.value}/users/lila.legro/verify-email/"
+            )
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize(
@@ -2079,7 +2086,7 @@ class TestUser(BaseAPITest):
         """Test verify user email."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/lila.legro/verify-email/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/lila.legro/verify-email/",
             json={
                 "token": "U66kv5LtukldDDSANUeAefQmjmeZuIcxC2lwiMUK6ec",
             },
@@ -2094,7 +2101,7 @@ class TestUser(BaseAPITest):
         """Test verify user email in case user with username is not found."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/lila.legro/verify-email/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/lila.legro/verify-email/",
             json={
                 "token": "U66kv5LtukldDDSANUeAefQmjmeZuIcxC2lwiMUK6ec",
             },
@@ -2117,7 +2124,7 @@ class TestUser(BaseAPITest):
         """Test verify user email in case user is deleted."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/sheila.fahey/verify-email/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/sheila.fahey/verify-email/",
             json={
                 "token": "U66kv5LtukldDDSANUeAefQmjmeZuIcxC2lwiMUK6ec",
             },
@@ -2140,7 +2147,7 @@ class TestUser(BaseAPITest):
         """Test verify user email in case user email is already verified."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/john.smith/verify-email/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/john.smith/verify-email/",
             json={
                 "token": "U66kv5LtukldDDSANUeAefQmjmeZuIcxC2lwiMUK6ec",
             },
@@ -2161,7 +2168,8 @@ class TestUser(BaseAPITest):
         """Test verify user email in case request json data is invalid."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/lila.legro/verify-email/", json={}
+            f"{AppConstants.API_V1_PREFIX.value}/users/lila.legro/verify-email/",
+            json={},
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -2183,7 +2191,7 @@ class TestUser(BaseAPITest):
         """Test verify user email in case token is expired."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/lila.legro/verify-email/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/lila.legro/verify-email/",
             json={
                 "token": "U66kv5LtukldDDSANUeAefQmjmeZuIcxC2lwiMUK6ec",
             },
@@ -2205,7 +2213,7 @@ class TestUser(BaseAPITest):
         """Test verify user email in case token is invalid."""
 
         response = await test_client.patch(
-            f"{API_V1_PREFIX}/users/lila.legro/verify-email/",
+            f"{AppConstants.API_V1_PREFIX.value}/users/lila.legro/verify-email/",
             json={
                 "token": "U66kv5LtukldDDSANUe",
             },

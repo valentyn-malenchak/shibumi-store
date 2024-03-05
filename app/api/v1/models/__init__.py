@@ -7,7 +7,7 @@ from pydantic import AliasChoices, BaseModel, Field
 from pydantic_core import PydanticCustomError, core_schema
 
 from app.constants import (
-    PAGINATION_MAX_PAGE_SIZE,
+    AppConstants,
     SortingTypesEnum,
     ValidationErrorMessagesEnum,
 )
@@ -58,7 +58,7 @@ class PaginationModel(BaseModel):
     """Pagination model for lists."""
 
     page: int
-    page_size: int = Field(le=PAGINATION_MAX_PAGE_SIZE)
+    page_size: int = Field(le=AppConstants.PAGINATION_MAX_PAGE_SIZE.value)
 
 
 class SortingModel(BaseModel):
