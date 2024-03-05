@@ -96,7 +96,7 @@ class ProductParametersValidator(BaseProductValidator):
                             "parameters",
                             parameter.machine_name,
                         ],
-                        "msg": ValidationErrorMessagesEnum.REQUIRED_FIELD.value,
+                        "msg": ValidationErrorMessagesEnum.REQUIRED_FIELD,
                     }
                 )
 
@@ -186,7 +186,7 @@ class ProductAccessValidator(BaseProductValidator):
         ) and product.available is False:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=HTTPErrorMessagesEnum.PRODUCT_ACCESS_DENIED.value,
+                detail=HTTPErrorMessagesEnum.PRODUCT_ACCESS_DENIED,
             )
 
 
@@ -212,5 +212,5 @@ class ProductsAccessFilterValidator(BaseProductValidator):
         ) and available is not True:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=HTTPErrorMessagesEnum.PRODUCTS_NOT_AVAILABLE_ACCESS_DENIED.value,
+                detail=HTTPErrorMessagesEnum.PRODUCTS_NOT_AVAILABLE_ACCESS_DENIED,
             )

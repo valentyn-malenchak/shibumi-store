@@ -66,7 +66,7 @@ class FileFixtureManager:
         async with self.transaction_manager as session:
             for collection in self.collection_names:
                 fixture_file_path = os.path.join(
-                    "app", "tests", "fixtures", "json", f"{collection.value}.json"
+                    "app", "tests", "fixtures", "json", f"{collection}.json"
                 )
 
                 data = self._load_fixture(fixture_file_path)

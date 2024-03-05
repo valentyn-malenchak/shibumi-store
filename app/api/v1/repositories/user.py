@@ -13,7 +13,7 @@ from app.services.mongo.constants import MongoCollectionsEnum
 class UserRepository(BaseRepository):
     """User repository for handling data access operations."""
 
-    _collection_name: str = MongoCollectionsEnum.USERS.value
+    _collection_name: str = MongoCollectionsEnum.USERS
 
     @staticmethod
     async def _get_list_query_filter(

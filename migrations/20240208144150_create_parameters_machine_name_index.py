@@ -12,10 +12,10 @@ class Migration(BaseMigration):  # type: ignore
 
     def upgrade(self) -> None:
         """Creates machine name index."""
-        self.db[MongoCollectionsEnum.PARAMETERS.value].create_index(
+        self.db[MongoCollectionsEnum.PARAMETERS].create_index(
             "machine_name", unique=True
         )
 
     def downgrade(self) -> None:
         """Drops machine name index."""
-        self.db[MongoCollectionsEnum.PARAMETERS.value].drop_index("machine_name_1")
+        self.db[MongoCollectionsEnum.PARAMETERS].drop_index("machine_name_1")

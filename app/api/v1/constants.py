@@ -1,6 +1,6 @@
 """Module that provides API v1 level constants."""
 
-from enum import Enum
+from enum import Enum, IntEnum, StrEnum
 
 
 class RolesEnum(Enum):
@@ -42,7 +42,7 @@ class ScopesEnum(Enum):
     PRODUCTS_GET_PRODUCT = "Allows to get product."
 
 
-class RedisNamesEnum(Enum):
+class RedisNamesEnum(StrEnum):
     """Redis names format enumerate."""
 
     EMAIL_VERIFICATION = "email_verification_{user_id}"
@@ -50,7 +50,7 @@ class RedisNamesEnum(Enum):
     PRODUCT_PARAMETERS_LIST = "product_parameters"
 
 
-class RedisNamesTTLEnum(Enum):
+class RedisNamesTTLEnum(IntEnum):
     """Redis names TTL enumerate."""
 
     EMAIL_VERIFICATION = 3600  # 1 hour
@@ -58,14 +58,14 @@ class RedisNamesTTLEnum(Enum):
     PRODUCT_PARAMETERS_LIST = 3600  # 1 hour
 
 
-class EmailSubjectsEnum(Enum):
+class EmailSubjectsEnum(StrEnum):
     """Email subjects enumerate."""
 
     EMAIL_VERIFICATION = "Shibumi Store - Email verification"
     RESET_PASSWORD = "Shibumi Store - Reset password"
 
 
-class EmailTextEnum(Enum):
+class EmailTextEnum(StrEnum):
     """Email text enum."""
 
     EMAIL_VERIFICATION = "Email verification token: {token}"

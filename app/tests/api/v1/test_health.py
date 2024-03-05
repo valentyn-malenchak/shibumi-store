@@ -23,7 +23,7 @@ class TestHealth(BaseAPITest):
     async def test_get_health(self, test_client: AsyncClient, arrange_db: None) -> None:
         """Test get application health."""
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX.value}/health/",
+            f"{AppConstants.API_V1_PREFIX}/health/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
         assert response.status_code == status.HTTP_200_OK
@@ -39,10 +39,8 @@ class TestHealth(BaseAPITest):
     ) -> None:
         """Test get application health in case user does not have appropriate scope."""
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX.value}/health/",
+            f"{AppConstants.API_V1_PREFIX}/health/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.PERMISSION_DENIED.value
-        }
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}

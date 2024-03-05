@@ -10,10 +10,8 @@ class Migration(BaseMigration):  # type: ignore
 
     def upgrade(self) -> None:
         """Creates a role index."""
-        self.db[MongoCollectionsEnum.ROLES_SCOPES.value].create_index(
-            "role", unique=True
-        )
+        self.db[MongoCollectionsEnum.ROLES_SCOPES].create_index("role", unique=True)
 
     def downgrade(self) -> None:
         """Drops a role index."""
-        self.db[MongoCollectionsEnum.ROLES_SCOPES.value].drop_index("role_1")
+        self.db[MongoCollectionsEnum.ROLES_SCOPES].drop_index("role_1")

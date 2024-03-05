@@ -1,9 +1,9 @@
 """Module that contains MongoDB constants."""
 
-from enum import Enum
+from enum import StrEnum
 
 
-class MongoCollectionsEnum(Enum):
+class MongoCollectionsEnum(StrEnum):
     """MongoDB's collections enumeration."""
 
     USERS = "users"

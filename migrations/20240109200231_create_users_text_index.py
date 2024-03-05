@@ -10,7 +10,7 @@ class Migration(BaseMigration):  # type: ignore
 
     def upgrade(self) -> None:
         """Creates a text index."""
-        self.db[MongoCollectionsEnum.USERS.value].create_index(
+        self.db[MongoCollectionsEnum.USERS].create_index(
             [
                 ("first_name", "text"),
                 ("last_name", "text"),
@@ -23,6 +23,6 @@ class Migration(BaseMigration):  # type: ignore
 
     def downgrade(self) -> None:
         """Drops a text index."""
-        self.db[MongoCollectionsEnum.USERS.value].drop_index(
+        self.db[MongoCollectionsEnum.USERS].drop_index(
             "first_name_text_last_name_text_patronymic_name_text_username_text_email_text_phone_number_text"
         )

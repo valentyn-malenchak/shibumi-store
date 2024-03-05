@@ -11,7 +11,7 @@ class Migration(BaseMigration):  # type: ignore
 
     def upgrade(self) -> None:
         """Inserts parameters."""
-        self.db[MongoCollectionsEnum.PARAMETERS.value].insert_many(
+        self.db[MongoCollectionsEnum.PARAMETERS].insert_many(
             [
                 {
                     "machine_name": "brand",
@@ -895,4 +895,4 @@ class Migration(BaseMigration):  # type: ignore
 
     def downgrade(self) -> None:
         """Drops parameters."""
-        self.db[MongoCollectionsEnum.PARAMETERS.value].delete_many(filter={})
+        self.db[MongoCollectionsEnum.PARAMETERS].delete_many(filter={})

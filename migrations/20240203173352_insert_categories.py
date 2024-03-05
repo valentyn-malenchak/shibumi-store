@@ -46,7 +46,7 @@ class Migration(BaseMigration):  # type: ignore
         power_banks_id = ObjectId("65d24f2a260fb739c605b2a7")
         mounts_holders_id = ObjectId("65d24f2a260fb739c605b2a8")
 
-        self.db[MongoCollectionsEnum.CATEGORIES.value].insert_many(
+        self.db[MongoCollectionsEnum.CATEGORIES].insert_many(
             [
                 {
                     "_id": electronics_id,
@@ -377,4 +377,4 @@ class Migration(BaseMigration):  # type: ignore
 
     def downgrade(self) -> None:
         """Drops categories."""
-        self.db[MongoCollectionsEnum.CATEGORIES.value].delete_many(filter={})
+        self.db[MongoCollectionsEnum.CATEGORIES].delete_many(filter={})

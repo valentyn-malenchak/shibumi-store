@@ -10,8 +10,8 @@ class Migration(BaseMigration):  # type: ignore
 
     def upgrade(self) -> None:
         """Creates a username index."""
-        self.db[MongoCollectionsEnum.USERS.value].create_index("username", unique=True)
+        self.db[MongoCollectionsEnum.USERS].create_index("username", unique=True)
 
     def downgrade(self) -> None:
         """Drops a username index."""
-        self.db[MongoCollectionsEnum.USERS.value].drop_index("username_1")
+        self.db[MongoCollectionsEnum.USERS].drop_index("username_1")

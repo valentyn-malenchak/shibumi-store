@@ -58,7 +58,7 @@ class Authentication:
         ):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=HTTPErrorMessagesEnum.INCORRECT_CREDENTIALS.value,
+                detail=HTTPErrorMessagesEnum.INCORRECT_CREDENTIALS,
             )
 
         permitted_scopes = await role_scope_service.get_scopes_by_roles(
@@ -112,13 +112,13 @@ class BaseAuthorization(abc.ABC):
         except ExpiredTokenError:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=HTTPErrorMessagesEnum.EXPIRED_TOKEN.value,
+                detail=HTTPErrorMessagesEnum.EXPIRED_TOKEN,
             )
 
         except InvalidTokenError:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=HTTPErrorMessagesEnum.INVALID_CREDENTIALS.value,
+                detail=HTTPErrorMessagesEnum.INVALID_CREDENTIALS,
             )
 
     @staticmethod
@@ -134,7 +134,7 @@ class BaseAuthorization(abc.ABC):
         if not all(scope in source_scopes for scope in required_scopes):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=HTTPErrorMessagesEnum.PERMISSION_DENIED.value,
+                detail=HTTPErrorMessagesEnum.PERMISSION_DENIED,
             )
 
     @staticmethod
@@ -162,13 +162,13 @@ class BaseAuthorization(abc.ABC):
         if user is None or user.deleted is True:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=HTTPErrorMessagesEnum.NOT_AUTHORIZED.value,
+                detail=HTTPErrorMessagesEnum.NOT_AUTHORIZED,
             )
 
         if user.email_verified is False:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=HTTPErrorMessagesEnum.EMAIL_IS_NOT_VERIFIED.value,
+                detail=HTTPErrorMessagesEnum.EMAIL_IS_NOT_VERIFIED,
             )
 
         # Verifies all API security scopes are present in token
@@ -237,7 +237,7 @@ class StrictAuthorization(BaseAuthorization):
         if token is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=HTTPErrorMessagesEnum.NOT_AUTHORIZED.value,
+                detail=HTTPErrorMessagesEnum.NOT_AUTHORIZED,
             )
 
         token_data = self._parse_token(token=token, is_refresh=self._uses_refresh_token)

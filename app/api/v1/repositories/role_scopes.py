@@ -11,7 +11,7 @@ from app.services.mongo.constants import MongoCollectionsEnum
 class RoleScopesRepository(BaseRepository):
     """Role-scopes repository for handling data access operations."""
 
-    _collection_name: str = MongoCollectionsEnum.ROLES_SCOPES.value
+    _collection_name: str = MongoCollectionsEnum.ROLES_SCOPES
 
     @staticmethod
     async def _get_list_query_filter(*_: Any, **__: Any) -> Mapping[str, Any]:

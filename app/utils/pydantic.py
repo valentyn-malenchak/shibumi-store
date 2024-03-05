@@ -64,31 +64,31 @@ class PasswordPolicy(BaseType):
         if len(value) < cls.__MIN_CHARACTERS_POLICY:
             raise PydanticCustomError(
                 "string_too_short",
-                ValidationErrorMessagesEnum.PASSWORD_MIN_LENGTH.value,
+                ValidationErrorMessagesEnum.PASSWORD_MIN_LENGTH,
             )
 
         if not any(char.isdigit() for char in value):
             raise PydanticCustomError(
                 "string_without_digit",
-                ValidationErrorMessagesEnum.PASSWORD_WITHOUT_DIGIT.value,
+                ValidationErrorMessagesEnum.PASSWORD_WITHOUT_DIGIT,
             )
 
         if not any(char.islower() for char in value):
             raise PydanticCustomError(
                 "string_without_lowercase_letters",
-                ValidationErrorMessagesEnum.PASSWORD_WITHOUT_LOWERCASE_LETTER.value,
+                ValidationErrorMessagesEnum.PASSWORD_WITHOUT_LOWERCASE_LETTER,
             )
 
         if not any(char.isupper() for char in value):
             raise PydanticCustomError(
                 "string_without_uppercase_letters",
-                ValidationErrorMessagesEnum.PASSWORD_WITHOUT_UPPERCASE_LETTER.value,
+                ValidationErrorMessagesEnum.PASSWORD_WITHOUT_UPPERCASE_LETTER,
             )
 
         if not any(char in punctuation for char in value):
             raise PydanticCustomError(
                 "string_without_special_characters",
-                ValidationErrorMessagesEnum.PASSWORD_WITHOUT_SPECIAL_CHARACTER.value,
+                ValidationErrorMessagesEnum.PASSWORD_WITHOUT_SPECIAL_CHARACTER,
             )
 
         return value
@@ -119,12 +119,12 @@ class UsernamePolicy(BaseType):
         if len(value) < cls.__MIN_CHARACTERS_POLICY:
             raise PydanticCustomError(
                 "string_too_short",
-                ValidationErrorMessagesEnum.USERNAME_MIN_LENGTH.value,
+                ValidationErrorMessagesEnum.USERNAME_MIN_LENGTH,
             )
 
         if len(value) > cls.__MAX_CHARACTERS_POLICY:
             raise PydanticCustomError(
-                "string_too_long", ValidationErrorMessagesEnum.USERNAME_MAX_LENGTH.value
+                "string_too_long", ValidationErrorMessagesEnum.USERNAME_MAX_LENGTH
             )
 
         if not all(
@@ -132,7 +132,7 @@ class UsernamePolicy(BaseType):
         ):
             raise PydanticCustomError(
                 "string_with_not_permitted_characters",
-                ValidationErrorMessagesEnum.USERNAME_NOT_ALLOWED_CHARACTERS.value,
+                ValidationErrorMessagesEnum.USERNAME_NOT_ALLOWED_CHARACTERS,
             )
 
         return value

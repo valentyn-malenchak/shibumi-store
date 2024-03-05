@@ -25,7 +25,7 @@ class ObjectIdAnnotation:
 
         if not ObjectId.is_valid(_id):
             raise PydanticCustomError(
-                "object_id", ValidationErrorMessagesEnum.INVALID_IDENTIFIER.value
+                "object_id", ValidationErrorMessagesEnum.INVALID_IDENTIFIER
             )
 
         return ObjectId(_id)
@@ -58,7 +58,7 @@ class PaginationModel(BaseModel):
     """Pagination model for lists."""
 
     page: int
-    page_size: int = Field(le=AppConstants.PAGINATION_MAX_PAGE_SIZE.value)
+    page_size: int = Field(le=AppConstants.PAGINATION_MAX_PAGE_SIZE)
 
 
 class SortingModel(BaseModel):
