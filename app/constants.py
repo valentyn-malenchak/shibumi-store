@@ -2,7 +2,16 @@
 
 from enum import Enum
 
-API_V1_PREFIX = "/api/v1"
+
+class AppConstants(Enum):
+    """Application level constants enum."""
+
+    API_V1_PREFIX = "/api/v1"
+
+    PAGINATION_MAX_PAGE_SIZE = 100
+
+    BACKGROUND_TASK_RETRY_ATTEMPTS = 3
+    BACKGROUND_TASK_RETRY_WAIT = 5
 
 
 class EnvironmentsEnum(Enum):
@@ -42,15 +51,6 @@ class HTTPErrorMessagesEnum(Enum):
     PRODUCTS_NOT_AVAILABLE_ACCESS_DENIED = "Access denied to not available products."
 
 
-# Password policies
-PASSWORD_MIN_CHARACTERS_POLICY = 8
-
-# Username policies
-USERNAME_MIN_CHARACTERS_POLICY = 8
-USERNAME_MAX_CHARACTERS_POLICY = 30
-USERNAME_ALLOWED_SPECIAL_CHARACTER = "_-."
-
-
 class ValidationErrorMessagesEnum(Enum):
     """Contains validation error messages for Pydantic models."""
 
@@ -80,9 +80,6 @@ class ValidationErrorMessagesEnum(Enum):
     )
 
 
-PAGINATION_MAX_PAGE_SIZE = 100
-
-
 class SortingTypesEnum(Enum):
     """Sorting types enumerate."""
 
@@ -102,7 +99,3 @@ class ProjectionValuesEnum(Enum):
 
     INCLUDE = 1
     EXCLUDE = 0
-
-
-BACKGROUND_TASK_RETRY_ATTEMPTS = 3
-BACKGROUND_TASK_RETRY_WAIT = 5

@@ -8,7 +8,7 @@ from fastapi import status
 from httpx import AsyncClient
 
 from app.constants import (
-    API_V1_PREFIX,
+    AppConstants,
     HTTPErrorMessagesEnum,
     ValidationErrorMessagesEnum,
 )
@@ -28,7 +28,9 @@ class TestCategory(BaseAPITest):
     async def test_get_categories_list_no_token(self, test_client: AsyncClient) -> None:
         """Test get categories list in case there is no token."""
 
-        response = await test_client.get(f"{API_V1_PREFIX}/categories/")
+        response = await test_client.get(
+            f"{AppConstants.API_V1_PREFIX.value}/categories/"
+        )
 
         assert response.status_code == status.HTTP_200_OK
         assert (
@@ -61,7 +63,7 @@ class TestCategory(BaseAPITest):
         """Test get categories list in case user is authorized."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/categories/",
+            f"{AppConstants.API_V1_PREFIX.value}/categories/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -92,7 +94,7 @@ class TestCategory(BaseAPITest):
         """Test get categories list with filters."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/categories/",
+            f"{AppConstants.API_V1_PREFIX.value}/categories/",
             params={"path": "/electronics/computers", "leafs": True},
         )
 
@@ -135,7 +137,7 @@ class TestCategory(BaseAPITest):
         """Test get category in case there is no token."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/categories/65d24f2a260fb739c605b28a/"
+            f"{AppConstants.API_V1_PREFIX.value}/categories/65d24f2a260fb739c605b28a/"
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -163,7 +165,7 @@ class TestCategory(BaseAPITest):
         """Test get category in case user is authorized."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/categories/65d24f2a260fb739c605b2a7/",
+            f"{AppConstants.API_V1_PREFIX.value}/categories/65d24f2a260fb739c605b2a7/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -212,7 +214,7 @@ class TestCategory(BaseAPITest):
         """Test get category in case user does not have a scope."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/categories/659ac89bfe61d8332f6be4c4/",
+            f"{AppConstants.API_V1_PREFIX.value}/categories/659ac89bfe61d8332f6be4c4/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -228,7 +230,7 @@ class TestCategory(BaseAPITest):
         """Test get category in case of invalid identifier."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/categories/invalid-group-id/"
+            f"{AppConstants.API_V1_PREFIX.value}/categories/invalid-group-id/"
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -250,7 +252,7 @@ class TestCategory(BaseAPITest):
         """
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/categories/6598495fdf97a8e0d7e612aa/"
+            f"{AppConstants.API_V1_PREFIX.value}/categories/6598495fdf97a8e0d7e612aa/"
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -270,7 +272,7 @@ class TestCategory(BaseAPITest):
         """Test get product parameters values by category in case there is no token."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/categories/65d24f2a260fb739c605b28d/parameters-values/"
+            f"{AppConstants.API_V1_PREFIX.value}/categories/65d24f2a260fb739c605b28d/parameters-values/"
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -395,7 +397,7 @@ class TestCategory(BaseAPITest):
         """
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/categories/65d24f2a260fb739c605b28d/parameters-values/"
+            f"{AppConstants.API_V1_PREFIX.value}/categories/65d24f2a260fb739c605b28d/parameters-values/"
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -414,7 +416,7 @@ class TestCategory(BaseAPITest):
         """Test get product parameters values by category in case is authorized."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/categories/65d24f2a260fb739c605b2a7/parameters-values/",
+            f"{AppConstants.API_V1_PREFIX.value}/categories/65d24f2a260fb739c605b2a7/parameters-values/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -441,7 +443,7 @@ class TestCategory(BaseAPITest):
         """
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/categories/65d24f2a260fb739c605b2a7/parameters-values/",
+            f"{AppConstants.API_V1_PREFIX.value}/categories/65d24f2a260fb739c605b2a7/parameters-values/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -459,7 +461,7 @@ class TestCategory(BaseAPITest):
         """
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/categories/invalid-group-id/parameters-values/"
+            f"{AppConstants.API_V1_PREFIX.value}/categories/invalid-group-id/parameters-values/"
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -484,7 +486,7 @@ class TestCategory(BaseAPITest):
         """
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/categories/6598495fdf97a8e0d7e612aa/parameters-values/"
+            f"{AppConstants.API_V1_PREFIX.value}/categories/6598495fdf97a8e0d7e612aa/parameters-values/"
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND

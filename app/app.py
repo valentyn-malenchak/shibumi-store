@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1 import ROUTERS
-from app.constants import API_V1_PREFIX
+from app.constants import AppConstants
 from app.services import SERVICE_CLIENTS
 from app.settings import SETTINGS
 
@@ -35,7 +35,7 @@ class App(FastAPI):
     def _configure_routes(self) -> None:
         """Configure the routes for the FastAPI app."""
         for router_ in ROUTERS:
-            self.include_router(router_, prefix=API_V1_PREFIX)
+            self.include_router(router_, prefix=AppConstants.API_V1_PREFIX.value)
 
     def _configure_middlewares(self) -> None:
         """Configure the middlewares for the FastAPI app."""

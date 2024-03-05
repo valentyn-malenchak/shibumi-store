@@ -6,7 +6,7 @@ import pytest
 from fastapi import status
 from httpx import AsyncClient
 
-from app.constants import API_V1_PREFIX, HTTPErrorMessagesEnum
+from app.constants import AppConstants, HTTPErrorMessagesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
 from app.tests.api.v1 import BaseAPITest
 from app.tests.constants import SHOP_SIDE_USER, TEST_JWT, USER_NO_SCOPES
@@ -23,7 +23,8 @@ class TestHealth(BaseAPITest):
     async def test_get_health(self, test_client: AsyncClient, arrange_db: None) -> None:
         """Test get application health."""
         response = await test_client.get(
-            f"{API_V1_PREFIX}/health/", headers={"Authorization": f"Bearer {TEST_JWT}"}
+            f"{AppConstants.API_V1_PREFIX.value}/health/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {"status": "healthy"}
@@ -38,7 +39,8 @@ class TestHealth(BaseAPITest):
     ) -> None:
         """Test get application health in case user does not have appropriate scope."""
         response = await test_client.get(
-            f"{API_V1_PREFIX}/health/", headers={"Authorization": f"Bearer {TEST_JWT}"}
+            f"{AppConstants.API_V1_PREFIX.value}/health/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {

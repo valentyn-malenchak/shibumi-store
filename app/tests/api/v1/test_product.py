@@ -8,7 +8,7 @@ from freezegun import freeze_time
 from httpx import AsyncClient
 
 from app.constants import (
-    API_V1_PREFIX,
+    AppConstants,
     HTTPErrorMessagesEnum,
     ValidationErrorMessagesEnum,
 )
@@ -38,7 +38,7 @@ class TestProduct(BaseAPITest):
         """Test create product."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/products/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/",
             json={
                 "name": "ASUS TUF Gaming F15",
                 "synopsis": "Display 15.6 IPS (1920x1080) Full HD 144 Hz / "
@@ -143,7 +143,7 @@ class TestProduct(BaseAPITest):
 
         # Check if background task calculates appropriate parameters-values
         response = await test_client.get(
-            f"{API_V1_PREFIX}/categories/65d24f2a260fb739c605b28d/parameters-values/"
+            f"{AppConstants.API_V1_PREFIX.value}/categories/65d24f2a260fb739c605b28d/parameters-values/"
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -187,7 +187,7 @@ class TestProduct(BaseAPITest):
         """Test create product in case there is no token."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/products/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/",
             json={
                 "name": "ASUS TUF Gaming F15",
                 "synopsis": None,
@@ -210,7 +210,7 @@ class TestProduct(BaseAPITest):
         """Test create product in case token is invalid."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/products/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/",
             json={
                 "name": "ASUS TUF Gaming F15",
                 "synopsis": None,
@@ -242,7 +242,7 @@ class TestProduct(BaseAPITest):
         """Test create product in case user does not have appropriate scope."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/products/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/",
             json={
                 "name": "ASUS TUF Gaming F15",
                 "synopsis": None,
@@ -274,7 +274,7 @@ class TestProduct(BaseAPITest):
         """Test create product in case request data is invalid."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/products/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/",
             json={
                 "synopsis": None,
                 "description": "Very cool laptop.",
@@ -315,7 +315,7 @@ class TestProduct(BaseAPITest):
         """Test create product in case request category does not exist."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/products/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/",
             json={
                 "name": "ASUS TUF Gaming F15",
                 "synopsis": "Cool.",
@@ -350,7 +350,7 @@ class TestProduct(BaseAPITest):
         """Test create product in case request category is not a tree leaf."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/products/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/",
             json={
                 "name": "ASUS TUF Gaming F15",
                 "synopsis": "Cool.",
@@ -383,7 +383,7 @@ class TestProduct(BaseAPITest):
         """Test create product in case product parameters are invalid."""
 
         response = await test_client.post(
-            f"{API_V1_PREFIX}/products/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/",
             json={
                 "name": "ASUS TUF Gaming F15",
                 "synopsis": "Display 15.6 IPS (1920x1080) Full HD 144 Hz / "
@@ -493,7 +493,7 @@ class TestProduct(BaseAPITest):
         """Test get product in case there is no token."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/products/6597f143c064f4099808ad26/"
+            f"{AppConstants.API_V1_PREFIX.value}/products/6597f143c064f4099808ad26/"
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -561,7 +561,7 @@ class TestProduct(BaseAPITest):
         """Test get product in case there is no token and product is unavailable."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/products/65d22fd0a83d80b9f0bd3e38/"
+            f"{AppConstants.API_V1_PREFIX.value}/products/65d22fd0a83d80b9f0bd3e38/"
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -582,7 +582,7 @@ class TestProduct(BaseAPITest):
         """Test get product in case user is authorized."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/products/6597f143c064f4099808ad26/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/6597f143c064f4099808ad26/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -651,7 +651,7 @@ class TestProduct(BaseAPITest):
         """Test get product in case user is authorized, but product is unavailable."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/products/65d22fd0a83d80b9f0bd3e38/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/65d22fd0a83d80b9f0bd3e38/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -675,7 +675,7 @@ class TestProduct(BaseAPITest):
         """
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/products/65d22fd0a83d80b9f0bd3e38/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/65d22fd0a83d80b9f0bd3e38/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -711,7 +711,7 @@ class TestProduct(BaseAPITest):
         """Test get product in case user does not have a scope."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/products/659ac89bfe61d8332f6be4c4/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/659ac89bfe61d8332f6be4c4/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -726,7 +726,9 @@ class TestProduct(BaseAPITest):
     ) -> None:
         """Test get product in case of invalid identifier."""
 
-        response = await test_client.get(f"{API_V1_PREFIX}/products/invalid-group-id/")
+        response = await test_client.get(
+            f"{AppConstants.API_V1_PREFIX.value}/products/invalid-group-id/"
+        )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert [
@@ -747,7 +749,7 @@ class TestProduct(BaseAPITest):
         """
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/products/6598495fdf97a8e0d7e612aa/"
+            f"{AppConstants.API_V1_PREFIX.value}/products/6598495fdf97a8e0d7e612aa/"
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -769,7 +771,7 @@ class TestProduct(BaseAPITest):
         """Test get products list in case there is no token."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/products/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/",
             params={"page": 1, "page_size": 2, "available": True},
         )
 
@@ -823,7 +825,7 @@ class TestProduct(BaseAPITest):
         """Test get products list in case user is customer."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/products/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/",
             params={"page": 3, "page_size": 1, "available": True},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -864,7 +866,7 @@ class TestProduct(BaseAPITest):
         """Test get products list in case user is from shop side."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/products/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/",
             params={"page": 7, "page_size": 2},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -910,7 +912,7 @@ class TestProduct(BaseAPITest):
         """Test get products list with filters."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/products/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/",
             params={
                 "page": 1,
                 "page_size": 20,
@@ -957,7 +959,7 @@ class TestProduct(BaseAPITest):
         """Test get products list with search."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/products/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/",
             params={
                 "page": 1,
                 "page_size": 20,
@@ -1018,7 +1020,7 @@ class TestProduct(BaseAPITest):
         """Test get products list with sorting."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/products/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/",
             params={
                 "page": 1,
                 "page_size": 2,
@@ -1075,7 +1077,7 @@ class TestProduct(BaseAPITest):
         """Test get products list in case user does not have a scope."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/products/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -1091,7 +1093,7 @@ class TestProduct(BaseAPITest):
         """Test get products list in case base query parameters are invalid."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/products/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/",
             params={
                 "available": "maybe",
                 "sort_by": "random_field",
@@ -1126,7 +1128,7 @@ class TestProduct(BaseAPITest):
         """Test get products list in case product parameters filter are invalid."""
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/products/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/",
             params={
                 "page": 1,
                 "page_size": 2,
@@ -1163,7 +1165,7 @@ class TestProduct(BaseAPITest):
         """
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/products/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/",
             params={"page": 1, "page_size": 2},
         )
 
@@ -1186,7 +1188,7 @@ class TestProduct(BaseAPITest):
         """
 
         response = await test_client.get(
-            f"{API_V1_PREFIX}/products/",
+            f"{AppConstants.API_V1_PREFIX.value}/products/",
             params={"page": 3, "page_size": 1, "available": False},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )

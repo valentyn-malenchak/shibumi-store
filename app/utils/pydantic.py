@@ -8,13 +8,7 @@ from pydantic import BaseModel, ConfigDict
 from pydantic_core import PydanticCustomError, core_schema
 from pydantic_extra_types.phone_numbers import PhoneNumber as PydanticPhoneNumber
 
-from app.constants import (
-    PASSWORD_MIN_CHARACTERS_POLICY,
-    USERNAME_ALLOWED_SPECIAL_CHARACTER,
-    USERNAME_MAX_CHARACTERS_POLICY,
-    USERNAME_MIN_CHARACTERS_POLICY,
-    ValidationErrorMessagesEnum,
-)
+from app.constants import ValidationErrorMessagesEnum
 
 
 class ImmutableModel(BaseModel):
@@ -50,6 +44,8 @@ class BaseType(str):
 class PasswordPolicy(BaseType):
     """Password policy pydantic type."""
 
+    __MIN_CHARACTERS_POLICY = 8
+
     @classmethod
     def _validate(cls, value: str, _: core_schema.ValidationInfo) -> str:
         """Validates password according to policy.
@@ -65,7 +61,7 @@ class PasswordPolicy(BaseType):
 
         """
 
-        if len(value) < PASSWORD_MIN_CHARACTERS_POLICY:
+        if len(value) < cls.__MIN_CHARACTERS_POLICY:
             raise PydanticCustomError(
                 "string_too_short",
                 ValidationErrorMessagesEnum.PASSWORD_MIN_LENGTH.value,
@@ -101,6 +97,10 @@ class PasswordPolicy(BaseType):
 class UsernamePolicy(BaseType):
     """Username policy pydantic type."""
 
+    __MIN_CHARACTERS_POLICY = 8
+    __MAX_CHARACTERS_POLICY = 30
+    __ALLOWED_SPECIAL_CHARACTER = "_-."
+
     @classmethod
     def _validate(cls, value: str, _: core_schema.ValidationInfo) -> str:
         """Validates username according to policy.
@@ -116,20 +116,19 @@ class UsernamePolicy(BaseType):
 
         """
 
-        if len(value) < USERNAME_MIN_CHARACTERS_POLICY:
+        if len(value) < cls.__MIN_CHARACTERS_POLICY:
             raise PydanticCustomError(
                 "string_too_short",
                 ValidationErrorMessagesEnum.USERNAME_MIN_LENGTH.value,
             )
 
-        if len(value) > USERNAME_MAX_CHARACTERS_POLICY:
+        if len(value) > cls.__MAX_CHARACTERS_POLICY:
             raise PydanticCustomError(
                 "string_too_long", ValidationErrorMessagesEnum.USERNAME_MAX_LENGTH.value
             )
 
         if not all(
-            char.isalnum() or char in USERNAME_ALLOWED_SPECIAL_CHARACTER
-            for char in value
+            char.isalnum() or char in cls.__ALLOWED_SPECIAL_CHARACTER for char in value
         ):
             raise PydanticCustomError(
                 "string_with_not_permitted_characters",
