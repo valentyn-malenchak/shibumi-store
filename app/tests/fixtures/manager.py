@@ -6,7 +6,9 @@ from typing import Any, Dict, List
 from injector import Injector
 
 from app.api.v1.repositories import BaseRepository
-from app.api.v1.repositories.parameters_values import ParametersValuesRepository
+from app.api.v1.repositories.category_parameters import (
+    CategoryParametersRepository,
+)
 from app.api.v1.repositories.product import ProductRepository
 from app.api.v1.repositories.user import UserRepository
 from app.loaders import JSONFileLoader
@@ -23,8 +25,8 @@ class FileFixtureManager:
     _fixture_repositories: Dict[MongoCollectionsEnum, BaseRepository] = {
         MongoCollectionsEnum.USERS: _injector.get(UserRepository),
         MongoCollectionsEnum.PRODUCTS: _injector.get(ProductRepository),
-        MongoCollectionsEnum.PARAMETERS_VALUES: _injector.get(
-            ParametersValuesRepository
+        MongoCollectionsEnum.CATEGORY_PARAMETERS: _injector.get(
+            CategoryParametersRepository
         ),
     }
 

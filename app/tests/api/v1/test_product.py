@@ -141,9 +141,9 @@ class TestProduct(BaseAPITest):
             "updated_at": None,
         }
 
-        # Check if background task calculates appropriate parameters-values
+        # Check if background task calculates appropriate category parameters
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/categories/65d24f2a260fb739c605b28d/parameters-values/"
+            f"{AppConstants.API_V1_PREFIX}/categories/65d24f2a260fb739c605b28d/parameters/"
         )
 
         assert response.status_code == status.HTTP_200_OK

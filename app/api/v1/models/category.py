@@ -55,7 +55,7 @@ class CategoriesListModel(ListResponseModel):
     data: List[ShortCategoryResponseModel]
 
 
-class ParametersValuesResponseModel(ObjectIdModel):
-    """Parameters values response model."""
+class CategoryParametersResponseModel(ObjectIdModel):
+    """Category parameters response model."""
 
     model_config = ConfigDict(extra="allow")

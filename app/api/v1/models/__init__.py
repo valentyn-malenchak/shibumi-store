@@ -17,18 +17,18 @@ class ObjectIdAnnotation:
     """Object identifier annotation."""
 
     @classmethod
-    def _validate(cls, _id: Any, *_: Any) -> ObjectId:
+    def _validate(cls, id_: Any, *_: Any) -> ObjectId:
         """Validates BSON object identifier."""
 
-        if isinstance(_id, ObjectId):
-            return _id
+        if isinstance(id_, ObjectId):
+            return id_
 
-        if not ObjectId.is_valid(_id):
+        if not ObjectId.is_valid(id_):
             raise PydanticCustomError(
                 "object_id", ValidationErrorMessagesEnum.INVALID_IDENTIFIER
             )
 
-        return ObjectId(_id)
+        return ObjectId(id_)
 
     @classmethod
     def __get_pydantic_core_schema__(cls, *_: Any) -> core_schema.CoreSchema:

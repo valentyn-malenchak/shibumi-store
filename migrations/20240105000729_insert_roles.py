@@ -1,4 +1,4 @@
-"""Contains a migration that inserts/deletes role scopes."""
+"""Contains a migration that inserts/deletes roles."""
 
 import arrow
 from mongodb_migrations.base import BaseMigration
@@ -8,11 +8,11 @@ from app.services.mongo.constants import MongoCollectionsEnum
 
 
 class Migration(BaseMigration):  # type: ignore
-    """Migration that inserts/deletes role scopes."""
+    """Migration that inserts/deletes roles."""
 
     def upgrade(self) -> None:
-        """Inserts roles scopes."""
-        self.db[MongoCollectionsEnum.ROLES_SCOPES].insert_many(
+        """Inserts roles."""
+        self.db[MongoCollectionsEnum.ROLES].insert_many(
             [
                 {
                     "role": RolesEnum.CUSTOMER.name,
@@ -24,7 +24,7 @@ class Migration(BaseMigration):  # type: ignore
                         ScopesEnum.USERS_DELETE_USER.name,
                         ScopesEnum.CATEGORIES_GET_CATEGORIES.name,
                         ScopesEnum.CATEGORIES_GET_CATEGORY.name,
-                        ScopesEnum.CATEGORIES_GET_PARAMETERS_VALUES_BY_CATEGORY.name,
+                        ScopesEnum.CATEGORIES_GET_CATEGORY_PARAMETERS.name,
                         ScopesEnum.PRODUCTS_GET_PRODUCTS.name,
                         ScopesEnum.PRODUCTS_GET_PRODUCT.name,
                     ],
@@ -44,7 +44,7 @@ class Migration(BaseMigration):  # type: ignore
                         ScopesEnum.USERS_DELETE_USER.name,
                         ScopesEnum.CATEGORIES_GET_CATEGORIES.name,
                         ScopesEnum.CATEGORIES_GET_CATEGORY.name,
-                        ScopesEnum.CATEGORIES_GET_PARAMETERS_VALUES_BY_CATEGORY.name,
+                        ScopesEnum.CATEGORIES_GET_CATEGORY_PARAMETERS.name,
                         ScopesEnum.PRODUCTS_GET_PRODUCTS.name,
                         ScopesEnum.PRODUCTS_GET_PRODUCT.name,
                     ],
@@ -59,7 +59,7 @@ class Migration(BaseMigration):  # type: ignore
                         ScopesEnum.USERS_UPDATE_USER_PASSWORD.name,
                         ScopesEnum.CATEGORIES_GET_CATEGORIES.name,
                         ScopesEnum.CATEGORIES_GET_CATEGORY.name,
-                        ScopesEnum.CATEGORIES_GET_PARAMETERS_VALUES_BY_CATEGORY.name,
+                        ScopesEnum.CATEGORIES_GET_CATEGORY_PARAMETERS.name,
                         ScopesEnum.PRODUCTS_CREATE_PRODUCT.name,
                         ScopesEnum.PRODUCTS_GET_PRODUCTS.name,
                         ScopesEnum.PRODUCTS_GET_PRODUCT.name,
@@ -75,7 +75,7 @@ class Migration(BaseMigration):  # type: ignore
                         ScopesEnum.USERS_UPDATE_USER_PASSWORD.name,
                         ScopesEnum.CATEGORIES_GET_CATEGORIES.name,
                         ScopesEnum.CATEGORIES_GET_CATEGORY.name,
-                        ScopesEnum.CATEGORIES_GET_PARAMETERS_VALUES_BY_CATEGORY.name,
+                        ScopesEnum.CATEGORIES_GET_CATEGORY_PARAMETERS.name,
                         ScopesEnum.PRODUCTS_GET_PRODUCTS.name,
                         ScopesEnum.PRODUCTS_GET_PRODUCT.name,
                     ],
@@ -90,7 +90,7 @@ class Migration(BaseMigration):  # type: ignore
                         ScopesEnum.USERS_UPDATE_USER_PASSWORD.name,
                         ScopesEnum.CATEGORIES_GET_CATEGORIES.name,
                         ScopesEnum.CATEGORIES_GET_CATEGORY.name,
-                        ScopesEnum.CATEGORIES_GET_PARAMETERS_VALUES_BY_CATEGORY.name,
+                        ScopesEnum.CATEGORIES_GET_CATEGORY_PARAMETERS.name,
                         ScopesEnum.PRODUCTS_GET_PRODUCTS.name,
                         ScopesEnum.PRODUCTS_GET_PRODUCT.name,
                     ],
@@ -111,7 +111,7 @@ class Migration(BaseMigration):  # type: ignore
                         ScopesEnum.USERS_DELETE_USER.name,
                         ScopesEnum.CATEGORIES_GET_CATEGORIES.name,
                         ScopesEnum.CATEGORIES_GET_CATEGORY.name,
-                        ScopesEnum.CATEGORIES_GET_PARAMETERS_VALUES_BY_CATEGORY.name,
+                        ScopesEnum.CATEGORIES_GET_CATEGORY_PARAMETERS.name,
                         ScopesEnum.PRODUCTS_CREATE_PRODUCT.name,
                         ScopesEnum.PRODUCTS_GET_PRODUCTS.name,
                         ScopesEnum.PRODUCTS_GET_PRODUCT.name,
@@ -123,5 +123,5 @@ class Migration(BaseMigration):  # type: ignore
         )
 
     def downgrade(self) -> None:
-        """Drops roles scopes."""
-        self.db[MongoCollectionsEnum.ROLES_SCOPES].delete_many(filter={})
+        """Drops roles."""
+        self.db[MongoCollectionsEnum.ROLES].delete_many(filter={})

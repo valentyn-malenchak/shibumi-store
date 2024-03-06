@@ -13,7 +13,7 @@ from app.api.v1.models.auth import (
     TokenUserModel,
 )
 from app.api.v1.models.user import CurrentUserModel
-from app.api.v1.services.role_scopes import RoleScopesService
+from app.api.v1.services.role import RoleService
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -50,13 +50,13 @@ async def refresh_access_token(
         StrictRefreshTokenAuthorization(),
         scopes=[ScopesEnum.AUTH_REFRESH_TOKEN.name],
     ),
-    role_scope_service: RoleScopesService = Depends(),
+    role_service: RoleService = Depends(),
 ) -> Dict[str, str]:
     """API which refreshes Access token using Refresh token.
 
     Args:
         current_user (CurrentUserModel): Current authorized user with permitted scopes.
-        role_scope_service (RoleScopesService): Roles-scopes service.
+        role_service (RoleService): Role service.
 
     Returns:
         Dict[str, str]: New access token.
@@ -66,7 +66,7 @@ async def refresh_access_token(
     return JWT.encode_tokens(
         data=TokenUserModel(
             id=str(current_user.object.id),
-            scopes=await role_scope_service.get_scopes_by_roles(
+            scopes=await role_service.get_scopes_by_roles(
                 roles=current_user.object.roles
             ),
         ),
