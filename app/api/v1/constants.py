@@ -33,9 +33,7 @@ class ScopesEnum(Enum):
 
     CATEGORIES_GET_CATEGORIES = "Allows to get categories list."
     CATEGORIES_GET_CATEGORY = "Allows to get category."
-    CATEGORIES_GET_PARAMETERS_VALUES_BY_CATEGORY = (
-        "Allows to get product parameters values by category."
-    )
+    CATEGORIES_GET_CATEGORY_PARAMETERS = "Allows to get calculated category parameters."
 
     PRODUCTS_CREATE_PRODUCT = "Allows to create a new product."
     PRODUCTS_GET_PRODUCTS = "Allows to get products list."

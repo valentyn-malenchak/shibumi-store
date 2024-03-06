@@ -260,15 +260,15 @@ class TestCategory(BaseAPITest):
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.PARAMETERS_VALUES,)], indirect=True
+        "arrange_db", [(MongoCollectionsEnum.CATEGORY_PARAMETERS,)], indirect=True
     )
-    async def test_get_product_parameters_values_by_category_no_token(
+    async def test_get_category_parameters_no_token(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test get product parameters values by category in case there is no token."""
+        """Test get category parameters in case there is no token."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/categories/65d24f2a260fb739c605b28d/parameters-values/"
+            f"{AppConstants.API_V1_PREFIX}/categories/65d24f2a260fb739c605b28d/parameters/"
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -384,16 +384,16 @@ class TestCategory(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    async def test_get_product_parameters_values_by_category_no_values(
+    async def test_get_category_parameters_no_calculated_parameters(
         self, test_client: AsyncClient
     ) -> None:
         """
-        Test get product parameters values by category in case there is no
-        calculated values for category.
+        Test get category parameters in case there is no calculated parameters for
+        category.
         """
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/categories/65d24f2a260fb739c605b28d/parameters-values/"
+            f"{AppConstants.API_V1_PREFIX}/categories/65d24f2a260fb739c605b28d/parameters/"
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -403,16 +403,16 @@ class TestCategory(BaseAPITest):
     @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
-        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PARAMETERS_VALUES)],
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.CATEGORY_PARAMETERS)],
         indirect=True,
     )
-    async def test_get_product_parameters_values_by_category_authorized_user(
+    async def test_get_category_parameters_authorized_user(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test get product parameters values by category in case is authorized."""
+        """Test get category parameters in case is authorized."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/categories/65d24f2a260fb739c605b2a7/parameters-values/",
+            f"{AppConstants.API_V1_PREFIX}/categories/65d24f2a260fb739c605b2a7/parameters/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -430,16 +430,13 @@ class TestCategory(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    async def test_get_product_parameters_values_by_category_no_scope(
+    async def test_get_category_parameters_no_scope(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """
-        Test get product parameters values by category in case user does not
-        have a scope.
-        """
+        """Test get category parameters in case user does not have a scope."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/categories/65d24f2a260fb739c605b2a7/parameters-values/",
+            f"{AppConstants.API_V1_PREFIX}/categories/65d24f2a260fb739c605b2a7/parameters/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -447,15 +444,13 @@ class TestCategory(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
 
     @pytest.mark.asyncio
-    async def test_get_product_parameters_values_by_category_invalid_identifier(
+    async def test_get_category_parameters_invalid_identifier(
         self, test_client: AsyncClient
     ) -> None:
-        """
-        Test get product parameters values by category in case of invalid identifier.
-        """
+        """Test get category parameters in case of invalid identifier."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/categories/invalid-group-id/parameters-values/"
+            f"{AppConstants.API_V1_PREFIX}/categories/invalid-group-id/parameters/"
         )
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -471,16 +466,16 @@ class TestCategory(BaseAPITest):
         ]
 
     @pytest.mark.asyncio
-    async def test_get_product_parameters_values_by_category_not_found(
+    async def test_get_category_parameters_not_found(
         self, test_client: AsyncClient
     ) -> None:
         """
-        Test get product parameters values by category in case of identifier is
-        valid, but there is no such category.
+        Test get category parameters in case of identifier is valid, but there is no
+        such category.
         """
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/categories/6598495fdf97a8e0d7e612aa/parameters-values/"
+            f"{AppConstants.API_V1_PREFIX}/categories/6598495fdf97a8e0d7e612aa/parameters/"
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND

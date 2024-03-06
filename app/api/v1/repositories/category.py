@@ -3,17 +3,41 @@
 from typing import Any, Dict, List, Mapping
 
 from bson import ObjectId
+from fastapi import Depends
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
+from app.api.v1.constants import ProductParameterTypesEnum
 from app.api.v1.repositories import BaseRepository
-from app.constants import ProjectionValuesEnum, SortingTypesEnum
+from app.api.v1.repositories.category_parameters import CategoryParametersRepository
+from app.constants import HTTPErrorMessagesEnum, ProjectionValuesEnum, SortingTypesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
+from app.services.mongo.service import MongoDBService
 
 
 class CategoryRepository(BaseRepository):
     """Category repository for handling data access operations."""
 
     _collection_name: str = MongoCollectionsEnum.CATEGORIES
+
+    def __init__(
+        self,
+        mongo_service: MongoDBService = Depends(),
+        category_parameters_repository: CategoryParametersRepository = Depends(),
+    ) -> None:
+        """Initializes the ProductRepository.
+
+        This method sets up the MongoDB service instance for data access.
+
+        Args:
+            mongo_service (MongoDBService): An instance of the MongoDB service.
+            category_parameters_repository (CategoryParametersRepository): Category
+            parameters repository.
+
+        """
+
+        super().__init__(mongo_service=mongo_service)
+
+        self.category_parameters_repository = category_parameters_repository
 
     async def get(
         self,
@@ -164,10 +188,102 @@ class CategoryRepository(BaseRepository):
 
         return result[0] if result else None
 
-    async def get_product_parameters_values_by_category(
+    async def calculate_category_parameters(
+        self,
+        id_: ObjectId,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+    ) -> None:
+        """Calculates list of parameters for specific product category.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the category.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Raises:
+            ValueError: If category with id does not exist.
+
+        """
+
+        category = await self.get_by_id(id_=id_, session=session)
+
+        if category is None:
+            raise ValueError(
+                HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+                    entity="Category"
+                )
+            )
+
+        parameters = category["parameters"]
+
+        pipeline: List[Dict[str, Any]] = [{"$match": {"category_id": id_}}]
+
+        list_type_parameters = [
+            parameter
+            for parameter in parameters
+            if parameter["type"] == ProductParameterTypesEnum.LIST.name
+        ]
+
+        if list_type_parameters:
+            pipeline.extend(
+                [
+                    {
+                        "$unwind": {
+                            "path": f"$parameters.{parameter['machine_name']}",
+                            "preserveNullAndEmptyArrays": True,
+                        }
+                    }
+                    for parameter in list_type_parameters
+                ]
+            )
+
+        pipeline.append(
+            {
+                "$group": {
+                    "_id": "$category_id",
+                    **{
+                        parameter["machine_name"]: {
+                            "$addToSet": f"$parameters.{parameter['machine_name']}"
+                        }
+                        for parameter in parameters
+                    },
+                }
+            },
+        )
+
+        result = await self._mongo_service.aggregate(
+            collection=MongoCollectionsEnum.PRODUCTS,
+            pipeline=pipeline,
+            session=session,
+        )
+
+        if result is not None:
+            category_parameters = {
+                parameter: sorted(
+                    value,
+                    # 'None' values will be in the end of list, not case-sensitive
+                    key=lambda element: (
+                        element is None,
+                        element.lower() if isinstance(element, str) else element,
+                    ),
+                )
+                if isinstance(value, list)
+                else value
+                for parameter, value in result[0].items()
+            }
+
+            await self.category_parameters_repository.update_by_id(
+                id_=category_parameters["_id"],
+                item=category_parameters,
+                upsert=True,
+                session=session,
+            )
+
+    async def get_category_parameters(
         self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
     ) -> Mapping[str, Any] | None:
-        """Retrieves parameters values data from the repository by category identifier.
+        """Retrieves parameters data from the repository by category identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the category.
@@ -175,12 +291,12 @@ class CategoryRepository(BaseRepository):
             if operation is transactional. Defaults to None.
 
         Returns:
-            Mapping[str, Any] | None: The retrieved parameters values.
+            Mapping[str, Any] | None: The retrieved parameters.
 
         """
 
         return await self._mongo_service.find_one(
-            collection=MongoCollectionsEnum.PARAMETERS_VALUES,
+            collection=MongoCollectionsEnum.CATEGORY_PARAMETERS,
             filter_={"_id": id_},
             session=session,
         )

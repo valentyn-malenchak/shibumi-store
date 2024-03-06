@@ -12,7 +12,7 @@ CUSTOMER_USER = dict(
         ScopesEnum.USERS_UPDATE_USER_PASSWORD.name,
         ScopesEnum.CATEGORIES_GET_CATEGORIES.name,
         ScopesEnum.CATEGORIES_GET_CATEGORY.name,
-        ScopesEnum.CATEGORIES_GET_PARAMETERS_VALUES_BY_CATEGORY.name,
+        ScopesEnum.CATEGORIES_GET_CATEGORY_PARAMETERS.name,
         ScopesEnum.PRODUCTS_GET_PRODUCTS.name,
         ScopesEnum.PRODUCTS_GET_PRODUCT.name,
     ],

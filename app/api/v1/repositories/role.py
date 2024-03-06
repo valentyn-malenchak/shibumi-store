@@ -1,4 +1,4 @@
-"""Module that contains role scopes repository class."""
+"""Module that contains role repository class."""
 
 from typing import Any, List, Mapping
 
@@ -8,10 +8,10 @@ from app.api.v1.repositories import BaseRepository
 from app.services.mongo.constants import MongoCollectionsEnum
 
 
-class RoleScopesRepository(BaseRepository):
-    """Role-scopes repository for handling data access operations."""
+class RoleRepository(BaseRepository):
+    """Role repository for handling data access operations."""
 
-    _collection_name: str = MongoCollectionsEnum.ROLES_SCOPES
+    _collection_name: str = MongoCollectionsEnum.ROLES
 
     @staticmethod
     async def _get_list_query_filter(*_: Any, **__: Any) -> Mapping[str, Any]:

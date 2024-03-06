@@ -1,4 +1,4 @@
-"""Module that contains role-scopes service class."""
+"""Module that contains role service class."""
 
 
 from typing import Any, List
@@ -7,28 +7,27 @@ from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
 
 from app.api.v1.models import PaginationModel, SearchModel, SortingModel
-from app.api.v1.repositories.role_scopes import RoleScopesRepository
+from app.api.v1.repositories.role import RoleRepository
 from app.api.v1.services import BaseService
 from app.services.mongo.transaction_manager import TransactionManager
 from app.services.redis.service import RedisService
 
 
-class RoleScopesService(BaseService):
-    """Role-scopes service for encapsulating business logic."""
+class RoleService(BaseService):
+    """Role service for encapsulating business logic."""
 
     def __init__(
         self,
         background_tasks: BackgroundTasks,
-        repository: RoleScopesRepository = Depends(),
+        repository: RoleRepository = Depends(),
         redis_service: RedisService = Depends(),
         transaction_manager: TransactionManager = Depends(),
     ) -> None:
-        """Initializes the role-scopes service.
+        """Initializes the role service.
 
         Args:
             background_tasks (BackgroundTasks): Background tasks.
-            repository (RoleScopesRepository): An instance of the Role-Scopes
-            repository.
+            repository (RoleRepository): An instance of the Role repository.
             redis_service (RedisService): Redis service.
             transaction_manager (TransactionManager): Transaction manager.
 
@@ -49,7 +48,7 @@ class RoleScopesService(BaseService):
         sorting: SortingModel,
         pagination: PaginationModel,
     ) -> List[Any]:
-        """Retrieves a list of roles-scopes based on parameters.
+        """Retrieves a list of roles based on parameters.
 
         Args:
             filter_ (Any): Parameters for list filtering.
@@ -58,7 +57,7 @@ class RoleScopesService(BaseService):
             pagination (PaginationModel): Parameters for pagination.
 
         Returns:
-            List[Any]: The retrieved list of roles-scopes.
+            List[Any]: The retrieved list of roles.
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -83,13 +82,13 @@ class RoleScopesService(BaseService):
         raise NotImplementedError
 
     async def get_by_id(self, id_: ObjectId) -> Any:
-        """Retrieves a role-scopes by its unique identifier.
+        """Retrieves a role by its unique identifier.
 
         Args:
-            id_ (ObjectId): The unique identifier of the role-scopes.
+            id_ (ObjectId): The unique identifier of the role.
 
         Returns:
-            Any: The retrieved role-scopes or None if not found.
+            Any: The retrieved role or None if not found.
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -110,13 +109,13 @@ class RoleScopesService(BaseService):
         return await self.repository.get_scopes_by_roles(roles=roles)
 
     async def create(self, item: Any) -> Any:
-        """Creates a new role-scopes.
+        """Creates a new role.
 
         Args:
-            item (Any): The data for the new role-scopes.
+            item (Any): The data for the new role.
 
         Returns:
-            Any: The ID of created role-scopes.
+            Any: The ID of created role.
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -125,14 +124,14 @@ class RoleScopesService(BaseService):
         raise NotImplementedError
 
     async def update_by_id(self, id_: ObjectId, item: Any) -> Any:
-        """Updates a role-scopes by its unique identifier.
+        """Updates a role by its unique identifier.
 
         Args:
-            id_ (ObjectId): The unique identifier of the role-scopes.
-            item (Any): Data to update role-scopes.
+            id_ (ObjectId): The unique identifier of the role.
+            item (Any): Data to update role.
 
         Returns:
-            Any: The updated role-scopes.
+            Any: The updated role.
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -141,10 +140,10 @@ class RoleScopesService(BaseService):
         raise NotImplementedError
 
     async def delete_by_id(self, id_: ObjectId) -> None:
-        """Deletes a role-scopes by its unique identifier.
+        """Deletes a role by its unique identifier.
 
         Args:
-            id_ (ObjectId): The unique identifier of the role-scopes.
+            id_ (ObjectId): The unique identifier of the role.
 
         Raises:
             NotImplementedError: This method is not implemented.

@@ -19,7 +19,7 @@ from app.api.v1.auth.password import Password
 from app.api.v1.constants import ScopesEnum
 from app.api.v1.models.auth import TokenPayloadModel
 from app.api.v1.models.user import CurrentUserModel
-from app.api.v1.services.role_scopes import RoleScopesService
+from app.api.v1.services.role import RoleService
 from app.api.v1.services.user import UserService
 from app.constants import HTTPErrorMessagesEnum
 from app.exceptions import ExpiredTokenError, InvalidTokenError
@@ -32,14 +32,14 @@ class Authentication:
         self,
         form_data: OAuth2PasswordRequestFormStrict = Depends(),
         user_service: UserService = Depends(),
-        role_scope_service: RoleScopesService = Depends(),
+        role_service: RoleService = Depends(),
     ) -> CurrentUserModel:
         """Authenticates a user using username and password.
 
         Args:
             form_data (OAuth2PasswordRequestForm): Form which contains
             username and password.
-            role_scope_service (RoleScopesService): Roles-scopes service.
+            role_service (RoleService): Role service.
 
         Returns:
             CurrentUserModel: User object if token is valid and permitted scopes list.
@@ -61,9 +61,7 @@ class Authentication:
                 detail=HTTPErrorMessagesEnum.INCORRECT_CREDENTIALS,
             )
 
-        permitted_scopes = await role_scope_service.get_scopes_by_roles(
-            roles=user.roles
-        )
+        permitted_scopes = await role_service.get_scopes_by_roles(roles=user.roles)
 
         if form_data.scopes:
             # Verifies all requested in form data scopes are permitted

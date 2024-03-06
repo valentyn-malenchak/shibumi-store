@@ -129,17 +129,27 @@ class CategoryService(BaseService):
         """
         raise NotImplementedError
 
-    async def get_product_parameters_values_by_category(
-        self, id_: ObjectId
-    ) -> Mapping[str, Any] | None:
-        """Retrieves a parameters values by category identifier.
+    async def get_category_parameters(self, id_: ObjectId) -> Mapping[str, Any] | None:
+        """Retrieves a category parameters by its identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the category.
 
         Returns:
-             Mapping[str, Any] | None: The retrieved category or None if not found.
+             Mapping[str, Any] | None: The retrieved parameters or None if not found.
 
         """
 
-        return await self.repository.get_product_parameters_values_by_category(id_=id_)
+        return await self.repository.get_category_parameters(id_=id_)
+
+    async def calculate_category_parameters(self, id_: ObjectId) -> None:
+        """Calculates list of parameters for specific product category.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the category.
+
+        """
+        async with self.transaction_manager as session:
+            await self.repository.calculate_category_parameters(
+                id_=id_, session=session
+            )

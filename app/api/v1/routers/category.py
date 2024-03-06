@@ -11,8 +11,8 @@ from app.api.v1.models.category import (
     CategoriesFilterModel,
     CategoriesListModel,
     Category,
+    CategoryParametersResponseModel,
     ExtendedCategoryResponseModel,
-    ParametersValuesResponseModel,
 )
 from app.api.v1.models.user import CurrentUserModel
 from app.api.v1.services.category import CategoryService
@@ -71,19 +71,19 @@ async def get_category(
 
 
 @router.get(
-    "/{category_id}/parameters-values/",
-    response_model=ParametersValuesResponseModel | None,
+    "/{category_id}/parameters/",
+    response_model=CategoryParametersResponseModel | None,
     status_code=status.HTTP_200_OK,
 )
-async def get_product_parameters_values_by_category(
+async def get_category_parameters(
     _: CurrentUserModel | None = Security(
         OptionalAuthorization(),
-        scopes=[ScopesEnum.CATEGORIES_GET_PARAMETERS_VALUES_BY_CATEGORY.name],
+        scopes=[ScopesEnum.CATEGORIES_GET_CATEGORY_PARAMETERS.name],
     ),
     category: Category = Depends(CategoryIdDependency()),
     category_service: CategoryService = Depends(),
 ) -> Mapping[str, Any] | None:
-    """API which returns product parameters values by category identifier.
+    """API which returns category parameters by its identifier.
 
     Args:
         _ (CurrentUserModel | None): Current user object or None.
@@ -91,9 +91,7 @@ async def get_product_parameters_values_by_category(
         category_service (CategoryService): Category service.
 
     Returns:
-         Mapping[str, Any] | None: Parameters values.
+         Mapping[str, Any] | None: Category parameters.
 
     """
-    return await category_service.get_product_parameters_values_by_category(
-        id_=category.id
-    )
+    return await category_service.get_category_parameters(id_=category.id)

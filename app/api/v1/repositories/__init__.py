@@ -232,6 +232,7 @@ class BaseRepository(abc.ABC):
         id_: ObjectId,
         item: Dict[str, Any],
         *,
+        upsert: bool = False,
         session: AsyncIOMotorClientSession | None = None,
     ) -> None:
         """Updates an item in repository.
@@ -239,6 +240,7 @@ class BaseRepository(abc.ABC):
         Args:
             id_ (ObjectId): The unique identifier of the item.
             item (Dict[str, Any]): Data to update item.
+            upsert (bool): Use update or insert. Defaults to False.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
@@ -248,6 +250,7 @@ class BaseRepository(abc.ABC):
             collection=self._collection_name,
             filter_={"_id": id_},
             update={"$set": item},
+            upsert=upsert,
             session=session,
         )
 
