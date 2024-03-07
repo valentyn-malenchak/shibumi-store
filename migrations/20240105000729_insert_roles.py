@@ -10,12 +10,21 @@ from app.services.mongo.constants import MongoCollectionsEnum
 class Migration(BaseMigration):  # type: ignore
     """Migration that inserts/deletes roles."""
 
+    @staticmethod
+    def __decompose_snake_case(string: str) -> str:
+        """Decomposes snake case."""
+
+        words = [word.title() for word in string.split("_")]
+
+        return " ".join(words)
+
     def upgrade(self) -> None:
         """Inserts roles."""
         self.db[MongoCollectionsEnum.ROLES].insert_many(
             [
                 {
-                    "role": RolesEnum.CUSTOMER.name,
+                    "name": self.__decompose_snake_case(RolesEnum.CUSTOMER),
+                    "machine_name": RolesEnum.CUSTOMER,
                     "scopes": [
                         ScopesEnum.AUTH_REFRESH_TOKEN.name,
                         ScopesEnum.USERS_GET_ME.name,
@@ -32,7 +41,8 @@ class Migration(BaseMigration):  # type: ignore
                     "updated_at": None,
                 },
                 {
-                    "role": RolesEnum.SUPPORT.name,
+                    "name": self.__decompose_snake_case(RolesEnum.SUPPORT),
+                    "machine_name": RolesEnum.SUPPORT,
                     "scopes": [
                         ScopesEnum.AUTH_REFRESH_TOKEN.name,
                         ScopesEnum.USERS_GET_ME.name,
@@ -52,7 +62,8 @@ class Migration(BaseMigration):  # type: ignore
                     "updated_at": None,
                 },
                 {
-                    "role": RolesEnum.WAREHOUSE_STUFF.name,
+                    "name": self.__decompose_snake_case(RolesEnum.WAREHOUSE_STUFF),
+                    "machine_name": RolesEnum.WAREHOUSE_STUFF,
                     "scopes": [
                         ScopesEnum.AUTH_REFRESH_TOKEN.name,
                         ScopesEnum.USERS_GET_ME.name,
@@ -68,7 +79,8 @@ class Migration(BaseMigration):  # type: ignore
                     "updated_at": None,
                 },
                 {
-                    "role": RolesEnum.CONTENT_MANAGER.name,
+                    "name": self.__decompose_snake_case(RolesEnum.CONTENT_MANAGER),
+                    "machine_name": RolesEnum.CONTENT_MANAGER,
                     "scopes": [
                         ScopesEnum.AUTH_REFRESH_TOKEN.name,
                         ScopesEnum.USERS_GET_ME.name,
@@ -83,7 +95,8 @@ class Migration(BaseMigration):  # type: ignore
                     "updated_at": None,
                 },
                 {
-                    "role": RolesEnum.MARKETING_MANAGER.name,
+                    "name": self.__decompose_snake_case(RolesEnum.MARKETING_MANAGER),
+                    "machine_name": RolesEnum.MARKETING_MANAGER,
                     "scopes": [
                         ScopesEnum.AUTH_REFRESH_TOKEN.name,
                         ScopesEnum.USERS_GET_ME.name,
@@ -98,7 +111,8 @@ class Migration(BaseMigration):  # type: ignore
                     "updated_at": None,
                 },
                 {
-                    "role": RolesEnum.ADMIN.name,
+                    "name": self.__decompose_snake_case(RolesEnum.ADMIN),
+                    "machine_name": RolesEnum.ADMIN,
                     "scopes": [
                         ScopesEnum.AUTH_REFRESH_TOKEN.name,
                         ScopesEnum.HEALTH_GET_HEALTH.name,

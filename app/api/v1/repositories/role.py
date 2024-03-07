@@ -4,6 +4,7 @@ from typing import Any, List, Mapping
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
+from app.api.v1.constants import RolesEnum
 from app.api.v1.repositories import BaseRepository
 from app.services.mongo.constants import MongoCollectionsEnum
 
@@ -44,7 +45,10 @@ class RoleRepository(BaseRepository):
         raise NotImplementedError
 
     async def get_scopes_by_roles(
-        self, roles: List[str], *, session: AsyncIOMotorClientSession | None = None
+        self,
+        roles: List[RolesEnum],
+        *,
+        session: AsyncIOMotorClientSession | None = None,
     ) -> List[str]:
         """Retrieves a list of scopes from the repository by roles name list.
 
@@ -61,7 +65,7 @@ class RoleRepository(BaseRepository):
         scopes = await self._mongo_service.aggregate(
             collection=self._collection_name,
             pipeline=[
-                {"$match": {"role": {"$in": roles}}},
+                {"$match": {"machine_name": {"$in": roles}}},
                 {"$unwind": "$scopes"},
                 {"$group": {"_id": "$scopes"}},
             ],

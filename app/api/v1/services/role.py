@@ -6,6 +6,7 @@ from typing import Any, List
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
 
+from app.api.v1.constants import RolesEnum
 from app.api.v1.models import PaginationModel, SearchModel, SortingModel
 from app.api.v1.repositories.role import RoleRepository
 from app.api.v1.services import BaseService
@@ -96,7 +97,7 @@ class RoleService(BaseService):
         """
         raise NotImplementedError
 
-    async def get_scopes_by_roles(self, roles: List[str]) -> List[str]:
+    async def get_scopes_by_roles(self, roles: List[RolesEnum]) -> List[str]:
         """Retrieves a list of scopes from the repository by roles name list.
 
         Args:

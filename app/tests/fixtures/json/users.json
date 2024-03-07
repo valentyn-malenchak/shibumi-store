@@ -11,7 +11,7 @@
     "birthdate": "1998-01-01T00:00:00.000+00:00",
     "hashed_password": "$2b$12$BuHaZV2.qZRYojxU.d1oJ.v65KKCgTH6b1MA4ztKxS.J6MnGJ6htC",
     "roles": [
-      "CUSTOMER"
+      "customer"
     ],
     "deleted": false,
     "created_at": "2023-12-30T13:25:43.895+00:00",
@@ -29,7 +29,7 @@
     "birthdate": "1939-03-30T00:00:00.000+00:00",
     "hashed_password": "$2b$12$Hi3/4nfK3ylx9cnOzuI.hO.WrdB5tEWNk/Rrp9dWWipN7q8RrHA32",
     "roles": [
-      "CUSTOMER"
+      "customer"
     ],
     "deleted": false,
     "created_at": "2023-11-11T13:25:43.895+00:00",
@@ -47,7 +47,7 @@
     "birthdate": "1994-11-14T00:00:00.000+00:00",
     "hashed_password": "$2b$12$WPb2AXKsUrdZvn.btRFSUugNIKOJ3OVacIyBG/nbHI/KoQwCgcLze",
     "roles": [
-      "CONTENT_MANAGER"
+      "content_manager"
     ],
     "deleted": true,
     "created_at": "2024-01-07T13:25:43.895+00:00",
@@ -65,8 +65,8 @@
     "birthdate": "1994-08-04T00:00:00.000+00:00",
     "hashed_password": "$2b$12$rFZEujzqs43rVaM9xthJEu5FpPG4aGmRxT0nmmPuLkw1fG2pWdB8S",
     "roles": [
-      "SUPPORT",
-      "CONTENT_MANAGER"
+      "support",
+      "content_manager"
     ],
     "deleted": false,
     "created_at": "2024-01-08T13:25:43.895+00:00",
@@ -84,7 +84,7 @@
     "birthdate": "1994-10-01T00:00:00.000+00:00",
     "hashed_password": "$2b$12$4UQ3d.YjtR09ZE8mQMsEKu1YMpsfM/QWGLw2QvU0Shz3Uqpw5BjxG",
     "roles": [
-      "WAREHOUSE_STUFF"
+      "warehouse_stuff"
     ],
     "deleted": false,
     "created_at": "2024-01-08T13:56:43.895+00:00",
@@ -102,7 +102,7 @@
     "birthdate": "1999-05-19T00:00:00.000+00:00",
     "hashed_password": "$2b$12$TcMm28bYcVgWi08AyylJe.D6QUWVqD9plbGdJ097PwV0LX1BXuPES",
     "roles": [
-      "CUSTOMER"
+      "customer"
     ],
     "deleted": false,
     "created_at": "2024-01-20T13:56:43.895+00:00",
@@ -120,7 +120,7 @@
     "birthdate": "1997-01-01T00:00:00.000+00:00",
     "hashed_password": "$2b$12$OkH.nDmcaCW9S28wqcZ41emHDmWHkB1Z5tjSGo/DZ5sUyYGVd.e5W",
     "roles": [
-      "ADMIN"
+      "admin"
     ],
     "deleted": false,
     "created_at": "2023-12-30T13:25:43.895+00:00",

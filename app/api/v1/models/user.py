@@ -27,7 +27,7 @@ class User(ObjectIdModel):
     hashed_password: str
     phone_number: str
     birthdate: date
-    roles: List[str]
+    roles: List[RolesEnum]
     deleted: bool
     created_at: datetime
     updated_at: datetime | None
@@ -35,7 +35,7 @@ class User(ObjectIdModel):
     @property
     def is_client(self) -> bool:
         """Shows is user a client or belongs to shop side."""
-        return self.roles == [RolesEnum.CUSTOMER.name]
+        return self.roles == [RolesEnum.CUSTOMER]
 
 
 class CurrentUserModel(BaseModel):
