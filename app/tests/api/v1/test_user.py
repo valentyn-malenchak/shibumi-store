@@ -57,7 +57,7 @@ class TestUser(BaseAPITest):
             "email_verified": True,
             "phone_number": "+380981111111",
             "birthdate": "1998-01-01",
-            "roles": [RolesEnum.CUSTOMER.name],
+            "roles": [RolesEnum.CUSTOMER],
             "deleted": False,
             "created_at": "2023-12-30T13:25:43.895000",
             "updated_at": None,
@@ -172,7 +172,7 @@ class TestUser(BaseAPITest):
                 "password": "Joe12345!",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
-                "roles": [RolesEnum.CUSTOMER.value],
+                "roles": [RolesEnum.CUSTOMER],
             },
         )
 
@@ -186,7 +186,7 @@ class TestUser(BaseAPITest):
             "email_verified": False,
             "phone_number": "+380980000000",
             "birthdate": "1997-12-07",
-            "roles": [RolesEnum.CUSTOMER.name],
+            "roles": [RolesEnum.CUSTOMER],
             "deleted": False,
             "created_at": FROZEN_DATETIME,
             "updated_at": None,
@@ -209,7 +209,7 @@ class TestUser(BaseAPITest):
                 "password": "Joe12345!",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
-                "roles": [RolesEnum.SUPPORT.value],
+                "roles": [RolesEnum.SUPPORT],
             },
         )
 
@@ -242,10 +242,10 @@ class TestUser(BaseAPITest):
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
                 "roles": [
-                    RolesEnum.SUPPORT.value,
-                    RolesEnum.CUSTOMER.value,
-                    RolesEnum.CONTENT_MANAGER.value,
-                    RolesEnum.ADMIN.value,
+                    RolesEnum.SUPPORT,
+                    RolesEnum.CUSTOMER,
+                    RolesEnum.CONTENT_MANAGER,
+                    RolesEnum.ADMIN,
                 ],
             },
         )
@@ -261,10 +261,10 @@ class TestUser(BaseAPITest):
             "phone_number": "+380980000000",
             "birthdate": "1997-12-07",
             "roles": [
-                RolesEnum.SUPPORT.name,
-                RolesEnum.CUSTOMER.name,
-                RolesEnum.CONTENT_MANAGER.name,
-                RolesEnum.ADMIN.name,
+                RolesEnum.SUPPORT,
+                RolesEnum.CUSTOMER,
+                RolesEnum.CONTENT_MANAGER,
+                RolesEnum.ADMIN,
             ],
             "deleted": False,
             "created_at": FROZEN_DATETIME,
@@ -316,8 +316,8 @@ class TestUser(BaseAPITest):
             (
                 "enum",
                 ["body", "roles", 0],
-                "Input should be 'Customer', 'Support', 'Warehouse stuff', "
-                "'Content manager', 'Marketing manager' or 'Admin'",
+                "Input should be 'customer', 'support', 'warehouse_stuff', "
+                "'content_manager', 'marketing_manager' or 'admin'",
             ),
         ]
 
@@ -336,7 +336,7 @@ class TestUser(BaseAPITest):
                 "password": "joe12",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
-                "roles": [RolesEnum.CUSTOMER.value],
+                "roles": [RolesEnum.CUSTOMER],
             },
         )
 
@@ -370,7 +370,7 @@ class TestUser(BaseAPITest):
                 "password": "joejoejoe",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
-                "roles": [RolesEnum.CUSTOMER.value],
+                "roles": [RolesEnum.CUSTOMER],
             },
         )
 
@@ -404,7 +404,7 @@ class TestUser(BaseAPITest):
                 "password": "JOE12345",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
-                "roles": [RolesEnum.CUSTOMER.value],
+                "roles": [RolesEnum.CUSTOMER],
             },
         )
 
@@ -438,7 +438,7 @@ class TestUser(BaseAPITest):
                 "password": "joe12345",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
-                "roles": [RolesEnum.CUSTOMER.value],
+                "roles": [RolesEnum.CUSTOMER],
             },
         )
 
@@ -472,7 +472,7 @@ class TestUser(BaseAPITest):
                 "password": "Joe12345",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
-                "roles": [RolesEnum.CUSTOMER.value],
+                "roles": [RolesEnum.CUSTOMER],
             },
         )
 
@@ -504,7 +504,7 @@ class TestUser(BaseAPITest):
                 "password": "Joe12345!~",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
-                "roles": [RolesEnum.CUSTOMER.value],
+                "roles": [RolesEnum.CUSTOMER],
             },
         )
 
@@ -536,7 +536,7 @@ class TestUser(BaseAPITest):
                 "password": "Joe12345!~",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
-                "roles": [RolesEnum.CUSTOMER.value],
+                "roles": [RolesEnum.CUSTOMER],
             },
         )
 
@@ -570,7 +570,7 @@ class TestUser(BaseAPITest):
                 "password": "Joe12345!~",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
-                "roles": [RolesEnum.CUSTOMER.value],
+                "roles": [RolesEnum.CUSTOMER],
             },
         )
 
@@ -612,7 +612,7 @@ class TestUser(BaseAPITest):
                 "password": "joe12345",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
-                "roles": [RolesEnum.CUSTOMER.value],
+                "roles": [RolesEnum.CUSTOMER],
             },
         )
 
@@ -639,7 +639,7 @@ class TestUser(BaseAPITest):
                 "password": "Joe12345!",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
-                "roles": [RolesEnum.CUSTOMER.value],
+                "roles": [RolesEnum.CUSTOMER],
             },
         )
 
@@ -670,7 +670,7 @@ class TestUser(BaseAPITest):
                 "patronymic_name": "Batman",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
-                "roles": [RolesEnum.CUSTOMER.value],
+                "roles": [RolesEnum.CUSTOMER],
             },
         )
 
@@ -685,7 +685,7 @@ class TestUser(BaseAPITest):
             "email_verified": True,
             "phone_number": "+380980000001",
             "birthdate": "1999-12-31",
-            "roles": [RolesEnum.CUSTOMER.name],
+            "roles": [RolesEnum.CUSTOMER],
             "deleted": False,
             "created_at": "2023-12-30T13:25:43.895000",
             "updated_at": FROZEN_DATETIME,
@@ -710,7 +710,7 @@ class TestUser(BaseAPITest):
                 "patronymic_name": "Batman",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
-                "roles": [RolesEnum.CUSTOMER.value, RolesEnum.ADMIN.value],
+                "roles": [RolesEnum.CUSTOMER, RolesEnum.ADMIN],
             },
         )
 
@@ -738,9 +738,9 @@ class TestUser(BaseAPITest):
                 "phone_number": "+380980004321",
                 "birthdate": "1999-09-07",
                 "roles": [
-                    RolesEnum.WAREHOUSE_STUFF.value,
-                    RolesEnum.ADMIN.value,
-                    RolesEnum.CUSTOMER.value,
+                    RolesEnum.WAREHOUSE_STUFF,
+                    RolesEnum.ADMIN,
+                    RolesEnum.CUSTOMER,
                 ],
             },
         )
@@ -757,9 +757,9 @@ class TestUser(BaseAPITest):
             "phone_number": "+380980004321",
             "birthdate": "1999-09-07",
             "roles": [
-                RolesEnum.WAREHOUSE_STUFF.name,
-                RolesEnum.ADMIN.name,
-                RolesEnum.CUSTOMER.name,
+                RolesEnum.WAREHOUSE_STUFF,
+                RolesEnum.ADMIN,
+                RolesEnum.CUSTOMER,
             ],
             "deleted": False,
             "created_at": "2024-01-08T13:25:43.895000",
@@ -812,8 +812,8 @@ class TestUser(BaseAPITest):
             (
                 "enum",
                 ["body", "roles", 0],
-                "Input should be 'Customer', 'Support', 'Warehouse stuff', "
-                "'Content manager', 'Marketing manager' or 'Admin'",
+                "Input should be 'customer', 'support', 'warehouse_stuff', "
+                "'content_manager', 'marketing_manager' or 'admin'",
             ),
         ]
 
@@ -829,7 +829,7 @@ class TestUser(BaseAPITest):
                 "patronymic_name": "Batman",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
-                "roles": [RolesEnum.CUSTOMER.value],
+                "roles": [RolesEnum.CUSTOMER],
             },
         )
 
@@ -856,7 +856,7 @@ class TestUser(BaseAPITest):
                 "username": "john.smith",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
-                "roles": [RolesEnum.CUSTOMER.value],
+                "roles": [RolesEnum.CUSTOMER],
             },
         )
 
@@ -882,7 +882,7 @@ class TestUser(BaseAPITest):
                 "patronymic_name": "Batman",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
-                "roles": [RolesEnum.CUSTOMER.value],
+                "roles": [RolesEnum.CUSTOMER],
             },
         )
 
@@ -908,7 +908,7 @@ class TestUser(BaseAPITest):
                 "patronymic_name": "Batman",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
-                "roles": [RolesEnum.CUSTOMER.value],
+                "roles": [RolesEnum.CUSTOMER],
             },
         )
 
@@ -934,7 +934,7 @@ class TestUser(BaseAPITest):
                 "patronymic_name": "Batman",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
-                "roles": [RolesEnum.CUSTOMER.value],
+                "roles": [RolesEnum.CUSTOMER],
             },
         )
 
@@ -963,7 +963,7 @@ class TestUser(BaseAPITest):
                 "patronymic_name": "Definitely not Batman",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
-                "roles": [RolesEnum.CONTENT_MANAGER.value],
+                "roles": [RolesEnum.CONTENT_MANAGER],
             },
         )
 
@@ -978,7 +978,7 @@ class TestUser(BaseAPITest):
             "email_verified": True,
             "phone_number": "+380980000001",
             "birthdate": "1999-12-31",
-            "roles": ["CONTENT_MANAGER"],
+            "roles": [RolesEnum.CONTENT_MANAGER],
             "deleted": False,
             "created_at": "2024-01-08T13:56:43.895000",
             "updated_at": FROZEN_DATETIME,
@@ -1003,7 +1003,7 @@ class TestUser(BaseAPITest):
                 "patronymic_name": "Definitely not Batman",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
-                "roles": [RolesEnum.CONTENT_MANAGER.value],
+                "roles": [RolesEnum.CONTENT_MANAGER],
             },
         )
 
@@ -1220,7 +1220,7 @@ class TestUser(BaseAPITest):
             "email_verified": True,
             "phone_number": "+111111111114",
             "birthdate": "1994-11-14",
-            "roles": ["CONTENT_MANAGER"],
+            "roles": ["content_manager"],
             "deleted": True,
             "created_at": "2024-01-07T13:25:43.895000",
             "updated_at": None,
@@ -1333,7 +1333,7 @@ class TestUser(BaseAPITest):
                     "email_verified": True,
                     "phone_number": "+380981111111",
                     "birthdate": "1998-01-01",
-                    "roles": ["CUSTOMER"],
+                    "roles": ["customer"],
                     "deleted": False,
                     "created_at": "2023-12-30T13:25:43.895000",
                     "updated_at": None,
@@ -1348,7 +1348,7 @@ class TestUser(BaseAPITest):
                     "email_verified": True,
                     "phone_number": "+111111111111",
                     "birthdate": "1939-03-30",
-                    "roles": ["CUSTOMER"],
+                    "roles": ["customer"],
                     "deleted": False,
                     "created_at": "2023-11-11T13:25:43.895000",
                     "updated_at": None,
@@ -1363,7 +1363,7 @@ class TestUser(BaseAPITest):
                     "email_verified": True,
                     "phone_number": "+111111111114",
                     "birthdate": "1994-11-14",
-                    "roles": ["CONTENT_MANAGER"],
+                    "roles": ["content_manager"],
                     "deleted": True,
                     "created_at": "2024-01-07T13:25:43.895000",
                     "updated_at": None,
@@ -1388,7 +1388,7 @@ class TestUser(BaseAPITest):
                 "page": 1,
                 "page_size": 1,
                 "deleted": False,
-                "roles": ["Support", "Warehouse stuff"],
+                "roles": ["support", "warehouse_stuff"],
             },
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -1406,7 +1406,7 @@ class TestUser(BaseAPITest):
                     "email_verified": True,
                     "phone_number": "+123111111111",
                     "birthdate": "1994-08-04",
-                    "roles": ["SUPPORT", "CONTENT_MANAGER"],
+                    "roles": ["support", "content_manager"],
                     "deleted": False,
                     "created_at": "2024-01-08T13:25:43.895000",
                     "updated_at": None,
@@ -1444,7 +1444,7 @@ class TestUser(BaseAPITest):
                     "email_verified": True,
                     "phone_number": "+123111111111",
                     "birthdate": "1994-08-04",
-                    "roles": ["SUPPORT", "CONTENT_MANAGER"],
+                    "roles": ["support", "content_manager"],
                     "deleted": False,
                     "created_at": "2024-01-08T13:25:43.895000",
                     "updated_at": None,
@@ -1487,7 +1487,7 @@ class TestUser(BaseAPITest):
                     "email_verified": True,
                     "phone_number": "+111111111114",
                     "birthdate": "1994-11-14",
-                    "roles": ["CONTENT_MANAGER"],
+                    "roles": ["content_manager"],
                     "deleted": True,
                     "created_at": "2024-01-07T13:25:43.895000",
                     "updated_at": None,
@@ -1525,8 +1525,8 @@ class TestUser(BaseAPITest):
             (
                 "enum",
                 ["query", "roles", 0],
-                "Input should be 'Customer', 'Support', 'Warehouse stuff', "
-                "'Content manager', 'Marketing manager' or 'Admin'",
+                "Input should be 'customer', 'support', 'warehouse_stuff', "
+                "'content_manager', 'marketing_manager' or 'admin'",
             ),
             ("enum", ["query", "sort_order"], "Input should be 'asc' or 'desc'"),
             ("missing", ["query", "page"], "Field required"),

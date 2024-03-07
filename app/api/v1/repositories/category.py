@@ -295,8 +295,6 @@ class CategoryRepository(BaseRepository):
 
         """
 
-        return await self._mongo_service.find_one(
-            collection=MongoCollectionsEnum.CATEGORY_PARAMETERS,
-            filter_={"_id": id_},
-            session=session,
+        return await self.category_parameters_repository.get_by_id(
+            id_=id_, session=session
         )

@@ -17,7 +17,7 @@ class Category(ObjectIdModel):
     description: str
     parent_id: Annotated[ObjectId, ObjectIdAnnotation] | None
     path: str  # used as "Materialized Path" pattern
-    path_name: str
+    machine_name: str
     has_children: bool
     parameters: List[Parameter]
     created_at: datetime
@@ -31,7 +31,7 @@ class ShortCategoryResponseModel(ObjectIdModel):
     description: str
     parent_id: Annotated[ObjectId, ObjectIdAnnotation] | None
     path: str  # used as "Materialized Path" pattern
-    path_name: str
+    machine_name: str
     created_at: datetime
     updated_at: datetime | None
 

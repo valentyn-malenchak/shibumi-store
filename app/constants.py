@@ -1,6 +1,6 @@
 """Module that provides application level constants."""
 
-from enum import IntEnum, StrEnum
+from enum import IntEnum, StrEnum, auto
 
 
 class AppConstants:
@@ -76,8 +76,8 @@ class ValidationErrorMessagesEnum(StrEnum):
 class SortingTypesEnum(StrEnum):
     """Sorting types enumerate."""
 
-    ASC = "asc"
-    DESC = "desc"
+    ASC = auto()
+    DESC = auto()
 
 
 class SortingValuesEnum(IntEnum):

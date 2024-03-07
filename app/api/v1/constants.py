@@ -1,17 +1,17 @@
 """Module that provides API v1 level constants."""
 
-from enum import Enum, IntEnum, StrEnum
+from enum import Enum, IntEnum, StrEnum, auto
 
 
-class RolesEnum(Enum):
+class RolesEnum(StrEnum):
     """User roles enumerate."""
 
-    CUSTOMER = "Customer"
-    SUPPORT = "Support"
-    WAREHOUSE_STUFF = "Warehouse stuff"
-    CONTENT_MANAGER = "Content manager"
-    MARKETING_MANAGER = "Marketing manager"
-    ADMIN = "Admin"
+    CUSTOMER = auto()
+    SUPPORT = auto()
+    WAREHOUSE_STUFF = auto()
+    CONTENT_MANAGER = auto()
+    MARKETING_MANAGER = auto()
+    ADMIN = auto()
 
 
 class ScopesEnum(Enum):

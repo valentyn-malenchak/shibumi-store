@@ -89,7 +89,7 @@ class UserService(BaseService):
             sort_order=sorting.sort_order,
             page=pagination.page,
             page_size=pagination.page_size,
-            roles=[role.name for role in filter_.roles],
+            roles=filter_.roles,
             deleted=filter_.deleted,
         )
 
@@ -107,7 +107,7 @@ class UserService(BaseService):
 
         return await self.repository.count(
             search=search.search,
-            roles=[role.name for role in filter_.roles],
+            roles=filter_.roles,
             deleted=filter_.deleted,
         )
 
@@ -162,7 +162,7 @@ class UserService(BaseService):
                     "email_verified": False,
                     "hashed_password": password,
                     "birthdate": arrow.get(item.birthdate).datetime,
-                    "roles": [role.name for role in item.roles],
+                    "roles": item.roles,
                     "deleted": False,
                     "created_at": arrow.utcnow().datetime,
                     "updated_at": None,
@@ -201,7 +201,7 @@ class UserService(BaseService):
             id_=id_,
             item={
                 **item.model_dump(exclude={"roles"}),
-                "roles": [role.name for role in item.roles],
+                "roles": item.roles,
                 "birthdate": arrow.get(item.birthdate).datetime,
                 "updated_at": arrow.utcnow().datetime,
             },

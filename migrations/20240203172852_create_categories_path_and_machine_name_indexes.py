@@ -1,5 +1,5 @@
 """
-Contains a migration that creates/drops categories path and path name
+Contains a migration that creates/drops categories path and machine_name
 fields unique indexes.
 """
 
@@ -10,17 +10,19 @@ from app.services.mongo.constants import MongoCollectionsEnum
 
 class Migration(BaseMigration):  # type: ignore
     """
-    Migration that creates/drops categories path and path name
+    Migration that creates/drops categories path and machine_name
     fields unique indexes.
     """
 
     def upgrade(self) -> None:
-        """Creates path and path name indexes."""
+        """Creates path and machine_name indexes."""
         # used as "Materialized Path" pattern
         self.db[MongoCollectionsEnum.CATEGORIES].create_index("path", unique=True)
-        self.db[MongoCollectionsEnum.CATEGORIES].create_index("path_name", unique=True)
+        self.db[MongoCollectionsEnum.CATEGORIES].create_index(
+            "machine_name", unique=True
+        )
 
     def downgrade(self) -> None:
-        """Drops path and path name indexes."""
-        self.db[MongoCollectionsEnum.CATEGORIES].drop_index("path_name_1")
+        """Drops path and machine_name indexes."""
+        self.db[MongoCollectionsEnum.CATEGORIES].drop_index("machine_name_1")
         self.db[MongoCollectionsEnum.CATEGORIES].drop_index("path_1")

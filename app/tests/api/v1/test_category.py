@@ -39,7 +39,7 @@ class TestCategory(BaseAPITest):
                     "description",
                     "parent_id",
                     "path",
-                    "path_name",
+                    "machine_name",
                     "created_at",
                     "updated_at",
                 }
@@ -74,7 +74,7 @@ class TestCategory(BaseAPITest):
                     "description",
                     "parent_id",
                     "path",
-                    "path_name",
+                    "machine_name",
                     "created_at",
                     "updated_at",
                 }
@@ -108,7 +108,7 @@ class TestCategory(BaseAPITest):
                     "description": "Desktop PCs",
                     "parent_id": "65d24f2a260fb739c605b28b",
                     "path": "/electronics/computers/desktops",
-                    "path_name": "desktops",
+                    "machine_name": "desktops",
                 },
                 {
                     "id": "65d24f2a260fb739c605b28d",
@@ -116,7 +116,7 @@ class TestCategory(BaseAPITest):
                     "description": "Laptop PCs",
                     "parent_id": "65d24f2a260fb739c605b28b",
                     "path": "/electronics/computers/laptops",
-                    "path_name": "laptops",
+                    "machine_name": "laptops",
                 },
                 {
                     "id": "65d24f2a260fb739c605b28e",
@@ -124,7 +124,7 @@ class TestCategory(BaseAPITest):
                     "description": "All-in-One PCs",
                     "parent_id": "65d24f2a260fb739c605b28b",
                     "path": "/electronics/computers/all-in-one",
-                    "path_name": "all-in-one",
+                    "machine_name": "all-in-one",
                 },
             ],
             "total": 3,
@@ -148,7 +148,7 @@ class TestCategory(BaseAPITest):
             "description": "Electronic devices",
             "parent_id": None,
             "path": "/electronics",
-            "path_name": "electronics",
+            "machine_name": "electronics",
             "parameters": [],
         }
 
@@ -176,7 +176,7 @@ class TestCategory(BaseAPITest):
             "description": "Power banks for mobile devices",
             "parent_id": "65d24f2a260fb739c605b2a3",
             "path": "/electronics/accessories/mobile-accessories/power-banks",
-            "path_name": "power-banks",
+            "machine_name": "power-banks",
             "parameters": [
                 {
                     "name": "Brand",
