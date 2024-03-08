@@ -116,7 +116,7 @@ async def create_user(
     ),
     user_data: CreateUserRequestModel = Depends(CreateUserRolesDependency()),
     user_service: UserService = Depends(),
-) -> User | None:
+) -> User:
     """API which creates a new user.
 
     Args:
@@ -125,7 +125,7 @@ async def create_user(
         user_service (UserService): User service.
 
     Returns:
-        User | None: Created user object.
+        User: Created user object.
 
     """
     return await user_service.create(item=user_data)
@@ -173,7 +173,7 @@ async def update_user(
     user: User = Depends(UpdateUserDependency()),
     user_data: UpdateUserRequestModel = Depends(UpdateUserRolesDependency()),
     user_service: UserService = Depends(),
-) -> User | None:
+) -> User:
     """API which updates a user object.
 
     Args:
@@ -183,7 +183,7 @@ async def update_user(
         user_service (UserService): User service.
 
     Returns:
-        User | None: Updated user object.
+        User: Updated user object.
 
     """
     return await user_service.update_by_id(id_=user.id, item=user_data)

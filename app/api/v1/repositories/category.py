@@ -9,7 +9,8 @@ from motor.motor_asyncio import AsyncIOMotorClientSession
 from app.api.v1.constants import ProductParameterTypesEnum
 from app.api.v1.repositories import BaseRepository
 from app.api.v1.repositories.category_parameters import CategoryParametersRepository
-from app.constants import HTTPErrorMessagesEnum, ProjectionValuesEnum, SortingTypesEnum
+from app.constants import ProjectionValuesEnum, SortingTypesEnum
+from app.exceptions import EntityIsNotFoundError
 from app.services.mongo.constants import MongoCollectionsEnum
 from app.services.mongo.service import MongoDBService
 
@@ -209,11 +210,7 @@ class CategoryRepository(BaseRepository):
         category = await self.get_by_id(id_=id_, session=session)
 
         if category is None:
-            raise ValueError(
-                HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
-                    entity="Category"
-                )
-            )
+            raise EntityIsNotFoundError
 
         parameters = category["parameters"]
 

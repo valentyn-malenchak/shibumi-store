@@ -9,6 +9,7 @@ from fastapi import BackgroundTasks, Depends
 from app.api.v1.models.category import CategoriesFilterModel, Category
 from app.api.v1.repositories.category import CategoryRepository
 from app.api.v1.services import BaseService
+from app.exceptions import EntityIsNotFoundError
 from app.services.mongo.transaction_manager import TransactionManager
 from app.services.redis.service import RedisService
 
@@ -71,20 +72,26 @@ class CategoryService(BaseService):
         """
         return await self.repository.count(path=filter_.path, leafs=filter_.leafs)
 
-    async def get_by_id(self, id_: ObjectId) -> Category | None:
+    async def get_by_id(self, id_: ObjectId) -> Category:
         """Retrieves a category by its unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the category.
 
         Returns:
-            Category | None: The retrieved category or None if not found.
+            Category: The retrieved category.
+
+        Raises:
+            EntityIsNotFoundError: If case category is not found.
 
         """
 
         category = await self.repository.get_by_id(id_=id_)
 
-        return Category(**category) if category is not None else None
+        if category is None:
+            raise EntityIsNotFoundError
+
+        return Category(**category)
 
     async def create(self, item: Any) -> Any:
         """Creates a new category.

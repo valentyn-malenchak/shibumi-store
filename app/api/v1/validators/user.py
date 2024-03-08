@@ -11,6 +11,7 @@ from app.api.v1.models.user import CurrentUserModel, User
 from app.api.v1.services.user import UserService
 from app.api.v1.validators import BaseValidator
 from app.constants import HTTPErrorMessagesEnum
+from app.exceptions import EntityIsNotFoundError
 
 
 class BaseUserValidator(BaseValidator):
@@ -82,14 +83,13 @@ class UserIdValidator(BaseUserValidator):
 
         """
 
-        user = await self.user_service.get_by_id(id_=user_id)
+        try:
+            user = await self.user_service.get_by_id(id_=user_id)
 
-        if user is None:
+        except EntityIsNotFoundError:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
-                    entity="User"
-                ),
+                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="User"),  # type: ignore
             )
 
         return user
@@ -112,12 +112,13 @@ class UsernameValidator(BaseUserValidator):
 
         """
 
-        user = await self.user_service.get_by_username(username=username)
+        try:
+            user = await self.user_service.get_by_username(username=username)
 
-        if user is None:
+        except EntityIsNotFoundError:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
                     entity="User"
                 ),
             )
@@ -145,7 +146,7 @@ class UserStatusValidator(BaseUserValidator):
         if user.deleted is True:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
                     entity="User"
                 ),
             )

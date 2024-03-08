@@ -10,6 +10,7 @@ from app.api.v1.models.category import Category
 from app.api.v1.services.category import CategoryService
 from app.api.v1.validators import BaseValidator
 from app.constants import HTTPErrorMessagesEnum
+from app.exceptions import EntityIsNotFoundError
 
 
 class BaseCategoryValidator(BaseValidator):
@@ -58,12 +59,13 @@ class CategoryIdValidator(BaseCategoryValidator):
 
         """
 
-        category = await self.category_service.get_by_id(id_=category_id)
+        try:
+            category = await self.category_service.get_by_id(id_=category_id)
 
-        if category is None:
+        except EntityIsNotFoundError:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
                     entity="Category"
                 ),
             )

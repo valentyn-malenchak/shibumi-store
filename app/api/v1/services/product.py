@@ -16,6 +16,7 @@ from app.api.v1.models.product import (
 from app.api.v1.repositories.product import ProductRepository
 from app.api.v1.services import BaseService
 from app.api.v1.services.category import CategoryService
+from app.exceptions import EntityIsNotFoundError
 from app.services.mongo.transaction_manager import TransactionManager
 from app.services.redis.service import RedisService
 
@@ -102,29 +103,35 @@ class ProductService(BaseService):
             parameters=filter_.parameters,
         )
 
-    async def get_by_id(self, id_: ObjectId) -> Product | None:
+    async def get_by_id(self, id_: ObjectId) -> Product:
         """Retrieves a product by its unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the product.
 
         Returns:
-            Product | None: The retrieved product or None if not found.
+            Product: The retrieved product.
+
+        Raises:
+            EntityIsNotFoundError: If case product is not found.
 
         """
 
         product = await self.repository.get_by_id(id_=id_)
 
-        return Product(**product) if product is not None else None
+        if product is None:
+            raise EntityIsNotFoundError
 
-    async def create(self, item: CreateProductRequestModel) -> Product | None:
+        return Product(**product)
+
+    async def create(self, item: CreateProductRequestModel) -> Product:
         """Creates a new product.
 
         Args:
             item (CreateProductRequestModel): The data for the new product.
 
         Returns:
-            Product | None: The created product.
+            Product: The created product.
 
         """
 

@@ -22,7 +22,7 @@ from app.api.v1.models.user import CurrentUserModel
 from app.api.v1.services.role import RoleService
 from app.api.v1.services.user import UserService
 from app.constants import HTTPErrorMessagesEnum
-from app.exceptions import ExpiredTokenError, InvalidTokenError
+from app.exceptions import EntityIsNotFoundError, ExpiredTokenError, InvalidTokenError
 
 
 class Authentication:
@@ -49,12 +49,17 @@ class Authentication:
 
         """
 
-        user = await user_service.get_by_username(username=form_data.username)
+        try:
+            user = await user_service.get_by_username(username=form_data.username)
 
-        if (
-            user is None
-            or user.deleted is True
-            or not Password.verify_password(form_data.password, user.hashed_password)
+        except EntityIsNotFoundError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=HTTPErrorMessagesEnum.INCORRECT_CREDENTIALS,
+            )
+
+        if user.deleted is True or not Password.verify_password(
+            form_data.password, user.hashed_password
         ):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -155,9 +160,16 @@ class BaseAuthorization(abc.ABC):
 
         """
 
-        user = await user_service.get_by_id(id_=ObjectId(token_data.id))
+        try:
+            user = await user_service.get_by_id(id_=ObjectId(token_data.id))
 
-        if user is None or user.deleted is True:
+        except EntityIsNotFoundError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=HTTPErrorMessagesEnum.NOT_AUTHORIZED,
+            )
+
+        if user.deleted is True:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail=HTTPErrorMessagesEnum.NOT_AUTHORIZED,
