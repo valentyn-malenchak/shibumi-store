@@ -645,7 +645,7 @@ class TestUser(BaseAPITest):
 
         assert response.status_code == status.HTTP_409_CONFLICT
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_FIELD_UNIQUENESS.value.format(
+            "detail": HTTPErrorMessagesEnum.ENTITY_FIELD_UNIQUENESS.format(  # type: ignore
                 entity="User", field="username"
             )
         }
@@ -1009,7 +1009,7 @@ class TestUser(BaseAPITest):
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
                 entity="User"
             )
         }
@@ -1164,7 +1164,7 @@ class TestUser(BaseAPITest):
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
                 entity="User"
             )
         }
@@ -1299,7 +1299,7 @@ class TestUser(BaseAPITest):
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
                 entity="User"
             )
         }
@@ -1684,7 +1684,7 @@ class TestUser(BaseAPITest):
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
                 entity="User"
             )
         }
@@ -1764,7 +1764,7 @@ class TestUser(BaseAPITest):
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
                 entity="User"
             )
         }
@@ -1784,7 +1784,7 @@ class TestUser(BaseAPITest):
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
                 entity="User"
             )
         }
@@ -1848,7 +1848,7 @@ class TestUser(BaseAPITest):
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
                 entity="User"
             )
         }
@@ -1872,7 +1872,7 @@ class TestUser(BaseAPITest):
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
                 entity="User"
             )
         }
@@ -1978,7 +1978,7 @@ class TestUser(BaseAPITest):
         )
 
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
                 entity="User"
             )
         }
@@ -1997,7 +1997,7 @@ class TestUser(BaseAPITest):
         )
 
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
                 entity="User"
             )
         }
@@ -2077,7 +2077,7 @@ class TestUser(BaseAPITest):
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
                 entity="User"
             )
         }
@@ -2100,7 +2100,7 @@ class TestUser(BaseAPITest):
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
                 entity="User"
             )
         }

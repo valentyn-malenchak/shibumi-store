@@ -25,6 +25,7 @@ from app.api.v1.models.user import (
 from app.api.v1.repositories.user import UserRepository
 from app.api.v1.services import BaseService
 from app.constants import HTTPErrorMessagesEnum
+from app.exceptions import EntityIsNotFoundError
 from app.services.mongo.transaction_manager import TransactionManager
 from app.services.redis.service import RedisService
 from app.services.send_grid.service import SendGridService
@@ -111,44 +112,56 @@ class UserService(BaseService):
             deleted=filter_.deleted,
         )
 
-    async def get_by_id(self, id_: ObjectId) -> User | None:
-        """Retrieves an item by its unique identifier.
+    async def get_by_id(self, id_: ObjectId) -> User:
+        """Retrieves a user by its unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the item.
 
         Returns:
-            User | None: User object or None.
+            User: User object.
+
+        Raises:
+            EntityIsNotFoundError: If case user is not found.
 
         """
 
         user = await self.repository.get_by_id(id_=id_)
 
-        return User(**user) if user is not None else None
+        if user is None:
+            raise EntityIsNotFoundError
 
-    async def get_by_username(self, username: str) -> User | None:
-        """Retrieves an item by its username.
+        return User(**user)
+
+    async def get_by_username(self, username: str) -> User:
+        """Retrieves a user by its username.
 
         Args:
             username (str): Username.
 
         Returns:
-            User | None: User object or None.
+            User: User object.
+
+        Raises:
+            EntityIsNotFoundError: If case user is not found.
 
         """
 
         user = await self.repository.get_by_username(username=username)
 
-        return User(**user) if user is not None else None
+        if user is None:
+            raise EntityIsNotFoundError
 
-    async def create(self, item: CreateUserRequestModel) -> User | None:
+        return User(**user)
+
+    async def create(self, item: CreateUserRequestModel) -> User:
         """Creates a new user.
 
         Args:
             item (CreateUserRequestModel): The data for the new user.
 
         Returns:
-            User | None: The created user.
+            User: The created user.
 
         """
 
@@ -172,20 +185,18 @@ class UserService(BaseService):
         except DuplicateKeyError:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=HTTPErrorMessagesEnum.ENTITY_FIELD_UNIQUENESS.value.format(
+                detail=HTTPErrorMessagesEnum.ENTITY_FIELD_UNIQUENESS.format(  # type: ignore
                     entity="User", field="username"
                 ),
             )
 
         user = await self.get_by_id(id_=id_)
 
-        await self.request_verify_email(user=user)  # type: ignore
+        await self.request_verify_email(user=user)
 
         return user
 
-    async def update_by_id(
-        self, id_: ObjectId, item: UpdateUserRequestModel
-    ) -> User | None:
+    async def update_by_id(self, id_: ObjectId, item: UpdateUserRequestModel) -> User:
         """Updates a user by its unique identifier.
 
         Args:
@@ -193,7 +204,7 @@ class UserService(BaseService):
             item (Any): Data to update user.
 
         Returns:
-            User | None: The updated user.
+            User: The updated user.
 
         """
 
@@ -267,7 +278,7 @@ class UserService(BaseService):
         token = VerificationToken.generate()
 
         self.redis_service.set(
-            name=RedisNamesEnum.RESET_PASSWORD.value.format(user_id=user.id),
+            name=RedisNamesEnum.RESET_PASSWORD.format(user_id=user.id),  # type: ignore
             value=token.hash(),
             ttl=RedisNamesTTLEnum.RESET_PASSWORD,
         )
@@ -276,7 +287,7 @@ class UserService(BaseService):
             self.send_grid_service.send,
             to_emails=user.email,
             subject=EmailSubjectsEnum.RESET_PASSWORD,
-            plain_text_content=EmailTextEnum.RESET_PASSWORD.value.format(
+            plain_text_content=EmailTextEnum.RESET_PASSWORD.format(  # type: ignore
                 token=token.value
             ),
         )
@@ -294,7 +305,7 @@ class UserService(BaseService):
         hashed_token = VerificationToken(token).hash()
 
         cached_token = self.redis_service.get(
-            name=RedisNamesEnum.RESET_PASSWORD.value.format(user_id=id_)
+            name=RedisNamesEnum.RESET_PASSWORD.format(user_id=id_)  # type: ignore
         )
 
         if cached_token is None or cached_token != hashed_token:
@@ -306,7 +317,7 @@ class UserService(BaseService):
         await self.update_password(id_=id_, password=password)
 
         self.redis_service.delete(
-            name=RedisNamesEnum.RESET_PASSWORD.value.format(user_id=id_)
+            name=RedisNamesEnum.RESET_PASSWORD.format(user_id=id_)  # type: ignore
         )
 
     async def request_verify_email(self, user: User) -> None:
@@ -320,7 +331,7 @@ class UserService(BaseService):
         token = VerificationToken.generate()
 
         self.redis_service.set(
-            name=RedisNamesEnum.EMAIL_VERIFICATION.value.format(user_id=user.id),
+            name=RedisNamesEnum.EMAIL_VERIFICATION.format(user_id=user.id),  # type: ignore
             value=token.hash(),
             ttl=RedisNamesTTLEnum.EMAIL_VERIFICATION,
         )
@@ -329,7 +340,7 @@ class UserService(BaseService):
             self.send_grid_service.send,
             to_emails=user.email,
             subject=EmailSubjectsEnum.EMAIL_VERIFICATION,
-            plain_text_content=EmailTextEnum.EMAIL_VERIFICATION.value.format(
+            plain_text_content=EmailTextEnum.EMAIL_VERIFICATION.format(  # type: ignore
                 token=token.value
             ),
         )
@@ -346,7 +357,7 @@ class UserService(BaseService):
         hashed_token = VerificationToken(token).hash()
 
         cached_token = self.redis_service.get(
-            name=RedisNamesEnum.EMAIL_VERIFICATION.value.format(user_id=id_)
+            name=RedisNamesEnum.EMAIL_VERIFICATION.format(user_id=id_)  # type: ignore
         )
 
         if cached_token is None or cached_token != hashed_token:
@@ -358,5 +369,5 @@ class UserService(BaseService):
         await self._update_email_verified(id_=id_)
 
         self.redis_service.delete(
-            name=RedisNamesEnum.EMAIL_VERIFICATION.value.format(user_id=id_)
+            name=RedisNamesEnum.EMAIL_VERIFICATION.format(user_id=id_)  # type: ignore
         )

@@ -330,7 +330,7 @@ class TestProduct(BaseAPITest):
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
                 entity="Category"
             )
         }
@@ -435,28 +435,28 @@ class TestProduct(BaseAPITest):
             (
                 "invalid_type",
                 ["body", "parameters", "vram"],
-                ValidationErrorMessagesEnum.INVALID_FIELD_TYPE.value.format(
+                ValidationErrorMessagesEnum.INVALID_FIELD_TYPE.format(  # type: ignore
                     type_="str"
                 ),
             ),
             (
                 "invalid_type",
                 ["body", "parameters", "ram"],
-                ValidationErrorMessagesEnum.INVALID_FIELD_TYPE.value.format(
+                ValidationErrorMessagesEnum.INVALID_FIELD_TYPE.format(  # type: ignore
                     type_="str"
                 ),
             ),
             (
                 "invalid_type",
                 ["body", "parameters", "ram_slots"],
-                ValidationErrorMessagesEnum.INVALID_FIELD_TYPE.value.format(
+                ValidationErrorMessagesEnum.INVALID_FIELD_TYPE.format(  # type: ignore
                     type_="int"
                 ),
             ),
             (
                 "invalid_type",
                 ["body", "parameters", "class"],
-                ValidationErrorMessagesEnum.INVALID_FIELD_TYPE.value.format(
+                ValidationErrorMessagesEnum.INVALID_FIELD_TYPE.format(  # type: ignore
                     type_="list"
                 ),
             ),
@@ -748,7 +748,7 @@ class TestProduct(BaseAPITest):
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
                 entity="Product"
             )
         }

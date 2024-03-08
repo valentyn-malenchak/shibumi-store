@@ -12,6 +12,7 @@ from app.api.v1.services.product import ProductService
 from app.api.v1.validators import BaseValidator
 from app.api.v1.validators.category import LeafCategoryValidator
 from app.constants import HTTPErrorMessagesEnum, ValidationErrorMessagesEnum
+from app.exceptions import EntityIsNotFoundError
 
 
 class BaseProductValidator(BaseValidator):
@@ -120,7 +121,7 @@ class ProductParametersValidator(BaseProductValidator):
                             "parameters",
                             parameter.machine_name,
                         ],
-                        "msg": ValidationErrorMessagesEnum.INVALID_FIELD_TYPE.value.format(  # noqa: E501
+                        "msg": ValidationErrorMessagesEnum.INVALID_FIELD_TYPE.format(  # type: ignore # noqa: E501
                             type_=type_.value.__name__
                         ),
                         "input": value,
@@ -152,12 +153,13 @@ class ProductIdValidator(BaseProductValidator):
 
         """
 
-        product = await self.product_service.get_by_id(id_=product_id)
+        try:
+            product = await self.product_service.get_by_id(id_=product_id)
 
-        if product is None:
+        except EntityIsNotFoundError:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.value.format(
+                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
                     entity="Product"
                 ),
             )

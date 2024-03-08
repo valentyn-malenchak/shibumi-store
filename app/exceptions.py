@@ -11,3 +11,7 @@ class ExpiredTokenError(AppExceptionError):
 
 class InvalidTokenError(AppExceptionError):
     """Invalid JWT exception."""
+
+
+class EntityIsNotFoundError(AppExceptionError):
+    """Entity is not found error."""

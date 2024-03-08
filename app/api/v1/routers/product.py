@@ -37,7 +37,7 @@ async def create_product(
     ),
     product_data: CreateProductRequestModel = Depends(CreateProductDependency()),
     product_service: ProductService = Depends(),
-) -> Product | None:
+) -> Product:
     """API which creates a new product.
 
     Args:
@@ -46,7 +46,7 @@ async def create_product(
         product_service (ProductService): Product service.
 
     Returns:
-        Product | None: Created product object.
+        Product: Created product object.
 
     """
     return await product_service.create(item=product_data)
