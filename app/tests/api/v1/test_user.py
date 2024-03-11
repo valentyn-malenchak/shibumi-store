@@ -1,13 +1,14 @@
 """Module that contains tests for user routes."""
 
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 from fastapi import status
 from freezegun import freeze_time
 from httpx import AsyncClient
 from jose import ExpiredSignatureError
-from tenacity import wait_none
+from sendgrid import SendGridException  # type: ignore
+from tenacity import RetryError, wait_none
 
 from app.api.v1.constants import RolesEnum
 from app.constants import (
@@ -153,11 +154,12 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("redis.Redis.setex", lambda *args, **kwargs: None)
-    @patch("sendgrid.SendGridAPIClient.send", lambda *args, **kwargs: None)
     @freeze_time(FROZEN_DATETIME)
     async def test_create_user_unauthenticated_user_creates_customer_user(
-        self, test_client: AsyncClient
+        self,
+        test_client: AsyncClient,
+        redis_setex_mock: MagicMock,
+        send_grid_send_mock: MagicMock,
     ) -> None:
         """Test create user in case unauthenticated user creates customer."""
 
@@ -175,6 +177,9 @@ class TestUser(BaseAPITest):
                 "roles": [RolesEnum.CUSTOMER],
             },
         )
+
+        redis_setex_mock.assert_called_once()
+        send_grid_send_mock.assert_called_once()
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self._exclude_fields(response.json(), exclude_keys=["id"]) == {
@@ -221,11 +226,13 @@ class TestUser(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    @patch("redis.Redis.setex", lambda *args, **kwargs: None)
-    @patch("sendgrid.SendGridAPIClient.send", lambda *args, **kwargs: None)
     @freeze_time(FROZEN_DATETIME)
     async def test_create_user_shop_side_user_creates_multi_role_user(
-        self, test_client: AsyncClient, arrange_db: None
+        self,
+        test_client: AsyncClient,
+        arrange_db: None,
+        redis_setex_mock: MagicMock,
+        send_grid_send_mock: MagicMock,
     ) -> None:
         """Test create user in case shop side user creates multi-role user."""
 
@@ -249,6 +256,9 @@ class TestUser(BaseAPITest):
                 ],
             },
         )
+
+        redis_setex_mock.assert_called_once()
+        send_grid_send_mock.assert_called_once()
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self._exclude_fields(response.json(), exclude_keys=["id"]) == {
@@ -1739,16 +1749,21 @@ class TestUser(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    @patch("redis.Redis.setex", lambda *args, **kwargs: None)
-    @patch("sendgrid.SendGridAPIClient.send", lambda *args, **kwargs: None)
     async def test_request_reset_user_password(
-        self, test_client: AsyncClient, arrange_db: None
+        self,
+        test_client: AsyncClient,
+        arrange_db: None,
+        redis_setex_mock: MagicMock,
+        send_grid_send_mock: MagicMock,
     ) -> None:
         """Test request reset user password."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/users/john.smith/reset-password/"
         )
+
+        redis_setex_mock.assert_called_once()
+        send_grid_send_mock.assert_called_once()
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
@@ -1793,32 +1808,45 @@ class TestUser(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    @patch("redis.Redis.setex", lambda *args, **kwargs: None)
-    @patch("sendgrid.SendGridAPIClient.send", Mock(side_effect=Exception()))
-    async def test_request_reset_user_password_send_grid_error(
+    @pytest.mark.parametrize(
+        "send_grid_send_mock", [SendGridException()], indirect=True
+    )
+    async def test_request_reset_user_password_send_grid_error(  # noqa: PLR0913
         self,
         monkeypatch: pytest.MonkeyPatch,
         test_client: AsyncClient,
         arrange_db: None,
+        redis_setex_mock: MagicMock,
+        send_grid_send_mock: MagicMock,
     ) -> None:
         """Test request reset user password in case some error in SendGrid."""
 
         # Skip waiting between attempts
         monkeypatch.setattr(SendGridService.send.retry, "wait", wait_none())  # type: ignore
 
-        with pytest.raises(Exception):
+        with pytest.raises(RetryError):
             await test_client.post(
                 f"{AppConstants.API_V1_PREFIX}/users/john.smith/reset-password/"
             )
+
+        redis_setex_mock.assert_called_once()
+        assert send_grid_send_mock.call_count == 3  # noqa: PLR2004
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    @patch("redis.Redis.get", lambda *args, **kwargs: REDIS_VERIFICATION_TOKEN)
-    @patch("redis.Redis.delete", lambda *args, **kwargs: None)
+    @pytest.mark.parametrize(
+        "redis_get_mock",
+        [REDIS_VERIFICATION_TOKEN],
+        indirect=True,
+    )
     async def test_reset_user_password(
-        self, test_client: AsyncClient, arrange_db: None
+        self,
+        test_client: AsyncClient,
+        arrange_db: None,
+        redis_get_mock: MagicMock,
+        redis_delete_mock: MagicMock,
     ) -> None:
         """Test reset user password."""
 
@@ -1829,6 +1857,9 @@ class TestUser(BaseAPITest):
                 "new_password": "J0hn1234!@~",
             },
         )
+
+        redis_get_mock.assert_called_once()
+        redis_delete_mock.assert_called_once()
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
@@ -1908,9 +1939,8 @@ class TestUser(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    @patch("redis.Redis.get", lambda *args, **kwargs: None)
     async def test_reset_user_password_token_is_expired(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, arrange_db: None, redis_get_mock: MagicMock
     ) -> None:
         """Test reset user password in case token is expired."""
 
@@ -1922,6 +1952,8 @@ class TestUser(BaseAPITest):
             },
         )
 
+        redis_get_mock.assert_called_once()
+
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == {
             "detail": HTTPErrorMessagesEnum.INVALID_RESET_PASSWORD_TOKEN
@@ -1931,9 +1963,13 @@ class TestUser(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    @patch("redis.Redis.get", lambda *args, **kwargs: REDIS_VERIFICATION_TOKEN)
+    @pytest.mark.parametrize(
+        "redis_get_mock",
+        [REDIS_VERIFICATION_TOKEN],
+        indirect=True,
+    )
     async def test_reset_user_password_token_is_invalid(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, arrange_db: None, redis_get_mock: MagicMock
     ) -> None:
         """Test reset user password in case token is invalid."""
 
@@ -1945,6 +1981,8 @@ class TestUser(BaseAPITest):
             },
         )
 
+        redis_get_mock.assert_called_once()
+
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == {
             "detail": HTTPErrorMessagesEnum.INVALID_RESET_PASSWORD_TOKEN
@@ -1954,16 +1992,21 @@ class TestUser(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    @patch("redis.Redis.setex", lambda *args, **kwargs: None)
-    @patch("sendgrid.SendGridAPIClient.send", lambda *args, **kwargs: None)
     async def test_request_verify_user_email(
-        self, test_client: AsyncClient, arrange_db: None
+        self,
+        test_client: AsyncClient,
+        arrange_db: None,
+        redis_setex_mock: MagicMock,
+        send_grid_send_mock: MagicMock,
     ) -> None:
         """Test request verify user email."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/users/lila.legro/verify-email/"
         )
+
+        redis_setex_mock.assert_called_once()
+        send_grid_send_mock.assert_called_once()
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
@@ -2024,32 +2067,45 @@ class TestUser(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    @patch("redis.Redis.setex", lambda *args, **kwargs: None)
-    @patch("sendgrid.SendGridAPIClient.send", Mock(side_effect=Exception()))
-    async def test_request_verify_user_email_send_grid_error(
+    @pytest.mark.parametrize(
+        "send_grid_send_mock", [SendGridException()], indirect=True
+    )
+    async def test_request_verify_user_email_send_grid_error(  # noqa: PLR0913
         self,
         monkeypatch: pytest.MonkeyPatch,
         test_client: AsyncClient,
         arrange_db: None,
+        redis_setex_mock: MagicMock,
+        send_grid_send_mock: MagicMock,
     ) -> None:
         """Test request verify user email in case some error in SendGrid."""
 
         # Skip waiting between attempts
         monkeypatch.setattr(SendGridService.send.retry, "wait", wait_none())  # type: ignore
 
-        with pytest.raises(Exception):
+        with pytest.raises(RetryError):
             await test_client.post(
                 f"{AppConstants.API_V1_PREFIX}/users/lila.legro/verify-email/"
             )
+
+        redis_setex_mock.assert_called_once()
+        assert send_grid_send_mock.call_count == 3  # noqa: PLR2004
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    @patch("redis.Redis.get", lambda *args, **kwargs: REDIS_VERIFICATION_TOKEN)
-    @patch("redis.Redis.delete", lambda *args, **kwargs: None)
+    @pytest.mark.parametrize(
+        "redis_get_mock",
+        [REDIS_VERIFICATION_TOKEN],
+        indirect=True,
+    )
     async def test_verify_user_email(
-        self, test_client: AsyncClient, arrange_db: None
+        self,
+        test_client: AsyncClient,
+        arrange_db: None,
+        redis_get_mock: MagicMock,
+        redis_delete_mock: MagicMock,
     ) -> None:
         """Test verify user email."""
 
@@ -2059,6 +2115,9 @@ class TestUser(BaseAPITest):
                 "token": "U66kv5LtukldDDSANUeAefQmjmeZuIcxC2lwiMUK6ec",
             },
         )
+
+        redis_get_mock.assert_called_once()
+        redis_delete_mock.assert_called_once()
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
@@ -2152,9 +2211,8 @@ class TestUser(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    @patch("redis.Redis.get", lambda *args, **kwargs: None)
     async def test_verify_user_email_token_is_expired(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, arrange_db: None, redis_get_mock: MagicMock
     ) -> None:
         """Test verify user email in case token is expired."""
 
@@ -2165,6 +2223,8 @@ class TestUser(BaseAPITest):
             },
         )
 
+        redis_get_mock.assert_called_once()
+
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == {
             "detail": HTTPErrorMessagesEnum.INVALID_EMAIL_VERIFICATION_TOKEN
@@ -2174,9 +2234,13 @@ class TestUser(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    @patch("redis.Redis.get", lambda *args, **kwargs: REDIS_VERIFICATION_TOKEN)
+    @pytest.mark.parametrize(
+        "redis_get_mock",
+        [REDIS_VERIFICATION_TOKEN],
+        indirect=True,
+    )
     async def test_verify_user_email_token_is_invalid(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, arrange_db: None, redis_get_mock: MagicMock
     ) -> None:
         """Test verify user email in case token is invalid."""
 
@@ -2186,6 +2250,8 @@ class TestUser(BaseAPITest):
                 "token": "U66kv5LtukldDDSANUe",
             },
         )
+
+        redis_get_mock.assert_called_once()
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == {
