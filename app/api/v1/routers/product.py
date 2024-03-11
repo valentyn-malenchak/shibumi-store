@@ -8,15 +8,15 @@ from fastapi import APIRouter, Depends, Security, status
 from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
 from app.api.v1.dependencies.product import (
-    CreateProductDependency,
     GetProductDependency,
+    ProductDataDependency,
     ProductsFilterDependency,
 )
 from app.api.v1.models import PaginationModel, SearchModel, SortingModel
 from app.api.v1.models.product import (
-    CreateProductRequestModel,
     ExtendedProductResponseModel,
     Product,
+    ProductRequestModel,
     ProductsFilterModel,
     ProductsListModel,
 )
@@ -35,21 +35,21 @@ async def create_product(
     _: CurrentUserModel = Security(
         StrictAuthorization(), scopes=[ScopesEnum.PRODUCTS_CREATE_PRODUCT.name]
     ),
-    product_data: CreateProductRequestModel = Depends(CreateProductDependency()),
+    product_data: ProductRequestModel = Depends(ProductDataDependency()),
     product_service: ProductService = Depends(),
 ) -> Product:
     """API which creates a new product.
 
     Args:
         _ (CurrentUserModel): Current user object.
-        product_data (CreateProductRequestModel): New product data.
+        product_data (ProductRequestModel): New product data.
         product_service (ProductService): Product service.
 
     Returns:
         Product: Created product object.
 
     """
-    return await product_service.create(item=product_data)
+    return await product_service.create(data=product_data)
 
 
 @router.get("/", response_model=ProductsListModel, status_code=status.HTTP_200_OK)
@@ -108,3 +108,31 @@ async def get_product(
 
     """
     return product
+
+
+@router.patch(
+    "/{product_id}/",
+    response_model=ExtendedProductResponseModel,
+    status_code=status.HTTP_200_OK,
+)
+async def update_product(
+    _: CurrentUserModel = Security(
+        StrictAuthorization(), scopes=[ScopesEnum.PRODUCTS_UPDATE_PRODUCT.name]
+    ),
+    product: Product = Depends(GetProductDependency()),
+    product_data: ProductRequestModel = Depends(ProductDataDependency()),
+    product_service: ProductService = Depends(),
+) -> Product:
+    """API which updates a product.
+
+    Args:
+        _ (CurrentUserModel): Current user object.
+        product (Product): Product object.
+        product_data (ProductRequestModel): Product data to update.
+        product_service (ProductService): Product service.
+
+    Returns:
+        Product: Updated product object.
+
+    """
+    return await product_service.update(item=product, data=product_data)

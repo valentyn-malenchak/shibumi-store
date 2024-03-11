@@ -272,7 +272,7 @@ class CategoryRepository(BaseRepository):
 
             await self.category_parameters_repository.update_by_id(
                 id_=category_parameters["_id"],
-                item=category_parameters,
+                data=category_parameters,
                 upsert=True,
                 session=session,
             )

@@ -35,9 +35,10 @@ class ScopesEnum(Enum):
     CATEGORIES_GET_CATEGORY = "Allows to get category."
     CATEGORIES_GET_CATEGORY_PARAMETERS = "Allows to get calculated category parameters."
 
-    PRODUCTS_CREATE_PRODUCT = "Allows to create a new product."
     PRODUCTS_GET_PRODUCTS = "Allows to get products list."
     PRODUCTS_GET_PRODUCT = "Allows to get product."
+    PRODUCTS_CREATE_PRODUCT = "Allows to create a new product."
+    PRODUCTS_UPDATE_PRODUCT = "Allows to update product."
 
 
 class RedisNamesEnum(StrEnum):

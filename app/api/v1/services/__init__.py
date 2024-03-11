@@ -94,11 +94,11 @@ class BaseService(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def create(self, item: Any) -> Any:
+    async def create(self, data: Any) -> Any:
         """Creates a new item.
 
         Args:
-            item (Any): The data for the new item.
+            data (Any): The data for the new item.
 
         Returns:
             Any: The created item.
@@ -110,12 +110,29 @@ class BaseService(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def update_by_id(self, id_: ObjectId, item: Any) -> Any:
+    async def update(self, item: Any, data: Any) -> Any:
+        """Updates an item by its unique identifier.
+
+        Args:
+            item (Any): Current item object.
+            data (Any): Data to update item.
+
+        Returns:
+            Any: The updated item.
+
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses.
+
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def update_by_id(self, id_: ObjectId, data: Any) -> Any:
         """Updates an item by its unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the item.
-            item (Any): Data to update item.
+            data (Any): Data to update item.
 
         Returns:
             Any: The updated item.

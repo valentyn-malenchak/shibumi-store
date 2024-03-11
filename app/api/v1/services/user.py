@@ -154,28 +154,27 @@ class UserService(BaseService):
 
         return User(**user)
 
-    async def create(self, item: CreateUserRequestModel) -> User:
+    async def create(self, data: CreateUserRequestModel) -> User:
         """Creates a new user.
 
         Args:
-            item (CreateUserRequestModel): The data for the new user.
+            data (CreateUserRequestModel): The data for the new user.
 
         Returns:
             User: The created user.
 
         """
 
-        password = Password.get_password_hash(password=item.password)
+        password = Password.get_password_hash(password=data.password)
 
         try:
             id_ = await self.repository.create(
-                item={
+                data={
                     # Replaces plain password on hashed one
-                    **item.model_dump(exclude={"password", "roles"}),
+                    **data.model_dump(exclude={"password"}),
                     "email_verified": False,
                     "hashed_password": password,
-                    "birthdate": arrow.get(item.birthdate).datetime,
-                    "roles": item.roles,
+                    "birthdate": arrow.get(data.birthdate).datetime,
                     "deleted": False,
                     "created_at": arrow.utcnow().datetime,
                     "updated_at": None,
@@ -196,12 +195,28 @@ class UserService(BaseService):
 
         return user
 
-    async def update_by_id(self, id_: ObjectId, item: UpdateUserRequestModel) -> User:
+    async def update(self, item: Any, data: Any) -> Any:
+        """Updates a user object.
+
+        Args:
+            item (Any): User object.
+            data (Any): Data to update user.
+
+        Returns:
+            Any: The updated user.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
+    async def update_by_id(self, id_: ObjectId, data: UpdateUserRequestModel) -> User:
         """Updates a user by its unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the user.
-            item (Any): Data to update user.
+            data (Any): Data to update user.
 
         Returns:
             User: The updated user.
@@ -210,10 +225,9 @@ class UserService(BaseService):
 
         await self.repository.update_by_id(
             id_=id_,
-            item={
-                **item.model_dump(exclude={"roles"}),
-                "roles": item.roles,
-                "birthdate": arrow.get(item.birthdate).datetime,
+            data={
+                **data.model_dump(),
+                "birthdate": arrow.get(data.birthdate).datetime,
                 "updated_at": arrow.utcnow().datetime,
             },
         )
@@ -233,7 +247,7 @@ class UserService(BaseService):
 
         await self.repository.update_by_id(
             id_=id_,
-            item={
+            data={
                 "hashed_password": password,
                 "updated_at": arrow.utcnow().datetime,
             },
@@ -249,7 +263,7 @@ class UserService(BaseService):
 
         await self.repository.update_by_id(
             id_=id_,
-            item={
+            data={
                 "email_verified": True,
                 "updated_at": arrow.utcnow().datetime,
             },
@@ -264,7 +278,7 @@ class UserService(BaseService):
         """
 
         await self.repository.update_by_id(
-            id_=id_, item={"deleted": True, "updated_at": arrow.utcnow().datetime}
+            id_=id_, data={"deleted": True, "updated_at": arrow.utcnow().datetime}
         )
 
     async def request_reset_password(self, user: User) -> None:

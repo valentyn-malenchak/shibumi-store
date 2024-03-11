@@ -10,8 +10,8 @@ from app.api.v1.constants import ProductParameterTypesEnum
 from app.api.v1.models import ObjectIdAnnotation
 from app.api.v1.models.product import (
     BaseProductsFilterModel,
-    CreateProductRequestModel,
     Product,
+    ProductRequestModel,
     ProductsFilterModel,
 )
 from app.api.v1.services.parameter import ParameterService
@@ -23,23 +23,23 @@ from app.api.v1.validators.product import (
 )
 
 
-class CreateProductDependency:
-    """Create product dependency."""
+class ProductDataDependency:
+    """Create/update product dependency."""
 
     async def __call__(
         self,
-        product_data: CreateProductRequestModel,
+        product_data: ProductRequestModel,
         product_parameters_validator: ProductParametersValidator = Depends(),
-    ) -> CreateProductRequestModel:
-        """Checks if the product can be created.
+    ) -> ProductRequestModel:
+        """Checks if the product can be created/updated.
 
         Args:
-            product_data (CreateProductRequestModel): New product data.
+            product_data (ProductRequestModel): New product data.
             product_parameters_validator (ProductParametersValidator): Product parameter
             validator.
 
         Returns:
-            CreateProductRequestModel: Product data.
+            ProductRequestModel: Product data.
 
         """
 

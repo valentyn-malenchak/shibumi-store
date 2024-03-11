@@ -99,11 +99,11 @@ class ParameterService(BaseService):
         """
         raise NotImplementedError
 
-    async def create(self, item: Any) -> Any:
+    async def create(self, data: Any) -> Any:
         """Creates a new parameter.
 
         Args:
-            item (Any): The data for the new parameter.
+            data (Any): The data for the new parameter.
 
         Returns:
             Any: The ID of created parameter.
@@ -114,12 +114,28 @@ class ParameterService(BaseService):
         """
         raise NotImplementedError
 
-    async def update_by_id(self, id_: ObjectId, item: Any) -> Any:
+    async def update(self, item: Any, data: Any) -> Any:
+        """Updates a parameter object.
+
+        Args:
+            item (Any): Parameter object.
+            data (Any): Data to update parameter.
+
+        Returns:
+            Any: The updated parameter.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
+    async def update_by_id(self, id_: ObjectId, data: Any) -> Any:
         """Updates a parameter by its unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the parameter.
-            item (Any): Data to update parameter.
+            data (Any): Data to update parameter.
 
         Returns:
             Any: The updated parameter.
