@@ -109,11 +109,11 @@ class RoleService(BaseService):
         """
         return await self.repository.get_scopes_by_roles(roles=roles)
 
-    async def create(self, item: Any) -> Any:
+    async def create(self, data: Any) -> Any:
         """Creates a new role.
 
         Args:
-            item (Any): The data for the new role.
+            data (Any): The data for the new role.
 
         Returns:
             Any: The ID of created role.
@@ -124,12 +124,28 @@ class RoleService(BaseService):
         """
         raise NotImplementedError
 
-    async def update_by_id(self, id_: ObjectId, item: Any) -> Any:
+    async def update(self, item: Any, data: Any) -> Any:
+        """Updates a role object.
+
+        Args:
+            item (Any): Role object.
+            data (Any): Data to update role.
+
+        Returns:
+            Any: The updated role.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
+    async def update_by_id(self, id_: ObjectId, data: Any) -> Any:
         """Updates a role by its unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the role.
-            item (Any): Data to update role.
+            data (Any): Data to update role.
 
         Returns:
             Any: The updated role.

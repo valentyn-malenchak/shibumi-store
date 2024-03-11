@@ -1189,3 +1189,615 @@ class TestProduct(BaseAPITest):
         assert response.json() == {
             "detail": HTTPErrorMessagesEnum.PRODUCTS_NOT_AVAILABLE_ACCESS_DENIED
         }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
+        indirect=True,
+    )
+    @freeze_time(FROZEN_DATETIME)
+    async def test_update_product(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update product."""
+
+        response = await test_client.patch(
+            f"{AppConstants.API_V1_PREFIX}/products/65d22fd0a83d80b9f0bd3e40/",
+            json={
+                "name": "RAVPower Portable Charger 10000mAh",
+                "synopsis": "10000mAh Power Bank with 18W PD and QC 3.0",
+                "description": "Compact and efficient power bank for on-the-go "
+                "charging.",
+                "quantity": 2,
+                "price": 15.99,
+                "category_id": "65d24f2a260fb739c605b2a7",
+                "available": True,
+                "html_body": None,
+                "parameters": {
+                    "brand": "RAVPower",
+                    "year": 2020,
+                    "warranty": "3 year",
+                    "country_of_production": "China",
+                },
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "id": "65d22fd0a83d80b9f0bd3e40",
+            "name": "RAVPower Portable Charger 10000mAh",
+            "synopsis": "10000mAh Power Bank with 18W PD and QC 3.0",
+            "description": "Compact and efficient power bank for on-the-go charging.",
+            "quantity": 2,
+            "price": 15.99,
+            "category_id": "65d24f2a260fb739c605b2a7",
+            "available": True,
+            "html_body": None,
+            "parameters": {
+                "brand": "RAVPower",
+                "year": 2020,
+                "warranty": "3 year",
+                "country_of_production": "China",
+            },
+            "created_at": "2024-02-20T11:30:00",
+            "updated_at": FROZEN_DATETIME,
+        }
+
+        # Check if background task calculates category parameters
+        response = await test_client.get(
+            f"{AppConstants.API_V1_PREFIX}/categories/65d24f2a260fb739c605b2a7/parameters/"
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "id": "65d24f2a260fb739c605b2a7",
+            "brand": ["Anker", "RAVPower", "Samsung", "Xiaomi"],
+            "country_of_production": ["China", "South Korea"],
+            "warranty": ["1 year", "18 months", "2 years", "3 year"],
+            "year": [2020, 2023, 2024],
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [
+            (
+                MongoCollectionsEnum.USERS,
+                MongoCollectionsEnum.PRODUCTS,
+                MongoCollectionsEnum.CATEGORY_PARAMETERS,
+            )
+        ],
+        indirect=True,
+    )
+    @freeze_time(FROZEN_DATETIME)
+    async def test_update_product_update_category(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update product in case category field is updated."""
+
+        response = await test_client.patch(
+            f"{AppConstants.API_V1_PREFIX}/products/6597f143c064f4099808ad26/",
+            json={
+                "name": "RAVPower Portable Charger 10000mAh",
+                "synopsis": "10000mAh Power Bank with 18W PD and QC 3.0",
+                "description": "Compact and efficient power bank for on-the-go "
+                "charging.",
+                "quantity": 2,
+                "price": 15.99,
+                "category_id": "65d24f2a260fb739c605b2a7",
+                "available": True,
+                "html_body": None,
+                "parameters": {
+                    "brand": "RAVPower",
+                    "year": 2020,
+                    "warranty": "3 year",
+                    "country_of_production": "China",
+                },
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "id": "6597f143c064f4099808ad26",
+            "name": "RAVPower Portable Charger 10000mAh",
+            "synopsis": "10000mAh Power Bank with 18W PD and QC 3.0",
+            "description": "Compact and efficient power bank for on-the-go charging.",
+            "quantity": 2,
+            "price": 15.99,
+            "category_id": "65d24f2a260fb739c605b2a7",
+            "available": True,
+            "html_body": None,
+            "parameters": {
+                "brand": "RAVPower",
+                "year": 2020,
+                "warranty": "3 year",
+                "country_of_production": "China",
+            },
+            "created_at": "2024-01-05T12:08:35.440000",
+            "updated_at": FROZEN_DATETIME,
+        }
+
+        # Check if background task calculates "new" category parameters
+        response = await test_client.get(
+            f"{AppConstants.API_V1_PREFIX}/categories/65d24f2a260fb739c605b2a7/parameters/"
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "id": "65d24f2a260fb739c605b2a7",
+            "brand": ["Anker", "RAVPower", "Samsung", "Xiaomi"],
+            "country_of_production": ["China", "South Korea"],
+            "warranty": ["1 year", "18 months", "2 years", "3 year"],
+            "year": [2020, 2023, 2024],
+        }
+
+        # Check if background task recalculates "old" category parameters
+        response = await test_client.get(
+            f"{AppConstants.API_V1_PREFIX}/categories/65d24f2a260fb739c605b28d/parameters/"
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "id": "65d24f2a260fb739c605b28d",
+            "battery_capacity": [
+                "43 watt*hours",
+                "45 watt*hours",
+                "49.9 watt*hours",
+                "56 watt*hours",
+                "58 watt*hours",
+                "68 watt*hours",
+                "70 watt*hours",
+                "80 watt*hours",
+                "86 watt*hours",
+                "99.9 watt*hours",
+            ],
+            "brand": [
+                "Acer",
+                "Alienware",
+                "Apple",
+                "Dell",
+                "HP",
+                "Huawei",
+                "Lenovo",
+                "Microsoft",
+                "MSI",
+                "Razer",
+                "Samsung",
+            ],
+            "class": [
+                "Affordable",
+                "Convertible",
+                "Gaming",
+                "High-Performance",
+                "Multimedia",
+                "Premium",
+                "Ultrabook",
+            ],
+            "color": [
+                "black",
+                "emerald green",
+                "lunar light",
+                "mystic bronze",
+                "platinum",
+                "silver",
+            ],
+            "country_of_production": ["China", "South Korea", "Taiwan"],
+            "cpu": [
+                "AMD Ryzen 7 5700U",
+                "Apple M2 Chip",
+                "Intel Core i5-12400H",
+                "Intel Core i7-11800H",
+                "Intel Core i7-1260U",
+                "Intel Core i7-12700H",
+                "Intel Core i7-12700U",
+                "Intel Core i7-1270U",
+                "Intel Core i9-12900H",
+                "Intel Core i9-12900HK",
+            ],
+            "cpu_cores_number": [8, 12, 14],
+            "graphics_card": [
+                "AMD Radeon Graphics",
+                "Apple Integrated GPU",
+                "GeForce RTX 3050 Ti",
+                "GeForce RTX 3070",
+                "GeForce RTX 3080",
+                "GeForce RTX 3080 Ti",
+                "GeForce RTX 3090",
+                "Intel Iris Xe Graphics",
+                "Intel UHD Graphics",
+                "NVIDIA GeForce MX450",
+            ],
+            "graphics_card_type": ["Discrete", "Integrated"],
+            "has_bluetooth": [True],
+            "has_fingerprint_identification": [False, True],
+            "has_keyboard_backlight": [False, True],
+            "has_touch_screen": [False, True],
+            "has_wifi": [True],
+            "hdd": [None],
+            "hdd_space": [None],
+            "motherboard_chipset": [None],
+            "no_wireless_connection": [False],
+            "os": [
+                "macOS Monterey",
+                "Windows 10 Home",
+                "Windows 11 Home",
+                "Windows 11 Pro",
+            ],
+            "ram": ["12 GB", "16 GB", "32 GB", "64 GB", "8 GB"],
+            "ram_slots": [2, 4],
+            "ram_type": ["DDR4", "DDR5", "LPDDR4X", "LPDDR5"],
+            "screen_refresh_rate": ["120 Hz", "144 Hz", "165 Hz", "240 Hz", "60 Hz"],
+            "screen_resolution": [
+                "1920x1080",
+                "2400x1600",
+                "2560x1440",
+                "2560x1600",
+                "3000x2000",
+                "3840x2160",
+            ],
+            "screen_size": ['13.3"', '14"', '14.4"', '15.6"', '17.3"'],
+            "screen_type": ["IPS", "OLED", "Super AMOLED"],
+            "ssd": ["Apple", "Samsung", "Toshiba", "Western Digital"],
+            "ssd_space": ["1 TB", "2 TB", "256 GB", "512 GB"],
+            "vram": ["16 GB", "2 GB", "4 GB", "8 GB", "Shared"],
+            "warranty": ["1 year", "2 years", "3 years"],
+            "year": [2024],
+        }
+
+    @pytest.mark.asyncio
+    async def test_update_product_no_token(self, test_client: AsyncClient) -> None:
+        """Test update product in case there is no token."""
+
+        response = await test_client.patch(
+            f"{AppConstants.API_V1_PREFIX}/products/6597f143c064f4099808ad26/",
+            json={
+                "name": "RAVPower Portable Charger 10000mAh",
+                "synopsis": "10000mAh Power Bank with 18W PD and QC 3.0",
+                "description": "Compact and efficient power bank for on-the-go "
+                "charging.",
+                "quantity": 2,
+                "price": 15.99,
+                "category_id": "65d24f2a260fb739c605b2a7",
+                "available": True,
+                "html_body": None,
+                "parameters": {
+                    "brand": "RAVPower",
+                    "year": 2020,
+                    "warranty": "3 year",
+                    "country_of_production": "China",
+                },
+            },
+        )
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED}
+
+    @pytest.mark.asyncio
+    async def test_update_product_invalid_token(self, test_client: AsyncClient) -> None:
+        """Test update product in case token is invalid."""
+
+        response = await test_client.patch(
+            f"{AppConstants.API_V1_PREFIX}/products/6597f143c064f4099808ad26/",
+            json={
+                "name": "RAVPower Portable Charger 10000mAh",
+                "synopsis": "10000mAh Power Bank with 18W PD and QC 3.0",
+                "description": "Compact and efficient power bank for on-the-go "
+                "charging.",
+                "quantity": 2,
+                "price": 15.99,
+                "category_id": "65d24f2a260fb739c605b2a7",
+                "available": True,
+                "html_body": None,
+                "parameters": {
+                    "brand": "RAVPower",
+                    "year": 2020,
+                    "warranty": "3 year",
+                    "country_of_production": "China",
+                },
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.INVALID_CREDENTIALS}
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
+    async def test_update_product_user_no_scope(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update product in case user does not have appropriate scope."""
+
+        response = await test_client.patch(
+            f"{AppConstants.API_V1_PREFIX}/products/6597f143c064f4099808ad26/",
+            json={
+                "name": "RAVPower Portable Charger 10000mAh",
+                "synopsis": "10000mAh Power Bank with 18W PD and QC 3.0",
+                "description": "Compact and efficient power bank for on-the-go "
+                "charging.",
+                "quantity": 2,
+                "price": 15.99,
+                "category_id": "65d24f2a260fb739c605b2a7",
+                "available": True,
+                "html_body": None,
+                "parameters": {
+                    "brand": "RAVPower",
+                    "year": 2020,
+                    "warranty": "3 year",
+                    "country_of_production": "China",
+                },
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
+    async def test_update_product_does_not_exist(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update product in case request product does not exist."""
+
+        response = await test_client.patch(
+            f"{AppConstants.API_V1_PREFIX}/products/6597f143c064f4099808ad26/",
+            json={
+                "name": "ASUS TUF Gaming F15",
+                "synopsis": "Cool.",
+                "description": "Very cool laptop.",
+                "quantity": 12,
+                "price": 1200.0,
+                "category_id": "62cd1a06f2fa373a2e2a7ea1",
+                "available": True,
+                "html_body": None,
+                "parameters": {
+                    "brand": "Asus",
+                },
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
+                entity="Product"
+            )
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
+        indirect=True,
+    )
+    async def test_update_product_validate_data(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update product in case request data is invalid."""
+
+        response = await test_client.patch(
+            f"{AppConstants.API_V1_PREFIX}/products/6597f143c064f4099808ad26/",
+            json={
+                "synopsis": None,
+                "description": "Very cool laptop.",
+                "quantity": 12,
+                "category_id": 1,
+                "available": True,
+                "parameters": {
+                    "brand": "Asus",
+                },
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            ("missing", ["body", "name"], "Field required"),
+            ("string_type", ["body", "synopsis"], "Input should be a valid string"),
+            ("missing", ["body", "price"], "Field required"),
+            (
+                "object_id",
+                ["body", "category_id"],
+                ValidationErrorMessagesEnum.INVALID_IDENTIFIER,
+            ),
+            ("missing", ["body", "html_body"], "Field required"),
+        ]
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
+        indirect=True,
+    )
+    async def test_update_product_category_does_not_exist(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update product in case request category does not exist."""
+
+        response = await test_client.patch(
+            f"{AppConstants.API_V1_PREFIX}/products/6597f143c064f4099808ad26/",
+            json={
+                "name": "ASUS TUF Gaming F15",
+                "synopsis": "Cool.",
+                "description": "Very cool laptop.",
+                "quantity": 12,
+                "price": 1200.0,
+                "category_id": "62cd1a06f2fa373a2e2a7ea1",
+                "available": True,
+                "html_body": None,
+                "parameters": {
+                    "brand": "Asus",
+                },
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
+                entity="Category"
+            )
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
+        indirect=True,
+    )
+    async def test_update_product_category_is_not_leaf(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update product in case request category is not a tree leaf."""
+
+        response = await test_client.patch(
+            f"{AppConstants.API_V1_PREFIX}/products/6597f143c064f4099808ad26/",
+            json={
+                "name": "ASUS TUF Gaming F15",
+                "synopsis": "Cool.",
+                "description": "Very cool laptop.",
+                "quantity": 12,
+                "price": 1200.0,
+                "category_id": "65d24f2a260fb739c605b28a",
+                "available": True,
+                "html_body": None,
+                "parameters": {
+                    "brand": "Asus",
+                },
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.LEAF_PRODUCT_CATEGORY_REQUIRED
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
+        indirect=True,
+    )
+    async def test_update_product_category_validate_product_parameters(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update product in case product parameters are invalid."""
+
+        response = await test_client.patch(
+            f"{AppConstants.API_V1_PREFIX}/products/6597f143c064f4099808ad26/",
+            json={
+                "name": "ASUS TUF Gaming F15",
+                "synopsis": "Display 15.6 IPS (1920x1080) Full HD 144 Hz / "
+                "Intel Core i5-12500H (2.5 - 4.5 GHz) / RAM 16 GB / "
+                "SSD 512 GB / nVidia GeForce RTX 3050, 4 GB / LAN / "
+                "Wi-Fi / Bluetooth / webcamera / no OS / 2.2 kg / black",
+                "description": "Very cool laptop.",
+                "quantity": 12,
+                "price": 1200.0,
+                "category_id": "65d24f2a260fb739c605b28d",
+                "available": True,
+                "html_body": None,
+                "parameters": {
+                    "brand": "Asus",
+                    "cpu": "Intel Core i5-12500H",
+                    "cpu_cores_number": 12,
+                    "graphics_card": "GeForce RTX 3050",
+                    "graphics_card_type": "Discrete",
+                    "motherboard_chipset": None,
+                    "vram": 4,
+                    "ram": 16,
+                    "ram_slots": "2",
+                    "ram_type": "DDR4",
+                    "hdd": None,
+                    "hdd_space": None,
+                    "ssd": "Kingston",
+                    "ssd_space": "512 GB",
+                    "class": "Gaming",
+                    "has_wifi": True,
+                    "has_bluetooth": True,
+                    "no_wireless_connection": False,
+                    "os": None,
+                    "year": 2024,
+                    "warranty": "2 years",
+                    "country_of_production": "Taiwan",
+                    "screen_type": "IPS",
+                    "screen_resolution": "1920x1080",
+                    "screen_refresh_rate": "144 Hz",
+                    "screen_size": '15.6"',
+                    "battery_capacity": "56 watt*hours",
+                    "color": "black",
+                    "custom_field": "some_value",
+                },
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            (
+                "invalid_type",
+                ["body", "parameters", "vram"],
+                ValidationErrorMessagesEnum.INVALID_FIELD_TYPE.format(  # type: ignore
+                    type_="str"
+                ),
+            ),
+            (
+                "invalid_type",
+                ["body", "parameters", "ram"],
+                ValidationErrorMessagesEnum.INVALID_FIELD_TYPE.format(  # type: ignore
+                    type_="str"
+                ),
+            ),
+            (
+                "invalid_type",
+                ["body", "parameters", "ram_slots"],
+                ValidationErrorMessagesEnum.INVALID_FIELD_TYPE.format(  # type: ignore
+                    type_="int"
+                ),
+            ),
+            (
+                "invalid_type",
+                ["body", "parameters", "class"],
+                ValidationErrorMessagesEnum.INVALID_FIELD_TYPE.format(  # type: ignore
+                    type_="list"
+                ),
+            ),
+            (
+                "missing",
+                ["body", "parameters", "has_fingerprint_identification"],
+                ValidationErrorMessagesEnum.REQUIRED_FIELD,
+            ),
+            (
+                "missing",
+                ["body", "parameters", "has_keyboard_backlight"],
+                ValidationErrorMessagesEnum.REQUIRED_FIELD,
+            ),
+            (
+                "missing",
+                ["body", "parameters", "has_touch_screen"],
+                ValidationErrorMessagesEnum.REQUIRED_FIELD,
+            ),
+        ]

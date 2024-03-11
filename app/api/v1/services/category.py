@@ -93,11 +93,11 @@ class CategoryService(BaseService):
 
         return Category(**category)
 
-    async def create(self, item: Any) -> Any:
+    async def create(self, data: Any) -> Any:
         """Creates a new category.
 
         Args:
-            item (Any): The data for the new category.
+            data (Any): The data for the new category.
 
         Returns:
             Any: The ID of created category.
@@ -108,12 +108,28 @@ class CategoryService(BaseService):
         """
         raise NotImplementedError
 
-    async def update_by_id(self, id_: ObjectId, item: Any) -> Any:
+    async def update(self, item: Any, data: Any) -> Any:
+        """Updates a category object.
+
+        Args:
+            item (Any): Category object.
+            data (Any): Data to update category.
+
+        Returns:
+            Any: The updated category.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
+    async def update_by_id(self, id_: ObjectId, data: Any) -> Any:
         """Updates a category by its unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the category.
-            item (Any): Data to update category.
+            data (Any): Data to update category.
 
         Returns:
             Any: The updated category.

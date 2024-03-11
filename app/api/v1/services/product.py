@@ -9,8 +9,8 @@ from fastapi import BackgroundTasks, Depends
 
 from app.api.v1.models import PaginationModel, SearchModel, SortingModel
 from app.api.v1.models.product import (
-    CreateProductRequestModel,
     Product,
+    ProductRequestModel,
     ProductsFilterModel,
 )
 from app.api.v1.repositories.product import ProductRepository
@@ -124,11 +124,11 @@ class ProductService(BaseService):
 
         return Product(**product)
 
-    async def create(self, item: CreateProductRequestModel) -> Product:
+    async def create(self, data: ProductRequestModel) -> Product:
         """Creates a new product.
 
         Args:
-            item (CreateProductRequestModel): The data for the new product.
+            data (ProductRequestModel): The data for the new product.
 
         Returns:
             Product: The created product.
@@ -136,8 +136,8 @@ class ProductService(BaseService):
         """
 
         id_ = await self.repository.create(
-            item={
-                **item.model_dump(),
+            data={
+                **data.model_dump(),
                 "created_at": arrow.utcnow().datetime,
                 "updated_at": None,
             },
@@ -145,17 +145,51 @@ class ProductService(BaseService):
 
         self.background_tasks.add_task(
             self.category_service.calculate_category_parameters,
-            id_=item.category_id,
+            id_=data.category_id,
         )
 
         return await self.get_by_id(id_=id_)
 
-    async def update_by_id(self, id_: ObjectId, item: Any) -> Any:
+    async def update(self, item: Product, data: ProductRequestModel) -> Product:
+        """Updates a product object.
+
+        Args:
+            item (Product): Product object.
+            data (ProductRequestModel): Data to update product.
+
+        Returns:
+            Product: The updated product.
+
+        """
+
+        await self.repository.update_by_id(
+            id_=item.id,
+            data={
+                **data.model_dump(),
+                "updated_at": arrow.utcnow().datetime,
+            },
+        )
+
+        self.background_tasks.add_task(
+            self.category_service.calculate_category_parameters,
+            id_=data.category_id,
+        )
+
+        # Recalculate parameters for "old" category, if category field is updated
+        if item.category_id != data.category_id:
+            self.background_tasks.add_task(
+                self.category_service.calculate_category_parameters,
+                id_=item.category_id,
+            )
+
+        return await self.get_by_id(id_=item.id)
+
+    async def update_by_id(self, id_: ObjectId, data: Any) -> Any:
         """Updates a product by its unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the product.
-            item (Any): Data to update product.
+            data (Any): Data to update product.
 
         Returns:
             Any: The updated product.

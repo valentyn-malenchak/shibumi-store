@@ -185,12 +185,12 @@ class BaseRepository(abc.ABC):
         )
 
     async def create(
-        self, item: Dict[str, Any], *, session: AsyncIOMotorClientSession | None = None
+        self, data: Dict[str, Any], *, session: AsyncIOMotorClientSession | None = None
     ) -> Any:
         """Creates a new item in repository.
 
         Args:
-            item (Dict[str, Any]): The data for the new item.
+            data (Dict[str, Any]): The data for the new item.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
@@ -200,7 +200,7 @@ class BaseRepository(abc.ABC):
         """
 
         return await self._mongo_service.insert_one(
-            collection=self._collection_name, document=item, session=session
+            collection=self._collection_name, document=data, session=session
         )
 
     async def create_many(
@@ -230,7 +230,7 @@ class BaseRepository(abc.ABC):
     async def update_by_id(
         self,
         id_: ObjectId,
-        item: Dict[str, Any],
+        data: Dict[str, Any],
         *,
         upsert: bool = False,
         session: AsyncIOMotorClientSession | None = None,
@@ -239,7 +239,7 @@ class BaseRepository(abc.ABC):
 
         Args:
             id_ (ObjectId): The unique identifier of the item.
-            item (Dict[str, Any]): Data to update item.
+            data (Dict[str, Any]): Data to update item.
             upsert (bool): Use update or insert. Defaults to False.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
@@ -249,7 +249,7 @@ class BaseRepository(abc.ABC):
         await self._mongo_service.update_one(
             collection=self._collection_name,
             filter_={"_id": id_},
-            update={"$set": item},
+            update={"$set": data},
             upsert=upsert,
             session=session,
         )

@@ -65,8 +65,8 @@ class ProductsListModel(ListResponseModel):
     data: List[ShortProductResponseModel]
 
 
-class CreateProductRequestModel(BaseModel):
-    """Product creation request model."""
+class ProductRequestModel(BaseModel):
+    """Create/update product request model."""
 
     name: str
     synopsis: str
