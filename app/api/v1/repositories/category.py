@@ -255,27 +255,26 @@ class CategoryRepository(BaseRepository):
             session=session,
         )
 
-        if result is not None:
-            category_parameters = {
-                parameter: sorted(
-                    value,
-                    # 'None' values will be in the end of list, not case-sensitive
-                    key=lambda element: (
-                        element is None,
-                        element.lower() if isinstance(element, str) else element,
-                    ),
-                )
-                if isinstance(value, list)
-                else value
-                for parameter, value in result[0].items()
-            }
-
-            await self.category_parameters_repository.update_by_id(
-                id_=category_parameters["_id"],
-                data=category_parameters,
-                upsert=True,
-                session=session,
+        category_parameters = {
+            parameter: sorted(
+                value,
+                # 'None' values will be in the end of list, not case-sensitive
+                key=lambda element: (
+                    element is None,
+                    element.lower() if isinstance(element, str) else element,
+                ),
             )
+            if isinstance(value, list)
+            else value
+            for parameter, value in result[0].items()
+        }
+
+        await self.category_parameters_repository.update_by_id(
+            id_=category_parameters["_id"],
+            data=category_parameters,
+            upsert=True,
+            session=session,
+        )
 
     async def get_category_parameters(
         self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
