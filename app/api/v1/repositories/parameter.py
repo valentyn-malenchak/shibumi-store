@@ -1,8 +1,6 @@
 """Module that contains parameter repository class."""
 
-from typing import Any, List, Mapping
-
-from motor.motor_asyncio import AsyncIOMotorClientSession
+from typing import Any, Mapping
 
 from app.api.v1.repositories import BaseRepository
 from app.constants import ProjectionValuesEnum
@@ -25,37 +23,8 @@ class ParameterRepository(BaseRepository):
         Returns:
             (Mapping[str, Any]): List query filter.
 
-        Raises:
-            NotImplementedError: This method is not implemented.
-
         """
-        raise NotImplementedError
-
-    async def get(
-        self,
-        *_: Any,
-        session: AsyncIOMotorClientSession | None = None,
-        **__: Any,
-    ) -> List[Mapping[str, Any]]:
-        """Retrieves a list of parameters based on parameters.
-
-        Args:
-            _ (Any): Parameters for list searching, sorting and pagination.
-            session (AsyncIOMotorClientSession | None): Defines a client session
-            if operation is transactional. Defaults to None.
-            __ (Any): Parameters for list filtering.
-
-        Returns:
-            List[Mapping[str, Any]]: The retrieved list of parameters.
-
-        """
-
-        return await self._mongo_service.find(
-            collection=self._collection_name,
-            filter_={},
-            projection=self._get_list_query_projection(),
-            session=session,
-        )
+        return {}
 
     @staticmethod
     def _get_list_query_projection() -> Mapping[str, Any] | None:

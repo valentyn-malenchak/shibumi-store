@@ -1,9 +1,8 @@
 """Module that contains parameter service class."""
 
-import json
 from typing import Any, List, Mapping
 
-from bson import ObjectId
+from bson import ObjectId, json_util
 from fastapi import BackgroundTasks, Depends
 
 from app.api.v1.constants import RedisNamesEnum, RedisNamesTTLEnum
@@ -57,14 +56,16 @@ class ParameterService(BaseService):
         )
 
         if cached_parameters is not None:
-            return json.loads(cached_parameters)  # type: ignore
+            return json_util.loads(cached_parameters)  # type: ignore
 
-        parameters = await self.repository.get()
+        parameters = await self.repository.get(
+            search=None, page=None, page_size=None, sort_by=None, sort_order=None
+        )
 
         self.redis_service.set(
             name=RedisNamesEnum.PRODUCT_PARAMETERS_LIST,
-            value=json.dumps(parameters),
-            ttl=RedisNamesTTLEnum.PRODUCT_PARAMETERS_LIST,
+            value=json_util.dumps(parameters),
+            ttl=RedisNamesTTLEnum.PRODUCT_PARAMETERS_LIST.value,
         )
 
         return parameters

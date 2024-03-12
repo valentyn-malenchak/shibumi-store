@@ -771,8 +771,8 @@ class TestProduct(BaseAPITest):
             params={"page": 1, "page_size": 2, "available": True},
         )
 
-        redis_get_mock.assert_called_once()
-        redis_setex_mock.assert_called_once()
+        assert redis_get_mock.call_count == 1  # noqa: PLR2004
+        assert redis_setex_mock.call_count == 1  # noqa: PLR2004
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
@@ -831,8 +831,8 @@ class TestProduct(BaseAPITest):
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
-        redis_get_mock.assert_called_once()
-        redis_setex_mock.assert_called_once()
+        assert redis_get_mock.call_count == 1  # noqa: PLR2004
+        assert redis_setex_mock.call_count == 1  # noqa: PLR2004
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
@@ -877,8 +877,8 @@ class TestProduct(BaseAPITest):
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
-        redis_get_mock.assert_called_once()
-        redis_setex_mock.assert_called_once()
+        assert redis_get_mock.call_count == 1  # noqa: PLR2004
+        assert redis_setex_mock.call_count == 1  # noqa: PLR2004
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
@@ -937,8 +937,8 @@ class TestProduct(BaseAPITest):
             },
         )
 
-        redis_get_mock.assert_called_once()
-        redis_setex_mock.assert_called_once()
+        assert redis_get_mock.call_count == 1  # noqa: PLR2004
+        assert redis_setex_mock.call_count == 1  # noqa: PLR2004
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
@@ -984,8 +984,8 @@ class TestProduct(BaseAPITest):
             },
         )
 
-        redis_get_mock.assert_called_once()
-        redis_setex_mock.assert_called_once()
+        assert redis_get_mock.call_count == 1  # noqa: PLR2004
+        assert redis_setex_mock.call_count == 1  # noqa: PLR2004
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
@@ -1052,8 +1052,8 @@ class TestProduct(BaseAPITest):
             },
         )
 
-        redis_get_mock.assert_called_once()
-        redis_setex_mock.assert_called_once()
+        assert redis_get_mock.call_count == 1  # noqa: PLR2004
+        assert redis_setex_mock.call_count == 1  # noqa: PLR2004
 
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
@@ -1162,7 +1162,7 @@ class TestProduct(BaseAPITest):
             },
         )
 
-        redis_get_mock.assert_called_once()
+        assert redis_get_mock.call_count == 1  # noqa: PLR2004
 
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert [
