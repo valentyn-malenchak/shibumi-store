@@ -294,7 +294,7 @@ class UserService(BaseService):
         self.redis_service.set(
             name=RedisNamesEnum.RESET_PASSWORD.format(user_id=user.id),  # type: ignore
             value=token.hash(),
-            ttl=RedisNamesTTLEnum.RESET_PASSWORD,
+            ttl=RedisNamesTTLEnum.RESET_PASSWORD.value,
         )
 
         self.background_tasks.add_task(
@@ -347,7 +347,7 @@ class UserService(BaseService):
         self.redis_service.set(
             name=RedisNamesEnum.EMAIL_VERIFICATION.format(user_id=user.id),  # type: ignore
             value=token.hash(),
-            ttl=RedisNamesTTLEnum.EMAIL_VERIFICATION,
+            ttl=RedisNamesTTLEnum.EMAIL_VERIFICATION.value,
         )
 
         self.background_tasks.add_task(

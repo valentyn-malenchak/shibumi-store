@@ -6,6 +6,7 @@ from motor.motor_asyncio import AsyncIOMotorClientSession
 
 from app.api.v1.constants import RolesEnum
 from app.api.v1.repositories import BaseRepository
+from app.constants import ProjectionValuesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
 
 
@@ -25,11 +26,8 @@ class RoleRepository(BaseRepository):
         Returns:
             (Mapping[str, Any]): List query filter.
 
-        Raises:
-            NotImplementedError: This method is not implemented.
-
         """
-        raise NotImplementedError
+        return {}
 
     @staticmethod
     def _get_list_query_projection() -> Mapping[str, Any] | None:
@@ -38,11 +36,8 @@ class RoleRepository(BaseRepository):
         Returns:
             Mapping[str, Any] | None: List query projection or None.
 
-        Raises:
-            NotImplementedError: This method is not implemented.
-
         """
-        raise NotImplementedError
+        return {"scopes": ProjectionValuesEnum.EXCLUDE}
 
     async def get_scopes_by_roles(
         self,

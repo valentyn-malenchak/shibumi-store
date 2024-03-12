@@ -1,13 +1,12 @@
 """Module that contains role service class."""
 
 
-from typing import Any, List
+from typing import Any, List, Mapping
 
-from bson import ObjectId
+from bson import ObjectId, json_util
 from fastapi import BackgroundTasks, Depends
 
-from app.api.v1.constants import RolesEnum
-from app.api.v1.models import PaginationModel, SearchModel, SortingModel
+from app.api.v1.constants import RedisNamesEnum, RedisNamesTTLEnum, RolesEnum
 from app.api.v1.repositories.role import RoleRepository
 from app.api.v1.services import BaseService
 from app.services.mongo.transaction_manager import TransactionManager
@@ -42,45 +41,51 @@ class RoleService(BaseService):
 
         self.repository = repository
 
-    async def get(
-        self,
-        filter_: Any,
-        search: SearchModel,
-        sorting: SortingModel,
-        pagination: PaginationModel,
-    ) -> List[Any]:
+    async def get(self, *_: Any) -> List[Mapping[str, Any]]:
         """Retrieves a list of roles based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering.
-            search (SearchModel): Parameters for list searching.
-            sorting (SortingModel): Parameters for sorting.
-            pagination (PaginationModel): Parameters for pagination.
+            _ (Any): Parameters for list filtering, searching, sorting and pagination.
 
         Returns:
-            List[Any]: The retrieved list of roles.
-
-        Raises:
-            NotImplementedError: This method is not implemented.
+            List[Mapping[str, Any]]: The retrieved list of roles.
 
         """
-        raise NotImplementedError
 
-    async def count(self, filter_: Any, search: SearchModel) -> int:
+        cached_roles = self.redis_service.get(name=RedisNamesEnum.ROLES_LIST)
+
+        if cached_roles is not None:
+            return json_util.loads(cached_roles)  # type: ignore
+
+        roles = await self.repository.get(
+            search=None, page=None, page_size=None, sort_by=None, sort_order=None
+        )
+
+        self.redis_service.set(
+            name=RedisNamesEnum.ROLES_LIST,
+            value=json_util.dumps(roles),
+            ttl=RedisNamesTTLEnum.ROLES_LIST.value,
+        )
+
+        return roles
+
+    async def count(self, *_: Any) -> int:
         """Counts documents based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering.
-            search (SearchModel): Parameters for list searching.
+            _ (Any): Parameters for list filtering and searching.
 
         Returns:
             int: Count of documents.
 
-        Raises:
-            NotImplementedError: This method is not implemented.
-
         """
-        raise NotImplementedError
+
+        cached_roles = self.redis_service.get(name=RedisNamesEnum.ROLES_LIST)
+
+        if cached_roles is not None:
+            return len(json_util.loads(cached_roles))
+
+        return await self.repository.count(search=None)
 
     async def get_by_id(self, id_: ObjectId) -> Any:
         """Retrieves a role by its unique identifier.

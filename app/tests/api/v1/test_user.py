@@ -178,8 +178,8 @@ class TestUser(BaseAPITest):
             },
         )
 
-        redis_setex_mock.assert_called_once()
-        send_grid_send_mock.assert_called_once()
+        assert redis_setex_mock.call_count == 1  # noqa: PLR2004
+        assert send_grid_send_mock.call_count == 1  # noqa: PLR2004
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self._exclude_fields(response.json(), exclude_keys=["id"]) == {
@@ -257,8 +257,8 @@ class TestUser(BaseAPITest):
             },
         )
 
-        redis_setex_mock.assert_called_once()
-        send_grid_send_mock.assert_called_once()
+        assert redis_setex_mock.call_count == 1  # noqa: PLR2004
+        assert send_grid_send_mock.call_count == 1  # noqa: PLR2004
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self._exclude_fields(response.json(), exclude_keys=["id"]) == {
@@ -1762,8 +1762,8 @@ class TestUser(BaseAPITest):
             f"{AppConstants.API_V1_PREFIX}/users/john.smith/reset-password/"
         )
 
-        redis_setex_mock.assert_called_once()
-        send_grid_send_mock.assert_called_once()
+        assert redis_setex_mock.call_count == 1  # noqa: PLR2004
+        assert send_grid_send_mock.call_count == 1  # noqa: PLR2004
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
@@ -1829,7 +1829,7 @@ class TestUser(BaseAPITest):
                 f"{AppConstants.API_V1_PREFIX}/users/john.smith/reset-password/"
             )
 
-        redis_setex_mock.assert_called_once()
+        assert redis_setex_mock.call_count == 1  # noqa: PLR2004
         assert send_grid_send_mock.call_count == 3  # noqa: PLR2004
 
     @pytest.mark.asyncio
@@ -1858,8 +1858,8 @@ class TestUser(BaseAPITest):
             },
         )
 
-        redis_get_mock.assert_called_once()
-        redis_delete_mock.assert_called_once()
+        assert redis_get_mock.call_count == 1  # noqa: PLR2004
+        assert redis_delete_mock.call_count == 1  # noqa: PLR2004
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
@@ -1952,7 +1952,7 @@ class TestUser(BaseAPITest):
             },
         )
 
-        redis_get_mock.assert_called_once()
+        assert redis_get_mock.call_count == 1  # noqa: PLR2004
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == {
@@ -1981,7 +1981,7 @@ class TestUser(BaseAPITest):
             },
         )
 
-        redis_get_mock.assert_called_once()
+        assert redis_get_mock.call_count == 1  # noqa: PLR2004
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == {
@@ -2005,8 +2005,8 @@ class TestUser(BaseAPITest):
             f"{AppConstants.API_V1_PREFIX}/users/lila.legro/verify-email/"
         )
 
-        redis_setex_mock.assert_called_once()
-        send_grid_send_mock.assert_called_once()
+        assert redis_setex_mock.call_count == 1  # noqa: PLR2004
+        assert send_grid_send_mock.call_count == 1  # noqa: PLR2004
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
@@ -2088,7 +2088,7 @@ class TestUser(BaseAPITest):
                 f"{AppConstants.API_V1_PREFIX}/users/lila.legro/verify-email/"
             )
 
-        redis_setex_mock.assert_called_once()
+        assert redis_setex_mock.call_count == 1  # noqa: PLR2004
         assert send_grid_send_mock.call_count == 3  # noqa: PLR2004
 
     @pytest.mark.asyncio
@@ -2116,8 +2116,8 @@ class TestUser(BaseAPITest):
             },
         )
 
-        redis_get_mock.assert_called_once()
-        redis_delete_mock.assert_called_once()
+        assert redis_get_mock.call_count == 1  # noqa: PLR2004
+        assert redis_delete_mock.call_count == 1  # noqa: PLR2004
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
@@ -2223,7 +2223,7 @@ class TestUser(BaseAPITest):
             },
         )
 
-        redis_get_mock.assert_called_once()
+        assert redis_get_mock.call_count == 1  # noqa: PLR2004
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == {
@@ -2251,7 +2251,7 @@ class TestUser(BaseAPITest):
             },
         )
 
-        redis_get_mock.assert_called_once()
+        assert redis_get_mock.call_count == 1  # noqa: PLR2004
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == {

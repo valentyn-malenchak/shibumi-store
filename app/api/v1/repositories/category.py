@@ -9,7 +9,7 @@ from motor.motor_asyncio import AsyncIOMotorClientSession
 from app.api.v1.constants import ProductParameterTypesEnum
 from app.api.v1.repositories import BaseRepository
 from app.api.v1.repositories.category_parameters import CategoryParametersRepository
-from app.constants import ProjectionValuesEnum, SortingTypesEnum
+from app.constants import ProjectionValuesEnum
 from app.exceptions import EntityIsNotFoundError
 from app.services.mongo.constants import MongoCollectionsEnum
 from app.services.mongo.service import MongoDBService
@@ -39,38 +39,6 @@ class CategoryRepository(BaseRepository):
         super().__init__(mongo_service=mongo_service)
 
         self.category_parameters_repository = category_parameters_repository
-
-    async def get(
-        self,
-        *_: Any,
-        path: str | None = None,
-        leafs: bool = False,
-        session: AsyncIOMotorClientSession | None = None,
-        **__: Any,
-    ) -> List[Mapping[str, Any]]:
-        """Retrieves a list of categories based on parameters.
-
-        Args:
-            _ (Any): Parameters for list searching, sorting and pagination.
-            path (str | None): Category tree path filtering. Defaults to None.
-            leafs (bool): Defines if only leaf categories will be returned.
-            Defaults to False.
-            session (AsyncIOMotorClientSession | None): Defines a client session
-            if operation is transactional. Defaults to None.
-            __ (Any): Parameters for list filtering.
-
-        Returns:
-            List[Mapping[str, Any]]: The retrieved list of categories.
-
-        """
-
-        return await self._mongo_service.find(
-            collection=self._collection_name,
-            filter_=await self._get_list_query_filter(path=path, leafs=leafs),
-            projection=self._get_list_query_projection(),
-            sort=self._get_list_sorting(sort_by="_id", sort_order=SortingTypesEnum.ASC),
-            session=session,
-        )
 
     async def _get_list_query_filter(
         self,
@@ -116,35 +84,6 @@ class CategoryRepository(BaseRepository):
 
         """
         return {"parameters": ProjectionValuesEnum.EXCLUDE}
-
-    async def count(
-        self,
-        *_: Any,
-        path: str | None = None,
-        leafs: bool = False,
-        session: AsyncIOMotorClientSession | None = None,
-        **__: Any,
-    ) -> int:
-        """Counts documents based on parameters.
-
-        Args:
-            _ (Any): Parameters for list searching.
-            path (str | None): Category tree path filtering. Defaults to None.
-            session (AsyncIOMotorClientSession | None): Defines a client session
-            if operation is transactional. Defaults to None.
-            leafs (bool): Defines if only leaf categories will be returned.
-            Defaults to False.
-            __ (Any): Parameters for list filtering.
-
-        Returns:
-            int: Count of documents.
-
-        """
-        return await self._mongo_service.count_documents(
-            collection=self._collection_name,
-            filter_=await self._get_list_query_filter(path=path, leafs=leafs),
-            session=session,
-        )
 
     async def get_by_id(
         self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None

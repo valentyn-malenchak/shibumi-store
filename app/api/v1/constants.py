@@ -31,6 +31,8 @@ class ScopesEnum(Enum):
     USERS_UPDATE_USER_PASSWORD = "Allows to update user's password."
     USERS_DELETE_USER = "Allows to delete user."
 
+    ROLES_GET_ROLES = "Allows to get roles list."
+
     CATEGORIES_GET_CATEGORIES = "Allows to get categories list."
     CATEGORIES_GET_CATEGORY = "Allows to get category."
     CATEGORIES_GET_CATEGORY_PARAMETERS = "Allows to get calculated category parameters."
@@ -47,6 +49,7 @@ class RedisNamesEnum(StrEnum):
     EMAIL_VERIFICATION = "email_verification_{user_id}"
     RESET_PASSWORD = "reset_password_{user_id}"
     PRODUCT_PARAMETERS_LIST = "product_parameters"
+    ROLES_LIST = "roles"
 
 
 class RedisNamesTTLEnum(IntEnum):
@@ -55,6 +58,7 @@ class RedisNamesTTLEnum(IntEnum):
     EMAIL_VERIFICATION = 3600  # 1 hour
     RESET_PASSWORD = 3600  # 1 hour
     PRODUCT_PARAMETERS_LIST = 3600  # 1 hour
+    ROLES_LIST = 3600  # 1 hour
 
 
 class EmailSubjectsEnum(StrEnum):
