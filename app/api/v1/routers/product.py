@@ -96,17 +96,22 @@ async def get_product(
         OptionalAuthorization(), scopes=[ScopesEnum.PRODUCTS_GET_PRODUCT.name]
     ),
     product: Product = Depends(GetProductDependency()),
+    product_service: ProductService = Depends(),
 ) -> Product:
     """API which returns a specific product.
 
     Args:
         _ (CurrentUserModel | None): Current user object or None.
         product (Product): Product object.
+        product_service (ProductService): Product service.
 
     Returns:
         Product: Product object.
 
     """
+
+    await product_service.increment_views(id_=product.id)
+
     return product
 
 

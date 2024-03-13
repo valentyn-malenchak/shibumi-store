@@ -124,6 +124,15 @@ class ProductService(BaseService):
 
         return Product(**product)
 
+    async def increment_views(self, id_: ObjectId) -> None:
+        """Increments a views field for product by its unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the product.
+
+        """
+        self.background_tasks.add_task(self.repository.increment_views, id_=id_)
+
     async def create(self, data: ProductRequestModel) -> Product:
         """Creates a new product.
 
@@ -138,6 +147,7 @@ class ProductService(BaseService):
         id_ = await self.repository.create(
             data={
                 **data.model_dump(),
+                "views": 0,
                 "created_at": arrow.utcnow().datetime,
                 "updated_at": None,
             },

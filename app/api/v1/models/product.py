@@ -17,6 +17,7 @@ class Product(ObjectIdModel):
     description: str
     quantity: int
     price: float
+    views: int
     category_id: Annotated[ObjectId, ObjectIdAnnotation]
     available: bool  # defines if product should be shown for customers
     html_body: str | None
@@ -32,6 +33,7 @@ class ShortProductResponseModel(ObjectIdModel):
     synopsis: str
     quantity: int
     price: float
+    views: int
     category_id: Annotated[ObjectId, ObjectIdAnnotation]
     available: bool
     created_at: datetime

@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Mapping
 
 from bson import ObjectId
 from injector import inject
+from motor.motor_asyncio import AsyncIOMotorClientSession
 
 from app.api.v1.repositories import BaseRepository
 from app.constants import ProjectionValuesEnum
@@ -72,3 +73,22 @@ class ProductRepository(BaseRepository):
             "html_body": ProjectionValuesEnum.EXCLUDE,
             "parameters": ProjectionValuesEnum.EXCLUDE,
         }
+
+    async def increment_views(
+        self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
+    ) -> None:
+        """Increments a views field for product by its unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the product.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        """
+
+        await self._mongo_service.update_one(
+            collection=self._collection_name,
+            filter_={"_id": id_},
+            update={"$inc": {"views": 1}},
+            session=session,
+        )
