@@ -1,6 +1,5 @@
 """Module that contains health domain router."""
 
-from typing import Dict
 
 from fastapi import APIRouter, Security, status
 
@@ -16,6 +15,6 @@ async def get_health(
     _: CurrentUserModel = Security(
         StrictAuthorization(), scopes=[ScopesEnum.HEALTH_GET_HEALTH.name]
     ),
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """API which checks the health of the application."""
     return {"status": "healthy"}

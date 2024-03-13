@@ -1,7 +1,7 @@
 """Module that contains base service abstract class."""
 
 import abc
-from typing import Any, List
+from typing import Any
 
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
@@ -42,7 +42,7 @@ class BaseService(abc.ABC):
         search: SearchModel,
         sorting: SortingModel,
         pagination: PaginationModel,
-    ) -> List[Any]:
+    ) -> list[Any]:
         """Retrieves a list of items based on parameters.
 
         Args:
@@ -52,7 +52,7 @@ class BaseService(abc.ABC):
             pagination (PaginationModel): Parameters for pagination.
 
         Returns:
-            List[Any]: The retrieved list of items.
+            list[Any]: The retrieved list of items.
 
         Raises:
             NotImplementedError: This method must be implemented by subclasses.

@@ -1,7 +1,8 @@
 """Module that contains category service class."""
 
 
-from typing import Any, List, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
@@ -46,7 +47,7 @@ class CategoryService(BaseService):
         self,
         filter_: CategoriesFilterModel,
         *_: Any,
-    ) -> List[Any]:
+    ) -> list[Any]:
         """Retrieves a list of categories based on parameters.
 
         Args:
@@ -54,7 +55,7 @@ class CategoryService(BaseService):
             _ (Any): Parameters for list searching, sorting and pagination.
 
         Returns:
-            List[Any]: The retrieved list of categories.
+            list[Any]: The retrieved list of categories.
 
         """
         return await self.repository.get(

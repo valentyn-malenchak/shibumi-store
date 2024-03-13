@@ -1,7 +1,7 @@
 """Contains JSON decoder class."""
 
 import json
-from typing import Any, Dict
+from typing import Any
 
 import arrow
 from bson import ObjectId
@@ -14,7 +14,7 @@ class JSONDecoder(json.JSONDecoder):
         """Initialization method."""
         super().__init__(object_hook=self._object_hook, *args, **kwargs)
 
-    def _object_hook(self, obj: Dict[str, Any]) -> Dict[str, Any]:
+    def _object_hook(self, obj: dict[str, Any]) -> dict[str, Any]:
         """Decodes datetime values."""
         for key, value in obj.items():
             if isinstance(value, str) and self._is_datetime(value):

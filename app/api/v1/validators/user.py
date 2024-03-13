@@ -1,7 +1,7 @@
 """Contains user domain validators."""
 
 
-from typing import Any, List
+from typing import Any
 
 from bson import ObjectId
 from fastapi import Depends, HTTPException, Request, status
@@ -157,11 +157,11 @@ class UserStatusValidator(BaseUserValidator):
 class UserRolesValidator(BaseUserValidator):
     """Roles validator class."""
 
-    async def validate(self, roles: List[RolesEnum]) -> None:
+    async def validate(self, roles: list[RolesEnum]) -> None:
         """Validates roles depends on current user.
 
         Args:
-            roles (List[RolesEnum]): Roles list to validate.
+            roles (list[RolesEnum]): Roles list to validate.
 
         Raises:
             HTTPException: Not permitted roles are requested.

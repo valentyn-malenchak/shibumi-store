@@ -1,7 +1,8 @@
 """Module that contains base API test component."""
 
 import asyncio
-from typing import Any, AsyncGenerator, Generator
+from collections.abc import AsyncGenerator, Generator
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest

@@ -1,6 +1,7 @@
 """Module that contains parameter service class."""
 
-from typing import Any, List, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 from bson import ObjectId, json_util
 from fastapi import BackgroundTasks, Depends
@@ -40,14 +41,14 @@ class ParameterService(BaseService):
 
         self.repository = repository
 
-    async def get(self, *_: Any) -> List[Mapping[str, Any]]:
+    async def get(self, *_: Any) -> list[Mapping[str, Any]]:
         """Retrieves a list of parameters based on parameters.
 
         Args:
             _ (Any): Parameters for list filtering, searching, sorting and pagination.
 
         Returns:
-            List[Mapping[str, Any]]: The retrieved list of parameters.
+            list[Mapping[str, Any]]: The retrieved list of parameters.
 
         """
 

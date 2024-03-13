@@ -3,7 +3,7 @@
 import abc
 import json
 import os
-from typing import Any, Dict
+from typing import Any
 
 from app.utils.json import JSONDecoder
 
@@ -12,11 +12,11 @@ class BaseLoader(abc.ABC):
     """Base loader."""
 
     @abc.abstractmethod
-    def load(self) -> Dict[str, Any]:
+    def load(self) -> dict[str, Any]:
         """Abstract method to load data from a source.
 
         Returns:
-            Dict[str, Any]: A dictionary containing data loaded from the source,
+            dict[str, Any]: A dictionary containing data loaded from the source,
             where keys are identifiers and values are the data.
 
         """
@@ -26,11 +26,11 @@ class BaseLoader(abc.ABC):
 class EnvironmentLoader(BaseLoader):
     """Environment variables loader."""
 
-    def load(self) -> Dict[str, Any]:
+    def load(self) -> dict[str, Any]:
         """Loads environment variables.
 
         Returns:
-            Dict[str, Any]: A dictionary containing environment variables,
+            dict[str, Any]: A dictionary containing environment variables,
             where keys are variable names and values are their values.
 
         Note:

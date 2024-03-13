@@ -1,6 +1,6 @@
 """Contains product domain dependencies."""
 
-from typing import Annotated, Any, Dict, List
+from typing import Annotated, Any
 
 from bson import ObjectId
 from fastapi import Depends, HTTPException, Request, status
@@ -127,11 +127,11 @@ class ProductsFilterDependency:
 
         await products_access_filter_validator.validate(available=filter_.available)
 
-        fields: Dict[str, Any] = {
+        fields: dict[str, Any] = {
             parameter["machine_name"]: (
-                List[getattr(ProductParameterTypesEnum, parameter["type"]).value]  # type: ignore
+                list[getattr(ProductParameterTypesEnum, parameter["type"]).value]  # type: ignore
                 if parameter["type"] != ProductParameterTypesEnum.LIST.name
-                else List[str],
+                else list[str],
                 None,
             )
             for parameter in await parameter_service.get()

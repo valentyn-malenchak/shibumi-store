@@ -1,6 +1,7 @@
 """Module that contains category domain routers."""
 
-from typing import Any, Dict, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 from fastapi import APIRouter, Depends, Security, status
 
@@ -27,7 +28,7 @@ async def get_categories(
     ),
     filter_: CategoriesFilterModel = Depends(),
     category_service: CategoryService = Depends(),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """API which returns categories list.
 
     Args:
@@ -36,7 +37,7 @@ async def get_categories(
         category_service (CategoryService): Category service.
 
     Returns:
-        Dict[str, Any]: List of categories.
+        dict[str, Any]: List of categories.
 
     """
 

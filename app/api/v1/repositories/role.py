@@ -1,6 +1,7 @@
 """Module that contains role repository class."""
 
-from typing import Any, List, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
@@ -41,19 +42,19 @@ class RoleRepository(BaseRepository):
 
     async def get_scopes_by_roles(
         self,
-        roles: List[RolesEnum],
+        roles: list[RolesEnum],
         *,
         session: AsyncIOMotorClientSession | None = None,
-    ) -> List[str]:
+    ) -> list[str]:
         """Retrieves a list of scopes from the repository by roles name list.
 
         Args:
-            roles (List[str]): List of roles.
+            roles (list[str]): List of roles.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
         Returns:
-            List[str]: The retrieved scopes.
+            list[str]: The retrieved scopes.
 
         """
 

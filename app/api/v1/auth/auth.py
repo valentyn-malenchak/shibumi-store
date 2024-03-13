@@ -4,7 +4,6 @@ using FastAPI security features and JWTs.
 """
 
 import abc
-from typing import List
 
 from bson import ObjectId
 from fastapi import Depends, HTTPException, Request, status
@@ -125,12 +124,12 @@ class BaseAuthorization(abc.ABC):
             )
 
     @staticmethod
-    def verify_scopes(source_scopes: List[str], required_scopes: List[str]) -> None:
+    def verify_scopes(source_scopes: list[str], required_scopes: list[str]) -> None:
         """Verifies all required scopes contain in source scopes.
 
         Args:
-            source_scopes (List[str]): Source scopes.
-            required_scopes (List[str]): Required scopes.
+            source_scopes (list[str]): Source scopes.
+            required_scopes (list[str]): Required scopes.
 
         """
 

@@ -1,7 +1,8 @@
 """Module that contains product service class."""
 
 
-from typing import Any, List, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 import arrow
 from bson import ObjectId
@@ -59,7 +60,7 @@ class ProductService(BaseService):
         search: SearchModel,
         sorting: SortingModel,
         pagination: PaginationModel,
-    ) -> List[Mapping[str, Any]]:
+    ) -> list[Mapping[str, Any]]:
         """Retrieves a list of products based on parameters.
 
         Args:
@@ -69,7 +70,7 @@ class ProductService(BaseService):
             pagination (PaginationModel): Parameters for pagination.
 
         Returns:
-            List[Mapping[str, Any]]: The retrieved list of products.
+            list[Mapping[str, Any]]: The retrieved list of products.
 
         """
 

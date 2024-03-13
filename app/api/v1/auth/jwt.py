@@ -1,6 +1,5 @@
 """Module that provides utility functions for manipulating JWT (JSON Web Token)."""
 
-from typing import Dict
 
 import arrow
 from jose import ExpiredSignatureError, JWTError, jwt
@@ -87,7 +86,7 @@ class JWT:
         expires_delta: int | None = None,
         *,
         include_refresh: bool = True,
-    ) -> Dict[str, str]:
+    ) -> dict[str, str]:
         """Encodes JWTs token with the provided data and expiration time.
 
         Args:
@@ -100,7 +99,7 @@ class JWT:
             Defaults to True.
 
         Returns:
-            Dict[str, str]: JWT.
+            dict[str, str]: JWT.
 
         """
 

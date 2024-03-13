@@ -1,7 +1,7 @@
 """Module that contains category domain models."""
 
 from datetime import datetime
-from typing import Annotated, List
+from typing import Annotated
 
 from bson import ObjectId
 from pydantic import BaseModel, ConfigDict
@@ -19,7 +19,7 @@ class Category(ObjectIdModel):
     path: str  # used as "Materialized Path" pattern
     machine_name: str
     has_children: bool
-    parameters: List[Parameter]
+    parameters: list[Parameter]
     created_at: datetime
     updated_at: datetime | None
 
@@ -39,7 +39,7 @@ class ShortCategoryResponseModel(ObjectIdModel):
 class ExtendedCategoryResponseModel(ShortCategoryResponseModel):
     """Extended category response model."""
 
-    parameters: List[Parameter]
+    parameters: list[Parameter]
 
 
 class CategoriesFilterModel(BaseModel):
@@ -52,7 +52,7 @@ class CategoriesFilterModel(BaseModel):
 class CategoriesListModel(ListResponseModel):
     """Categories list model."""
 
-    data: List[ShortCategoryResponseModel]
+    data: list[ShortCategoryResponseModel]
 
 
 class CategoryParametersResponseModel(ObjectIdModel):

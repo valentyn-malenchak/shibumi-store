@@ -1,7 +1,8 @@
 """Module that contains role service class."""
 
 
-from typing import Any, List, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 from bson import ObjectId, json_util
 from fastapi import BackgroundTasks, Depends
@@ -41,14 +42,14 @@ class RoleService(BaseService):
 
         self.repository = repository
 
-    async def get(self, *_: Any) -> List[Mapping[str, Any]]:
+    async def get(self, *_: Any) -> list[Mapping[str, Any]]:
         """Retrieves a list of roles based on parameters.
 
         Args:
             _ (Any): Parameters for list filtering, searching, sorting and pagination.
 
         Returns:
-            List[Mapping[str, Any]]: The retrieved list of roles.
+            list[Mapping[str, Any]]: The retrieved list of roles.
 
         """
 
@@ -102,14 +103,14 @@ class RoleService(BaseService):
         """
         raise NotImplementedError
 
-    async def get_scopes_by_roles(self, roles: List[RolesEnum]) -> List[str]:
+    async def get_scopes_by_roles(self, roles: list[RolesEnum]) -> list[str]:
         """Retrieves a list of scopes from the repository by roles name list.
 
         Args:
-            roles (List[str]): List of roles.
+            roles (list[str]): List of roles.
 
         Returns:
-            List[str]: The retrieved scopes.
+            list[str]: The retrieved scopes.
 
         """
         return await self.repository.get_scopes_by_roles(roles=roles)

@@ -1,7 +1,7 @@
 """Module that contains product domain routers."""
 
 
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import APIRouter, Depends, Security, status
 
@@ -62,7 +62,7 @@ async def get_products(
     sorting: SortingModel = Depends(),
     pagination: PaginationModel = Depends(),
     product_service: ProductService = Depends(),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """API which returns products list.
 
     Args:

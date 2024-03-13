@@ -1,6 +1,6 @@
 """Module that contains base test component."""
 
-from typing import Any, List
+from typing import Any
 
 
 class BaseTest:
@@ -10,7 +10,7 @@ class BaseTest:
         self,
         obj_: Any,
         *,
-        exclude_keys: List[str],
+        exclude_keys: list[str],
     ) -> Any:
         """Excludes specified keys from dictionaries."""
 
