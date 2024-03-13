@@ -1,7 +1,7 @@
 """Module that contains product domain models."""
 
 from datetime import datetime
-from typing import Annotated, Any, Dict, List
+from typing import Annotated, Any
 
 from bson import ObjectId
 from pydantic import BaseModel
@@ -21,7 +21,7 @@ class Product(ObjectIdModel):
     category_id: Annotated[ObjectId, ObjectIdAnnotation]
     available: bool  # defines if product should be shown for customers
     html_body: str | None
-    parameters: Dict[str, Any]
+    parameters: dict[str, Any]
     created_at: datetime
     updated_at: datetime | None
 
@@ -45,7 +45,7 @@ class ExtendedProductResponseModel(ShortProductResponseModel):
 
     description: str
     html_body: str | None
-    parameters: Dict[str, Any]
+    parameters: dict[str, Any]
 
 
 class BaseProductsFilterModel(BaseModel):
@@ -58,13 +58,13 @@ class BaseProductsFilterModel(BaseModel):
 class ProductsFilterModel(BaseProductsFilterModel):
     """Products list filter model."""
 
-    parameters: Dict[str, List[Any]] | None = None
+    parameters: dict[str, list[Any]] | None = None
 
 
 class ProductsListModel(ListResponseModel):
     """Products list model."""
 
-    data: List[ShortProductResponseModel]
+    data: list[ShortProductResponseModel]
 
 
 class ProductRequestModel(BaseModel):
@@ -78,4 +78,4 @@ class ProductRequestModel(BaseModel):
     category_id: Annotated[ObjectId, ObjectIdAnnotation]
     available: bool
     html_body: str | None
-    parameters: Dict[str, Any]
+    parameters: dict[str, Any]

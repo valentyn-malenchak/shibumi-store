@@ -1,6 +1,5 @@
 """Module that contains auth domain routers."""
 
-from typing import Dict
 
 from fastapi import APIRouter, Depends, Security, status
 
@@ -23,7 +22,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 )
 async def create_tokens(
     current_user: CurrentUserModel = Depends(Authentication()),
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """API which creates Access and Refresh tokens for user.
 
     Args:
@@ -31,7 +30,7 @@ async def create_tokens(
         with permitted scopes.
 
     Returns:
-        Dict[str, str]: Access and Refresh JWTs.
+        dict[str, str]: Access and Refresh JWTs.
 
     """
 
@@ -51,7 +50,7 @@ async def refresh_access_token(
         scopes=[ScopesEnum.AUTH_REFRESH_TOKEN.name],
     ),
     role_service: RoleService = Depends(),
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """API which refreshes Access token using Refresh token.
 
     Args:
@@ -59,7 +58,7 @@ async def refresh_access_token(
         role_service (RoleService): Role service.
 
     Returns:
-        Dict[str, str]: New access token.
+        dict[str, str]: New access token.
 
     """
 

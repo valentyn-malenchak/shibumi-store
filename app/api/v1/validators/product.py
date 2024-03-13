@@ -1,7 +1,7 @@
 """Contains product domain validators."""
 
 
-from typing import Any, Dict, List
+from typing import Any
 
 from bson import ObjectId
 from fastapi import Depends, HTTPException, Request, status
@@ -66,18 +66,18 @@ class ProductParametersValidator(BaseProductValidator):
 
         self.leaf_category_validator = leaf_category_validator
 
-        self._errors: List[Dict[str, Any]] = []
+        self._errors: list[dict[str, Any]] = []
 
     async def validate(
         self,
         category_id: ObjectId,
-        requested_parameters: Dict[str, Any],
+        requested_parameters: dict[str, Any],
     ) -> None:
         """Validates product parameters.
 
         Args:
             category_id (ObjectId): BSON object identifier of requested category.
-            requested_parameters (Dict[str, Any]): Requested product parameters.
+            requested_parameters (dict[str, Any]): Requested product parameters.
 
         Raises:
             HTTPException: If product parameters are invalid.
@@ -121,7 +121,7 @@ class ProductParametersValidator(BaseProductValidator):
                             "parameters",
                             parameter.machine_name,
                         ],
-                        "msg": ValidationErrorMessagesEnum.INVALID_FIELD_TYPE.format(  # type: ignore # noqa: E501
+                        "msg": ValidationErrorMessagesEnum.INVALID_FIELD_TYPE.format(  # type: ignore
                             type_=type_.value.__name__
                         ),
                         "input": value,

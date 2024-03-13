@@ -31,7 +31,7 @@ class TestRole(BaseAPITest):
         response = await test_client.get(f"{AppConstants.API_V1_PREFIX}/roles/")
 
         assert redis_get_mock.call_count == 2  # noqa: PLR2004
-        assert redis_setex_mock.call_count == 1  # noqa: PLR2004
+        assert redis_setex_mock.call_count == 1
 
         assert response.status_code == status.HTTP_200_OK
         assert self._exclude_fields(
@@ -92,7 +92,7 @@ class TestRole(BaseAPITest):
         )
 
         assert redis_get_mock.call_count == 2  # noqa: PLR2004
-        assert redis_setex_mock.call_count == 1  # noqa: PLR2004
+        assert redis_setex_mock.call_count == 1
 
         assert response.status_code == status.HTTP_200_OK
         assert self._exclude_fields(

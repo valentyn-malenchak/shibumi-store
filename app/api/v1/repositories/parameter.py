@@ -1,6 +1,7 @@
 """Module that contains parameter repository class."""
 
-from typing import Any, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 from app.api.v1.repositories import BaseRepository
 from app.constants import ProjectionValuesEnum

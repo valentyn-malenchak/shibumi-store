@@ -1,7 +1,7 @@
 """Module that contains user domain routers."""
 
 
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import APIRouter, Depends, Security, status
 
@@ -63,7 +63,7 @@ async def get_users(
     sorting: SortingModel = Depends(),
     pagination: PaginationModel = Depends(),
     user_service: UserService = Depends(),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """API which returns users list.
 
     Args:

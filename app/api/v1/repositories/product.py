@@ -1,6 +1,7 @@
 """Module that contains product repository class."""
 
-from typing import Any, Dict, List, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 from bson import ObjectId
 from injector import inject
@@ -22,7 +23,7 @@ class ProductRepository(BaseRepository):
         search: str | None,
         category_id: ObjectId | None = None,
         available: bool | None = None,
-        parameters: Dict[str, List[Any]] | None = None,
+        parameters: dict[str, list[Any]] | None = None,
         **_: Any,
     ) -> Mapping[str, Any]:
         """Returns a query filter for list.
@@ -31,7 +32,7 @@ class ProductRepository(BaseRepository):
             search (str | None): Parameters for list searching.
             category_id (ObjectId | None): Category identifier. Defaults to None.
             available (bool | None): Available products filter. Defaults to None.
-            parameters (Dict[str, List[Any]] | None): Product parameters filter.
+            parameters (dict[str, list[Any]] | None): Product parameters filter.
             Defaults to None.
             _ (Any): Parameters for list filtering.
 
@@ -40,7 +41,7 @@ class ProductRepository(BaseRepository):
 
         """
 
-        query_filter: Dict[str, Any] = {}
+        query_filter: dict[str, Any] = {}
 
         if search is not None:
             query_filter["$text"] = {"$search": search}

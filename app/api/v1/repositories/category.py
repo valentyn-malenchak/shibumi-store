@@ -1,6 +1,7 @@
 """Module that contains category repository class."""
 
-from typing import Any, Dict, List, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 from bson import ObjectId
 from fastapi import Depends
@@ -61,7 +62,7 @@ class CategoryRepository(BaseRepository):
 
         """
 
-        query_filter: Dict[str, Any] = {}
+        query_filter: dict[str, Any] = {}
 
         if path is not None:
             query_filter["path"] = {"$regex": f"^{path}"}
@@ -153,7 +154,7 @@ class CategoryRepository(BaseRepository):
 
         parameters = category["parameters"]
 
-        pipeline: List[Dict[str, Any]] = [{"$match": {"category_id": id_}}]
+        pipeline: list[dict[str, Any]] = [{"$match": {"category_id": id_}}]
 
         list_type_parameters = [
             parameter

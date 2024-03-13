@@ -1,7 +1,6 @@
 """Module that contains role domain models."""
 
 from datetime import datetime
-from typing import List
 
 from app.api.v1.constants import RolesEnum
 from app.api.v1.models import ListResponseModel, ObjectIdModel
@@ -19,4 +18,4 @@ class RoleResponseModel(ObjectIdModel):
 class RolesListModel(ListResponseModel):
     """Roles list model."""
 
-    data: List[RoleResponseModel]
+    data: list[RoleResponseModel]

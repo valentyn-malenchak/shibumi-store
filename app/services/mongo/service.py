@@ -1,6 +1,7 @@
 """Module that contains MongoDB service."""
 
-from typing import Any, Iterable, List, Mapping, Sequence
+from collections.abc import Iterable, Mapping, Sequence
+from typing import Any
 
 from fastapi import Depends
 from injector import inject
@@ -56,7 +57,7 @@ class MongoDBService(BaseService):
         sort: Sequence[tuple[str, int | str | Mapping[str, Any]]] | None = None,
         *,
         session: AsyncIOMotorClientSession | None = None,
-    ) -> List[Mapping[str, Any]]:
+    ) -> list[Mapping[str, Any]]:
         """
         Finds documents that satisfy the specified query criteria in the chosen
         collection.
@@ -79,7 +80,7 @@ class MongoDBService(BaseService):
             if operation is transactional. Defaults to None.
 
         Returns:
-            List[Mapping[str, Any]]: List of documents.
+            list[Mapping[str, Any]]: List of documents.
 
         """
 
@@ -136,7 +137,7 @@ class MongoDBService(BaseService):
         filter_: Mapping[str, Any] | None = None,
         *,
         session: AsyncIOMotorClientSession | None = None,
-    ) -> List[Any]:
+    ) -> list[Any]:
         """Finds the distinct values for a specified field across chosen collection and
         returns the results in an array.
 
@@ -149,7 +150,7 @@ class MongoDBService(BaseService):
             if operation is transactional. Defaults to None.
 
         Returns:
-            List[Any]: List of distinct values.
+            list[Any]: List of distinct values.
 
         """
 
@@ -216,7 +217,7 @@ class MongoDBService(BaseService):
         documents: Iterable[Mapping[str, Any]],
         *,
         session: AsyncIOMotorClientSession | None = None,
-    ) -> List[Any]:
+    ) -> list[Any]:
         """Inserts multiple documents in bulk in the chosen collection.
 
         Args:
@@ -227,7 +228,7 @@ class MongoDBService(BaseService):
             if operation is transactional. Defaults to None.
 
         Returns:
-            List[Any]: The IDs of created documents.
+            list[Any]: The IDs of created documents.
 
         """
 
@@ -287,7 +288,7 @@ class MongoDBService(BaseService):
         *,
         session: AsyncIOMotorClientSession | None = None,
         cursor_length: int | None = None,
-    ) -> List[Mapping[str, Any]]:
+    ) -> list[Mapping[str, Any]]:
         """
         Aggregates a pipeline in the chosen collection.
 
@@ -301,7 +302,7 @@ class MongoDBService(BaseService):
             Defaults to None.
 
         Returns:
-            List[Mapping[str, Any]]: List of documents.
+            list[Mapping[str, Any]]: List of documents.
 
         """
 

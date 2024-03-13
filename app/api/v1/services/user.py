@@ -1,7 +1,8 @@
 """Module that contains user service class."""
 
 
-from typing import Any, List, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 import arrow
 from bson import ObjectId
@@ -70,7 +71,7 @@ class UserService(BaseService):
         search: SearchModel,
         sorting: SortingModel,
         pagination: PaginationModel,
-    ) -> List[Mapping[str, Any]]:
+    ) -> list[Mapping[str, Any]]:
         """Retrieves a list of users based on parameters.
 
         Args:
@@ -80,7 +81,7 @@ class UserService(BaseService):
             pagination (PaginationModel): Parameters for pagination.
 
         Returns:
-            List[Mapping[str, Any]]: The retrieved list of users.
+            list[Mapping[str, Any]]: The retrieved list of users.
 
         """
 

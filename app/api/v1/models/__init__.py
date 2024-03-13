@@ -1,6 +1,6 @@
 """Module that contains common domain models."""
 
-from typing import Annotated, Any, List
+from typing import Annotated, Any
 
 from bson import ObjectId
 from pydantic import AliasChoices, BaseModel, Field
@@ -71,5 +71,5 @@ class SortingModel(BaseModel):
 class ListResponseModel(BaseModel):
     """List response model."""
 
-    data: List[Any]
+    data: list[Any]
     total: int

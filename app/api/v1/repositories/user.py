@@ -1,6 +1,7 @@
 """Module that contains user repository class."""
 
-from typing import Any, Dict, List, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 from injector import inject
 from motor.motor_asyncio import AsyncIOMotorClientSession
@@ -18,7 +19,7 @@ class UserRepository(BaseRepository):
     @staticmethod
     async def _get_list_query_filter(
         search: str | None,
-        roles: List[str] | None = None,
+        roles: list[str] | None = None,
         deleted: bool | None = None,
         **_: Any,
     ) -> Mapping[str, Any]:
@@ -26,7 +27,7 @@ class UserRepository(BaseRepository):
 
         Args:
             search (str | None): Parameters for list searching.
-            roles (List[str] | None): List of roles for filtering. Defaults to None.
+            roles (list[str] | None): List of roles for filtering. Defaults to None.
             deleted (bool | None): Deleted status filtering. Defaults to None.
             _ (Any): Parameters for list filtering.
 
@@ -35,7 +36,7 @@ class UserRepository(BaseRepository):
 
         """
 
-        query_filter: Dict[str, Any] = {}
+        query_filter: dict[str, Any] = {}
 
         if search is not None:
             query_filter["$text"] = {"$search": search}

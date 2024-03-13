@@ -1,7 +1,6 @@
 """Module that contains user domain models."""
 
 from datetime import date, datetime
-from typing import List
 
 from fastapi import Query
 from pydantic import BaseModel, EmailStr, Field
@@ -27,7 +26,7 @@ class User(ObjectIdModel):
     hashed_password: str
     phone_number: str
     birthdate: date
-    roles: List[RolesEnum]
+    roles: list[RolesEnum]
     deleted: bool
     created_at: datetime
     updated_at: datetime | None
@@ -42,7 +41,7 @@ class CurrentUserModel(BaseModel):
     """User model for authenticate/authorize operations."""
 
     object: User
-    scopes: List[str]
+    scopes: list[str]
 
 
 class UserResponseModel(ObjectIdModel):
@@ -56,7 +55,7 @@ class UserResponseModel(ObjectIdModel):
     email_verified: bool
     phone_number: str
     birthdate: date
-    roles: List[str]
+    roles: list[str]
     deleted: bool
     created_at: datetime
     updated_at: datetime | None
@@ -65,14 +64,14 @@ class UserResponseModel(ObjectIdModel):
 class UsersFilterModel(BaseModel):
     """Users list filter model."""
 
-    roles: List[RolesEnum] = Field(Query([]))
+    roles: list[RolesEnum] = Field(Query([]))
     deleted: bool | None = None
 
 
 class UsersListModel(ListResponseModel):
     """Users list model."""
 
-    data: List[UserResponseModel]
+    data: list[UserResponseModel]
 
 
 class CreateUserRequestModel(BaseModel):
@@ -86,7 +85,7 @@ class CreateUserRequestModel(BaseModel):
     password: PasswordPolicy
     phone_number: PhoneNumber
     birthdate: date
-    roles: List[RolesEnum]
+    roles: list[RolesEnum]
 
 
 class UpdateUserRequestModel(BaseModel):
@@ -97,7 +96,7 @@ class UpdateUserRequestModel(BaseModel):
     patronymic_name: str | None
     phone_number: PhoneNumber
     birthdate: date
-    roles: List[RolesEnum]
+    roles: list[RolesEnum]
 
 
 class UserPasswordUpdateModel(BaseModel):

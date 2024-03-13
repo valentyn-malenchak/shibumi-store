@@ -1,6 +1,6 @@
 """Module that contains role domain routers."""
 
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import APIRouter, Depends, Security, status
 
@@ -19,7 +19,7 @@ async def get_roles(
         OptionalAuthorization(), scopes=[ScopesEnum.ROLES_GET_ROLES.name]
     ),
     role_service: RoleService = Depends(),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """API which returns roles list.
 
     Args:
@@ -27,7 +27,7 @@ async def get_roles(
         role_service (RoleService): Role service.
 
     Returns:
-        Dict[str, Any]: List of roles.
+        dict[str, Any]: List of roles.
 
     """
 

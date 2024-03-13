@@ -1,7 +1,8 @@
 """Module that contains base repository abstract class."""
 
 import abc
-from typing import Any, Dict, List, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 from bson import ObjectId
 from fastapi import Depends
@@ -36,7 +37,7 @@ class BaseRepository(abc.ABC):
         page_size: int | None,
         session: AsyncIOMotorClientSession | None = None,
         **filters: Any,
-    ) -> List[Mapping[str, Any]]:
+    ) -> list[Mapping[str, Any]]:
         """Retrieves a list of items based on parameters.
 
         Args:
@@ -51,7 +52,7 @@ class BaseRepository(abc.ABC):
             filters (Any): Parameters for list filtering.
 
         Returns:
-            List[Mapping[str, Any]]: The retrieved list of items.
+            list[Mapping[str, Any]]: The retrieved list of items.
 
         """
 
@@ -119,7 +120,7 @@ class BaseRepository(abc.ABC):
     @staticmethod
     def _get_list_sorting(
         sort_by: str | None, sort_order: SortingTypesEnum | None
-    ) -> List[tuple[str, int]] | None:
+    ) -> list[tuple[str, int]] | None:
         """Returns list sorting depends on parameters.
 
         Args:
@@ -128,7 +129,7 @@ class BaseRepository(abc.ABC):
             or descending.
 
         Returns:
-            List[tuple[str, int]] | None: Sorting.
+            list[tuple[str, int]] | None: Sorting.
 
         """
 
@@ -185,12 +186,12 @@ class BaseRepository(abc.ABC):
         )
 
     async def create(
-        self, data: Dict[str, Any], *, session: AsyncIOMotorClientSession | None = None
+        self, data: dict[str, Any], *, session: AsyncIOMotorClientSession | None = None
     ) -> Any:
         """Creates a new item in repository.
 
         Args:
-            data (Dict[str, Any]): The data for the new item.
+            data (dict[str, Any]): The data for the new item.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
@@ -205,19 +206,19 @@ class BaseRepository(abc.ABC):
 
     async def create_many(
         self,
-        items: List[Dict[str, Any]],
+        items: list[dict[str, Any]],
         *,
         session: AsyncIOMotorClientSession | None = None,
-    ) -> List[Any]:
+    ) -> list[Any]:
         """Creates bulk items in the repository.
 
         Args:
-            items (List[Dict[str, Any]]): Items to be created.
+            items (list[dict[str, Any]]): Items to be created.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
         Returns:
-            List[Any]: The IDs of created items.
+            list[Any]: The IDs of created items.
 
         """
 
@@ -230,7 +231,7 @@ class BaseRepository(abc.ABC):
     async def update_by_id(
         self,
         id_: ObjectId,
-        data: Dict[str, Any],
+        data: dict[str, Any],
         *,
         upsert: bool = False,
         session: AsyncIOMotorClientSession | None = None,
@@ -239,7 +240,7 @@ class BaseRepository(abc.ABC):
 
         Args:
             id_ (ObjectId): The unique identifier of the item.
-            data (Dict[str, Any]): Data to update item.
+            data (dict[str, Any]): Data to update item.
             upsert (bool): Use update or insert. Defaults to False.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.

@@ -1,7 +1,7 @@
 """Contains fixture loader class."""
 
 import os
-from typing import Any, Dict, List
+from typing import Any, ClassVar
 
 from injector import Injector
 
@@ -22,7 +22,7 @@ class FileFixtureManager:
     _injector = Injector()
 
     # contains collection mapping to its repository
-    _fixture_repositories: Dict[MongoCollectionsEnum, BaseRepository] = {
+    _fixture_repositories: ClassVar[dict[MongoCollectionsEnum, BaseRepository]] = {
         MongoCollectionsEnum.USERS: _injector.get(UserRepository),
         MongoCollectionsEnum.PRODUCTS: _injector.get(ProductRepository),
         MongoCollectionsEnum.CATEGORY_PARAMETERS: _injector.get(
@@ -31,12 +31,12 @@ class FileFixtureManager:
     }
 
     def __init__(
-        self, collection_names: List[MongoCollectionsEnum] | None = None
+        self, collection_names: list[MongoCollectionsEnum] | None = None
     ) -> None:
         """File fixture manager initialization method.
 
         Args:
-            collection_names (List[MongoCollectionsEnum] | None): List of
+            collection_names (list[MongoCollectionsEnum] | None): List of
             collections to be handled. Defaults to None.
 
         """

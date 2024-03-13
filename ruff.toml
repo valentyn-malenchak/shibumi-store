@@ -31,8 +31,9 @@ target-version = "py312"
 
 [lint]
 # Enable the pycodestyle (`E`), Pyflakes (`F`), pycodestyle warnings (`W`),
-# isort (`I`), pep8-naming (`N`), Pylint (`PL`) and McCabe complexity (`C901`).
-select = ["E", "F", "W", "I", "N", "PL", "C90"]
+# isort (`I`), pep8-naming (`N`), Pylint (`PL`), McCabe complexity (`C901`),.
+# pyupgrade (`UP`) and Ruff-specific rules (`RUF`).
+select = ["E", "F", "W", "I", "N", "PL", "C90", "UP", "RUF"]
 # Allow autofix for isort and F401 imported but unused.
 fixable = ["I", "F401"]
 
