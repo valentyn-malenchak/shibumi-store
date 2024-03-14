@@ -1,6 +1,5 @@
 """Module that contains health domain router."""
 
-
 from fastapi import APIRouter, Security, status
 
 from app.api.v1.auth.auth import StrictAuthorization

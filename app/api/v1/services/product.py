@@ -1,6 +1,5 @@
 """Module that contains product service class."""
 
-
 from collections.abc import Mapping
 from typing import Any
 

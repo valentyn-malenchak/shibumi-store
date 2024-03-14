@@ -1,6 +1,5 @@
 """Module that contains user service class."""
 
-
 from collections.abc import Mapping
 from typing import Any
 

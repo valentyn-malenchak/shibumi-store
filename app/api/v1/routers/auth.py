@@ -1,6 +1,5 @@
 """Module that contains auth domain routers."""
 
-
 from fastapi import APIRouter, Depends, Security, status
 
 from app.api.v1.auth.auth import Authentication, StrictRefreshTokenAuthorization

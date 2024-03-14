@@ -1,6 +1,5 @@
 """Module that provides utility functions for manipulating JWT (JSON Web Token)."""
 
-
 import arrow
 from jose import ExpiredSignatureError, JWTError, jwt
 from pydantic import ValidationError

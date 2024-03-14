@@ -1,6 +1,5 @@
 """Contains product domain validators."""
 
-
 from typing import Any
 
 from bson import ObjectId

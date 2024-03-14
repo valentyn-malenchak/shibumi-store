@@ -1,6 +1,5 @@
 """Module that contains product domain routers."""
 
-
 from typing import Any
 
 from fastapi import APIRouter, Depends, Security, status
