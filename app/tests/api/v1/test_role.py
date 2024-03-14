@@ -1,6 +1,5 @@
 """Module that contains tests for role routes."""
 
-
 from unittest.mock import MagicMock, Mock, patch
 
 import pytest

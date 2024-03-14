@@ -1,6 +1,5 @@
 """Module that contains tests for category routes."""
 
-
 from unittest.mock import Mock, patch
 
 import pytest

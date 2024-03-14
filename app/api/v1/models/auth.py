@@ -1,6 +1,5 @@
 """Module that contains auth domain models."""
 
-
 from pydantic import BaseModel
 
 

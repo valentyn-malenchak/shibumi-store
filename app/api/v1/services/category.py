@@ -1,6 +1,5 @@
 """Module that contains category service class."""
 
-
 from collections.abc import Mapping
 from typing import Any
 

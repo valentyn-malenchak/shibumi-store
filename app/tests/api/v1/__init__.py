@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 import pytest_asyncio
 from _pytest.fixtures import SubRequest
-from httpx import AsyncClient
+from httpx import ASGITransport, AsyncClient
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from app.app import app
@@ -39,7 +39,10 @@ class BaseAPITest(BaseTest):
     @pytest_asyncio.fixture
     async def test_client(self) -> AsyncGenerator[AsyncClient, None]:
         """Opens the TestClient generator for the FastAPI application."""
-        async with AsyncClient(app=app, base_url=self._APP_BASE_URL) as client:
+        async with AsyncClient(
+            transport=ASGITransport(app),  # type: ignore
+            base_url=self._APP_BASE_URL,
+        ) as client:
             yield client
 
     @pytest.fixture(scope="session", autouse=True)
