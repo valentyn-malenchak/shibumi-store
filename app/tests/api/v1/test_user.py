@@ -678,6 +678,7 @@ class TestUser(BaseAPITest):
                 "first_name": "John",
                 "last_name": "Smith",
                 "patronymic_name": "Batman",
+                "email": "john.smith@gmail.com",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
                 "roles": [RolesEnum.CUSTOMER],
@@ -718,6 +719,7 @@ class TestUser(BaseAPITest):
                 "first_name": "John",
                 "last_name": "Smith",
                 "patronymic_name": "Batman",
+                "email": "john.smith@gmail.com",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
                 "roles": [RolesEnum.CUSTOMER, RolesEnum.ADMIN],
@@ -745,6 +747,7 @@ class TestUser(BaseAPITest):
                 "first_name": "Anya",
                 "last_name": "Schoen",
                 "patronymic_name": None,
+                "email": "anya_schoen@gmail.com",
                 "phone_number": "+380980004321",
                 "birthdate": "1999-09-07",
                 "roles": [
@@ -781,6 +784,55 @@ class TestUser(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
+    @freeze_time(FROZEN_DATETIME)
+    async def test_update_user_email_change(
+        self,
+        test_client: AsyncClient,
+        arrange_db: None,
+        redis_setex_mock: MagicMock,
+        send_grid_send_mock: MagicMock,
+    ) -> None:
+        """Test update user in case email is changed."""
+
+        response = await test_client.patch(
+            f"{AppConstants.API_V1_PREFIX}/users/65844f12b6de26578d98c2c8/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+            json={
+                "first_name": "John",
+                "last_name": "Smith",
+                "patronymic_name": "Batman",
+                "email": "john.smith+1@gmail.com",
+                "phone_number": "+380980000001",
+                "birthdate": "1999-12-31",
+                "roles": [RolesEnum.CUSTOMER],
+            },
+        )
+
+        assert redis_setex_mock.call_count == 1
+        assert send_grid_send_mock.call_count == 1
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "id": "65844f12b6de26578d98c2c8",
+            "first_name": "John",
+            "last_name": "Smith",
+            "patronymic_name": "Batman",
+            "username": "john.smith",
+            "email": "john.smith+1@gmail.com",
+            "email_verified": False,
+            "phone_number": "+380980000001",
+            "birthdate": "1999-12-31",
+            "roles": [RolesEnum.CUSTOMER],
+            "deleted": False,
+            "created_at": "2023-12-30T13:25:43.895000",
+            "updated_at": FROZEN_DATETIME,
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
     async def test_update_user_validate_json_data(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -793,6 +845,7 @@ class TestUser(BaseAPITest):
                 "first_name": "John",
                 "last_name": "Smith",
                 "patronymic_name": "Batman",
+                "email": "john.smith@gmail.com",
                 "phone_number": "+3809800000013",
                 "birthdate": "1999-12-35",
                 "roles": ["CEO"],
@@ -971,6 +1024,7 @@ class TestUser(BaseAPITest):
                 "first_name": "Frederique",
                 "last_name": "Langosh",
                 "patronymic_name": "Definitely not Batman",
+                "email": "frederique.langosh@gmail.com",
                 "phone_number": "+380980000001",
                 "birthdate": "1999-12-31",
                 "roles": [RolesEnum.CONTENT_MANAGER],

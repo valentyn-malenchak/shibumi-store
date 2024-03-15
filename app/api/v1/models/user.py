@@ -94,6 +94,7 @@ class UpdateUserRequestModel(BaseModel):
     first_name: str
     last_name: str
     patronymic_name: str | None
+    email: EmailStr
     phone_number: PhoneNumber
     birthdate: date
     roles: list[RolesEnum]

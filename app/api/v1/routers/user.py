@@ -142,7 +142,7 @@ async def request_verify_user_email(
         user_service (UserService): User service.
 
     """
-    return await user_service.request_verify_email(user=user)
+    return await user_service.request_verify_email(item=user)
 
 
 @router.patch("/{username}/verify-email/", status_code=status.HTTP_204_NO_CONTENT)
@@ -185,7 +185,7 @@ async def update_user(
         User: Updated user object.
 
     """
-    return await user_service.update_by_id(id_=user.id, data=user_data)
+    return await user_service.update(item=user, data=user_data)
 
 
 @router.patch("/{user_id}/password/", status_code=status.HTTP_204_NO_CONTENT)
@@ -242,7 +242,7 @@ async def request_reset_user_password(
         user_service (UserService): User service.
 
     """
-    return await user_service.request_reset_password(user=user)
+    return await user_service.request_reset_password(item=user)
 
 
 @router.patch("/{username}/reset-password/", status_code=status.HTTP_204_NO_CONTENT)
