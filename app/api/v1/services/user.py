@@ -191,15 +191,44 @@ class UserService(BaseService):
 
         user = await self.get_by_id(id_=id_)
 
-        await self.request_verify_email(user=user)
+        await self.request_verify_email(item=user)
 
         return user
 
-    async def update(self, item: Any, data: Any) -> Any:
+    async def update(self, item: User, data: UpdateUserRequestModel) -> User:
         """Updates a user object.
 
         Args:
-            item (Any): User object.
+            item (User): User object.
+            data (UpdateUserRequestModel): Data to update user.
+
+        Returns:
+            User: The updated user.
+
+        """
+
+        emails_match = item.email == data.email
+
+        await self.repository.update_by_id(
+            id_=item.id,
+            data={
+                **data.model_dump(),
+                "email_verified": emails_match and item.email_verified,
+                "birthdate": arrow.get(data.birthdate).datetime,
+                "updated_at": arrow.utcnow().datetime,
+            },
+        )
+
+        if emails_match is False:
+            await self.request_verify_email(item=item)
+
+        return await self.get_by_id(id_=item.id)
+
+    async def update_by_id(self, id_: Any, data: Any) -> Any:
+        """Updates a user by its unique identifier.
+
+        Args:
+            id_ (Any): The unique identifier of the user.
             data (Any): Data to update user.
 
         Returns:
@@ -210,29 +239,6 @@ class UserService(BaseService):
 
         """
         raise NotImplementedError
-
-    async def update_by_id(self, id_: ObjectId, data: UpdateUserRequestModel) -> User:
-        """Updates a user by its unique identifier.
-
-        Args:
-            id_ (ObjectId): The unique identifier of the user.
-            data (Any): Data to update user.
-
-        Returns:
-            User: The updated user.
-
-        """
-
-        await self.repository.update_by_id(
-            id_=id_,
-            data={
-                **data.model_dump(),
-                "birthdate": arrow.get(data.birthdate).datetime,
-                "updated_at": arrow.utcnow().datetime,
-            },
-        )
-
-        return await self.get_by_id(id_=id_)
 
     async def update_password(self, id_: ObjectId, password: str) -> None:
         """Updates user's password by its unique identifier.
@@ -281,25 +287,25 @@ class UserService(BaseService):
             id_=id_, data={"deleted": True, "updated_at": arrow.utcnow().datetime}
         )
 
-    async def request_reset_password(self, user: User) -> None:
+    async def request_reset_password(self, item: User) -> None:
         """Requests user's password reset.
 
         Args:
-            user (User): User that requests password reset.
+            item (User): User that requests password reset.
 
         """
 
         token = VerificationToken.generate()
 
         self.redis_service.set(
-            name=RedisNamesEnum.RESET_PASSWORD.format(user_id=user.id),  # type: ignore
+            name=RedisNamesEnum.RESET_PASSWORD.format(user_id=item.id),  # type: ignore
             value=token.hash(),
             ttl=RedisNamesTTLEnum.RESET_PASSWORD.value,
         )
 
         self.background_tasks.add_task(
             self.send_grid_service.send,
-            to_emails=user.email,
+            to_emails=item.email,
             subject=EmailSubjectsEnum.RESET_PASSWORD,
             plain_text_content=EmailTextEnum.RESET_PASSWORD.format(  # type: ignore
                 token=token.value
@@ -334,25 +340,25 @@ class UserService(BaseService):
             name=RedisNamesEnum.RESET_PASSWORD.format(user_id=id_)  # type: ignore
         )
 
-    async def request_verify_email(self, user: User) -> None:
+    async def request_verify_email(self, item: User) -> None:
         """Requests user's email verification.
 
         Args:
-            user (User): User that requests email verification.
+            item (User): User that requests email verification.
 
         """
 
         token = VerificationToken.generate()
 
         self.redis_service.set(
-            name=RedisNamesEnum.EMAIL_VERIFICATION.format(user_id=user.id),  # type: ignore
+            name=RedisNamesEnum.EMAIL_VERIFICATION.format(user_id=item.id),  # type: ignore
             value=token.hash(),
             ttl=RedisNamesTTLEnum.EMAIL_VERIFICATION.value,
         )
 
         self.background_tasks.add_task(
             self.send_grid_service.send,
-            to_emails=user.email,
+            to_emails=item.email,
             subject=EmailSubjectsEnum.EMAIL_VERIFICATION,
             plain_text_content=EmailTextEnum.EMAIL_VERIFICATION.format(  # type: ignore
                 token=token.value
