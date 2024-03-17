@@ -4,12 +4,17 @@ from typing import Any
 
 from bson import ObjectId
 from fastapi import Depends, HTTPException, Request, status
+from pydantic import BaseModel, ValidationError, create_model
 
 from app.api.v1.constants import ProductParameterTypesEnum
-from app.api.v1.models.product import Product
+from app.api.v1.models.product import (
+    Product,
+    ProductsFilterModel,
+)
+from app.api.v1.services.parameter import ParameterService
 from app.api.v1.services.product import ProductService
 from app.api.v1.validators import BaseValidator
-from app.api.v1.validators.category import LeafCategoryValidator
+from app.api.v1.validators.category import CategoryLeafValidator
 from app.constants import HTTPErrorMessagesEnum, ValidationErrorMessagesEnum
 from app.exceptions import EntityIsNotFoundError
 
@@ -50,20 +55,20 @@ class ProductParametersValidator(BaseProductValidator):
         self,
         request: Request,
         product_service: ProductService = Depends(),
-        leaf_category_validator: LeafCategoryValidator = Depends(),
+        category_leaf_validator: CategoryLeafValidator = Depends(),
     ):
-        """Initializes product parameter validator.
+        """Initializes product parameters validator.
 
         Args:
             request (Request): Current request object.
             product_service (ProductService): Product service.
-            leaf_category_validator (LeafCategoryValidator): Leaf category validator.
+            category_leaf_validator (CategoryLeafValidator): Category leaf validator.
 
         """
 
         super().__init__(request=request, product_service=product_service)
 
-        self.leaf_category_validator = leaf_category_validator
+        self.category_leaf_validator = category_leaf_validator
 
         self._errors: list[dict[str, Any]] = []
 
@@ -83,7 +88,7 @@ class ProductParametersValidator(BaseProductValidator):
 
         """
 
-        category = await self.leaf_category_validator.validate(category_id=category_id)
+        category = await self.category_leaf_validator.validate(category_id=category_id)
 
         for parameter in category.parameters:
             # each of category parameters is required to set
@@ -135,8 +140,8 @@ class ProductParametersValidator(BaseProductValidator):
             )
 
 
-class ProductIdValidator(BaseProductValidator):
-    """Product identifier validator."""
+class ProductByIdValidator(BaseProductValidator):
+    """Product by identifier validator."""
 
     async def validate(self, product_id: ObjectId) -> Product:
         """Validates requested product by id.
@@ -166,19 +171,44 @@ class ProductIdValidator(BaseProductValidator):
         return product
 
 
-class ProductAccessValidator(BaseProductValidator):
-    """Product access validator."""
+class ProductByIdStatusValidator(BaseProductValidator):
+    """Product by identifier status validator."""
 
-    async def validate(self, product: Product) -> None:
-        """Checks if the current user has access to product.
+    def __init__(
+        self,
+        request: Request,
+        product_service: ProductService = Depends(),
+        product_by_id_validator: ProductByIdValidator = Depends(),
+    ):
+        """Initializes product by identifier status validator.
 
         Args:
-            product (Product): Product object.
+            request (Request): Current request object.
+            product_service (ProductService): Product service.
+            product_by_id_validator (ProductByIdValidator): Product by identifier
+            validator.
+
+        """
+
+        super().__init__(request=request, product_service=product_service)
+
+        self.product_by_id_validator = product_by_id_validator
+
+    async def validate(self, product_id: ObjectId) -> Product:
+        """Checks product and user's access to it.
+
+        Args:
+            product_id (ObjectId): BSON object identifier of requested product.
+
+        Returns:
+            Product: Product object.
 
         Raises:
             HTTPException: If current user don't have access to product.
 
         """
+
+        product = await self.product_by_id_validator.validate(product_id=product_id)
 
         current_user = getattr(self.request.state, "current_user", None)
 
@@ -190,9 +220,11 @@ class ProductAccessValidator(BaseProductValidator):
                 detail=HTTPErrorMessagesEnum.PRODUCT_ACCESS_DENIED,
             )
 
+        return product
 
-class ProductsAccessFilterValidator(BaseProductValidator):
-    """Products access filter validator."""
+
+class ProductsAvailableFilterValidator(BaseProductValidator):
+    """Products available filter validator."""
 
     async def validate(self, available: bool | None) -> None:
         """Checks if the current user has access to not available products.
@@ -215,3 +247,82 @@ class ProductsAccessFilterValidator(BaseProductValidator):
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=HTTPErrorMessagesEnum.PRODUCTS_NOT_AVAILABLE_ACCESS_DENIED,
             )
+
+
+class ProductsFilterValidator(BaseProductValidator):
+    """Products filter validator."""
+
+    def __init__(
+        self,
+        request: Request,
+        product_service: ProductService = Depends(),
+        parameter_service: ParameterService = Depends(),
+        products_available_filter_validator: ProductsAvailableFilterValidator = Depends(),  # noqa: E501
+    ):
+        """Initializes products filter validator.
+
+        Args:
+            request (Request): Current request object.
+            product_service (ProductService): Product service.
+            parameter_service (ParameterService): Parameter service.
+            products_available_filter_validator (ProductsAvailableFilterValidator):
+            Products available filter validator.
+
+        """
+
+        super().__init__(request=request, product_service=product_service)
+
+        self.parameter_service = parameter_service
+
+        self.products_available_filter_validator = products_available_filter_validator
+
+    async def validate(
+        self, category_id: ObjectId | None, available: bool | None
+    ) -> ProductsFilterModel:
+        """Validates and formats products list filter.
+
+        Args:
+            category_id (ObjectId | None): Category identifier filter.
+            available (available: bool | None): Product availability filter.
+
+        Returns:
+            ProductsFilterModel: Products filter object.
+
+        Raises:
+            HTTPException: If product parameters filter is invalid.
+
+        """
+
+        await self.products_available_filter_validator.validate(available=available)
+
+        fields: dict[str, Any] = {
+            parameter["machine_name"]: (
+                list[getattr(ProductParameterTypesEnum, parameter["type"]).value]  # type: ignore
+                if parameter["type"] != ProductParameterTypesEnum.LIST.name
+                else list[str],
+                None,
+            )
+            for parameter in await self.parameter_service.get()
+        }
+
+        parameters_model = create_model(
+            "ProductsParameters", **fields, __base__=BaseModel
+        )
+
+        try:
+            query_params = parameters_model(
+                **{
+                    query_param: self.request.query_params.getlist(query_param)
+                    for query_param in self.request.query_params.keys()
+                }
+            ).model_dump(exclude_unset=True)
+
+        except ValidationError as error:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=error.errors(),
+            )
+
+        return ProductsFilterModel(
+            category_id=category_id, available=available, parameters=query_params
+        )

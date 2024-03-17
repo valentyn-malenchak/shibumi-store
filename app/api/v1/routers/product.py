@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, Security, status
 from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
 from app.api.v1.dependencies.product import (
-    GetProductDependency,
+    ProductByIdStatusDependency,
     ProductDataDependency,
     ProductsFilterDependency,
 )
@@ -94,7 +94,7 @@ async def get_product(
     _: CurrentUserModel | None = Security(
         OptionalAuthorization(), scopes=[ScopesEnum.PRODUCTS_GET_PRODUCT.name]
     ),
-    product: Product = Depends(GetProductDependency()),
+    product: Product = Depends(ProductByIdStatusDependency()),
     product_service: ProductService = Depends(),
 ) -> Product:
     """API which returns a specific product.
@@ -123,7 +123,7 @@ async def update_product(
     _: CurrentUserModel = Security(
         StrictAuthorization(), scopes=[ScopesEnum.PRODUCTS_UPDATE_PRODUCT.name]
     ),
-    product: Product = Depends(GetProductDependency()),
+    product: Product = Depends(ProductByIdStatusDependency()),
     product_data: ProductRequestModel = Depends(ProductDataDependency()),
     product_service: ProductService = Depends(),
 ) -> Product:

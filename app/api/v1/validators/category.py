@@ -41,8 +41,8 @@ class BaseCategoryValidator(BaseValidator):
         raise NotImplementedError
 
 
-class CategoryIdValidator(BaseCategoryValidator):
-    """Category identifier validator."""
+class CategoryByIdValidator(BaseCategoryValidator):
+    """Category by identifier validator."""
 
     async def validate(self, category_id: ObjectId) -> Category:
         """Validates requested category by id.
@@ -72,27 +72,28 @@ class CategoryIdValidator(BaseCategoryValidator):
         return category
 
 
-class LeafCategoryValidator(BaseCategoryValidator):
-    """Leaf category validator."""
+class CategoryLeafValidator(BaseCategoryValidator):
+    """Category leaf validator."""
 
     def __init__(
         self,
         request: Request,
         category_service: CategoryService = Depends(),
-        category_id_validator: CategoryIdValidator = Depends(),
+        category_by_id_validator: CategoryByIdValidator = Depends(),
     ):
-        """Initializes base category validator.
+        """Initializes leaf category validator.
 
         Args:
             request (Request): Current request object.
             category_service (UserService): Category service.
-            category_id_validator (CategoryIdValidator): Category identifier validator.
+            category_by_id_validator (CategoryByIdValidator): Category by identifier
+            validator.
 
         """
 
         super().__init__(request=request, category_service=category_service)
 
-        self.category_id_validator = category_id_validator
+        self.category_by_id_validator = category_by_id_validator
 
     async def validate(self, category_id: ObjectId) -> Category:
         """Validates requested category by id.
@@ -108,7 +109,7 @@ class LeafCategoryValidator(BaseCategoryValidator):
 
         """
 
-        category = await self.category_id_validator.validate(category_id=category_id)
+        category = await self.category_by_id_validator.validate(category_id=category_id)
 
         if category.has_children is True:
             raise HTTPException(
