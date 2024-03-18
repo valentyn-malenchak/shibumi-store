@@ -19,17 +19,17 @@ class ParameterService(BaseService):
     def __init__(
         self,
         background_tasks: BackgroundTasks,
-        repository: ParameterRepository = Depends(),
         redis_service: RedisService = Depends(),
         transaction_manager: TransactionManager = Depends(),
+        repository: ParameterRepository = Depends(),
     ) -> None:
         """Initializes the parameter service.
 
         Args:
             background_tasks (BackgroundTasks): Background tasks.
-            repository (ParameterRepository): An instance of the Parameter repository.
             redis_service (RedisService): Redis service.
             transaction_manager (TransactionManager): Transaction manager.
+            repository (ParameterRepository): An instance of the Parameter repository.
 
         """
 

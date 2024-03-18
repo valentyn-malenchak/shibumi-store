@@ -11,7 +11,6 @@ from app.api.v1.constants import ProductParameterTypesEnum
 from app.api.v1.repositories import BaseRepository
 from app.api.v1.repositories.category_parameters import CategoryParametersRepository
 from app.constants import ProjectionValuesEnum
-from app.exceptions import EntityIsNotFoundError
 from app.services.mongo.constants import MongoCollectionsEnum
 from app.services.mongo.service import MongoDBService
 
@@ -142,17 +141,12 @@ class CategoryRepository(BaseRepository):
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
-        Raises:
-            ValueError: If category with id does not exist.
-
         """
 
         category = await self.get_by_id(id_=id_, session=session)
 
-        if category is None:
-            raise EntityIsNotFoundError
-
-        parameters = category["parameters"]
+        # Ignore 'None' result from method, category is validated earlier
+        parameters = category["parameters"]  # type: ignore
 
         pipeline: list[dict[str, Any]] = [{"$match": {"category_id": id_}}]
 

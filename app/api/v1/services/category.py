@@ -20,17 +20,17 @@ class CategoryService(BaseService):
     def __init__(
         self,
         background_tasks: BackgroundTasks,
-        repository: CategoryRepository = Depends(),
         redis_service: RedisService = Depends(),
         transaction_manager: TransactionManager = Depends(),
+        repository: CategoryRepository = Depends(),
     ) -> None:
         """Initializes the category service.
 
         Args:
             background_tasks (BackgroundTasks): Background tasks.
-            repository (CategoryRepository): An instance of the Category repository.
             redis_service (RedisService): Redis service.
             transaction_manager (TransactionManager): Transaction manager.
+            repository (CategoryRepository): An instance of the Category repository.
 
         """
 
