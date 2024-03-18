@@ -1,6 +1,6 @@
 """Module that contains tests for product routes."""
 
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
 from fastapi import status
@@ -477,6 +477,97 @@ class TestProduct(BaseAPITest):
                 ValidationErrorMessagesEnum.REQUIRED_FIELD,
             ),
         ]
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
+    @freeze_time(FROZEN_DATETIME)
+    @patch(
+        "app.api.v1.repositories.category.CategoryRepository.calculate_category_parameters",
+        Mock(side_effect=ValueError()),
+    )
+    @patch(
+        "motor.motor_asyncio.AsyncIOMotorClientSession.abort_transaction",
+        new_callable=AsyncMock,
+    )
+    async def test_create_product_category_parameters_calculation_failed(
+        self,
+        mongo_transaction_abort_mock: MagicMock,
+        test_client: AsyncClient,
+        arrange_db: None,
+    ) -> None:
+        """
+        Test create product in case category parameters calculation failed.
+        Calculation transaction should be aborted.
+        """
+
+        try:
+            await test_client.post(
+                f"{AppConstants.API_V1_PREFIX}/products/",
+                json={
+                    "name": "ASUS TUF Gaming F15",
+                    "synopsis": "Display 15.6 IPS (1920x1080) Full HD 144 Hz / "
+                    "Intel Core i5-12500H (2.5 - 4.5 GHz) / RAM 16 GB / "
+                    "SSD 512 GB / nVidia GeForce RTX 3050, 4 GB / LAN / "
+                    "Wi-Fi / Bluetooth / webcamera / no OS / 2.2 kg / black",
+                    "description": "Very cool laptop.",
+                    "quantity": 12,
+                    "price": 1200.00,
+                    "category_id": "65d24f2a260fb739c605b28d",
+                    "available": True,
+                    "html_body": None,
+                    "parameters": {
+                        "brand": "Asus",
+                        "cpu": "Intel Core i5-12500H",
+                        "cpu_cores_number": 12,
+                        "graphics_card": "GeForce RTX 3050",
+                        "graphics_card_type": "Discrete",
+                        "motherboard_chipset": None,
+                        "vram": "4 GB",
+                        "ram": "16 GB",
+                        "ram_slots": 2,
+                        "ram_type": "DDR4",
+                        "hdd": None,
+                        "hdd_space": None,
+                        "ssd": "Kingston",
+                        "ssd_space": "512 GB",
+                        "class": ["Gaming"],
+                        "has_wifi": True,
+                        "has_bluetooth": True,
+                        "no_wireless_connection": False,
+                        "os": None,
+                        "year": 2024,
+                        "warranty": "2 years",
+                        "country_of_production": "Taiwan",
+                        "screen_type": "IPS",
+                        "screen_resolution": "1920x1080",
+                        "screen_refresh_rate": "144 Hz",
+                        "screen_size": '15.6"',
+                        "battery_capacity": "56 watt*hours",
+                        "has_fingerprint_identification": False,
+                        "has_keyboard_backlight": False,
+                        "has_touch_screen": False,
+                        "color": "black",
+                        "custom_field": "some_value",
+                    },
+                },
+                headers={"Authorization": f"Bearer {TEST_JWT}"},
+            )
+
+        except ValueError:
+            pass
+
+        assert mongo_transaction_abort_mock.call_count == 1
+
+        # Check if background task calculates appropriate category parameters
+        response = await test_client.get(
+            f"{AppConstants.API_V1_PREFIX}/categories/65d24f2a260fb739c605b28d/parameters/"
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() is None
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize(

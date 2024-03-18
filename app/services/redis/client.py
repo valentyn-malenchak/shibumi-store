@@ -24,5 +24,4 @@ class RedisClient(BaseClient):
     @classmethod
     def close(cls) -> None:
         """Closes Redis client."""
-        if cls._client is not None:
-            cls._client.close()  # type: ignore
+        cls._client.close()  # type: ignore

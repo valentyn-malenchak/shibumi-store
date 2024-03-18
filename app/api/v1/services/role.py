@@ -19,17 +19,17 @@ class RoleService(BaseService):
     def __init__(
         self,
         background_tasks: BackgroundTasks,
-        repository: RoleRepository = Depends(),
         redis_service: RedisService = Depends(),
         transaction_manager: TransactionManager = Depends(),
+        repository: RoleRepository = Depends(),
     ) -> None:
         """Initializes the role service.
 
         Args:
             background_tasks (BackgroundTasks): Background tasks.
-            repository (RoleRepository): An instance of the Role repository.
             redis_service (RedisService): Redis service.
             transaction_manager (TransactionManager): Transaction manager.
+            repository (RoleRepository): An instance of the Role repository.
 
         """
 

@@ -27,18 +27,18 @@ class ProductService(BaseService):
     def __init__(  # noqa: PLR0913
         self,
         background_tasks: BackgroundTasks,
-        repository: ProductRepository = Depends(),
         redis_service: RedisService = Depends(),
         transaction_manager: TransactionManager = Depends(),
+        repository: ProductRepository = Depends(),
         category_service: CategoryService = Depends(),
     ) -> None:
         """Initializes the product service.
 
         Args:
             background_tasks (BackgroundTasks): Background tasks.
-            repository (ProductRepository): An instance of the Product repository.
             redis_service (RedisService): Redis service.
             transaction_manager (TransactionManager): Transaction manager.
+            repository (ProductRepository): An instance of the Product repository.
             category_service (CategoryService): Category service.
 
         """

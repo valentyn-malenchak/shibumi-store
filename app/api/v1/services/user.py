@@ -38,18 +38,18 @@ class UserService(BaseService):
     def __init__(  # noqa: PLR0913
         self,
         background_tasks: BackgroundTasks,
-        repository: UserRepository = Depends(),
         redis_service: RedisService = Depends(),
         transaction_manager: TransactionManager = Depends(),
+        repository: UserRepository = Depends(),
         send_grid_service: SendGridService = Depends(),
     ) -> None:
         """Initializes the UserService.
 
         Args:
             background_tasks (BackgroundTasks): Background tasks.
-            repository (UserRepository): An instance of the User repository.
             redis_service (RedisService): Redis service.
             transaction_manager (TransactionManager): Transaction manager.
+            repository (UserRepository): An instance of the User repository.
             send_grid_service (SendGridService): SendGrid service.
 
         """

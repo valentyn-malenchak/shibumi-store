@@ -11,3 +11,5 @@ exclude_lines =
   @abc.abstractmethod
   # Skip not implemented methods
   raise NotImplementedError
+  # Skip module execution blocks
+  if __name__ == "__main__":
