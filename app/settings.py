@@ -10,6 +10,7 @@ class AppConfig(ImmutableModel):
     APP_NAME: str = "shibumi-store"
     APP_WORKERS: int = 1
     APP_DEBUG: bool = False
+    APP_OPENAPI_URL: str | None = None
 
     AUTH_SECRET_KEY: str
     AUTH_REFRESH_SECRET_KEY: str

@@ -29,9 +29,6 @@ class App(FastAPI):
         # configure application handlers
         self._configure_handlers()
 
-        # load application configuration into FastApi
-        self.state.config = SETTINGS
-
     def _configure_routes(self) -> None:
         """Configure the routes for the FastAPI app."""
         for router_ in ROUTERS:
@@ -64,12 +61,12 @@ class App(FastAPI):
             "__main__:app",
             host="0.0.0.0",
             port=8000,
-            reload=self.state.config.APP_DEBUG,
-            workers=self.state.config.APP_WORKERS,
+            reload=SETTINGS.APP_DEBUG,
+            workers=SETTINGS.APP_WORKERS,
         )
 
 
-app = App()
+app = App(openapi_url=SETTINGS.APP_OPENAPI_URL)
 
 if __name__ == "__main__":
     app.run()

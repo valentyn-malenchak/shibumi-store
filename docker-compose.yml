@@ -19,6 +19,7 @@ services:
       - APP_NAME=shibumi-store
       - APP_WORKERS=4
       - APP_DEBUG=true
+      - APP_OPENAPI_URL=/openapi.json
       - AUTH_SECRET_KEY=  # Add your secret key here
       - AUTH_REFRESH_SECRET_KEY=  # Add your refresh secret key here
       - AUTH_ALGORITHM=HS256
