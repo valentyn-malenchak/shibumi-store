@@ -41,3 +41,16 @@ class CategoryParametersRepository(BaseRepository):
 
         """
         raise NotImplementedError
+
+    @staticmethod
+    def get_list_default_sorting() -> list[tuple[str, int | Mapping[str, Any]]] | None:
+        """Returns list default sorting.
+
+        Returns:
+            list[tuple[str, int | Mapping[str, Any]]] | None: Default sorting.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError

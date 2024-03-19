@@ -59,6 +59,16 @@ class UserRepository(BaseRepository):
         """
         return None
 
+    @staticmethod
+    def get_list_default_sorting() -> list[tuple[str, int | Mapping[str, Any]]] | None:
+        """Returns list default sorting.
+
+        Returns:
+            list[tuple[str, int | Mapping[str, Any]]] | None: Default sorting.
+
+        """
+        return None
+
     async def get_by_username(
         self, username: str, *, session: AsyncIOMotorClientSession | None = None
     ) -> Mapping[str, Any] | None:

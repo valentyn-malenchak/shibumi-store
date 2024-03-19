@@ -60,7 +60,9 @@ class BaseRepository(abc.ABC):
             collection=self._collection_name,
             filter_=await self._get_list_query_filter(search, **filters),
             projection=self._get_list_query_projection(),
-            sort=self._get_list_sorting(sort_by=sort_by, sort_order=sort_order),
+            sort=self._get_list_sorting(
+                sort_by=sort_by, sort_order=sort_order, search=search is not None
+            ),
             skip=self._calculate_skip(page=page, page_size=page_size),
             limit=page_size,
             session=session,
@@ -117,29 +119,54 @@ class BaseRepository(abc.ABC):
         """
         raise NotImplementedError
 
-    @staticmethod
     def _get_list_sorting(
-        sort_by: str | None, sort_order: SortingTypesEnum | None
-    ) -> list[tuple[str, int]] | None:
+        self,
+        sort_by: str | None,
+        sort_order: SortingTypesEnum | None,
+        search: bool = False,
+    ) -> list[tuple[str, int | Mapping[str, Any]]] | None:
         """Returns list sorting depends on parameters.
 
         Args:
             sort_by (str | None): Specifies a field for sorting.
             sort_order (SortingTypesEnum | None): Defines sort order - ascending
             or descending.
+            search (bool): Defines if search is included in query. Defaults to False.
 
         Returns:
-            list[tuple[str, int]] | None: Sorting.
+            list[tuple[str, int | Mapping[str, Any]]] | None: Sorting.
 
         """
 
-        sort_value = (
-            SortingValuesEnum.DESC
-            if sort_order == SortingTypesEnum.DESC
-            else SortingValuesEnum.ASC
+        if sort_by is not None:
+            sort_value = (
+                SortingValuesEnum.DESC
+                if sort_order == SortingTypesEnum.DESC
+                else SortingValuesEnum.ASC
+            )
+
+            return [(sort_by, sort_value)]
+
+        # If search is included to query, return items sorted by search scores
+        return (
+            self.get_list_default_sorting()
+            if search is False
+            else [("score", {"$meta": "textScore"})]
         )
 
-        return [(sort_by, sort_value)] if sort_by is not None else None
+    @staticmethod
+    @abc.abstractmethod
+    def get_list_default_sorting() -> list[tuple[str, int | Mapping[str, Any]]] | None:
+        """Returns list default sorting.
+
+        Returns:
+            list[tuple[str, int | Mapping[str, Any]]] | None: Default sorting.
+
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses.
+
+        """
+        raise NotImplementedError
 
     async def count(
         self,

@@ -102,14 +102,6 @@ class TestCategory(BaseAPITest):
         ) == {
             "data": [
                 {
-                    "id": "65d24f2a260fb739c605b28e",
-                    "name": "All-in-One Computers",
-                    "description": "All-in-One PCs",
-                    "parent_id": "65d24f2a260fb739c605b28b",
-                    "path": "/electronics/computers/all-in-one",
-                    "machine_name": "all-in-one",
-                },
-                {
                     "id": "65d24f2a260fb739c605b28c",
                     "name": "Desktop Computers",
                     "description": "Desktop PCs",
@@ -124,6 +116,14 @@ class TestCategory(BaseAPITest):
                     "parent_id": "65d24f2a260fb739c605b28b",
                     "path": "/electronics/computers/laptops",
                     "machine_name": "laptops",
+                },
+                {
+                    "id": "65d24f2a260fb739c605b28e",
+                    "name": "All-in-One Computers",
+                    "description": "All-in-One PCs",
+                    "parent_id": "65d24f2a260fb739c605b28b",
+                    "path": "/electronics/computers/all-in-one",
+                    "machine_name": "all-in-one",
                 },
             ],
             "total": 3,
