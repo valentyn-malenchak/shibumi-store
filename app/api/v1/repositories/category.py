@@ -10,7 +10,7 @@ from motor.motor_asyncio import AsyncIOMotorClientSession
 from app.api.v1.constants import ProductParameterTypesEnum
 from app.api.v1.repositories import BaseRepository
 from app.api.v1.repositories.category_parameters import CategoryParametersRepository
-from app.constants import ProjectionValuesEnum
+from app.constants import ProjectionValuesEnum, SortingValuesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
 from app.services.mongo.service import MongoDBService
 
@@ -84,6 +84,16 @@ class CategoryRepository(BaseRepository):
 
         """
         return {"parameters": ProjectionValuesEnum.EXCLUDE}
+
+    @staticmethod
+    def get_list_default_sorting() -> list[tuple[str, int | Mapping[str, Any]]] | None:
+        """Returns list default sorting.
+
+        Returns:
+           list[tuple[str, int | Mapping[str, Any]]] | None: Default sorting.
+
+        """
+        return [("_id", SortingValuesEnum.ASC)]
 
     async def get_by_id(
         self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None

@@ -8,7 +8,7 @@ from injector import inject
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
 from app.api.v1.repositories import BaseRepository
-from app.constants import ProjectionValuesEnum
+from app.constants import ProjectionValuesEnum, SortingValuesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
 
 
@@ -74,6 +74,16 @@ class ProductRepository(BaseRepository):
             "html_body": ProjectionValuesEnum.EXCLUDE,
             "parameters": ProjectionValuesEnum.EXCLUDE,
         }
+
+    @staticmethod
+    def get_list_default_sorting() -> list[tuple[str, int | Mapping[str, Any]]] | None:
+        """Returns list default sorting.
+
+        Returns:
+            list[tuple[str, int | Mapping[str, Any]]] | None: Default sorting.
+
+        """
+        return [("views", SortingValuesEnum.DESC)]
 
     async def increment_views(
         self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None

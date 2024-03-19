@@ -880,6 +880,20 @@ class TestProduct(BaseAPITest):
         assert response.json() == {
             "data": [
                 {
+                    "id": "6607f143c064f4099808ad33",
+                    "name": "Apple MacBook Air M2",
+                    "synopsis": "Display 13.3 IPS (2560x1600) Retina / Apple M2 Chip / "
+                    "RAM 16 GB / SSD 1 TB / Apple Integrated GPU / Wi-Fi 6 / "
+                    "Bluetooth 5.2 / webcam / macOS Monterey / 1.29 kg / silver",
+                    "quantity": 30,
+                    "price": 1139.0,
+                    "views": 1500,
+                    "category_id": "65d24f2a260fb739c605b28d",
+                    "available": True,
+                    "created_at": "2024-05-14T09:00:00",
+                    "updated_at": None,
+                },
+                {
                     "id": "6597f143c064f4099808ad26",
                     "name": "ASUS TUF Gaming F15",
                     "synopsis": "Display 15.6 IPS (1920x1080) Full HD 144 Hz / "
@@ -892,21 +906,6 @@ class TestProduct(BaseAPITest):
                     "category_id": "65d24f2a260fb739c605b28d",
                     "available": True,
                     "created_at": "2024-01-05T12:08:35.440000",
-                    "updated_at": None,
-                },
-                {
-                    "id": "65a7f143c064f4099808ad27",
-                    "name": "MSI GS66 Stealth",
-                    "synopsis": "Display 15.6 IPS (1920x1080) Full HD 240 Hz / "
-                    "Intel Core i9-12900H (2.5 - 5.0 GHz) / RAM 32 GB / "
-                    "SSD 1 TB / nVidia GeForce RTX 3080, 8 GB / LAN / Wi-Fi "
-                    "/ Bluetooth / webcam / Windows 11 Home / 2.1 kg / black",
-                    "quantity": 8,
-                    "price": 1600.49,
-                    "views": 140,
-                    "category_id": "65d24f2a260fb739c605b28d",
-                    "available": True,
-                    "created_at": "2024-02-10T14:20:00",
                     "updated_at": None,
                 },
             ],
@@ -942,18 +941,18 @@ class TestProduct(BaseAPITest):
         assert response.json() == {
             "data": [
                 {
-                    "id": "65b7f143c064f4099808ad28",
-                    "name": "Lenovo Legion 7i",
-                    "synopsis": "Display 15.6 IPS (2560x1440) Quad HD 165 Hz / "
-                    "Intel Core i7-12700H (2.5 - 4.8 GHz) / RAM 64 GB / "
-                    "SSD 2 TB / NVIDIA GeForce RTX 3080 Ti, 16 GB / LAN / Wi-Fi 6 "
-                    "/ Bluetooth 5.1 / webcam / Windows 11 Pro / 2.5 kg / black",
-                    "quantity": 15,
-                    "price": 2559.0,
-                    "views": 4,
+                    "id": "6627f143c064f4099808ad35",
+                    "name": "Samsung Galaxy Book Pro 360",
+                    "synopsis": "Display 15.6 Super AMOLED (1920x1080) Full HD "
+                    "Touchscreen / Intel Core i7-1260U (2.1 - 4.7 GHz) / RAM 16 GB / "
+                    "SSD 512 GB / Intel Iris Xe Graphics / Wi-Fi 6E / Bluetooth 5.1 / "
+                    "webcam / Windows 11 Home / 1.05 kg / mystic bronze",
+                    "quantity": 20,
+                    "price": 749.0,
+                    "views": 982,
                     "category_id": "65d24f2a260fb739c605b28d",
                     "available": True,
-                    "created_at": "2024-03-02T09:45:00",
+                    "created_at": "2024-07-10T08:45:00",
                     "updated_at": None,
                 }
             ],
@@ -989,27 +988,30 @@ class TestProduct(BaseAPITest):
         assert response.json() == {
             "data": [
                 {
-                    "id": "65d22fd0a83d80b9f0bd3e38",
-                    "name": "Xiaomi Mi Power Bank (BHR6109CN)",
-                    "synopsis": "20000 mAh 22.5W Fast Charge PB2022ZM",
-                    "quantity": 2,
-                    "price": 57.69,
-                    "views": 560,
-                    "category_id": "65d24f2a260fb739c605b2a7",
-                    "available": False,
-                    "created_at": "2024-02-18T16:26:56.913000",
+                    "id": "65d7f143c064f4099808ad30",
+                    "name": "HP Envy x360",
+                    "synopsis": "Display 13.3 IPS (1920x1080) Full HD Touchscreen / "
+                    "AMD Ryzen 7 5700U (1.8 - 4.3 GHz) / RAM 8 GB / "
+                    "SSD 256 GB / AMD Radeon Graphics / Wi-Fi 6 / "
+                    "Bluetooth 5.2 / webcam / Windows 11 Home / 1.3 kg / silver",
+                    "quantity": 18,
+                    "price": 599.99,
+                    "views": 256,
+                    "category_id": "65d24f2a260fb739c605b28d",
+                    "available": True,
+                    "created_at": "2024-04-05T10:15:00",
                     "updated_at": None,
                 },
                 {
-                    "id": "65d22fd0a83d80b9f0bd3e39",
-                    "name": "Anker PowerCore 26800mAh Portable Charger",
-                    "synopsis": "26800mAh 3-Port USB Power Bank",
-                    "quantity": 5,
-                    "price": 56.2,
-                    "views": 453,
+                    "id": "65d22fd0a83d80b9f0bd3e41",
+                    "name": "Samsung Wireless Charger Portable Battery",
+                    "synopsis": "10000mAh Wireless Power Bank with USB-C, Silver",
+                    "quantity": 8,
+                    "price": 170.58,
+                    "views": 207,
                     "category_id": "65d24f2a260fb739c605b2a7",
                     "available": True,
-                    "created_at": "2024-02-19T09:15:00",
+                    "created_at": "2024-02-21T14:20:00",
                     "updated_at": None,
                 },
             ],
@@ -1099,18 +1101,6 @@ class TestProduct(BaseAPITest):
         assert response.json() == {
             "data": [
                 {
-                    "id": "65d22fd0a83d80b9f0bd3e40",
-                    "name": "RAVPower Portable Charger 20000mAh",
-                    "synopsis": "20000mAh Power Bank with 18W PD and QC 3.0",
-                    "quantity": 10,
-                    "price": 29.99,
-                    "views": 189,
-                    "category_id": "65d24f2a260fb739c605b2a7",
-                    "available": True,
-                    "created_at": "2024-02-20T11:30:00",
-                    "updated_at": None,
-                },
-                {
                     "id": "65d22fd0a83d80b9f0bd3e41",
                     "name": "Samsung Wireless Charger Portable Battery",
                     "synopsis": "10000mAh Wireless Power Bank with USB-C, Silver",
@@ -1120,6 +1110,18 @@ class TestProduct(BaseAPITest):
                     "category_id": "65d24f2a260fb739c605b2a7",
                     "available": True,
                     "created_at": "2024-02-21T14:20:00",
+                    "updated_at": None,
+                },
+                {
+                    "id": "65d22fd0a83d80b9f0bd3e40",
+                    "name": "RAVPower Portable Charger 20000mAh",
+                    "synopsis": "20000mAh Power Bank with 18W PD and QC 3.0",
+                    "quantity": 10,
+                    "price": 29.99,
+                    "views": 189,
+                    "category_id": "65d24f2a260fb739c605b2a7",
+                    "available": True,
+                    "created_at": "2024-02-20T11:30:00",
                     "updated_at": None,
                 },
                 {

@@ -40,3 +40,13 @@ class ParameterRepository(BaseRepository):
             "machine_name": ProjectionValuesEnum.INCLUDE,
             "type": ProjectionValuesEnum.INCLUDE,
         }
+
+    @staticmethod
+    def get_list_default_sorting() -> list[tuple[str, int | Mapping[str, Any]]] | None:
+        """Returns list default sorting.
+
+        Returns:
+            list[tuple[str, int | Mapping[str, Any]]] | None: Default sorting.
+
+        """
+        return None
