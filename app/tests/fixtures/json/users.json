@@ -1,6 +1,8 @@
 [
   {
-    "_id": "65844f12b6de26578d98c2c8",
+    "_id": {
+      "$oid": "65844f12b6de26578d98c2c8"
+    },
     "first_name": "John",
     "last_name": "Smith",
     "patronymic_name": null,
@@ -8,17 +10,23 @@
     "email": "john.smith@gmail.com",
     "email_verified": true,
     "phone_number": "+380981111111",
-    "birthdate": "1998-01-01T00:00:00.000+00:00",
+    "birthdate": {
+      "$date": "1998-01-01T00:00:00.000Z"
+    },
     "hashed_password": "$2b$12$BuHaZV2.qZRYojxU.d1oJ.v65KKCgTH6b1MA4ztKxS.J6MnGJ6htC",
     "roles": [
       "customer"
     ],
     "deleted": false,
-    "created_at": "2023-12-30T13:25:43.895+00:00",
+    "created_at": {
+      "$date": "2023-12-30T13:25:43.895Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "6598495fdf97a8e0d7e612ae",
+    "_id": {
+      "$oid": "6598495fdf97a8e0d7e612ae"
+    },
     "first_name": "Bruce",
     "last_name": "Wayne",
     "patronymic_name": null,
@@ -26,17 +34,25 @@
     "email": "bruce_wayne@gmail.com",
     "email_verified": true,
     "phone_number": "+111111111111",
-    "birthdate": "1939-03-30T00:00:00.000+00:00",
+    "birthdate": {
+      "$date": {
+        "$numberLong": "-970704000000"
+      }
+    },
     "hashed_password": "$2b$12$Hi3/4nfK3ylx9cnOzuI.hO.WrdB5tEWNk/Rrp9dWWipN7q8RrHA32",
     "roles": [
       "customer"
     ],
     "deleted": false,
-    "created_at": "2023-11-11T13:25:43.895+00:00",
+    "created_at": {
+      "$date": "2023-11-11T13:25:43.895Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "659ac89bfe61d8332f6be4c4",
+    "_id": {
+      "$oid": "659ac89bfe61d8332f6be4c4"
+    },
     "first_name": "Sheila",
     "last_name": "Fahey",
     "patronymic_name": null,
@@ -44,17 +60,23 @@
     "email": "sheila.fahey@gmail.com",
     "email_verified": true,
     "phone_number": "+111111111114",
-    "birthdate": "1994-11-14T00:00:00.000+00:00",
+    "birthdate": {
+      "$date": "1994-11-14T00:00:00.000Z"
+    },
     "hashed_password": "$2b$12$WPb2AXKsUrdZvn.btRFSUugNIKOJ3OVacIyBG/nbHI/KoQwCgcLze",
     "roles": [
       "content_manager"
     ],
     "deleted": true,
-    "created_at": "2024-01-07T13:25:43.895+00:00",
+    "created_at": {
+      "$date": "2024-01-07T13:25:43.895Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "659bf67868d14b47475ec11c",
+    "_id": {
+      "$oid": "659bf67868d14b47475ec11c"
+    },
     "first_name": "Anya",
     "last_name": "Schoen",
     "patronymic_name": null,
@@ -62,18 +84,24 @@
     "email": "anya_schoen@gmail.com",
     "email_verified": true,
     "phone_number": "+123111111111",
-    "birthdate": "1994-08-04T00:00:00.000+00:00",
+    "birthdate": {
+      "$date": "1994-08-04T00:00:00.000Z"
+    },
     "hashed_password": "$2b$12$rFZEujzqs43rVaM9xthJEu5FpPG4aGmRxT0nmmPuLkw1fG2pWdB8S",
     "roles": [
       "support",
       "content_manager"
     ],
     "deleted": false,
-    "created_at": "2024-01-08T13:25:43.895+00:00",
+    "created_at": {
+      "$date": "2024-01-08T13:25:43.895Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "659c3528d71686302919981c",
+    "_id": {
+      "$oid": "659c3528d71686302919981c"
+    },
     "first_name": "Frederique",
     "last_name": "Langosh",
     "patronymic_name": null,
@@ -81,17 +109,23 @@
     "email": "frederique.langosh@gmail.com",
     "email_verified": true,
     "phone_number": "+123451111111",
-    "birthdate": "1994-10-01T00:00:00.000+00:00",
+    "birthdate": {
+      "$date": "1994-10-01T00:00:00.000Z"
+    },
     "hashed_password": "$2b$12$4UQ3d.YjtR09ZE8mQMsEKu1YMpsfM/QWGLw2QvU0Shz3Uqpw5BjxG",
     "roles": [
       "warehouse_stuff"
     ],
     "deleted": false,
-    "created_at": "2024-01-08T13:56:43.895+00:00",
+    "created_at": {
+      "$date": "2024-01-08T13:56:43.895Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "65ac14f5b9263b2bece37679",
+    "_id": {
+      "$oid": "65ac14f5b9263b2bece37679"
+    },
     "first_name": "Lila",
     "last_name": "Legro",
     "patronymic_name": null,
@@ -99,17 +133,23 @@
     "email": "lila.legro8@yahoo.com",
     "email_verified": false,
     "phone_number": "+123451114511",
-    "birthdate": "1999-05-19T00:00:00.000+00:00",
+    "birthdate": {
+      "$date": "1999-05-19T00:00:00.000Z"
+    },
     "hashed_password": "$2b$12$TcMm28bYcVgWi08AyylJe.D6QUWVqD9plbGdJ097PwV0LX1BXuPES",
     "roles": [
       "customer"
     ],
     "deleted": false,
-    "created_at": "2024-01-20T13:56:43.895+00:00",
+    "created_at": {
+      "$date": "2024-01-20T13:56:43.895Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "6597f14332e631f7fed1a114",
+    "_id": {
+      "$oid": "6597f14332e631f7fed1a114"
+    },
     "first_name": "Admin",
     "last_name": "Admin",
     "patronymic_name": null,
@@ -117,13 +157,17 @@
     "email": "admin@gmail.com",
     "email_verified": true,
     "phone_number": "+380980000000",
-    "birthdate": "1997-01-01T00:00:00.000+00:00",
+    "birthdate": {
+      "$date": "1997-01-01T00:00:00.000Z"
+    },
     "hashed_password": "$2b$12$OkH.nDmcaCW9S28wqcZ41emHDmWHkB1Z5tjSGo/DZ5sUyYGVd.e5W",
     "roles": [
       "admin"
     ],
     "deleted": false,
-    "created_at": "2023-12-30T13:25:43.895+00:00",
+    "created_at": {
+      "$date": "2023-12-30T13:25:43.895Z"
+    },
     "updated_at": null
   }
 ]

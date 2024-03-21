@@ -1,13 +1,17 @@
 [
   {
-    "_id": "6597f143c064f4099808ad26",
+    "_id": {
+      "$oid": "6597f143c064f4099808ad26"
+    },
     "name": "ASUS TUF Gaming F15",
     "synopsis": "Display 15.6 IPS (1920x1080) Full HD 144 Hz / Intel Core i5-12500H (2.5 - 4.5 GHz) / RAM 16 GB / SSD 512 GB / nVidia GeForce RTX 3050, 4 GB / LAN / Wi-Fi / Bluetooth / webcamera / no OS / 2.2 kg / black",
     "description": "Very cool laptop.",
     "quantity": 12,
-    "price": 1198.00,
+    "price": 1198,
     "views": 1452,
-    "category_id": "65d24f2a260fb739c605b28d",
+    "category_id": {
+      "$oid": "65d24f2a260fb739c605b28d"
+    },
     "available": true,
     "html_body": null,
     "parameters": {
@@ -46,18 +50,24 @@
       "color": "black",
       "custom_field": "some_value"
     },
-    "created_at": "2024-01-05T12:08:35.440000",
+    "created_at": {
+      "$date": "2024-01-05T12:08:35.440Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "65a7f143c064f4099808ad27",
+    "_id": {
+      "$oid": "65a7f143c064f4099808ad27"
+    },
     "name": "MSI GS66 Stealth",
     "synopsis": "Display 15.6 IPS (1920x1080) Full HD 240 Hz / Intel Core i9-12900H (2.5 - 5.0 GHz) / RAM 32 GB / SSD 1 TB / nVidia GeForce RTX 3080, 8 GB / LAN / Wi-Fi / Bluetooth / webcam / Windows 11 Home / 2.1 kg / black",
     "description": "Powerful and sleek gaming laptop for high-performance gaming and productivity.",
     "quantity": 8,
     "price": 1600.49,
     "views": 140,
-    "category_id": "65d24f2a260fb739c605b28d",
+    "category_id": {
+      "$oid": "65d24f2a260fb739c605b28d"
+    },
     "available": true,
     "html_body": null,
     "parameters": {
@@ -97,18 +107,24 @@
       "color": "black",
       "custom_field": "another_value"
     },
-    "created_at": "2024-02-10T14:20:00.000000",
+    "created_at": {
+      "$date": "2024-02-10T14:20:00.000Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "65b7f143c064f4099808ad28",
+    "_id": {
+      "$oid": "65b7f143c064f4099808ad28"
+    },
     "name": "Lenovo Legion 7i",
     "synopsis": "Display 15.6 IPS (2560x1440) Quad HD 165 Hz / Intel Core i7-12700H (2.5 - 4.8 GHz) / RAM 64 GB / SSD 2 TB / NVIDIA GeForce RTX 3080 Ti, 16 GB / LAN / Wi-Fi 6 / Bluetooth 5.1 / webcam / Windows 11 Pro / 2.5 kg / black",
     "description": "Premium gaming laptop with top-tier specifications for an immersive gaming experience.",
     "quantity": 15,
-    "price": 2559.00,
+    "price": 2559,
     "views": 4,
-    "category_id": "65d24f2a260fb739c605b28d",
+    "category_id": {
+      "$oid": "65d24f2a260fb739c605b28d"
+    },
     "available": true,
     "html_body": null,
     "parameters": {
@@ -148,18 +164,24 @@
       "color": "black",
       "custom_field": "extra_value"
     },
-    "created_at": "2024-03-02T09:45:00.000000",
+    "created_at": {
+      "$date": "2024-03-02T09:45:00.000Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "65c7f143c064f4099808ad29",
+    "_id": {
+      "$oid": "65c7f143c064f4099808ad29"
+    },
     "name": "Acer Predator Helios 300",
     "synopsis": "Display 17.3 IPS (1920x1080) Full HD 144 Hz / Intel Core i7-11800H (2.3 - 4.6 GHz) / RAM 32 GB / SSD 1 TB / NVIDIA GeForce RTX 3070, 8 GB / LAN / Wi-Fi 6 / Bluetooth 5.0 / webcam / Windows 10 Home / 3.1 kg / black",
     "description": "Affordable gaming laptop with powerful specifications for smooth gameplay.",
     "quantity": 20,
-    "price": 1066.00,
+    "price": 1066,
     "views": 0,
-    "category_id": "65d24f2a260fb739c605b28d",
+    "category_id": {
+      "$oid": "65d24f2a260fb739c605b28d"
+    },
     "available": true,
     "html_body": null,
     "parameters": {
@@ -199,18 +221,24 @@
       "color": "black",
       "custom_field": "additional_value"
     },
-    "created_at": "2024-03-15T14:30:00.000000",
+    "created_at": {
+      "$date": "2024-03-15T14:30:00.000Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "65d7f143c064f4099808ad30",
+    "_id": {
+      "$oid": "65d7f143c064f4099808ad30"
+    },
     "name": "HP Envy x360",
     "synopsis": "Display 13.3 IPS (1920x1080) Full HD Touchscreen / AMD Ryzen 7 5700U (1.8 - 4.3 GHz) / RAM 8 GB / SSD 256 GB / AMD Radeon Graphics / Wi-Fi 6 / Bluetooth 5.2 / webcam / Windows 11 Home / 1.3 kg / silver",
     "description": "Convertible laptop with a sleek design and touch screen for versatile use.",
     "quantity": 18,
     "price": 599.99,
     "views": 256,
-    "category_id": "65d24f2a260fb739c605b28d",
+    "category_id": {
+      "$oid": "65d24f2a260fb739c605b28d"
+    },
     "available": true,
     "html_body": null,
     "parameters": {
@@ -249,18 +277,24 @@
       "color": "silver",
       "custom_field": "different_value"
     },
-    "created_at": "2024-04-05T10:15:00.000000",
+    "created_at": {
+      "$date": "2024-04-05T10:15:00.000Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "65e7f143c064f4099808ad31",
+    "_id": {
+      "$oid": "65e7f143c064f4099808ad31"
+    },
     "name": "Razer Blade 15",
     "synopsis": "Display 15.6 OLED (3840x2160) 4K Touchscreen / Intel Core i9-12900H (2.5 - 5.0 GHz) / RAM 32 GB / SSD 2 TB / NVIDIA GeForce RTX 3080 Ti, 16 GB / LAN / Wi-Fi 6E / Bluetooth 5.2 / webcam / Windows 11 Pro / 2.1 kg / black",
     "description": "High-performance gaming laptop with a stunning 4K OLED touch display.",
     "quantity": 10,
     "price": 2199.99,
     "views": 420,
-    "category_id": "65d24f2a260fb739c605b28d",
+    "category_id": {
+      "$oid": "65d24f2a260fb739c605b28d"
+    },
     "available": true,
     "html_body": null,
     "parameters": {
@@ -300,18 +334,24 @@
       "color": "black",
       "custom_field": "unique_value"
     },
-    "created_at": "2024-04-18T15:20:00.000000",
+    "created_at": {
+      "$date": "2024-04-18T15:20:00.000Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "65f7f143c064f4099808ad32",
+    "_id": {
+      "$oid": "65f7f143c064f4099808ad32"
+    },
     "name": "Dell Inspiron 15",
     "synopsis": "Display 15.6 IPS (1920x1080) Full HD 60 Hz / Intel Core i5-12400H (2.0 - 4.5 GHz) / RAM 12 GB / SSD 512 GB / Intel UHD Graphics / LAN / Wi-Fi 5 / Bluetooth 4.2 / webcam / Windows 10 Home / 2.2 kg / silver",
     "description": "Reliable laptop for everyday use with decent performance and sleek design.",
     "quantity": 25,
-    "price": 419.80,
+    "price": 419.8,
     "views": 142,
-    "category_id": "65d24f2a260fb739c605b28d",
+    "category_id": {
+      "$oid": "65d24f2a260fb739c605b28d"
+    },
     "available": true,
     "html_body": null,
     "parameters": {
@@ -350,18 +390,24 @@
       "color": "silver",
       "custom_field": "specific_value"
     },
-    "created_at": "2024-05-01T11:10:00.000000",
+    "created_at": {
+      "$date": "2024-05-01T11:10:00.000Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "6607f143c064f4099808ad33",
+    "_id": {
+      "$oid": "6607f143c064f4099808ad33"
+    },
     "name": "Apple MacBook Air M2",
     "synopsis": "Display 13.3 IPS (2560x1600) Retina / Apple M2 Chip / RAM 16 GB / SSD 1 TB / Apple Integrated GPU / Wi-Fi 6 / Bluetooth 5.2 / webcam / macOS Monterey / 1.29 kg / silver",
     "description": "Lightweight and powerful laptop with Apple's latest M2 chip for efficient performance.",
     "quantity": 30,
-    "price": 1139.00,
+    "price": 1139,
     "views": 1500,
-    "category_id": "65d24f2a260fb739c605b28d",
+    "category_id": {
+      "$oid": "65d24f2a260fb739c605b28d"
+    },
     "available": true,
     "html_body": null,
     "parameters": {
@@ -400,18 +446,24 @@
       "color": "silver",
       "custom_field": "distinct_value"
     },
-    "created_at": "2024-05-14T09:00:00.000000",
+    "created_at": {
+      "$date": "2024-05-14T09:00:00.000Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "6617f143c064f4099808ad34",
+    "_id": {
+      "$oid": "6617f143c064f4099808ad34"
+    },
     "name": "Microsoft Surface Laptop Studio",
     "synopsis": "Display 14.4 IPS (2400x1600) PixelSense Touchscreen / Intel Core i7-12700U (2.2 - 4.9 GHz) / RAM 32 GB / SSD 1 TB / NVIDIA GeForce RTX 3050 Ti, 4 GB / Wi-Fi 6E / Bluetooth 5.2 / webcam / Windows 11 Pro / 1.5 kg / platinum",
     "description": "Versatile and sleek laptop with a unique form factor and touch screen capabilities.",
     "quantity": 15,
     "price": 1363.59,
     "views": 503,
-    "category_id": "65d24f2a260fb739c605b28d",
+    "category_id": {
+      "$oid": "65d24f2a260fb739c605b28d"
+    },
     "available": true,
     "html_body": null,
     "parameters": {
@@ -450,18 +502,24 @@
       "color": "platinum",
       "custom_field": "specific_value"
     },
-    "created_at": "2024-06-05T12:30:00.000000",
+    "created_at": {
+      "$date": "2024-06-05T12:30:00.000Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "6627f143c064f4099808ad35",
+    "_id": {
+      "$oid": "6627f143c064f4099808ad35"
+    },
     "name": "Samsung Galaxy Book Pro 360",
     "synopsis": "Display 15.6 Super AMOLED (1920x1080) Full HD Touchscreen / Intel Core i7-1260U (2.1 - 4.7 GHz) / RAM 16 GB / SSD 512 GB / Intel Iris Xe Graphics / Wi-Fi 6E / Bluetooth 5.1 / webcam / Windows 11 Home / 1.05 kg / mystic bronze",
     "description": "Thin and lightweight convertible laptop with vibrant Super AMOLED display for excellent visuals.",
     "quantity": 20,
-    "price": 749.00,
+    "price": 749,
     "views": 982,
-    "category_id": "65d24f2a260fb739c605b28d",
+    "category_id": {
+      "$oid": "65d24f2a260fb739c605b28d"
+    },
     "available": true,
     "html_body": null,
     "parameters": {
@@ -501,18 +559,24 @@
       "color": "mystic bronze",
       "custom_field": "unique_value"
     },
-    "created_at": "2024-07-10T08:45:00.000000",
+    "created_at": {
+      "$date": "2024-07-10T08:45:00.000Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "6637f143c064f4099808ad36",
+    "_id": {
+      "$oid": "6637f143c064f4099808ad36"
+    },
     "name": "Alienware x17",
     "synopsis": "Display 17.3 IPS (3840x2160) 4K 120 Hz / Intel Core i9-12900HK (2.5 - 5.0 GHz) / RAM 64 GB / SSD 2 TB / NVIDIA GeForce RTX 3090, 16 GB / LAN / Wi-Fi 6E / Bluetooth 5.2 / webcam / Windows 11 Pro / 3.2 kg / lunar light",
     "description": "High-end gaming laptop with top-of-the-line specifications and futuristic design.",
     "quantity": 12,
     "price": 2149.97,
     "views": 52,
-    "category_id": "65d24f2a260fb739c605b28d",
+    "category_id": {
+      "$oid": "65d24f2a260fb739c605b28d"
+    },
     "available": true,
     "html_body": null,
     "parameters": {
@@ -552,18 +616,24 @@
       "color": "lunar light",
       "custom_field": "special_value"
     },
-    "created_at": "2024-08-15T13:00:00.000000",
+    "created_at": {
+      "$date": "2024-08-15T13:00:00.000Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "6647f143c064f4099808ad37",
+    "_id": {
+      "$oid": "6647f143c064f4099808ad37"
+    },
     "name": "Huawei MateBook X Pro",
     "synopsis": "Display 14 IPS (3000x2000) 3K Touchscreen / Intel Core i7-1270U (2.1 - 4.7 GHz) / RAM 16 GB / SSD 1 TB / NVIDIA GeForce MX450, 2 GB / Wi-Fi 6 / Bluetooth 5.0 / webcam / Windows 11 Home / 1.33 kg / emerald green",
     "description": "Premium ultrabook with a stunning 3K touchscreen display and elegant design.",
     "quantity": 18,
-    "price": 979.00,
+    "price": 979,
     "views": 288,
-    "category_id": "65d24f2a260fb739c605b28d",
+    "category_id": {
+      "$oid": "65d24f2a260fb739c605b28d"
+    },
     "available": true,
     "html_body": null,
     "parameters": {
@@ -603,18 +673,24 @@
       "color": "emerald green",
       "custom_field": "unique_value"
     },
-    "created_at": "2024-09-02T10:20:00.000000",
+    "created_at": {
+      "$date": "2024-09-02T10:20:00.000Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "65d22fd0a83d80b9f0bd3e38",
+    "_id": {
+      "$oid": "65d22fd0a83d80b9f0bd3e38"
+    },
     "name": "Xiaomi Mi Power Bank (BHR6109CN)",
     "synopsis": "20000 mAh 22.5W Fast Charge PB2022ZM",
     "description": "Very cool power bank.",
     "quantity": 2,
     "price": 57.69,
     "views": 560,
-    "category_id": "65d24f2a260fb739c605b2a7",
+    "category_id": {
+      "$oid": "65d24f2a260fb739c605b2a7"
+    },
     "available": false,
     "html_body": null,
     "parameters": {
@@ -623,18 +699,24 @@
       "warranty": "2 years",
       "country_of_production": "China"
     },
-    "created_at": "2024-02-18T16:26:56.913000",
+    "created_at": {
+      "$date": "2024-02-18T16:26:56.913Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "65d22fd0a83d80b9f0bd3e39",
+    "_id": {
+      "$oid": "65d22fd0a83d80b9f0bd3e39"
+    },
     "name": "Anker PowerCore 26800mAh Portable Charger",
     "synopsis": "26800mAh 3-Port USB Power Bank",
     "description": "High-capacity power bank with fast charging capabilities.",
     "quantity": 5,
-    "price": 56.20,
+    "price": 56.2,
     "views": 453,
-    "category_id": "65d24f2a260fb739c605b2a7",
+    "category_id": {
+      "$oid": "65d24f2a260fb739c605b2a7"
+    },
     "available": true,
     "html_body": null,
     "parameters": {
@@ -643,18 +725,24 @@
       "warranty": "18 months",
       "country_of_production": "China"
     },
-    "created_at": "2024-02-19T09:15:00.000000",
+    "created_at": {
+      "$date": "2024-02-19T09:15:00.000Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "65d22fd0a83d80b9f0bd3e40",
+    "_id": {
+      "$oid": "65d22fd0a83d80b9f0bd3e40"
+    },
     "name": "RAVPower Portable Charger 20000mAh",
     "synopsis": "20000mAh Power Bank with 18W PD and QC 3.0",
     "description": "Compact and efficient power bank for on-the-go charging.",
     "quantity": 10,
     "price": 29.99,
     "views": 189,
-    "category_id": "65d24f2a260fb739c605b2a7",
+    "category_id": {
+      "$oid": "65d24f2a260fb739c605b2a7"
+    },
     "available": true,
     "html_body": null,
     "parameters": {
@@ -663,18 +751,24 @@
       "warranty": "1 year",
       "country_of_production": "China"
     },
-    "created_at": "2024-02-20T11:30:00.000000",
+    "created_at": {
+      "$date": "2024-02-20T11:30:00.000Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "65d22fd0a83d80b9f0bd3e41",
+    "_id": {
+      "$oid": "65d22fd0a83d80b9f0bd3e41"
+    },
     "name": "Samsung Wireless Charger Portable Battery",
     "synopsis": "10000mAh Wireless Power Bank with USB-C, Silver",
     "description": "Wireless and portable charging solution from Samsung.",
     "quantity": 8,
     "price": 170.58,
     "views": 207,
-    "category_id": "65d24f2a260fb739c605b2a7",
+    "category_id": {
+      "$oid": "65d24f2a260fb739c605b2a7"
+    },
     "available": true,
     "html_body": null,
     "parameters": {
@@ -683,18 +777,24 @@
       "warranty": "1 year",
       "country_of_production": "South Korea"
     },
-    "created_at": "2024-02-21T14:20:00.000000",
+    "created_at": {
+      "$date": "2024-02-21T14:20:00.000Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "65d22fd0a83d80b9f0bd3e42",
+    "_id": {
+      "$oid": "65d22fd0a83d80b9f0bd3e42"
+    },
     "name": "Dell XPS 8940 Desktop",
     "synopsis": "Intel Core i7-11700K, 32GB RAM, 1TB SSD + 2TB HDD, NVIDIA GeForce RTX 3070, Windows 11",
     "description": "Powerful desktop computer for both work and gaming.",
     "quantity": 5,
     "price": 1138.99,
     "views": 540,
-    "category_id": "65d24f2a260fb739c605b28c",
+    "category_id": {
+      "$oid": "65d24f2a260fb739c605b28c"
+    },
     "available": true,
     "html_body": null,
     "parameters": {
@@ -724,18 +824,24 @@
       "warranty": "2 years",
       "country_of_production": "China"
     },
-    "created_at": "2024-02-22T16:40:00.000000",
+    "created_at": {
+      "$date": "2024-02-22T16:40:00.000Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "65d22fd0a83d80b9f0bd3e43",
+    "_id": {
+      "$oid": "65d22fd0a83d80b9f0bd3e43"
+    },
     "name": "HP Pavilion Gaming Desktop",
     "synopsis": "AMD Ryzen 7 5800X, 16GB RAM, 512GB SSD + 1TB HDD, NVIDIA GeForce RTX 3060, Windows 10",
     "description": "High-performance gaming desktop with stunning graphics and smooth gameplay.",
     "quantity": 8,
-    "price": 748.00,
+    "price": 748,
     "views": 487,
-    "category_id": "65d24f2a260fb739c605b28c",
+    "category_id": {
+      "$oid": "65d24f2a260fb739c605b28c"
+    },
     "available": true,
     "html_body": null,
     "parameters": {
@@ -764,18 +870,24 @@
       "warranty": "1 year",
       "country_of_production": "China"
     },
-    "created_at": "2024-02-25T11:55:00.000000",
+    "created_at": {
+      "$date": "2024-02-25T11:55:00.000Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "65d22fd0a83d80b9f0bd3e44",
+    "_id": {
+      "$oid": "65d22fd0a83d80b9f0bd3e44"
+    },
     "name": "Apple Mac mini",
     "synopsis": "Apple M1 Chip, 16GB RAM, 1TB SSD, Integrated 8-core GPU, macOS Monterey",
     "description": "Compact and efficient desktop computer with Apple's latest M1 chip.",
     "quantity": 10,
-    "price": 499.00,
+    "price": 499,
     "views": 972,
-    "category_id": "65d24f2a260fb739c605b28c",
+    "category_id": {
+      "$oid": "65d24f2a260fb739c605b28c"
+    },
     "available": true,
     "html_body": null,
     "parameters": {
@@ -805,18 +917,24 @@
       "warranty": "1 year",
       "country_of_production": "China"
     },
-    "created_at": "2024-03-01T14:20:00.000000",
+    "created_at": {
+      "$date": "2024-03-01T14:20:00.000Z"
+    },
     "updated_at": null
   },
   {
-    "_id": "65d22fd0a83d80b9f0bd3e45",
+    "_id": {
+      "$oid": "65d22fd0a83d80b9f0bd3e45"
+    },
     "name": "Lenovo ThinkCentre M80q",
     "synopsis": "Intel Core i5-11400T, 8GB RAM, 256GB SSD, Intel UHD Graphics 730, Windows 11 Pro",
     "description": "Compact and reliable desktop computer for business and everyday use.",
     "quantity": 15,
-    "price": 910.80,
+    "price": 910.8,
     "views": 808,
-    "category_id": "65d24f2a260fb739c605b28c",
+    "category_id": {
+      "$oid": "65d24f2a260fb739c605b28c"
+    },
     "available": true,
     "html_body": null,
     "parameters": {
@@ -845,7 +963,9 @@
       "warranty": "3 years",
       "country_of_production": "China"
     },
-    "created_at": "2024-03-05T09:45:00.000000",
+    "created_at": {
+      "$date": "2024-03-05T09:45:00.000Z"
+    },
     "updated_at": null
   }
 ]
