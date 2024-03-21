@@ -1,6 +1,8 @@
 [
   {
-    "_id": "65d24f2a260fb739c605b28d",
+    "_id": {
+      "$oid": "65d24f2a260fb739c605b28d"
+    },
     "battery_capacity": [
       "43 watt*hours",
       "45 watt*hours",
@@ -195,7 +197,9 @@
     ]
   },
   {
-    "_id": "65d24f2a260fb739c605b2a7",
+    "_id": {
+      "$oid": "65d24f2a260fb739c605b2a7"
+    },
     "brand": [
       "Anker",
       "RAVPower",

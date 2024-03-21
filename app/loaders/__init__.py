@@ -1,11 +1,10 @@
 """Module that contains loaders."""
 
 import abc
-import json
 import os
 from typing import Any
 
-from app.utils.json import JSONDecoder
+from bson import json_util
 
 
 class BaseLoader(abc.ABC):
@@ -67,4 +66,4 @@ class JSONFileLoader(BaseLoader):
         path = os.path.join(os.getcwd(), self.file_path)
 
         with open(path, encoding="utf-8") as json_file:
-            return json.load(json_file, cls=JSONDecoder)
+            return json_util.loads(json_file.read())

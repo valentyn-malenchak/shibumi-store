@@ -2,7 +2,6 @@
 
 import asyncio
 from collections.abc import AsyncGenerator, Generator
-from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -12,7 +11,6 @@ from httpx import ASGITransport, AsyncClient
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from app.app import app
-from app.loaders import JSONFileLoader
 from app.tests import BaseTest
 from app.tests.fixtures.manager import FileFixtureManager
 
@@ -22,19 +20,6 @@ class BaseAPITest(BaseTest):
 
     _client = None
     _APP_BASE_URL = "http://test"
-
-    @staticmethod
-    def load_fixture(fixture_file_path: str) -> Any:
-        """Loads data from fixture file.
-
-        Args:
-            fixture_file_path (str): Fixture file path.
-
-        Returns:
-            Any: Fixture content.
-
-        """
-        return JSONFileLoader(file_path=fixture_file_path).load()
 
     @pytest_asyncio.fixture
     async def test_client(self) -> AsyncGenerator[AsyncClient, None]:
