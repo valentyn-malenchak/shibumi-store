@@ -1,7 +1,7 @@
 # Shibumi Store
 
 [![Python Version](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-312/)
-[![FastAPI Version](https://img.shields.io/badge/fastapi-0.110.0-green.svg)](https://fastapi.tiangolo.com/)
+[![FastAPI Version](https://img.shields.io/badge/fastapi-0.110.1-green.svg)](https://fastapi.tiangolo.com/)
 [![MongoDB Version](https://img.shields.io/badge/mongodb-7.0-green.svg)](https://www.mongodb.com/)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=valentyn-malenchak_shibumi-store&metric=coverage)](https://sonarcloud.io/summary/new_code?id=valentyn-malenchak_shibumi-store)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=valentyn-malenchak_shibumi-store&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=valentyn-malenchak_shibumi-store)
@@ -110,7 +110,7 @@ The project is organized with the following directory structure:
 │   ├── utils/                                 # Utility modules
 │   │   ├── __init__.py
 │   │   ├── json.py                            # Custom JSON decoder
-│   │   └── pydantic.py                        # Custom Pydantic modules
+│   │   └── token.py                           # Verification token component
 │   ├── __init__.py
 │   ├── app.py                                 # Configures and runs FastAPI application
 │   ├── constants.py                           # Application level constants
