@@ -252,7 +252,7 @@ class TestCategory(BaseAPITest):
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(
                 entity="Category"
             )
         }
@@ -479,7 +479,7 @@ class TestCategory(BaseAPITest):
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(
                 entity="Category"
             )
         }

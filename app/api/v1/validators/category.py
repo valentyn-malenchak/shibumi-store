@@ -64,7 +64,7 @@ class CategoryByIdValidator(BaseCategoryValidator):
         except EntityIsNotFoundError:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
+                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(
                     entity="Category"
                 ),
             )

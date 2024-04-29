@@ -184,7 +184,7 @@ class UserService(BaseService):
         except DuplicateKeyError:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=HTTPErrorMessagesEnum.ENTITY_FIELD_UNIQUENESS.format(  # type: ignore
+                detail=HTTPErrorMessagesEnum.ENTITY_FIELD_UNIQUENESS.format(
                     entity="User", field="username"
                 ),
             )
@@ -298,7 +298,7 @@ class UserService(BaseService):
         token = VerificationToken.generate()
 
         self.redis_service.set(
-            name=RedisNamesEnum.RESET_PASSWORD.format(user_id=item.id),  # type: ignore
+            name=RedisNamesEnum.RESET_PASSWORD.format(user_id=item.id),
             value=token.hash(),
             ttl=RedisNamesTTLEnum.RESET_PASSWORD.value,
         )
@@ -307,9 +307,7 @@ class UserService(BaseService):
             self.send_grid_service.send,
             to_emails=item.email,
             subject=EmailSubjectsEnum.RESET_PASSWORD,
-            plain_text_content=EmailTextEnum.RESET_PASSWORD.format(  # type: ignore
-                token=token.value
-            ),
+            plain_text_content=EmailTextEnum.RESET_PASSWORD.format(token=token.value),
         )
 
     async def reset_password(self, id_: ObjectId, token: str, password: str) -> None:
@@ -325,7 +323,7 @@ class UserService(BaseService):
         hashed_token = VerificationToken(token).hash()
 
         cached_token = self.redis_service.get(
-            name=RedisNamesEnum.RESET_PASSWORD.format(user_id=id_)  # type: ignore
+            name=RedisNamesEnum.RESET_PASSWORD.format(user_id=id_)
         )
 
         if cached_token is None or cached_token != hashed_token:
@@ -337,7 +335,7 @@ class UserService(BaseService):
         await self.update_password(id_=id_, password=password)
 
         self.redis_service.delete(
-            name=RedisNamesEnum.RESET_PASSWORD.format(user_id=id_)  # type: ignore
+            name=RedisNamesEnum.RESET_PASSWORD.format(user_id=id_)
         )
 
     async def request_verify_email(self, item: User) -> None:
@@ -351,7 +349,7 @@ class UserService(BaseService):
         token = VerificationToken.generate()
 
         self.redis_service.set(
-            name=RedisNamesEnum.EMAIL_VERIFICATION.format(user_id=item.id),  # type: ignore
+            name=RedisNamesEnum.EMAIL_VERIFICATION.format(user_id=item.id),
             value=token.hash(),
             ttl=RedisNamesTTLEnum.EMAIL_VERIFICATION.value,
         )
@@ -360,7 +358,7 @@ class UserService(BaseService):
             self.send_grid_service.send,
             to_emails=item.email,
             subject=EmailSubjectsEnum.EMAIL_VERIFICATION,
-            plain_text_content=EmailTextEnum.EMAIL_VERIFICATION.format(  # type: ignore
+            plain_text_content=EmailTextEnum.EMAIL_VERIFICATION.format(
                 token=token.value
             ),
         )
@@ -377,7 +375,7 @@ class UserService(BaseService):
         hashed_token = VerificationToken(token).hash()
 
         cached_token = self.redis_service.get(
-            name=RedisNamesEnum.EMAIL_VERIFICATION.format(user_id=id_)  # type: ignore
+            name=RedisNamesEnum.EMAIL_VERIFICATION.format(user_id=id_)
         )
 
         if cached_token is None or cached_token != hashed_token:
@@ -389,5 +387,5 @@ class UserService(BaseService):
         await self._update_email_verified(id_=id_)
 
         self.redis_service.delete(
-            name=RedisNamesEnum.EMAIL_VERIFICATION.format(user_id=id_)  # type: ignore
+            name=RedisNamesEnum.EMAIL_VERIFICATION.format(user_id=id_)
         )
