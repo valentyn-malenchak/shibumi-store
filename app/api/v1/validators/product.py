@@ -125,7 +125,7 @@ class ProductParametersValidator(BaseProductValidator):
                             "parameters",
                             parameter.machine_name,
                         ],
-                        "msg": ValidationErrorMessagesEnum.INVALID_FIELD_TYPE.format(  # type: ignore
+                        "msg": ValidationErrorMessagesEnum.INVALID_FIELD_TYPE.format(
                             type_=type_.value.__name__
                         ),
                         "input": value,
@@ -163,7 +163,7 @@ class ProductByIdValidator(BaseProductValidator):
         except EntityIsNotFoundError:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
+                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(
                     entity="Product"
                 ),
             )

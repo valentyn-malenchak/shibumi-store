@@ -66,7 +66,7 @@ class UserByIdValidator(BaseUserValidator):
         except EntityIsNotFoundError:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="User"),  # type: ignore
+                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="User"),
             )
 
         return user
@@ -95,9 +95,7 @@ class UserByUsernameValidator(BaseUserValidator):
         except EntityIsNotFoundError:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
-                    entity="User"
-                ),
+                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="User"),
             )
 
         return user
@@ -123,9 +121,7 @@ class UserStatusValidator(BaseUserValidator):
         if user.deleted is True:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(  # type: ignore
-                    entity="User"
-                ),
+                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="User"),
             )
 
         return user
