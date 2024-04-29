@@ -1065,6 +1065,64 @@ class TestProduct(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.PRODUCTS,)], indirect=True
     )
+    async def test_get_products_list_with_filter_by_identifiers(
+        self,
+        test_client: AsyncClient,
+        arrange_db: None,
+        redis_get_mock: MagicMock,
+        redis_setex_mock: MagicMock,
+    ) -> None:
+        """Test get products list with filter by identifiers."""
+
+        response = await test_client.get(
+            f"{AppConstants.API_V1_PREFIX}/products/",
+            params={
+                "page": 1,
+                "page_size": 20,
+                "available": True,
+                "ids": ["65d22fd0a83d80b9f0bd3e39", "65d22fd0a83d80b9f0bd3e44"],
+            },
+        )
+
+        assert redis_get_mock.call_count == 1
+        assert redis_setex_mock.call_count == 1
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "data": [
+                {
+                    "id": "65d22fd0a83d80b9f0bd3e44",
+                    "name": "Apple Mac mini",
+                    "synopsis": "Apple M1 Chip, 16GB RAM, 1TB SSD, Integrated "
+                    "8-core GPU, macOS Monterey",
+                    "quantity": 10,
+                    "price": 499.0,
+                    "views": 972,
+                    "category_id": "65d24f2a260fb739c605b28c",
+                    "available": True,
+                    "created_at": "2024-03-01T14:20:00",
+                    "updated_at": None,
+                },
+                {
+                    "id": "65d22fd0a83d80b9f0bd3e39",
+                    "name": "Anker PowerCore 26800mAh Portable Charger",
+                    "synopsis": "26800mAh 3-Port USB Power Bank",
+                    "quantity": 5,
+                    "price": 56.2,
+                    "views": 453,
+                    "category_id": "65d24f2a260fb739c605b2a7",
+                    "available": True,
+                    "created_at": "2024-02-19T09:15:00",
+                    "updated_at": None,
+                },
+            ],
+            "total": 2,
+        }
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.PRODUCTS,)], indirect=True
+    )
     async def test_get_products_list_with_search(
         self,
         test_client: AsyncClient,

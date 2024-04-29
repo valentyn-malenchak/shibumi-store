@@ -92,5 +92,7 @@ class ProductsFilterDependency:
         """
 
         return await products_filter_validator.validate(
-            category_id=filter_.category_id, available=filter_.available
+            category_id=filter_.category_id,
+            available=filter_.available,
+            ids=filter_.ids,
         )

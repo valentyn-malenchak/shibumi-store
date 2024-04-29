@@ -81,6 +81,7 @@ class ProductService(BaseService):
             page_size=pagination.page_size,
             category_id=filter_.category_id,
             available=filter_.available,
+            ids=filter_.ids,
             parameters=filter_.parameters,
         )
 
@@ -100,6 +101,7 @@ class ProductService(BaseService):
             search=search.search,
             category_id=filter_.category_id,
             available=filter_.available,
+            ids=filter_.ids,
             parameters=filter_.parameters,
         )
 

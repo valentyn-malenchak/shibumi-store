@@ -277,13 +277,17 @@ class ProductsFilterValidator(BaseProductValidator):
         self.products_available_filter_validator = products_available_filter_validator
 
     async def validate(
-        self, category_id: ObjectId | None, available: bool | None
+        self,
+        category_id: ObjectId | None,
+        available: bool | None,
+        ids: list[ObjectId] | None,
     ) -> ProductsFilterModel:
         """Validates and formats products list filter.
 
         Args:
             category_id (ObjectId | None): Category identifier filter.
-            available (available: bool | None): Product availability filter.
+            available (bool | None): Product availability filter.
+            ids (list[ObjectId] | None): Filter by list of product identifiers.
 
         Returns:
             ProductsFilterModel: Products filter object.
@@ -324,5 +328,8 @@ class ProductsFilterValidator(BaseProductValidator):
             )
 
         return ProductsFilterModel(
-            category_id=category_id, available=available, parameters=query_params
+            category_id=category_id,
+            available=available,
+            ids=ids,
+            parameters=query_params,
         )

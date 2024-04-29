@@ -23,6 +23,7 @@ class ProductRepository(BaseRepository):
         search: str | None,
         category_id: ObjectId | None = None,
         available: bool | None = None,
+        ids: list[ObjectId] | None = None,
         parameters: dict[str, list[Any]] | None = None,
         **_: Any,
     ) -> Mapping[str, Any]:
@@ -32,6 +33,8 @@ class ProductRepository(BaseRepository):
             search (str | None): Parameters for list searching.
             category_id (ObjectId | None): Category identifier. Defaults to None.
             available (bool | None): Available products filter. Defaults to None.
+            ids (list[ObjectId] | None): Filter by list of product identifiers.
+            Defaults to None.
             parameters (dict[str, list[Any]] | None): Product parameters filter.
             Defaults to None.
             _ (Any): Parameters for list filtering.
@@ -51,6 +54,9 @@ class ProductRepository(BaseRepository):
 
         if available is not None:
             query_filter["available"] = available
+
+        if ids:
+            query_filter["_id"] = {"$in": ids}
 
         if parameters:
             for name, values in parameters.items():
