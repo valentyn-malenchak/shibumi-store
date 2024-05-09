@@ -181,6 +181,8 @@ class TestUser(BaseAPITest):
         assert redis_setex_mock.call_count == 1
         assert send_grid_send_mock.call_count == 1
 
+        # TODO: verify cart is initialized for a new user
+
         assert response.status_code == status.HTTP_201_CREATED
         assert self._exclude_fields(response.json(), exclude_keys=["id"]) == {
             "first_name": "Joe",

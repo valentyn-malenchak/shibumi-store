@@ -22,6 +22,7 @@ from app.api.v1.models.user import (
     User,
     UsersFilterModel,
 )
+from app.api.v1.repositories.cart import CartRepository
 from app.api.v1.repositories.user import UserRepository
 from app.api.v1.services import BaseService
 from app.constants import HTTPErrorMessagesEnum
@@ -41,6 +42,7 @@ class UserService(BaseService):
         redis_service: RedisService = Depends(),
         transaction_manager: TransactionManager = Depends(),
         repository: UserRepository = Depends(),
+        cart_repository: CartRepository = Depends(),
         send_grid_service: SendGridService = Depends(),
     ) -> None:
         """Initializes the UserService.
@@ -50,6 +52,7 @@ class UserService(BaseService):
             redis_service (RedisService): Redis service.
             transaction_manager (TransactionManager): Transaction manager.
             repository (UserRepository): An instance of the User repository.
+            cart_repository (CartRepository): An instance of the cart repository.
             send_grid_service (SendGridService): SendGrid service.
 
         """
@@ -61,6 +64,8 @@ class UserService(BaseService):
         )
 
         self.repository = repository
+
+        self.cart_repository = cart_repository
 
         self.send_grid_service = send_grid_service
 
@@ -188,6 +193,9 @@ class UserService(BaseService):
                     entity="User", field="username"
                 ),
             )
+
+        # Initialize user's cart
+        await self.cart_repository.create(data={"user_id": id_, "products": []})
 
         user = await self.get_by_id(id_=id_)
 
