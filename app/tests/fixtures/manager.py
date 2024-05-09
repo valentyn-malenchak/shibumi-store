@@ -6,6 +6,7 @@ from typing import Any, ClassVar
 from injector import Injector
 
 from app.api.v1.repositories import BaseRepository
+from app.api.v1.repositories.cart import CartRepository
 from app.api.v1.repositories.category_parameters import (
     CategoryParametersRepository,
 )
@@ -28,6 +29,7 @@ class FileFixtureManager:
         MongoCollectionsEnum.CATEGORY_PARAMETERS: _injector.get(
             CategoryParametersRepository
         ),
+        MongoCollectionsEnum.CART: _injector.get(CartRepository),
     }
 
     def __init__(
