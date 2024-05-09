@@ -10,7 +10,7 @@ from app.services.mongo.constants import MongoCollectionsEnum
 class CartRepository(BaseRepository):
     """Cart repository for handling data access operations."""
 
-    _collection_name: str = MongoCollectionsEnum.CART
+    _collection_name: str = MongoCollectionsEnum.CARTS
 
     @staticmethod
     async def _get_list_query_filter(*_: Any, **__: Any) -> Mapping[str, Any]:

@@ -12,4 +12,4 @@ class MongoCollectionsEnum(StrEnum):
     PRODUCTS = auto()
     PARAMETERS = auto()
     CATEGORY_PARAMETERS = auto()
-    CART = auto()
+    CARTS = auto()

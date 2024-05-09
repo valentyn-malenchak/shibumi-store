@@ -29,7 +29,7 @@ class FileFixtureManager:
         MongoCollectionsEnum.CATEGORY_PARAMETERS: _injector.get(
             CategoryParametersRepository
         ),
-        MongoCollectionsEnum.CART: _injector.get(CartRepository),
+        MongoCollectionsEnum.CARTS: _injector.get(CartRepository),
     }
 
     def __init__(
