@@ -2,8 +2,9 @@
 
 import abc
 from string import punctuation
-from typing import Any
+from typing import Annotated, Any
 
+from annotated_types import Gt
 from pydantic import BaseModel, ConfigDict
 from pydantic_core import PydanticCustomError, core_schema
 from pydantic_extra_types.phone_numbers import PhoneNumber as PydanticPhoneNumber
@@ -136,3 +137,6 @@ class UsernamePolicy(BaseType):
             )
 
         return value
+
+
+PositiveInt = Annotated[int, Gt(gt=0)]

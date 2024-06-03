@@ -22,9 +22,9 @@ from app.api.v1.models.user import (
     User,
     UsersFilterModel,
 )
-from app.api.v1.repositories.cart import CartRepository
 from app.api.v1.repositories.user import UserRepository
 from app.api.v1.services import BaseService
+from app.api.v1.services.cart import CartService
 from app.constants import HTTPErrorMessagesEnum
 from app.exceptions import EntityIsNotFoundError
 from app.services.mongo.transaction_manager import TransactionManager
@@ -42,7 +42,7 @@ class UserService(BaseService):
         redis_service: RedisService = Depends(),
         transaction_manager: TransactionManager = Depends(),
         repository: UserRepository = Depends(),
-        cart_repository: CartRepository = Depends(),
+        cart_service: CartService = Depends(),
         send_grid_service: SendGridService = Depends(),
     ) -> None:
         """Initializes the UserService.
@@ -52,7 +52,7 @@ class UserService(BaseService):
             redis_service (RedisService): Redis service.
             transaction_manager (TransactionManager): Transaction manager.
             repository (UserRepository): An instance of the User repository.
-            cart_repository (CartRepository): An instance of the cart repository.
+            cart_service (CartService): An instance of the cart service.
             send_grid_service (SendGridService): SendGrid service.
 
         """
@@ -65,7 +65,7 @@ class UserService(BaseService):
 
         self.repository = repository
 
-        self.cart_repository = cart_repository
+        self.cart_service = cart_service
 
         self.send_grid_service = send_grid_service
 
@@ -127,7 +127,7 @@ class UserService(BaseService):
             User: User object.
 
         Raises:
-            EntityIsNotFoundError: If case user is not found.
+            EntityIsNotFoundError: In case user is not found.
 
         """
 
@@ -148,7 +148,7 @@ class UserService(BaseService):
             User: User object.
 
         Raises:
-            EntityIsNotFoundError: If case user is not found.
+            EntityIsNotFoundError: In case user is not found.
 
         """
 
@@ -195,7 +195,7 @@ class UserService(BaseService):
             )
 
         # Initialize user's cart
-        await self.cart_repository.create(data={"user_id": id_, "products": []})
+        await self.cart_service.create(user_id=id_)
 
         user = await self.get_by_id(id_=id_)
 

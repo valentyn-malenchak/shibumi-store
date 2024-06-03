@@ -42,6 +42,9 @@ class ScopesEnum(Enum):
     PRODUCTS_CREATE_PRODUCT = "Allows to create a new product."
     PRODUCTS_UPDATE_PRODUCT = "Allows to update product."
 
+    CART_ADD_PRODUCT = "Allows to add product to the cart."
+    CART_UPDATE_PRODUCT = "Allows to update product in the cart."
+
 
 class RedisNamesEnum(StrEnum):
     """Redis names format enumerate."""
