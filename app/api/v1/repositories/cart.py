@@ -3,6 +3,9 @@
 from collections.abc import Mapping
 from typing import Any
 
+from bson import ObjectId
+from motor.motor_asyncio import AsyncIOMotorClientSession
+
 from app.api.v1.repositories import BaseRepository
 from app.services.mongo.constants import MongoCollectionsEnum
 
@@ -54,3 +57,24 @@ class CartRepository(BaseRepository):
 
         """
         raise NotImplementedError
+
+    async def get_by_user_id(
+        self, user_id: ObjectId, *, session: AsyncIOMotorClientSession | None = None
+    ) -> Mapping[str, Any] | None:
+        """Retrieves an item from the repository by user unique identifier.
+
+        Args:
+            user_id (ObjectId): The unique identifier of the user.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            Mapping[str, Any] | None: The retrieved item.
+
+        """
+
+        return await self._mongo_service.find_one(
+            collection=self._collection_name,
+            filter_={"user_id": user_id},
+            session=session,
+        )

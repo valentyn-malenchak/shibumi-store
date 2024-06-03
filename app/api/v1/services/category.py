@@ -92,7 +92,7 @@ class CategoryService(BaseService):
             Category: The retrieved category.
 
         Raises:
-            EntityIsNotFoundError: If case category is not found.
+            EntityIsNotFoundError: In case category is not found.
 
         """
 

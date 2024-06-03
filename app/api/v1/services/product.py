@@ -115,7 +115,7 @@ class ProductService(BaseService):
             Product: The retrieved product.
 
         Raises:
-            EntityIsNotFoundError: If case product is not found.
+            EntityIsNotFoundError: In case product is not found.
 
         """
 

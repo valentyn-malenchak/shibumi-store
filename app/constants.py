@@ -43,6 +43,12 @@ class HTTPErrorMessagesEnum(StrEnum):
     PRODUCT_ACCESS_DENIED = "Access denied to product."
     PRODUCTS_NOT_AVAILABLE_ACCESS_DENIED = "Access denied to not available products."
 
+    MAXIMUM_PRODUCT_QUANTITY_AVAILABLE = (
+        "Maximum available quantity for product is exceeded."
+    )
+    PRODUCT_IS_ALREADY_ADDED_TO_THE_CART = "Product is already added to the cart."
+    PRODUCT_IS_NOT_ADDED_TO_THE_CART = "Product is not added to the cart."
+
 
 class ValidationErrorMessagesEnum(StrEnum):
     """Contains validation error messages for Pydantic models."""
