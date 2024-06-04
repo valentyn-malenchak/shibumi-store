@@ -42,8 +42,9 @@ class ScopesEnum(Enum):
     PRODUCTS_CREATE_PRODUCT = "Allows to create a new product."
     PRODUCTS_UPDATE_PRODUCT = "Allows to update product."
 
-    CART_ADD_PRODUCT = "Allows to add product to the cart."
-    CART_UPDATE_PRODUCT = "Allows to update product in the cart."
+    CARTS_GET_CART = "Allows to get user's cart."
+    CARTS_ADD_PRODUCT = "Allows to add product to the cart."
+    CARTS_UPDATE_PRODUCT = "Allows to update product in the cart."
 
 
 class RedisNamesEnum(StrEnum):

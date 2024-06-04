@@ -16,10 +16,30 @@ from app.api.v1.services.cart import CartService
 router = APIRouter(prefix="/cart", tags=["cart"])
 
 
+@router.get("/", response_model=CartResponseModel, status_code=status.HTTP_200_OK)
+async def get_cart(
+    current_user: CurrentUserModel = Security(
+        StrictAuthorization(), scopes=[ScopesEnum.CARTS_GET_CART.name]
+    ),
+    cart_service: CartService = Depends(),
+) -> Cart:
+    """API which returns cart of current user.
+
+    Args:
+        current_user (CurrentUserModel): Current user object.
+        cart_service (CartService): Cart service.
+
+    Returns:
+        Cart: Cart object.
+
+    """
+    return await cart_service.get_by_user_id(user_id=current_user.object.id)
+
+
 @router.post("/", response_model=CartResponseModel, status_code=status.HTTP_201_CREATED)
 async def add_product_to_the_cart(
     _: CurrentUserModel = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.CART_ADD_PRODUCT.name]
+        StrictAuthorization(), scopes=[ScopesEnum.CARTS_ADD_PRODUCT.name]
     ),
     cart_product: CartProduct = Depends(CartProductDependency()),
     cart: Cart = Depends(CartProductAddDependency()),
@@ -43,7 +63,7 @@ async def add_product_to_the_cart(
 @router.patch("/", response_model=CartResponseModel, status_code=status.HTTP_200_OK)
 async def update_product_in_the_cart(
     _: CurrentUserModel = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.CART_UPDATE_PRODUCT.name]
+        StrictAuthorization(), scopes=[ScopesEnum.CARTS_UPDATE_PRODUCT.name]
     ),
     cart_product: CartProduct = Depends(CartProductDependency()),
     cart: Cart = Depends(CartProductUpdateDependency()),

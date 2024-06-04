@@ -16,8 +16,9 @@ CUSTOMER_USER = dict(
         ScopesEnum.CATEGORIES_GET_CATEGORY_PARAMETERS.name,
         ScopesEnum.PRODUCTS_GET_PRODUCTS.name,
         ScopesEnum.PRODUCTS_GET_PRODUCT.name,
-        ScopesEnum.CART_ADD_PRODUCT.name,
-        ScopesEnum.CART_UPDATE_PRODUCT.name,
+        ScopesEnum.CARTS_GET_CART.name,
+        ScopesEnum.CARTS_ADD_PRODUCT.name,
+        ScopesEnum.CARTS_UPDATE_PRODUCT.name,
     ],
     exp=1703194093,
 )
