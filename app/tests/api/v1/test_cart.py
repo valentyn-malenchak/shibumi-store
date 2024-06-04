@@ -32,6 +32,68 @@ class TestCart(BaseAPITest):
             (
                 MongoCollectionsEnum.USERS,
                 MongoCollectionsEnum.CARTS,
+            )
+        ],
+        indirect=True,
+    )
+    async def test_get_cart(self, test_client: AsyncClient, arrange_db: None) -> None:
+        """Test get cart."""
+
+        response = await test_client.get(
+            f"{AppConstants.API_V1_PREFIX}/cart/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+        assert response.json() == {
+            "id": "663ce924336962a87b140742",
+            "user_id": "65844f12b6de26578d98c2c8",
+            "products": [
+                {
+                    "id": "65d22fd0a83d80b9f0bd3e39",
+                    "quantity": 2,
+                }
+            ],
+            "created_at": "2024-01-05T12:08:35.440000",
+            "updated_at": None,
+        }
+
+    @pytest.mark.asyncio
+    async def test_get_cart_no_token(self, test_client: AsyncClient) -> None:
+        """Test get cart in case there is no token."""
+
+        response = await test_client.get(f"{AppConstants.API_V1_PREFIX}/cart/")
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED}
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
+    async def test_get_cart_user_no_scope(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get cart in case user does not have appropriate scope."""
+
+        response = await test_client.get(
+            f"{AppConstants.API_V1_PREFIX}/cart/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [
+            (
+                MongoCollectionsEnum.USERS,
+                MongoCollectionsEnum.CARTS,
                 MongoCollectionsEnum.PRODUCTS,
             )
         ],
