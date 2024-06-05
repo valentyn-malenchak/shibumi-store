@@ -10,6 +10,7 @@ from motor.motor_asyncio import (
     AsyncIOMotorCollection,
     AsyncIOMotorDatabase,
 )
+from pymongo import ReturnDocument
 
 from app.services.base import BaseService
 from app.services.mongo.client import MongoDBClient
@@ -183,6 +184,45 @@ class MongoDBService(BaseService):
         collection_ = self._get_collection_by_name(collection=collection)
 
         return await collection_.find_one(filter=filter_, session=session)
+
+    async def find_one_and_update(  # noqa: PLR0913
+        self,
+        collection: str,
+        filter_: Mapping[str, Any],
+        update: Mapping[str, Any],
+        upsert: bool = False,
+        return_updated: bool = True,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+    ) -> Mapping[str, Any]:
+        """Updates a document in the chosen collection and return it.
+
+        Args:
+            collection (str): Collection name.
+            filter_ (Mapping[str, Any]): Specifies query selection criteria.
+            update (Mapping[str, Any]): Data to be updated.
+            upsert (bool): Use update or insert. Defaults to False.
+            return_updated (bool): Defines if method should return document after
+            the update or original version. Defaults to True (updated document).
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            Mapping[str, Any] | None:
+
+        """
+
+        collection_ = self._get_collection_by_name(collection=collection)
+
+        return await collection_.find_one_and_update(
+            filter=filter_,
+            update=update,
+            upsert=upsert,
+            return_document=ReturnDocument.AFTER
+            if return_updated is True
+            else ReturnDocument.BEFORE,
+            session=session,
+        )
 
     async def insert_one(
         self,

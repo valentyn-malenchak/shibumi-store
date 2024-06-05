@@ -17,6 +17,7 @@ from app.api.v1.validators import BaseValidator
 from app.api.v1.validators.category import CategoryLeafValidator
 from app.constants import HTTPErrorMessagesEnum, ValidationErrorMessagesEnum
 from app.exceptions import EntityIsNotFoundError
+from app.utils.pydantic import PositiveInt
 
 
 class BaseProductValidator(BaseValidator):
@@ -333,3 +334,55 @@ class ProductsFilterValidator(BaseProductValidator):
             ids=ids,
             parameters=query_params,
         )
+
+
+class ProductQuantityValidator(BaseProductValidator):
+    """Product quantity validator."""
+
+    def __init__(
+        self,
+        request: Request,
+        product_service: ProductService = Depends(),
+        product_by_id_status_validator: ProductByIdStatusValidator = Depends(),
+    ):
+        """Initializes product quantity validator.
+
+        Args:
+            request (Request): Current request object.
+            product_service (ProductService): Product service.
+            product_by_id_status_validator (ProductByIdStatusValidator): Product by
+            identifier status validator.
+
+        """
+
+        super().__init__(request=request, product_service=product_service)
+
+        self.product_by_id_status_validator = product_by_id_status_validator
+
+    async def validate(self, product_id: ObjectId, quantity: PositiveInt) -> Product:
+        """Validates product.
+
+        Args:
+            product_id (ObjectId): BSON object identifier of requested product.
+            quantity (PositiveInt): Requested product quantity.
+
+        Returns:
+            Product: Product object.
+
+        Raises:
+            HTTPException: If cart product quantity is exceeded the maximum number
+            available.
+
+        """
+
+        product = await self.product_by_id_status_validator.validate(
+            product_id=product_id
+        )
+
+        if product.quantity < quantity:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=HTTPErrorMessagesEnum.MAXIMUM_PRODUCT_QUANTITY_AVAILABLE,
+            )
+
+        return product

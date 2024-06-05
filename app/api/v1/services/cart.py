@@ -6,7 +6,11 @@ import arrow
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
 
-from app.api.v1.models.cart import Cart, CartProduct
+from app.api.v1.models.cart import (
+    AddCartProductRequestModel,
+    Cart,
+    UpdateCartProductRequestModel,
+)
 from app.api.v1.repositories.cart import CartRepository
 from app.api.v1.services import BaseService
 from app.exceptions import EntityIsNotFoundError
@@ -97,7 +101,7 @@ class CartService(BaseService):
         """Retrieves a cart by user unique identifier.
 
         Args:
-            user_id (ObjectId): The unique identifier of the user.
+            user_id (ObjectId): BSON object identifier of requested user.
 
         Returns:
             Cart: The retrieved cart.
@@ -152,27 +156,21 @@ class CartService(BaseService):
         """
         raise NotImplementedError
 
-    async def update_by_id(self, id_: ObjectId, products: list[CartProduct]) -> Cart:
+    async def update_by_id(self, id_: ObjectId, data: Any) -> Any:
         """Updates a cart by its unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the cart.
-            products (list[CartProduct]): List of products for cart update.
+            data (Any): Data to update cart.
 
         Returns:
-            Cart: The updated cart.
+            Any: The updated cart.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
 
         """
-
-        await self.repository.update_by_id(
-            id_=id_,
-            data={
-                "products": [product.model_dump() for product in products],
-                "updated_at": arrow.utcnow().datetime,
-            },
-        )
-
-        return await self.get_by_id(id_=id_)
+        raise NotImplementedError
 
     async def delete_by_id(self, id_: ObjectId) -> None:
         """Deletes a cart by its unique identifier.
@@ -186,39 +184,68 @@ class CartService(BaseService):
         """
         raise NotImplementedError
 
-    async def add_product_to_the_cart(self, item: Cart, product: CartProduct) -> Cart:
+    async def add_product(
+        self, user_id: ObjectId, cart_product_data: AddCartProductRequestModel
+    ) -> Cart:
         """Adds new product to the cart.
 
         Args:
-            item (Cart): Cart object.
-            product (CartProduct): Product to be added.
+            user_id (ObjectId): BSON object identifier of requested user.
+            cart_product_data (AddCartProductRequestModel): Cart product data.
 
         Returns:
             Cart: Updated cart.
 
         """
 
-        return await self.update_by_id(id_=item.id, products=[*item.products, product])
+        cart = await self.repository.add_product(
+            user_id=user_id,
+            product_id=cart_product_data.id,
+            quantity=cart_product_data.quantity,
+        )
 
-    async def update_product_to_the_cart(
-        self, item: Cart, product: CartProduct
+        return Cart(**cart)
+
+    async def update_product(
+        self,
+        user_id: ObjectId,
+        product_id: ObjectId,
+        cart_product_data: UpdateCartProductRequestModel,
     ) -> Cart:
-        """Updates new product to the cart.
+        """Updates product in the cart.
 
         Args:
-            item (Cart): Cart object.
-            product (CartProduct): Product to be updated.
+            user_id (ObjectId): BSON object identifier of requested user.
+            product_id (ObjectId): The unique identifier of the product.
+            cart_product_data (UpdateCartProductRequestModel): Cart product data.
 
         Returns:
             Cart: Updated cart.
 
         """
 
-        return await self.update_by_id(
-            id_=item.id,
-            products=[
-                # Replaces product object if ids match
-                cart_product if cart_product.id != product.id else product
-                for cart_product in item.products
-            ],
+        cart = await self.repository.update_product(
+            user_id=user_id,
+            product_id=product_id,
+            quantity=cart_product_data.quantity,
         )
+
+        return Cart(**cart)
+
+    async def delete_product(self, user_id: ObjectId, product_id: ObjectId) -> Cart:
+        """Deletes product from the cart.
+
+        Args:
+            user_id (ObjectId): BSON object identifier of requested user.
+            product_id (ObjectId): The unique identifier of the product.
+
+        Returns:
+            Cart: Updated cart.
+
+        """
+
+        cart = await self.repository.delete_product(
+            user_id=user_id, product_id=product_id
+        )
+
+        return Cart(**cart)

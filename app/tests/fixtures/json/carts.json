@@ -12,6 +12,12 @@
           "$oid": "65d22fd0a83d80b9f0bd3e39"
         },
         "quantity": 2
+      },
+      {
+        "id": {
+          "$oid": "65d22fd0a83d80b9f0bd3e42"
+        },
+        "quantity": 1
       }
     ],
     "created_at": {
