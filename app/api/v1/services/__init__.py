@@ -111,7 +111,7 @@ class BaseService(abc.ABC):
 
     @abc.abstractmethod
     async def update(self, item: Any, data: Any) -> Any:
-        """Updates an item by its unique identifier.
+        """Updates an item.
 
         Args:
             item (Any): Current item object.
