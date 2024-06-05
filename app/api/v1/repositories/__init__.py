@@ -149,14 +149,14 @@ class BaseRepository(abc.ABC):
 
         # If search is included to query, return items sorted by search scores
         return (
-            self.get_list_default_sorting()
+            self._get_list_default_sorting()
             if search is False
             else [("score", {"$meta": "textScore"})]
         )
 
     @staticmethod
     @abc.abstractmethod
-    def get_list_default_sorting() -> list[tuple[str, int | Mapping[str, Any]]] | None:
+    def _get_list_default_sorting() -> list[tuple[str, int | Mapping[str, Any]]] | None:
         """Returns list default sorting.
 
         Returns:
@@ -210,6 +210,38 @@ class BaseRepository(abc.ABC):
 
         return await self._mongo_service.find_one(
             collection=self._collection_name, filter_={"_id": id_}, session=session
+        )
+
+    async def get_one_and_update_by_id(
+        self,
+        id_: ObjectId,
+        data: dict[str, Any],
+        *,
+        upsert: bool = False,
+        session: AsyncIOMotorClientSession | None = None,
+    ) -> Mapping[str, Any]:
+        """
+        Updates and retrieves a single item from the repository by its
+        unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the item.
+            data (dict[str, Any]): Data to update item.
+            upsert (bool): Use update or insert. Defaults to False.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            Mapping[str, Any]: The retrieved item.
+
+        """
+
+        return await self._mongo_service.find_one_and_update(
+            collection=self._collection_name,
+            filter_={"_id": id_},
+            update={"$set": data},
+            upsert=upsert,
+            session=session,
         )
 
     async def create(

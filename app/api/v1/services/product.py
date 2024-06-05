@@ -174,13 +174,15 @@ class ProductService(BaseService):
 
         """
 
-        await self.repository.update_by_id(
+        updated_product = await self.repository.get_one_and_update_by_id(
             id_=item.id,
             data={
                 **data.model_dump(),
                 "updated_at": arrow.utcnow().datetime,
             },
         )
+
+        product = Product(**updated_product)
 
         self.background_tasks.add_task(
             self.category_service.calculate_category_parameters,
@@ -194,7 +196,7 @@ class ProductService(BaseService):
                 id_=item.category_id,
             )
 
-        return await self.get_by_id(id_=item.id)
+        return product
 
     async def update_by_id(self, id_: ObjectId, data: Any) -> Any:
         """Updates a product by its unique identifier.

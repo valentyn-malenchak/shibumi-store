@@ -217,7 +217,7 @@ class UserService(BaseService):
 
         emails_match = item.email == data.email
 
-        await self.repository.update_by_id(
+        updated_user = await self.repository.get_one_and_update_by_id(
             id_=item.id,
             data={
                 **data.model_dump(),
@@ -227,10 +227,12 @@ class UserService(BaseService):
             },
         )
 
-        if emails_match is False:
-            await self.request_verify_email(item=item)
+        user = User(**updated_user)
 
-        return await self.get_by_id(id_=item.id)
+        if emails_match is False:
+            await self.request_verify_email(item=user)
+
+        return user
 
     async def update_by_id(self, id_: Any, data: Any) -> Any:
         """Updates a user by its unique identifier.

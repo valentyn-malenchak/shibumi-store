@@ -82,7 +82,7 @@ class ProductRepository(BaseRepository):
         }
 
     @staticmethod
-    def get_list_default_sorting() -> list[tuple[str, int | Mapping[str, Any]]] | None:
+    def _get_list_default_sorting() -> list[tuple[str, int | Mapping[str, Any]]] | None:
         """Returns list default sorting.
 
         Returns:
