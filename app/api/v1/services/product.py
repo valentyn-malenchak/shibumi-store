@@ -6,11 +6,11 @@ from typing import Any
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
 
-from app.api.v1.models import PaginationModel, SearchModel, SortingModel
+from app.api.v1.models import Pagination, Search, Sorting
 from app.api.v1.models.product import (
     Product,
-    ProductRequestModel,
-    ProductsFilterModel,
+    ProductData,
+    ProductFilter,
 )
 from app.api.v1.repositories.product import ProductRepository
 from app.api.v1.services import BaseService
@@ -54,18 +54,18 @@ class ProductService(BaseService):
 
     async def get(
         self,
-        filter_: ProductsFilterModel,
-        search: SearchModel,
-        sorting: SortingModel,
-        pagination: PaginationModel,
+        filter_: ProductFilter,
+        search: Search,
+        sorting: Sorting,
+        pagination: Pagination,
     ) -> list[Mapping[str, Any]]:
         """Retrieves a list of products based on parameters.
 
         Args:
-            filter_ (ProductsFilterModel): Parameters for list filtering.
-            search (SearchModel): Parameters for list searching.
-            sorting (SortingModel): Parameters for sorting.
-            pagination (PaginationModel): Parameters for pagination.
+            filter_ (ProductFilter): Parameters for list filtering.
+            search (Search): Parameters for list searching.
+            sorting (Sorting): Parameters for sorting.
+            pagination (Pagination): Parameters for pagination.
 
         Returns:
             list[Mapping[str, Any]]: The retrieved list of products.
@@ -84,12 +84,12 @@ class ProductService(BaseService):
             parameters=filter_.parameters,
         )
 
-    async def count(self, filter_: ProductsFilterModel, search: SearchModel) -> int:
+    async def count(self, filter_: ProductFilter, search: Search) -> int:
         """Counts items based on parameters.
 
         Args:
-            filter_ (ProductsFilterModel): Parameters for list filtering.
-            search (SearchModel): Parameters for list searching.
+            filter_ (ProductFilter): Parameters for list filtering.
+            search (Search): Parameters for list searching.
 
         Returns:
             int: Count of items.
@@ -125,11 +125,11 @@ class ProductService(BaseService):
 
         return Product(**product)
 
-    async def create(self, data: ProductRequestModel) -> Product:
+    async def create(self, data: ProductData) -> Product:
         """Creates a new product.
 
         Args:
-            data (ProductRequestModel): The data for the new product.
+            data (ProductData): The data for the new product.
 
         Returns:
             Product: The created product.
@@ -155,12 +155,12 @@ class ProductService(BaseService):
 
         return await self.get_by_id(id_=id_)
 
-    async def update(self, item: Product, data: ProductRequestModel) -> Product:
+    async def update(self, item: Product, data: ProductData) -> Product:
         """Updates a product object.
 
         Args:
             item (Product): Product object.
-            data (ProductRequestModel): Data to update product.
+            data (ProductData): Data to update product.
 
         Returns:
             Product: The updated product.

@@ -3,11 +3,11 @@
 from datetime import datetime
 
 from app.api.v1.constants import RolesEnum
-from app.api.v1.models import ListResponseModel, ObjectIdModel
+from app.api.v1.models import BSONObjectId, List
 
 
-class RoleResponseModel(ObjectIdModel):
-    """Role response model."""
+class Role(BSONObjectId):
+    """Role model."""
 
     name: str
     machine_name: RolesEnum
@@ -15,7 +15,7 @@ class RoleResponseModel(ObjectIdModel):
     updated_at: datetime | None
 
 
-class RolesListModel(ListResponseModel):
-    """Roles list model."""
+class RoleList(List):
+    """Role list model."""
 
-    data: list[RoleResponseModel]
+    data: list[Role]

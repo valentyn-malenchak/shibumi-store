@@ -5,9 +5,9 @@ from typing import Annotated
 from bson import ObjectId
 from fastapi import Depends
 
-from app.api.v1.models import ObjectIdAnnotation
 from app.api.v1.models.category import Category
 from app.api.v1.validators.category import CategoryByIdValidator
+from app.utils.pydantic import ObjectIdAnnotation
 
 
 class CategoryByIdDependency:

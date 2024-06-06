@@ -44,8 +44,8 @@ class BaseCartValidator(BaseValidator):
         raise NotImplementedError
 
 
-class CartAddProductValidator(BaseCartValidator):
-    """Cart add product validator."""
+class CartProductAddValidator(BaseCartValidator):
+    """Cart product add validator."""
 
     def __init__(
         self,
@@ -53,7 +53,7 @@ class CartAddProductValidator(BaseCartValidator):
         cart_service: CartService = Depends(),
         product_quantity_validator: ProductQuantityValidator = Depends(),
     ):
-        """Initializes cart add product validator.
+        """Initializes cart product add validator.
 
         Args:
             request (Request): Current request object.
@@ -91,8 +91,8 @@ class CartAddProductValidator(BaseCartValidator):
             )
 
 
-class CartUpdateProductValidator(BaseCartValidator):
-    """Cart update product validator."""
+class CartProductUpdateValidator(BaseCartValidator):
+    """Cart product update validator."""
 
     def __init__(
         self,
@@ -100,7 +100,7 @@ class CartUpdateProductValidator(BaseCartValidator):
         cart_service: CartService = Depends(),
         product_quantity_validator: ProductQuantityValidator = Depends(),
     ):
-        """Initializes cart update product validator.
+        """Initializes cart product update validator.
 
         Args:
             request (Request): Current request object.
@@ -138,8 +138,8 @@ class CartUpdateProductValidator(BaseCartValidator):
             )
 
 
-class CartDeleteProductValidator(BaseCartValidator):
-    """Cart delete product validator."""
+class CartProductDeleteValidator(BaseCartValidator):
+    """Cart product delete validator."""
 
     def __init__(
         self,
@@ -147,7 +147,7 @@ class CartDeleteProductValidator(BaseCartValidator):
         cart_service: CartService = Depends(),
         product_by_id_status_validator: ProductByIdStatusValidator = Depends(),
     ):
-        """Initializes cart delete product validator.
+        """Initializes cart product delete validator.
 
         Args:
             request (Request): Current request object.

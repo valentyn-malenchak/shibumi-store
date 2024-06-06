@@ -9,7 +9,7 @@ from pydantic import BaseModel, ValidationError, create_model
 from app.api.v1.constants import ProductParameterTypesEnum
 from app.api.v1.models.product import (
     Product,
-    ProductsFilterModel,
+    ProductFilter,
 )
 from app.api.v1.services.parameter import ParameterService
 from app.api.v1.services.product import ProductService
@@ -224,8 +224,8 @@ class ProductByIdStatusValidator(BaseProductValidator):
         return product
 
 
-class ProductsAvailableFilterValidator(BaseProductValidator):
-    """Products available filter validator."""
+class ProductAvailableFilterValidator(BaseProductValidator):
+    """Product available filter validator."""
 
     async def validate(self, available: bool | None) -> None:
         """Checks if the current user has access to not available products.
@@ -250,24 +250,24 @@ class ProductsAvailableFilterValidator(BaseProductValidator):
             )
 
 
-class ProductsFilterValidator(BaseProductValidator):
-    """Products filter validator."""
+class ProductFilterValidator(BaseProductValidator):
+    """Product filter validator."""
 
     def __init__(
         self,
         request: Request,
         product_service: ProductService = Depends(),
         parameter_service: ParameterService = Depends(),
-        products_available_filter_validator: ProductsAvailableFilterValidator = Depends(),  # noqa: E501
+        product_available_filter_validator: ProductAvailableFilterValidator = Depends(),
     ):
-        """Initializes products filter validator.
+        """Initializes product filter validator.
 
         Args:
             request (Request): Current request object.
             product_service (ProductService): Product service.
             parameter_service (ParameterService): Parameter service.
-            products_available_filter_validator (ProductsAvailableFilterValidator):
-            Products available filter validator.
+            product_available_filter_validator (ProductAvailableFilterValidator):
+            Product available filter validator.
 
         """
 
@@ -275,14 +275,14 @@ class ProductsFilterValidator(BaseProductValidator):
 
         self.parameter_service = parameter_service
 
-        self.products_available_filter_validator = products_available_filter_validator
+        self.product_available_filter_validator = product_available_filter_validator
 
     async def validate(
         self,
         category_id: ObjectId | None,
         available: bool | None,
         ids: list[ObjectId] | None,
-    ) -> ProductsFilterModel:
+    ) -> ProductFilter:
         """Validates and formats products list filter.
 
         Args:
@@ -291,14 +291,14 @@ class ProductsFilterValidator(BaseProductValidator):
             ids (list[ObjectId] | None): Filter by list of product identifiers.
 
         Returns:
-            ProductsFilterModel: Products filter object.
+            ProductFilter: Products filter object.
 
         Raises:
             HTTPException: If product parameters filter is invalid.
 
         """
 
-        await self.products_available_filter_validator.validate(available=available)
+        await self.product_available_filter_validator.validate(available=available)
 
         fields: dict[str, Any] = {
             parameter["machine_name"]: (
@@ -328,7 +328,7 @@ class ProductsFilterValidator(BaseProductValidator):
                 detail=error.errors(),
             )
 
-        return ProductsFilterModel(
+        return ProductFilter(
             category_id=category_id,
             available=available,
             ids=ids,

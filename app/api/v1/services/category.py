@@ -6,7 +6,7 @@ from typing import Any
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
 
-from app.api.v1.models.category import CategoriesFilterModel, Category
+from app.api.v1.models.category import Category, CategoryFilter
 from app.api.v1.repositories.category import CategoryRepository
 from app.api.v1.services import BaseService
 from app.exceptions import EntityIsNotFoundError
@@ -44,13 +44,13 @@ class CategoryService(BaseService):
 
     async def get(
         self,
-        filter_: CategoriesFilterModel,
+        filter_: CategoryFilter,
         *_: Any,
     ) -> list[Any]:
         """Retrieves a list of categories based on parameters.
 
         Args:
-            filter_ (CategoriesFilterModel): Parameters for list filtering.
+            filter_ (CategoryFilter): Parameters for list filtering.
             _ (Any): Parameters for list searching, sorting and pagination.
 
         Returns:
@@ -67,11 +67,11 @@ class CategoryService(BaseService):
             leafs=filter_.leafs,
         )
 
-    async def count(self, filter_: CategoriesFilterModel, *_: Any) -> int:
+    async def count(self, filter_: CategoryFilter, *_: Any) -> int:
         """Counts items based on parameters.
 
         Args:
-            filter_ (CategoriesFilterModel): Parameters for list filtering.
+            filter_ (CategoryFilter): Parameters for list filtering.
             _ (Any): Parameters for list searching.
 
         Returns:

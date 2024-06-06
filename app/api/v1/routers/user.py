@@ -16,34 +16,34 @@ from app.api.v1.dependencies.user import (
     UserPasswordUpdateDependency,
     UserUpdateDependency,
 )
-from app.api.v1.models import PaginationModel, SearchModel, SortingModel
+from app.api.v1.models import Pagination, Search, Sorting
 from app.api.v1.models.user import (
-    CreateUserRequestModel,
-    CurrentUserModel,
-    UpdateUserRequestModel,
+    CurrentUser,
+    ShortUser,
     User,
-    UserPasswordResetModel,
-    UserPasswordUpdateModel,
-    UserResponseModel,
-    UsersFilterModel,
-    UsersListModel,
-    VerificationTokenModel,
+    UserCreateData,
+    UserFilter,
+    UserList,
+    UserPasswordResetData,
+    UserPasswordUpdateData,
+    UserUpdateData,
+    VerificationToken,
 )
 from app.api.v1.services.user import UserService
 
 router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.get("/me/", response_model=UserResponseModel, status_code=status.HTTP_200_OK)
+@router.get("/me/", response_model=ShortUser, status_code=status.HTTP_200_OK)
 async def get_user_me(
-    current_user: CurrentUserModel = Security(
+    current_user: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.USERS_GET_ME.name]
     ),
 ) -> User:
     """API which returns current user object.
 
     Args:
-        current_user (CurrentUserModel): Current authorized user with permitted scopes.
+        current_user (CurrentUser): Current authorized user with permitted scopes.
 
     Returns:
         User: Current user object.
@@ -52,29 +52,29 @@ async def get_user_me(
     return current_user.object
 
 
-@router.get("/", response_model=UsersListModel, status_code=status.HTTP_200_OK)
+@router.get("/", response_model=UserList, status_code=status.HTTP_200_OK)
 async def get_users(
-    _: CurrentUserModel = Security(
+    _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.USERS_GET_USERS.name]
     ),
-    filter_: UsersFilterModel = Depends(),
-    search: SearchModel = Depends(),
-    sorting: SortingModel = Depends(),
-    pagination: PaginationModel = Depends(),
+    filter_: UserFilter = Depends(),
+    search: Search = Depends(),
+    sorting: Sorting = Depends(),
+    pagination: Pagination = Depends(),
     user_service: UserService = Depends(),
 ) -> dict[str, Any]:
     """API which returns users list.
 
     Args:
-        _ (CurrentUserModel): Current user object.
-        filter_ (UsersFilterModel): Parameters for list filtering.
-        search (SearchModel): Parameters for list searching.
-        sorting (SortingModel): Parameters for sorting.
-        pagination (PaginationModel): Parameters for pagination.
+        _ (CurrentUser): Current user object.
+        filter_ (UserFilter): Parameters for list filtering.
+        search (Search): Parameters for list searching.
+        sorting (Sorting): Parameters for sorting.
+        pagination (Pagination): Parameters for pagination.
         user_service (UserService): User service.
 
     Returns:
-        UsersListModel: List of users object.
+        UserList: List of users object.
 
     """
 
@@ -86,11 +86,9 @@ async def get_users(
     )
 
 
-@router.get(
-    "/{user_id}/", response_model=UserResponseModel, status_code=status.HTTP_200_OK
-)
+@router.get("/{user_id}/", response_model=ShortUser, status_code=status.HTTP_200_OK)
 async def get_user(
-    _: CurrentUserModel = Security(
+    _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.USERS_GET_USER.name]
     ),
     user: User = Depends(UserByIdDependency()),
@@ -98,7 +96,7 @@ async def get_user(
     """API which returns a specific user.
 
     Args:
-        _ (CurrentUserModel): Current user object.
+        _ (CurrentUser): Current user object.
         user (User): User object.
 
     Returns:
@@ -108,19 +106,19 @@ async def get_user(
     return user
 
 
-@router.post("/", response_model=UserResponseModel, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=ShortUser, status_code=status.HTTP_201_CREATED)
 async def create_user(
-    _: CurrentUserModel | None = Security(
+    _: CurrentUser | None = Security(
         OptionalAuthorization(), scopes=[ScopesEnum.USERS_CREATE_USER.name]
     ),
-    user_data: CreateUserRequestModel = Depends(UserDataCreateDependency()),
+    user_data: UserCreateData = Depends(UserDataCreateDependency()),
     user_service: UserService = Depends(),
 ) -> User:
     """API which creates a new user.
 
     Args:
-        _ (CurrentUserModel | None): Current user object or None.
-        user_data (CreateUserRequestModel): User registration data.
+        _ (CurrentUser | None): Current user object or None.
+        user_data (UserCreateData): User registration data.
         user_service (UserService): User service.
 
     Returns:
@@ -147,14 +145,14 @@ async def request_verify_user_email(
 
 @router.patch("/{username}/verify-email/", status_code=status.HTTP_204_NO_CONTENT)
 async def verify_user_email(
-    verify_email: VerificationTokenModel,
+    verify_email: VerificationToken,
     user: User = Depends(UserEmailVerifiedDependency()),
     user_service: UserService = Depends(),
 ) -> None:
     """API which verifies user's email.
 
     Args:
-        verify_email (VerificationTokenModel): Email verification token.
+        verify_email (VerificationToken): Email verification token.
         user (User): User object.
         user_service (UserService): User service.
 
@@ -162,23 +160,21 @@ async def verify_user_email(
     return await user_service.verify_email(id_=user.id, token=verify_email.token)
 
 
-@router.patch(
-    "/{user_id}/", response_model=UserResponseModel, status_code=status.HTTP_200_OK
-)
+@router.patch("/{user_id}/", response_model=ShortUser, status_code=status.HTTP_200_OK)
 async def update_user(
-    _: CurrentUserModel = Security(
+    _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.USERS_UPDATE_USER.name]
     ),
     user: User = Depends(UserUpdateDependency()),
-    user_data: UpdateUserRequestModel = Depends(UserDataUpdateDependency()),
+    user_data: UserUpdateData = Depends(UserDataUpdateDependency()),
     user_service: UserService = Depends(),
 ) -> User:
     """API which updates a user object.
 
     Args:
-        _ (CurrentUserModel): Current user object.
+        _ (CurrentUser): Current user object.
         user (User): User object.
-        user_data (UpdateUserRequestModel): User data to update.
+        user_data (UserUpdateData): User data to update.
         user_service (UserService): User service.
 
     Returns:
@@ -190,19 +186,19 @@ async def update_user(
 
 @router.patch("/{user_id}/password/", status_code=status.HTTP_204_NO_CONTENT)
 async def update_user_password(
-    _: CurrentUserModel = Security(
+    _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.USERS_UPDATE_USER_PASSWORD.name]
     ),
     user: User = Depends(UserByIdDependency()),
-    password: UserPasswordUpdateModel = Depends(UserPasswordUpdateDependency()),
+    password: UserPasswordUpdateData = Depends(UserPasswordUpdateDependency()),
     user_service: UserService = Depends(),
 ) -> None:
     """API which updates a user password.
 
     Args:
-        _ (CurrentUserModel): Current user object.
+        _ (CurrentUser): Current user object.
         user (User): User object.
-        password (UserPasswordUpdateModel): Old and new passwords.
+        password (UserPasswordUpdateData): Old and new passwords.
         user_service (UserService): User service.
 
     """
@@ -213,7 +209,7 @@ async def update_user_password(
 
 @router.delete("/{user_id}/", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
-    _: CurrentUserModel = Security(
+    _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.USERS_DELETE_USER.name]
     ),
     user: User = Depends(UserDeleteDependency()),
@@ -222,7 +218,7 @@ async def delete_user(
     """API which softly deletes a user object.
 
     Args:
-        _ (CurrentUserModel): Current user object.
+        _ (CurrentUser): Current user object.
         user (User): User object.
         user_service (UserService): User service.
 
@@ -247,14 +243,14 @@ async def request_reset_user_password(
 
 @router.patch("/{username}/reset-password/", status_code=status.HTTP_204_NO_CONTENT)
 async def reset_user_password(
-    reset_password: UserPasswordResetModel,
+    reset_password: UserPasswordResetData,
     user: User = Depends(UserByUsernameStatusDependency()),
     user_service: UserService = Depends(),
 ) -> None:
     """API which resets password.
 
     Args:
-        reset_password (UserPasswordResetModel): Reset token with new password.
+        reset_password (UserPasswordResetData): Reset token with new password.
         user (User): User object.
         user_service (UserService): User service.
 

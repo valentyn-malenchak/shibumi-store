@@ -6,7 +6,7 @@ from fastapi import Query
 from pydantic import BaseModel, EmailStr, Field
 
 from app.api.v1.constants import RolesEnum
-from app.api.v1.models import ListResponseModel, ObjectIdModel
+from app.api.v1.models import BSONObjectId, List
 from app.utils.pydantic import (
     PasswordPolicy,
     PhoneNumber,
@@ -14,7 +14,7 @@ from app.utils.pydantic import (
 )
 
 
-class User(ObjectIdModel):
+class User(BSONObjectId):
     """User model."""
 
     first_name: str
@@ -37,15 +37,15 @@ class User(ObjectIdModel):
         return self.roles == [RolesEnum.CUSTOMER]
 
 
-class CurrentUserModel(BaseModel):
+class CurrentUser(BaseModel):
     """User model for authenticate/authorize operations."""
 
     object: User
     scopes: list[str]
 
 
-class UserResponseModel(ObjectIdModel):
-    """User response model."""
+class ShortUser(BSONObjectId):
+    """Short user model."""
 
     first_name: str
     last_name: str
@@ -61,21 +61,21 @@ class UserResponseModel(ObjectIdModel):
     updated_at: datetime | None
 
 
-class UsersFilterModel(BaseModel):
-    """Users list filter model."""
+class UserFilter(BaseModel):
+    """User filter model."""
 
     roles: list[RolesEnum] = Field(Query([]))
     deleted: bool | None = None
 
 
-class UsersListModel(ListResponseModel):
-    """Users list model."""
+class UserList(List):
+    """User list model."""
 
-    data: list[UserResponseModel]
+    data: list[ShortUser]
 
 
-class CreateUserRequestModel(BaseModel):
-    """User creation request model."""
+class UserCreateData(BaseModel):
+    """User creation data model."""
 
     first_name: str
     last_name: str
@@ -88,8 +88,8 @@ class CreateUserRequestModel(BaseModel):
     roles: list[RolesEnum]
 
 
-class UpdateUserRequestModel(BaseModel):
-    """User updating request model."""
+class UserUpdateData(BaseModel):
+    """User updating data model."""
 
     first_name: str
     last_name: str
@@ -100,20 +100,20 @@ class UpdateUserRequestModel(BaseModel):
     roles: list[RolesEnum]
 
 
-class UserPasswordUpdateModel(BaseModel):
-    """User password update model."""
+class UserPasswordUpdateData(BaseModel):
+    """User password update data model."""
 
     old_password: str
     new_password: PasswordPolicy
 
 
-class VerificationTokenModel(BaseModel):
+class VerificationToken(BaseModel):
     """Verification token model."""
 
     token: str
 
 
-class UserPasswordResetModel(VerificationTokenModel):
-    """User password reset model."""
+class UserPasswordResetData(VerificationToken):
+    """User password reset data model."""
 
     new_password: PasswordPolicy

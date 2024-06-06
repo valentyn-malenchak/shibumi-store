@@ -7,10 +7,24 @@ from bson import ObjectId
 from fastapi import Query
 from pydantic import BaseModel, Field
 
-from app.api.v1.models import ListResponseModel, ObjectIdAnnotation, ObjectIdModel
+from app.api.v1.models import BSONObjectId, List, ObjectIdAnnotation
 
 
-class Product(ObjectIdModel):
+class ProductData(BaseModel):
+    """Product data model."""
+
+    name: str
+    synopsis: str
+    description: str
+    quantity: int
+    price: float
+    category_id: Annotated[ObjectId, ObjectIdAnnotation]
+    available: bool
+    html_body: str | None
+    parameters: dict[str, Any]
+
+
+class Product(BSONObjectId):
     """Product model."""
 
     name: str
@@ -27,8 +41,8 @@ class Product(ObjectIdModel):
     updated_at: datetime | None
 
 
-class ShortProductResponseModel(ObjectIdModel):
-    """Short product response model."""
+class ShortProduct(BSONObjectId):
+    """Short product model."""
 
     name: str
     synopsis: str
@@ -41,43 +55,21 @@ class ShortProductResponseModel(ObjectIdModel):
     updated_at: datetime | None
 
 
-class ExtendedProductResponseModel(ShortProductResponseModel):
-    """Extended product response model."""
-
-    description: str
-    html_body: str | None
-    parameters: dict[str, Any]
-
-
-class BaseProductsFilterModel(BaseModel):
-    """Base products list filter model."""
+class BaseProductFilter(BaseModel):
+    """Base product filter model."""
 
     category_id: Annotated[ObjectId, ObjectIdAnnotation] | None = None
     available: bool | None = None
     ids: list[Annotated[ObjectId, ObjectIdAnnotation]] | None = Field(Query([]))
 
 
-class ProductsFilterModel(BaseProductsFilterModel):
-    """Products list filter model."""
+class ProductFilter(BaseProductFilter):
+    """Product filter model."""
 
     parameters: dict[str, list[Any]] | None = None
 
 
-class ProductsListModel(ListResponseModel):
-    """Products list model."""
+class ProductList(List):
+    """Product list model."""
 
-    data: list[ShortProductResponseModel]
-
-
-class ProductRequestModel(BaseModel):
-    """Create/update product request model."""
-
-    name: str
-    synopsis: str
-    description: str
-    quantity: int
-    price: float
-    category_id: Annotated[ObjectId, ObjectIdAnnotation]
-    available: bool
-    html_body: str | None
-    parameters: dict[str, Any]
+    data: list[ShortProduct]

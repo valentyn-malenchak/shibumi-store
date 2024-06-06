@@ -6,11 +6,11 @@ from typing import Annotated
 from bson import ObjectId
 from pydantic import BaseModel, ConfigDict
 
-from app.api.v1.models import ListResponseModel, ObjectIdAnnotation, ObjectIdModel
+from app.api.v1.models import BSONObjectId, List, ObjectIdAnnotation
 from app.api.v1.models.parameter import Parameter
 
 
-class Category(ObjectIdModel):
+class Category(BSONObjectId):
     """Category model."""
 
     name: str
@@ -24,8 +24,8 @@ class Category(ObjectIdModel):
     updated_at: datetime | None
 
 
-class ShortCategoryResponseModel(ObjectIdModel):
-    """Short category response model."""
+class ShortCategory(BSONObjectId):
+    """Short category model."""
 
     name: str
     description: str
@@ -36,26 +36,20 @@ class ShortCategoryResponseModel(ObjectIdModel):
     updated_at: datetime | None
 
 
-class ExtendedCategoryResponseModel(ShortCategoryResponseModel):
-    """Extended category response model."""
-
-    parameters: list[Parameter]
-
-
-class CategoriesFilterModel(BaseModel):
-    """Categories list filter model."""
+class CategoryFilter(BaseModel):
+    """Category list filter model."""
 
     path: str | None = None
     leafs: bool = False
 
 
-class CategoriesListModel(ListResponseModel):
-    """Categories list model."""
+class CategoryList(List):
+    """Category list model."""
 
-    data: list[ShortCategoryResponseModel]
+    data: list[ShortCategory]
 
 
-class CategoryParametersResponseModel(ObjectIdModel):
-    """Category parameters response model."""
+class CategoryParameters(BSONObjectId):
+    """Category parameters model."""
 
     model_config = ConfigDict(extra="allow")

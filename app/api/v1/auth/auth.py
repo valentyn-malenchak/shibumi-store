@@ -16,8 +16,8 @@ from fastapi.security import (
 from app.api.v1.auth.jwt import JWT
 from app.api.v1.auth.password import Password
 from app.api.v1.constants import ScopesEnum
-from app.api.v1.models.auth import TokenPayloadModel
-from app.api.v1.models.user import CurrentUserModel
+from app.api.v1.models.auth import JWTPayload
+from app.api.v1.models.user import CurrentUser
 from app.api.v1.services.role import RoleService
 from app.api.v1.services.user import UserService
 from app.constants import HTTPErrorMessagesEnum
@@ -32,7 +32,7 @@ class Authentication:
         form_data: OAuth2PasswordRequestFormStrict = Depends(),
         user_service: UserService = Depends(),
         role_service: RoleService = Depends(),
-    ) -> CurrentUserModel:
+    ) -> CurrentUser:
         """Authenticates a user using username and password.
 
         Args:
@@ -41,7 +41,8 @@ class Authentication:
             role_service (RoleService): Role service.
 
         Returns:
-            CurrentUserModel: User object if token is valid and permitted scopes list.
+            CurrentUser: Current user object if token is valid and permitted
+            scopes list.
 
         Raises:
             HTTPException: If authentication fails or not permitted scope is requested.
@@ -79,7 +80,7 @@ class Authentication:
             # If there are no requested scopes returns all permitted
             scopes = permitted_scopes
 
-        return CurrentUserModel(object=user, scopes=scopes)
+        return CurrentUser(object=user, scopes=scopes)
 
 
 class BaseAuthorization(abc.ABC):
@@ -93,7 +94,7 @@ class BaseAuthorization(abc.ABC):
     )
 
     @staticmethod
-    def _parse_token(token: str, is_refresh: bool = False) -> TokenPayloadModel:
+    def _parse_token(token: str, is_refresh: bool = False) -> JWTPayload:
         """Parses a JWT.
 
         Args:
@@ -101,7 +102,7 @@ class BaseAuthorization(abc.ABC):
             is_refresh (bool): Defines if refresh token used. Default to False.
 
         Returns:
-            TokenPayloadModel: JWT user data.
+            JWTPayload: JWT payload.
 
         Raises:
             HTTPException: If token is expired/invalid.
@@ -141,21 +142,22 @@ class BaseAuthorization(abc.ABC):
 
     @staticmethod
     async def _authorize_user(
-        token_data: TokenPayloadModel,
+        token_data: JWTPayload,
         security_scopes: SecurityScopes,
         request: Request,
         user_service: UserService,
-    ) -> CurrentUserModel:
+    ) -> CurrentUser:
         """Authorizes the user.
 
         Args:
-            token_data (TokenPayloadModel): JWT user data.
+            token_data (JWTPayload): JWT payload.
             security_scopes (SecurityScopes): Security scopes list.
             request (Request): Current request object.
             user_service (UserService): An instance of the User service.
 
         Returns:
-            CurrentUserModel: User object if token is valid and permitted scopes list.
+            CurrentUser: Current user object if token is valid and permitted
+            scopes list.
 
         """
 
@@ -185,9 +187,7 @@ class BaseAuthorization(abc.ABC):
             source_scopes=token_data.scopes, required_scopes=security_scopes.scopes
         )
 
-        request.state.current_user = CurrentUserModel(
-            object=user, scopes=token_data.scopes
-        )
+        request.state.current_user = CurrentUser(object=user, scopes=token_data.scopes)
 
         return request.state.current_user
 
@@ -198,7 +198,7 @@ class BaseAuthorization(abc.ABC):
         request: Request,
         token: str | None = Depends(_oauth2),
         user_service: UserService = Depends(),
-    ) -> CurrentUserModel | None:
+    ) -> CurrentUser | None:
         """Authorizes the user using JWT.
 
         Args:
@@ -208,7 +208,7 @@ class BaseAuthorization(abc.ABC):
             user_service (UserService): An instance of the User service.
 
         Returns:
-            CurrentUserModel | None: User object if token is valid and
+            CurrentUser | None: Current user object if token is valid and
             permitted scopes list.
 
         Raises:
@@ -229,7 +229,7 @@ class StrictAuthorization(BaseAuthorization):
         request: Request,
         token: str | None = Depends(BaseAuthorization._oauth2),
         user_service: UserService = Depends(),
-    ) -> CurrentUserModel:
+    ) -> CurrentUser:
         """Authorizes the user using JWT strictly.
 
         Args:
@@ -239,7 +239,8 @@ class StrictAuthorization(BaseAuthorization):
             user_service (UserService): An instance of the User service.
 
         Returns:
-            CurrentUserModel: User object if token is valid and permitted scopes list.
+            CurrentUser: Current user object if token is valid and permitted
+            scopes list.
 
         """
 
@@ -274,7 +275,7 @@ class OptionalAuthorization(BaseAuthorization):
         request: Request,
         token: str | None = Depends(BaseAuthorization._oauth2),
         user_service: UserService = Depends(),
-    ) -> CurrentUserModel | None:
+    ) -> CurrentUser | None:
         """Authorizes the user using JWT optionally.
 
         Args:
@@ -284,7 +285,7 @@ class OptionalAuthorization(BaseAuthorization):
             user_service (UserService): An instance of the User service.
 
         Returns:
-            CurrentUserModel | None: User object if token is valid and
+            CurrentUser | None: Current user object if token is valid and
             permitted scopes list.
 
         """

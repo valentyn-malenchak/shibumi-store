@@ -9,31 +9,30 @@ from app.api.v1.auth.auth import OptionalAuthorization
 from app.api.v1.constants import ScopesEnum
 from app.api.v1.dependencies.category import CategoryByIdDependency
 from app.api.v1.models.category import (
-    CategoriesFilterModel,
-    CategoriesListModel,
     Category,
-    CategoryParametersResponseModel,
-    ExtendedCategoryResponseModel,
+    CategoryFilter,
+    CategoryList,
+    CategoryParameters,
 )
-from app.api.v1.models.user import CurrentUserModel
+from app.api.v1.models.user import CurrentUser
 from app.api.v1.services.category import CategoryService
 
 router = APIRouter(prefix="/categories", tags=["categories"])
 
 
-@router.get("/", response_model=CategoriesListModel, status_code=status.HTTP_200_OK)
+@router.get("/", response_model=CategoryList, status_code=status.HTTP_200_OK)
 async def get_categories(
-    _: CurrentUserModel | None = Security(
+    _: CurrentUser | None = Security(
         OptionalAuthorization(), scopes=[ScopesEnum.CATEGORIES_GET_CATEGORIES.name]
     ),
-    filter_: CategoriesFilterModel = Depends(),
+    filter_: CategoryFilter = Depends(),
     category_service: CategoryService = Depends(),
 ) -> dict[str, Any]:
     """API which returns categories list.
 
     Args:
-        _ (CurrentUserModel | None): Current user object or None.
-        filter_ (CategoriesFilterModel): Parameters for list filtering.
+        _ (CurrentUser | None): Current user object or None.
+        filter_ (CategoryFilter): Parameters for list filtering.
         category_service (CategoryService): Category service.
 
     Returns:
@@ -49,11 +48,11 @@ async def get_categories(
 
 @router.get(
     "/{category_id}/",
-    response_model=ExtendedCategoryResponseModel,
+    response_model=Category,
     status_code=status.HTTP_200_OK,
 )
 async def get_category(
-    _: CurrentUserModel | None = Security(
+    _: CurrentUser | None = Security(
         OptionalAuthorization(), scopes=[ScopesEnum.CATEGORIES_GET_CATEGORY.name]
     ),
     category: Category = Depends(CategoryByIdDependency()),
@@ -61,7 +60,7 @@ async def get_category(
     """API which returns a specific category.
 
     Args:
-        _ (CurrentUserModel | None): Current user object or None.
+        _ (CurrentUser | None): Current user object or None.
         category (Category): Category object.
 
     Returns:
@@ -73,11 +72,11 @@ async def get_category(
 
 @router.get(
     "/{category_id}/parameters/",
-    response_model=CategoryParametersResponseModel | None,
+    response_model=CategoryParameters | None,
     status_code=status.HTTP_200_OK,
 )
 async def get_category_parameters(
-    _: CurrentUserModel | None = Security(
+    _: CurrentUser | None = Security(
         OptionalAuthorization(),
         scopes=[ScopesEnum.CATEGORIES_GET_CATEGORY_PARAMETERS.name],
     ),
@@ -87,12 +86,12 @@ async def get_category_parameters(
     """API which returns category parameters by its identifier.
 
     Args:
-        _ (CurrentUserModel | None): Current user object or None.
+        _ (CurrentUser | None): Current user object or None.
         category (Category): Category object.
         category_service (CategoryService): Category service.
 
     Returns:
-         Mapping[str, Any] | None: Category parameters.
+         Mapping[str, Any] | None: Category parameters or None.
 
     """
     return await category_service.get_category_parameters(id_=category.id)

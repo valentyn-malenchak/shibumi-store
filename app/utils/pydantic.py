@@ -5,6 +5,7 @@ from string import punctuation
 from typing import Annotated, Any
 
 from annotated_types import Gt
+from bson import ObjectId
 from pydantic import BaseModel, ConfigDict
 from pydantic_core import PydanticCustomError, core_schema
 from pydantic_extra_types.phone_numbers import PhoneNumber as PydanticPhoneNumber
@@ -22,6 +23,33 @@ class PhoneNumber(PydanticPhoneNumber):
     """Custom phone number data type."""
 
     phone_format = "E164"
+
+
+class ObjectIdAnnotation:
+    """BSON object identifier annotation."""
+
+    @classmethod
+    def _validate(cls, id_: Any, *_: Any) -> ObjectId:
+        """Validates BSON object identifier."""
+
+        if isinstance(id_, ObjectId):
+            return id_
+
+        if not ObjectId.is_valid(id_):
+            raise PydanticCustomError(
+                "object_id", ValidationErrorMessagesEnum.INVALID_IDENTIFIER
+            )
+
+        return ObjectId(id_)
+
+    @classmethod
+    def __get_pydantic_core_schema__(cls, *_: Any) -> core_schema.CoreSchema:
+        """Customizes pydantic validation."""
+        return core_schema.no_info_wrap_validator_function(
+            cls._validate,
+            core_schema.str_schema(),
+            serialization=core_schema.to_string_ser_schema(),
+        )
 
 
 class BaseType(str):
