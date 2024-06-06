@@ -6,9 +6,9 @@ from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
 
 from app.api.v1.models.cart import (
-    AddCartProductRequestModel,
     Cart,
-    UpdateCartProductRequestModel,
+    CartProduct,
+    CartProductQuantity,
 )
 from app.api.v1.repositories.cart import CartRepository
 from app.api.v1.services import BaseService
@@ -117,12 +117,11 @@ class CartService(BaseService):
 
         return Cart(**cart)
 
-    # TODO: another interface than in Base class
     async def create(self, user_id: ObjectId) -> Cart:
         """Creates a new cart.
 
         Args:
-            user_id (Any): User unique identifier.
+            user_id (ObjectId): User unique identifier.
 
         Returns:
             Cart: Created cart.
@@ -177,14 +176,12 @@ class CartService(BaseService):
         """
         raise NotImplementedError
 
-    async def add_product(
-        self, user_id: ObjectId, cart_product_data: AddCartProductRequestModel
-    ) -> Cart:
+    async def add_product(self, user_id: ObjectId, data: CartProduct) -> Cart:
         """Adds new product to the cart.
 
         Args:
             user_id (ObjectId): BSON object identifier of requested user.
-            cart_product_data (AddCartProductRequestModel): Cart product data.
+            data (CartProduct): Cart product data.
 
         Returns:
             Cart: Updated cart.
@@ -193,8 +190,8 @@ class CartService(BaseService):
 
         cart = await self.repository.add_product(
             user_id=user_id,
-            product_id=cart_product_data.id,
-            quantity=cart_product_data.quantity,
+            product_id=data.id,
+            quantity=data.quantity,
         )
 
         return Cart(**cart)
@@ -203,14 +200,14 @@ class CartService(BaseService):
         self,
         user_id: ObjectId,
         product_id: ObjectId,
-        cart_product_data: UpdateCartProductRequestModel,
+        data: CartProductQuantity,
     ) -> Cart:
         """Updates product in the cart.
 
         Args:
             user_id (ObjectId): BSON object identifier of requested user.
             product_id (ObjectId): The unique identifier of the product.
-            cart_product_data (UpdateCartProductRequestModel): Cart product data.
+            data (CartProductQuantity): Cart product quantity.
 
         Returns:
             Cart: Updated cart.
@@ -220,7 +217,7 @@ class CartService(BaseService):
         cart = await self.repository.update_product(
             user_id=user_id,
             product_id=product_id,
-            quantity=cart_product_data.quantity,
+            quantity=data.quantity,
         )
 
         return Cart(**cart)

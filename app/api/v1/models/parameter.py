@@ -2,10 +2,10 @@
 
 from datetime import datetime
 
-from app.api.v1.models import ObjectIdModel
+from app.api.v1.models import BSONObjectId
 
 
-class Parameter(ObjectIdModel):
+class Parameter(BSONObjectId):
     """Parameter model."""
 
     name: str

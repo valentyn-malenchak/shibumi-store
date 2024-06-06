@@ -148,6 +148,7 @@ class TestCategory(BaseAPITest):
             "parent_id": None,
             "path": "/electronics",
             "machine_name": "electronics",
+            "has_children": True,
             "parameters": [],
         }
 
@@ -176,6 +177,7 @@ class TestCategory(BaseAPITest):
             "parent_id": "65d24f2a260fb739c605b2a3",
             "path": "/electronics/accessories/mobile-accessories/power-banks",
             "machine_name": "power-banks",
+            "has_children": False,
             "parameters": [
                 {
                     "name": "Brand",

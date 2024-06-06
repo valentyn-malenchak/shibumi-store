@@ -5,12 +5,11 @@ from typing import Annotated
 from bson import ObjectId
 from fastapi import Depends
 
-from app.api.v1.models import ObjectIdAnnotation
 from app.api.v1.models.user import (
-    CreateUserRequestModel,
-    UpdateUserRequestModel,
     User,
-    UserPasswordUpdateModel,
+    UserCreateData,
+    UserPasswordUpdateData,
+    UserUpdateData,
 )
 from app.api.v1.validators.user import (
     UserByIdValidator,
@@ -21,6 +20,7 @@ from app.api.v1.validators.user import (
     UserRolesValidator,
     UserUpdateValidator,
 )
+from app.utils.pydantic import ObjectIdAnnotation
 
 
 class UserByIdDependency:
@@ -98,20 +98,20 @@ class UserPasswordUpdateDependency:
     async def __call__(
         self,
         user_id: Annotated[ObjectId, ObjectIdAnnotation],
-        password: UserPasswordUpdateModel,
+        password: UserPasswordUpdateData,
         user_password_update_validator: UserPasswordUpdateValidator = Depends(),
-    ) -> UserPasswordUpdateModel:
+    ) -> UserPasswordUpdateData:
         """Checks if the current user can update own password.
 
         Args:
             user_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
             identifier of requested user.
-            password (UserPasswordUpdateModel): Old and new passwords.
+            password (UserPasswordUpdateData): Old and new passwords.
             user_password_update_validator (UserPasswordUpdateValidator): User password
             update validator.
 
         Returns:
-            UserPasswordUpdateModel: Old and new passwords.
+            UserPasswordUpdateData: Old and new passwords.
 
         """
 
@@ -150,17 +150,17 @@ class UserDataCreateDependency:
 
     async def __call__(
         self,
-        user_data: CreateUserRequestModel,
+        user_data: UserCreateData,
         user_roles_validator: UserRolesValidator = Depends(),
-    ) -> CreateUserRequestModel:
+    ) -> UserCreateData:
         """Validates data on user create operation.
 
         Args:
-            user_data (CreateUserRequestModel): Requested user's data.
+            user_data (UserCreateData): Requested user's data.
             user_roles_validator (UserRolesValidator): Roles validator.
 
         Returns:
-            CreateUserRequestModel: Requested user's data.
+            UserCreateData: Requested user's data.
 
         """
 
@@ -174,17 +174,17 @@ class UserDataUpdateDependency:
 
     async def __call__(
         self,
-        user_data: UpdateUserRequestModel,
+        user_data: UserUpdateData,
         user_roles_validator: UserRolesValidator = Depends(),
-    ) -> UpdateUserRequestModel:
+    ) -> UserUpdateData:
         """Validates data on user update operation.
 
         Args:
-            user_data (UpdateUserRequestModel): Requested user's data.
+            user_data (UserUpdateData): Requested user's data.
             user_roles_validator (UserRolesValidator): Roles validator.
 
         Returns:
-            UpdateUserRequestModel: Requested user's data.
+            UserUpdateData: Requested user's data.
 
         """
 

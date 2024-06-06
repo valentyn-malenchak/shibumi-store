@@ -4,7 +4,7 @@ import arrow
 from jose import ExpiredSignatureError, JWTError, jwt
 from pydantic import ValidationError
 
-from app.api.v1.models.auth import TokenPayloadModel, TokenUserModel
+from app.api.v1.models.auth import JWTPayload, JWTUser
 from app.exceptions import ExpiredTokenError, InvalidTokenError
 from app.settings import SETTINGS
 
@@ -15,11 +15,11 @@ class JWT:
     _JTW_TYPE = "Bearer"
 
     @staticmethod
-    def _encode_jwt(data: TokenUserModel, secret_key: str, expires_delta: int) -> str:
+    def _encode_jwt(data: JWTUser, secret_key: str, expires_delta: int) -> str:
         """Encodes a JWT with the provided data and expiration time.
 
         Args:
-            data (TokenUserModel): Data to include in the token payload.
+            data (JWTUser): User data to include in the token payload.
             secret_key (str): Secret key for signing the token.
             expires_delta (int): Expiration time in minutes from the current time.
 
@@ -36,13 +36,11 @@ class JWT:
         return jwt.encode(to_encode, secret_key, SETTINGS.AUTH_ALGORITHM)
 
     @staticmethod
-    def _encode_access_token(
-        data: TokenUserModel, expires_delta: int | None = None
-    ) -> str:
+    def _encode_access_token(data: JWTUser, expires_delta: int | None = None) -> str:
         """Encodes an access JWT with the provided data and expiration time.
 
         Args:
-            data (TokenUserModel): Data to include in the token payload.
+            data (JWTUser): User data to include in the token payload.
             expires_delta (int | None): Expiration time in minutes from the
                 current time. If None, the default expiration time from settings
                 will be used.
@@ -58,13 +56,11 @@ class JWT:
         )
 
     @staticmethod
-    def _encodes_refresh_token(
-        data: TokenUserModel, expires_delta: int | None = None
-    ) -> str:
+    def _encodes_refresh_token(data: JWTUser, expires_delta: int | None = None) -> str:
         """Encodes a refresh JWT with the provided data and expiration time.
 
         Args:
-            data (TokenUserModel): Data to include in the token payload.
+            data (JWTUser): User data to include in the token payload.
             expires_delta (int | None): Expiration time in minutes from the
             current time. If None, the default expiration time from settings
             will be used.
@@ -81,7 +77,7 @@ class JWT:
 
     @staticmethod
     def encode_tokens(
-        data: TokenUserModel,
+        data: JWTUser,
         expires_delta: int | None = None,
         *,
         include_refresh: bool = True,
@@ -89,7 +85,7 @@ class JWT:
         """Encodes JWTs token with the provided data and expiration time.
 
         Args:
-            data (TokenUserModel): Data to include in the token payload.
+            data (JWTUser): User data to include in the token payload.
             expires_delta (int | None): Expiration time in minutes from the
             current time. If None, the default expiration time from settings
             will be used.
@@ -113,7 +109,7 @@ class JWT:
         return tokens
 
     @staticmethod
-    def decode_token(token: str, is_refresh: bool = False) -> TokenPayloadModel:
+    def decode_token(token: str, is_refresh: bool = False) -> JWTPayload:
         """Decodes and validates a JWT.
 
         Args:
@@ -121,7 +117,7 @@ class JWT:
             is_refresh (bool): Defines if token is refresh. Default to False.
 
         Returns:
-            TokenPayloadModel: The decoded token payload.
+            JWTPayload: The decoded token payload.
 
         Raises:
             ExpiredTokenException: If the token is expired.
@@ -137,7 +133,7 @@ class JWT:
                 algorithms=[SETTINGS.AUTH_ALGORITHM],
             )
 
-            return TokenPayloadModel(**payload)
+            return JWTPayload(**payload)
 
         except ExpiredSignatureError:
             raise ExpiredTokenError

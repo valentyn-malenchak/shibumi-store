@@ -6,26 +6,24 @@ from app.api.v1.auth.auth import Authentication, StrictRefreshTokenAuthorization
 from app.api.v1.auth.jwt import JWT
 from app.api.v1.constants import ScopesEnum
 from app.api.v1.models.auth import (
-    AccessTokenModel,
-    TokensModel,
-    TokenUserModel,
+    JWTAccessToken,
+    JWTTokens,
+    JWTUser,
 )
-from app.api.v1.models.user import CurrentUserModel
+from app.api.v1.models.user import CurrentUser
 from app.api.v1.services.role import RoleService
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.post(
-    "/tokens/", response_model=TokensModel, status_code=status.HTTP_201_CREATED
-)
+@router.post("/tokens/", response_model=JWTTokens, status_code=status.HTTP_201_CREATED)
 async def create_tokens(
-    current_user: CurrentUserModel = Depends(Authentication()),
+    current_user: CurrentUser = Depends(Authentication()),
 ) -> dict[str, str]:
     """API which creates Access and Refresh tokens for user.
 
     Args:
-        current_user (CurrentUserModel): Current authenticated user
+        current_user (CurrentUser): Current authenticated user
         with permitted scopes.
 
     Returns:
@@ -34,17 +32,17 @@ async def create_tokens(
     """
 
     return JWT.encode_tokens(
-        data=TokenUserModel(id=str(current_user.object.id), scopes=current_user.scopes)
+        data=JWTUser(id=str(current_user.object.id), scopes=current_user.scopes)
     )
 
 
 @router.post(
     "/access-token/",
-    response_model=AccessTokenModel,
+    response_model=JWTAccessToken,
     status_code=status.HTTP_201_CREATED,
 )
 async def refresh_access_token(
-    current_user: CurrentUserModel = Security(
+    current_user: CurrentUser = Security(
         StrictRefreshTokenAuthorization(),
         scopes=[ScopesEnum.AUTH_REFRESH_TOKEN.name],
     ),
@@ -53,7 +51,7 @@ async def refresh_access_token(
     """API which refreshes Access token using Refresh token.
 
     Args:
-        current_user (CurrentUserModel): Current authorized user with permitted scopes.
+        current_user (CurrentUser): Current authorized user with permitted scopes.
         role_service (RoleService): Role service.
 
     Returns:
@@ -62,7 +60,7 @@ async def refresh_access_token(
     """
 
     return JWT.encode_tokens(
-        data=TokenUserModel(
+        data=JWTUser(
             id=str(current_user.object.id),
             scopes=await role_service.get_scopes_by_roles(
                 roles=current_user.object.roles

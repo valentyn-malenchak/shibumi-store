@@ -7,7 +7,7 @@ from fastapi import Depends, HTTPException, Request, status
 
 from app.api.v1.auth.password import Password
 from app.api.v1.constants import RolesEnum
-from app.api.v1.models.user import CurrentUserModel, User
+from app.api.v1.models.user import CurrentUser, User
 from app.api.v1.services.user import UserService
 from app.api.v1.validators import BaseValidator
 from app.constants import HTTPErrorMessagesEnum
@@ -226,7 +226,7 @@ class UserAccessValidator(BaseUserValidator):
 
         """
 
-        current_user: CurrentUserModel = self.request.state.current_user
+        current_user: CurrentUser = self.request.state.current_user
 
         if current_user.object.id != user_id:
             raise HTTPException(

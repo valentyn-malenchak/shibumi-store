@@ -5,18 +5,18 @@ from typing import Annotated
 from bson import ObjectId
 from fastapi import Depends
 
-from app.api.v1.models import ObjectIdAnnotation
 from app.api.v1.models.product import (
-    BaseProductsFilterModel,
+    BaseProductFilter,
     Product,
-    ProductRequestModel,
-    ProductsFilterModel,
+    ProductData,
+    ProductFilter,
 )
 from app.api.v1.validators.product import (
     ProductByIdStatusValidator,
+    ProductFilterValidator,
     ProductParametersValidator,
-    ProductsFilterValidator,
 )
+from app.utils.pydantic import ObjectIdAnnotation
 
 
 class ProductDataDependency:
@@ -24,18 +24,18 @@ class ProductDataDependency:
 
     async def __call__(
         self,
-        product_data: ProductRequestModel,
+        product_data: ProductData,
         product_parameters_validator: ProductParametersValidator = Depends(),
-    ) -> ProductRequestModel:
+    ) -> ProductData:
         """Checks if the product can be created/updated.
 
         Args:
-            product_data (ProductRequestModel): New product data.
+            product_data (ProductData): New product data.
             product_parameters_validator (ProductParametersValidator): Product parameter
             validator.
 
         Returns:
-            ProductRequestModel: Product data.
+            ProductData: Product data.
 
         """
 
@@ -71,27 +71,27 @@ class ProductByIdStatusDependency:
         return await product_by_id_status_validator.validate(product_id=product_id)
 
 
-class ProductsFilterDependency:
-    """Products filter dependency."""
+class ProductFilterDependency:
+    """Product filter dependency."""
 
     async def __call__(
         self,
-        filter_: BaseProductsFilterModel = Depends(),
-        products_filter_validator: ProductsFilterValidator = Depends(),
-    ) -> ProductsFilterModel:
+        filter_: BaseProductFilter = Depends(),
+        product_filter_validator: ProductFilterValidator = Depends(),
+    ) -> ProductFilter:
         """Validates and formats products list filter.
 
         Args:
-            filter_ (BaseProductsFilterModel): Base products filter.
-            products_filter_validator (ProductsFilterValidator): Products filter
+            filter_ (BaseProductFilter): Base products filter.
+            product_filter_validator (ProductFilterValidator): Product filter
             validator.
 
         Returns:
-            ProductsFilterModel: Products filter object.
+            ProductFilter: Product filter object.
 
         """
 
-        return await products_filter_validator.validate(
+        return await product_filter_validator.validate(
             category_id=filter_.category_id,
             available=filter_.available,
             ids=filter_.ids,

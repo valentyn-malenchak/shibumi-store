@@ -15,12 +15,12 @@ from app.api.v1.constants import (
     RedisNamesEnum,
     RedisNamesTTLEnum,
 )
-from app.api.v1.models import PaginationModel, SearchModel, SortingModel
+from app.api.v1.models import Pagination, Search, Sorting
 from app.api.v1.models.user import (
-    CreateUserRequestModel,
-    UpdateUserRequestModel,
     User,
-    UsersFilterModel,
+    UserCreateData,
+    UserFilter,
+    UserUpdateData,
 )
 from app.api.v1.repositories.user import UserRepository
 from app.api.v1.services import BaseService
@@ -71,18 +71,18 @@ class UserService(BaseService):
 
     async def get(
         self,
-        filter_: UsersFilterModel,
-        search: SearchModel,
-        sorting: SortingModel,
-        pagination: PaginationModel,
+        filter_: UserFilter,
+        search: Search,
+        sorting: Sorting,
+        pagination: Pagination,
     ) -> list[Mapping[str, Any]]:
         """Retrieves a list of users based on parameters.
 
         Args:
-            filter_ (UsersFilterModel): Parameters for list filtering.
-            search (SearchModel): Parameters for list searching.
-            sorting (SortingModel): Parameters for sorting.
-            pagination (PaginationModel): Parameters for pagination.
+            filter_ (UserFilter): Parameters for list filtering.
+            search (Search): Parameters for list searching.
+            sorting (Sorting): Parameters for sorting.
+            pagination (Pagination): Parameters for pagination.
 
         Returns:
             list[Mapping[str, Any]]: The retrieved list of users.
@@ -99,12 +99,12 @@ class UserService(BaseService):
             deleted=filter_.deleted,
         )
 
-    async def count(self, filter_: UsersFilterModel, search: SearchModel) -> int:
+    async def count(self, filter_: UserFilter, search: Search) -> int:
         """Counts items based on parameters.
 
         Args:
-            filter_ (UsersFilterModel): Parameters for list filtering.
-            search (SearchModel): Parameters for list searching.
+            filter_ (UserFilter): Parameters for list filtering.
+            search (Search): Parameters for list searching.
 
         Returns:
             int: Count of items.
@@ -138,11 +138,11 @@ class UserService(BaseService):
 
         return User(**user)
 
-    async def create(self, data: CreateUserRequestModel) -> User:
+    async def create(self, data: UserCreateData) -> User:
         """Creates a new user.
 
         Args:
-            data (CreateUserRequestModel): The data for the new user.
+            data (UserCreateData): The data for the new user.
 
         Returns:
             User: The created user.
@@ -181,12 +181,12 @@ class UserService(BaseService):
 
         return user
 
-    async def update(self, item: User, data: UpdateUserRequestModel) -> User:
+    async def update(self, item: User, data: UserUpdateData) -> User:
         """Updates a user object.
 
         Args:
             item (User): User object.
-            data (UpdateUserRequestModel): Data to update user.
+            data (UserUpdateData): Data to update user.
 
         Returns:
             User: The updated user.
