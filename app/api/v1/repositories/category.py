@@ -138,6 +138,78 @@ class CategoryRepository(BaseRepository):
 
         return result[0] if result else None
 
+    async def get_one_and_update_by_id(
+        self,
+        id_: ObjectId,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+        **fields: Any,
+    ) -> Mapping[str, Any]:
+        """
+        Updates and retrieves a single category from the repository by its
+        unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the category.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+            fields (Any): Fields to update category.
+
+        Returns:
+            Mapping[str, Any]: The retrieved category.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
+    async def create(
+        self, *, session: AsyncIOMotorClientSession | None = None, **fields: Any
+    ) -> Any:
+        """Creates a new category in repository.
+
+        Args:
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+            fields (Any): The fields for the new category.
+
+        Returns:
+            Any: The ID of created category.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
+    async def update_by_id(
+        self,
+        id_: ObjectId,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+        upsert: bool = False,
+        **fields: Any,
+    ) -> None:
+        """Updates a category in repository.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the category.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+            upsert (bool): Use update or insert. Defaults to False.
+            fields (Any): Fields to update category.
+
+        """
+
+        await self._mongo_service.update_one(
+            collection=self._collection_name,
+            filter_={"_id": id_},
+            update={"$set": fields},
+            upsert=upsert,
+            session=session,
+        )
+
     async def calculate_category_parameters(
         self,
         id_: ObjectId,
@@ -215,9 +287,9 @@ class CategoryRepository(BaseRepository):
 
         await self.category_parameters_repository.update_by_id(
             id_=category_parameters["_id"],
-            data=category_parameters,
             upsert=True,
             session=session,
+            **category_parameters,
         )
 
     async def get_category_parameters(

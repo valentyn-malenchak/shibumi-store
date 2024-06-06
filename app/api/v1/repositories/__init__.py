@@ -38,7 +38,7 @@ class BaseRepository(abc.ABC):
         session: AsyncIOMotorClientSession | None = None,
         **filters: Any,
     ) -> list[Mapping[str, Any]]:
-        """Retrieves a list of items based on parameters.
+        """Retrieves a list of documents based on parameters.
 
         Args:
             search (str | None): Parameters for list searching.
@@ -46,13 +46,13 @@ class BaseRepository(abc.ABC):
             sort_order (SortingTypesEnum | None): Defines sort order - ascending
             or descending.
             page (int | None): Page number.
-            page_size (int | None): Number of items on each page.
+            page_size (int | None): Number of documents on each page.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
             filters (Any): Parameters for list filtering.
 
         Returns:
-            list[Mapping[str, Any]]: The retrieved list of items.
+            list[Mapping[str, Any]]: The retrieved list of documents.
 
         """
 
@@ -70,11 +70,11 @@ class BaseRepository(abc.ABC):
 
     @staticmethod
     def _calculate_skip(page: int | None, page_size: int | None) -> int | None:
-        """Calculates count of items to skip for reaching page.
+        """Calculates count of documents to skip for reaching page.
 
         Args:
             page (int | None): Page number.
-            page_size (int | None): Number of items on each page.
+            page_size (int | None): Number of documents on each page.
 
         Returns:
             int | None: Skip number or None.
@@ -147,7 +147,7 @@ class BaseRepository(abc.ABC):
 
             return [(sort_by, sort_value)]
 
-        # If search is included to query, return items sorted by search scores
+        # If search is included to query, return documents sorted by search scores
         return (
             self._get_list_default_sorting()
             if search is False
@@ -196,15 +196,15 @@ class BaseRepository(abc.ABC):
     async def get_by_id(
         self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
     ) -> Mapping[str, Any] | None:
-        """Retrieves an item from the repository by its unique identifier.
+        """Retrieves a document from the repository by its unique identifier.
 
         Args:
-            id_ (ObjectId): The unique identifier of the item.
+            id_ (ObjectId): The unique identifier of the document.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
         Returns:
-            Mapping[str, Any] | None: The retrieved item.
+            Mapping[str, Any] | None: The retrieved document.
 
         """
 
@@ -212,112 +212,103 @@ class BaseRepository(abc.ABC):
             collection=self._collection_name, filter_={"_id": id_}, session=session
         )
 
+    @abc.abstractmethod
     async def get_one_and_update_by_id(
         self,
         id_: ObjectId,
-        data: dict[str, Any],
         *,
-        upsert: bool = False,
         session: AsyncIOMotorClientSession | None = None,
+        **fields: Any,
     ) -> Mapping[str, Any]:
         """
-        Updates and retrieves a single item from the repository by its
+        Updates and retrieves a single document from the repository by its
         unique identifier.
 
         Args:
-            id_ (ObjectId): The unique identifier of the item.
-            data (dict[str, Any]): Data to update item.
-            upsert (bool): Use update or insert. Defaults to False.
+            id_ (ObjectId): The unique identifier of the document.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            fields (Any): Fields to update document.
 
         Returns:
-            Mapping[str, Any]: The retrieved item.
+            Mapping[str, Any]: The retrieved document.
+
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses.
 
         """
+        raise NotImplementedError
 
-        return await self._mongo_service.find_one_and_update(
-            collection=self._collection_name,
-            filter_={"_id": id_},
-            update={"$set": data},
-            upsert=upsert,
-            session=session,
-        )
-
+    @abc.abstractmethod
     async def create(
-        self, data: dict[str, Any], *, session: AsyncIOMotorClientSession | None = None
+        self, *, session: AsyncIOMotorClientSession | None = None, **fields: Any
     ) -> Any:
-        """Creates a new item in repository.
+        """Creates a new document in repository.
 
         Args:
-            data (dict[str, Any]): The data for the new item.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            fields (Any): The fields for the new document.
 
         Returns:
-            Any: The ID of created item.
+            Any: The ID of created document.
+
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses.
 
         """
-
-        return await self._mongo_service.insert_one(
-            collection=self._collection_name, document=data, session=session
-        )
+        raise NotImplementedError
 
     async def create_many(
         self,
-        items: list[dict[str, Any]],
+        documents: list[dict[str, Any]],
         *,
         session: AsyncIOMotorClientSession | None = None,
     ) -> list[Any]:
-        """Creates bulk items in the repository.
+        """Creates bulk documents in the repository.
 
         Args:
-            items (list[dict[str, Any]]): Items to be created.
+            documents (list[dict[str, Any]]): Documents to be created.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
         Returns:
-            list[Any]: The IDs of created items.
+            list[Any]: The IDs of created documents.
 
         """
 
         return await self._mongo_service.insert_many(
             collection=self._collection_name,
-            documents=items,
+            documents=documents,
             session=session,
         )
 
+    @abc.abstractmethod
     async def update_by_id(
         self,
         id_: ObjectId,
-        data: dict[str, Any],
         *,
-        upsert: bool = False,
         session: AsyncIOMotorClientSession | None = None,
+        **fields: Any,
     ) -> None:
-        """Updates an item in repository.
+        """Updates a document in repository.
 
         Args:
-            id_ (ObjectId): The unique identifier of the item.
-            data (dict[str, Any]): Data to update item.
-            upsert (bool): Use update or insert. Defaults to False.
+            id_ (ObjectId): The unique identifier of the document.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            fields (Any): Fields to update document.
+
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses.
 
         """
-
-        await self._mongo_service.update_one(
-            collection=self._collection_name,
-            filter_={"_id": id_},
-            update={"$set": data},
-            upsert=upsert,
-            session=session,
-        )
+        raise NotImplementedError
 
     async def delete_all(
         self, *, session: AsyncIOMotorClientSession | None = None
     ) -> None:
-        """Deletes all items from the repository.
+        """Deletes all documents from the repository.
 
         Args:
             session (AsyncIOMotorClientSession | None): Defines a client session

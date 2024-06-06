@@ -100,14 +100,14 @@ class UserService(BaseService):
         )
 
     async def count(self, filter_: UsersFilterModel, search: SearchModel) -> int:
-        """Counts documents based on parameters.
+        """Counts items based on parameters.
 
         Args:
             filter_ (UsersFilterModel): Parameters for list filtering.
             search (SearchModel): Parameters for list searching.
 
         Returns:
-            int: Count of documents.
+            int: Count of items.
 
         """
 
@@ -138,27 +138,6 @@ class UserService(BaseService):
 
         return User(**user)
 
-    async def get_by_username(self, username: str) -> User:
-        """Retrieves a user by its username.
-
-        Args:
-            username (str): Username.
-
-        Returns:
-            User: User object.
-
-        Raises:
-            EntityIsNotFoundError: In case user is not found.
-
-        """
-
-        user = await self.repository.get_by_username(username=username)
-
-        if user is None:
-            raise EntityIsNotFoundError
-
-        return User(**user)
-
     async def create(self, data: CreateUserRequestModel) -> User:
         """Creates a new user.
 
@@ -174,16 +153,15 @@ class UserService(BaseService):
 
         try:
             id_ = await self.repository.create(
-                data={
-                    # Replaces plain password on hashed one
-                    **data.model_dump(exclude={"password"}),
-                    "email_verified": False,
-                    "hashed_password": password,
-                    "birthdate": arrow.get(data.birthdate).datetime,
-                    "deleted": False,
-                    "created_at": arrow.utcnow().datetime,
-                    "updated_at": None,
-                },
+                first_name=data.first_name,
+                last_name=data.last_name,
+                patronymic_name=data.patronymic_name,
+                username=data.username,
+                email=data.email,
+                hashed_password=password,
+                phone_number=data.phone_number,
+                birthdate=arrow.get(data.birthdate).datetime,
+                roles=data.roles,
             )
 
         except DuplicateKeyError:
@@ -219,12 +197,14 @@ class UserService(BaseService):
 
         updated_user = await self.repository.get_one_and_update_by_id(
             id_=item.id,
-            data={
-                **data.model_dump(),
-                "email_verified": emails_match and item.email_verified,
-                "birthdate": arrow.get(data.birthdate).datetime,
-                "updated_at": arrow.utcnow().datetime,
-            },
+            first_name=data.first_name,
+            last_name=data.last_name,
+            patronymic_name=data.patronymic_name,
+            email=data.email,
+            phone_number=data.phone_number,
+            birthdate=arrow.get(data.birthdate).datetime,
+            roles=data.roles,
+            email_verified=emails_match and item.email_verified,
         )
 
         user = User(**updated_user)
@@ -261,13 +241,7 @@ class UserService(BaseService):
 
         password = Password.get_password_hash(password=password)
 
-        await self.repository.update_by_id(
-            id_=id_,
-            data={
-                "hashed_password": password,
-                "updated_at": arrow.utcnow().datetime,
-            },
-        )
+        await self.repository.update_by_id(id_=id_, hashed_password=password)
 
     async def _update_email_verified(self, id_: ObjectId) -> None:
         """Updates user's email verification flag.
@@ -277,13 +251,7 @@ class UserService(BaseService):
 
         """
 
-        await self.repository.update_by_id(
-            id_=id_,
-            data={
-                "email_verified": True,
-                "updated_at": arrow.utcnow().datetime,
-            },
-        )
+        await self.repository.update_by_id(id_=id_, email_verified=True)
 
     async def delete_by_id(self, id_: ObjectId) -> None:
         """Softly deletes a user by its unique identifier.
@@ -293,9 +261,28 @@ class UserService(BaseService):
 
         """
 
-        await self.repository.update_by_id(
-            id_=id_, data={"deleted": True, "updated_at": arrow.utcnow().datetime}
-        )
+        await self.repository.update_by_id(id_=id_, deleted=True)
+
+    async def get_by_username(self, username: str) -> User:
+        """Retrieves a user by its username.
+
+        Args:
+            username (str): Username.
+
+        Returns:
+            User: User object.
+
+        Raises:
+            EntityIsNotFoundError: In case user is not found.
+
+        """
+
+        user = await self.repository.get_by_username(username=username)
+
+        if user is None:
+            raise EntityIsNotFoundError
+
+        return User(**user)
 
     async def request_reset_password(self, item: User) -> None:
         """Requests user's password reset.

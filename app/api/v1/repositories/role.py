@@ -3,6 +3,7 @@
 from collections.abc import Mapping
 from typing import Any
 
+from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
 from app.api.v1.constants import RolesEnum
@@ -49,6 +50,72 @@ class RoleRepository(BaseRepository):
 
         """
         return None
+
+    async def get_one_and_update_by_id(
+        self,
+        id_: ObjectId,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+        **fields: Any,
+    ) -> Mapping[str, Any]:
+        """
+        Updates and retrieves a single role from the repository by its
+        unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the role.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+            fields (Any): Fields to update role.
+
+        Returns:
+            Mapping[str, Any]: The retrieved role.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
+    async def create(
+        self, *, session: AsyncIOMotorClientSession | None = None, **fields: Any
+    ) -> Any:
+        """Creates a new role in repository.
+
+        Args:
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+            fields (Any): The fields for the new role.
+
+        Returns:
+            Any: The ID of created role.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
+    async def update_by_id(
+        self,
+        id_: ObjectId,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+        **fields: Any,
+    ) -> None:
+        """Updates a role in repository.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the role.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+            fields (Any): Fields to update role.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
 
     async def get_scopes_by_roles(
         self,

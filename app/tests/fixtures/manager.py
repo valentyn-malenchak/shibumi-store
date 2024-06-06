@@ -77,7 +77,7 @@ class FileFixtureManager:
 
                 repository = self._fixture_repositories[collection]
 
-                await repository.create_many(items=data, session=session)
+                await repository.create_many(documents=data, session=session)
 
     async def clear(self) -> None:
         """Clear collections from loaded data."""

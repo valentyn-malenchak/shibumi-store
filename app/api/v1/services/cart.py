@@ -2,7 +2,6 @@
 
 from typing import Any
 
-import arrow
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
 
@@ -62,13 +61,13 @@ class CartService(BaseService):
         raise NotImplementedError
 
     async def count(self, *_: Any) -> int:
-        """Counts documents based on parameters.
+        """Counts items based on parameters.
 
         Args:
             _ (Any): Parameters for list filtering and searching.
 
         Returns:
-            int: Count of documents.
+            int: Count of items.
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -118,6 +117,7 @@ class CartService(BaseService):
 
         return Cart(**cart)
 
+    # TODO: another interface than in Base class
     async def create(self, user_id: ObjectId) -> Cart:
         """Creates a new cart.
 
@@ -129,14 +129,7 @@ class CartService(BaseService):
 
         """
 
-        id_ = await self.repository.create(
-            data={
-                "user_id": user_id,
-                "products": [],
-                "created_at": arrow.utcnow().datetime,
-                "updated_at": None,
-            }
-        )
+        id_ = await self.repository.create(user_id=user_id)
 
         return await self.get_by_id(id_=id_)
 
