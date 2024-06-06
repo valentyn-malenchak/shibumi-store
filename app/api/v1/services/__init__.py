@@ -62,14 +62,14 @@ class BaseService(abc.ABC):
 
     @abc.abstractmethod
     async def count(self, filter_: Any, search: SearchModel) -> int:
-        """Counts documents based on parameters.
+        """Counts items based on parameters.
 
         Args:
             filter_ (Any): Parameters for list filtering.
             search (SearchModel): Parameters for list searching.
 
         Returns:
-            int: Count of documents.
+            int: Count of items.
 
         Raises:
             NotImplementedError: This method must be implemented by subclasses.

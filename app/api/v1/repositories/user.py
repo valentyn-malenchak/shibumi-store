@@ -3,6 +3,8 @@
 from collections.abc import Mapping
 from typing import Any
 
+import arrow
+from bson import ObjectId
 from injector import inject
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
@@ -68,6 +70,86 @@ class UserRepository(BaseRepository):
 
         """
         return None
+
+    async def get_one_and_update_by_id(
+        self,
+        id_: ObjectId,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+        **fields: Any,
+    ) -> Mapping[str, Any]:
+        """
+        Updates and retrieves a single user from the repository by its
+        unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the user.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+            fields (Any): Fields to update user.
+
+        Returns:
+            Mapping[str, Any]: The retrieved user.
+
+        """
+
+        return await self._mongo_service.find_one_and_update(
+            collection=self._collection_name,
+            filter_={"_id": id_},
+            update={"$set": {**fields, "updated_at": arrow.utcnow().datetime}},
+            session=session,
+        )
+
+    async def create(
+        self, *, session: AsyncIOMotorClientSession | None = None, **fields: Any
+    ) -> Any:
+        """Creates a new user in repository.
+
+        Args:
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+            fields (Any): The fields for the new user.
+
+        Returns:
+            Any: The ID of created user.
+
+        """
+
+        return await self._mongo_service.insert_one(
+            collection=self._collection_name,
+            document={
+                **fields,
+                "email_verified": False,
+                "deleted": False,
+                "created_at": arrow.utcnow().datetime,
+                "updated_at": None,
+            },
+            session=session,
+        )
+
+    async def update_by_id(
+        self,
+        id_: ObjectId,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+        **fields: Any,
+    ) -> None:
+        """Updates a user in repository.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the user.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+            fields (Any): Fields to update category.
+
+        """
+
+        await self._mongo_service.update_one(
+            collection=self._collection_name,
+            filter_={"_id": id_},
+            update={"$set": {**fields, "updated_at": arrow.utcnow().datetime}},
+            session=session,
+        )
 
     async def get_by_username(
         self, username: str, *, session: AsyncIOMotorClientSession | None = None

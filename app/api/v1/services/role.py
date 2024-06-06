@@ -70,13 +70,13 @@ class RoleService(BaseService):
         return roles
 
     async def count(self, *_: Any) -> int:
-        """Counts documents based on parameters.
+        """Counts items based on parameters.
 
         Args:
             _ (Any): Parameters for list filtering and searching.
 
         Returns:
-            int: Count of documents.
+            int: Count of items.
 
         """
 
@@ -101,18 +101,6 @@ class RoleService(BaseService):
 
         """
         raise NotImplementedError
-
-    async def get_scopes_by_roles(self, roles: list[RolesEnum]) -> list[str]:
-        """Retrieves a list of scopes from the repository by roles name list.
-
-        Args:
-            roles (list[str]): List of roles.
-
-        Returns:
-            list[str]: The retrieved scopes.
-
-        """
-        return await self.repository.get_scopes_by_roles(roles=roles)
 
     async def create(self, data: Any) -> Any:
         """Creates a new role.
@@ -172,3 +160,15 @@ class RoleService(BaseService):
 
         """
         raise NotImplementedError
+
+    async def get_scopes_by_roles(self, roles: list[RolesEnum]) -> list[str]:
+        """Retrieves a list of scopes from the repository by roles name list.
+
+        Args:
+            roles (list[str]): List of roles.
+
+        Returns:
+            list[str]: The retrieved scopes.
+
+        """
+        return await self.repository.get_scopes_by_roles(roles=roles)

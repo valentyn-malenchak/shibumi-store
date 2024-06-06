@@ -3,6 +3,7 @@
 from collections.abc import Mapping
 from typing import Any
 
+import arrow
 from bson import ObjectId
 from injector import inject
 from motor.motor_asyncio import AsyncIOMotorClientSession
@@ -90,6 +91,82 @@ class ProductRepository(BaseRepository):
 
         """
         return [("views", SortingValuesEnum.DESC)]
+
+    async def get_one_and_update_by_id(
+        self,
+        id_: ObjectId,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+        **fields: Any,
+    ) -> Mapping[str, Any]:
+        """
+        Updates and retrieves a single product from the repository by its
+        unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the product.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+            fields (Any): Fields to update product.
+
+        Returns:
+            Mapping[str, Any]: The retrieved product.
+
+        """
+
+        return await self._mongo_service.find_one_and_update(
+            collection=self._collection_name,
+            filter_={"_id": id_},
+            update={"$set": {**fields, "updated_at": arrow.utcnow().datetime}},
+            session=session,
+        )
+
+    async def create(
+        self, *, session: AsyncIOMotorClientSession | None = None, **fields: Any
+    ) -> Any:
+        """Creates a new product in repository.
+
+        Args:
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+            fields (Any): The fields for the new product.
+
+        Returns:
+            Any: The ID of created product.
+
+        """
+
+        return await self._mongo_service.insert_one(
+            collection=self._collection_name,
+            document={
+                **fields,
+                "views": 0,
+                "created_at": arrow.utcnow().datetime,
+                "updated_at": None,
+            },
+            session=session,
+        )
+
+    async def update_by_id(
+        self,
+        id_: ObjectId,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+        **fields: Any,
+    ) -> None:
+        """Updates a product in repository.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the product.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+            fields (Any): Fields to update product.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
 
     async def increment_views(
         self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None

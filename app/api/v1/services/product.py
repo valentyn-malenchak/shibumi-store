@@ -3,7 +3,6 @@
 from collections.abc import Mapping
 from typing import Any
 
-import arrow
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
 
@@ -86,14 +85,14 @@ class ProductService(BaseService):
         )
 
     async def count(self, filter_: ProductsFilterModel, search: SearchModel) -> int:
-        """Counts documents based on parameters.
+        """Counts items based on parameters.
 
         Args:
             filter_ (ProductsFilterModel): Parameters for list filtering.
             search (SearchModel): Parameters for list searching.
 
         Returns:
-            int: Count of documents.
+            int: Count of items.
 
         """
 
@@ -126,15 +125,6 @@ class ProductService(BaseService):
 
         return Product(**product)
 
-    async def increment_views(self, id_: ObjectId) -> None:
-        """Increments a views field for product by its unique identifier.
-
-        Args:
-            id_ (ObjectId): The unique identifier of the product.
-
-        """
-        self.background_tasks.add_task(self.repository.increment_views, id_=id_)
-
     async def create(self, data: ProductRequestModel) -> Product:
         """Creates a new product.
 
@@ -147,12 +137,15 @@ class ProductService(BaseService):
         """
 
         id_ = await self.repository.create(
-            data={
-                **data.model_dump(),
-                "views": 0,
-                "created_at": arrow.utcnow().datetime,
-                "updated_at": None,
-            },
+            name=data.name,
+            synopsis=data.synopsis,
+            description=data.description,
+            quantity=data.quantity,
+            price=data.price,
+            category_id=data.category_id,
+            available=data.available,
+            html_body=data.html_body,
+            parameters=data.parameters,
         )
 
         self.background_tasks.add_task(
@@ -176,10 +169,15 @@ class ProductService(BaseService):
 
         updated_product = await self.repository.get_one_and_update_by_id(
             id_=item.id,
-            data={
-                **data.model_dump(),
-                "updated_at": arrow.utcnow().datetime,
-            },
+            name=data.name,
+            synopsis=data.synopsis,
+            description=data.description,
+            quantity=data.quantity,
+            price=data.price,
+            category_id=data.category_id,
+            available=data.available,
+            html_body=data.html_body,
+            parameters=data.parameters,
         )
 
         product = Product(**updated_product)
@@ -225,3 +223,12 @@ class ProductService(BaseService):
 
         """
         raise NotImplementedError
+
+    async def increment_views(self, id_: ObjectId) -> None:
+        """Increments a views field for product by its unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the product.
+
+        """
+        self.background_tasks.add_task(self.repository.increment_views, id_=id_)
