@@ -462,7 +462,7 @@ class UserEmailVerifiedValidator(BaseUserValidator):
 
         if user.email_verified is True:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
+                status_code=status.HTTP_409_CONFLICT,
                 detail=HTTPErrorMessagesEnum.EMAIL_IS_ALREADY_VERIFIED,
             )
 
