@@ -2092,7 +2092,7 @@ class TestUser(BaseAPITest):
             f"{AppConstants.API_V1_PREFIX}/users/john.smith/verify-email/"
         )
 
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == status.HTTP_409_CONFLICT
         assert response.json() == {
             "detail": HTTPErrorMessagesEnum.EMAIL_IS_ALREADY_VERIFIED
         }
@@ -2210,7 +2210,7 @@ class TestUser(BaseAPITest):
             },
         )
 
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == status.HTTP_409_CONFLICT
         assert response.json() == {
             "detail": HTTPErrorMessagesEnum.EMAIL_IS_ALREADY_VERIFIED
         }
