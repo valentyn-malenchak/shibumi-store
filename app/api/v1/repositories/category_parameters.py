@@ -33,11 +33,11 @@ class CategoryParametersRepository(BaseRepository):
         raise NotImplementedError
 
     @staticmethod
-    def _get_list_query_projection() -> Mapping[str, Any] | None:
-        """Returns a query projection for list.
+    def _get_list_default_sorting() -> list[tuple[str, int | Mapping[str, Any]]] | None:
+        """Returns list default sorting.
 
         Returns:
-            Mapping[str, Any] | None: List query projection or None.
+            list[tuple[str, int | Mapping[str, Any]]] | None: Default sorting.
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -46,11 +46,11 @@ class CategoryParametersRepository(BaseRepository):
         raise NotImplementedError
 
     @staticmethod
-    def _get_list_default_sorting() -> list[tuple[str, int | Mapping[str, Any]]] | None:
-        """Returns list default sorting.
+    def _get_list_query_projection() -> Mapping[str, Any] | None:
+        """Returns a query projection for list.
 
         Returns:
-            list[tuple[str, int | Mapping[str, Any]]] | None: Default sorting.
+            Mapping[str, Any] | None: List query projection or None.
 
         Raises:
             NotImplementedError: This method is not implemented.

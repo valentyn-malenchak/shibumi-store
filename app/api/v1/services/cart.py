@@ -176,11 +176,11 @@ class CartService(BaseService):
         """
         raise NotImplementedError
 
-    async def add_product(self, user_id: ObjectId, data: CartProduct) -> Cart:
+    async def add_product(self, id_: ObjectId, data: CartProduct) -> Cart:
         """Adds new product to the cart.
 
         Args:
-            user_id (ObjectId): BSON object identifier of requested user.
+            id_ (ObjectId): BSON object identifier of requested cart.
             data (CartProduct): Cart product data.
 
         Returns:
@@ -189,7 +189,7 @@ class CartService(BaseService):
         """
 
         cart = await self.repository.add_product(
-            user_id=user_id,
+            id_=id_,
             product_id=data.id,
             quantity=data.quantity,
         )
@@ -198,14 +198,14 @@ class CartService(BaseService):
 
     async def update_product(
         self,
-        user_id: ObjectId,
+        id_: ObjectId,
         product_id: ObjectId,
         data: CartProductQuantity,
     ) -> Cart:
         """Updates product in the cart.
 
         Args:
-            user_id (ObjectId): BSON object identifier of requested user.
+            id_ (ObjectId): BSON object identifier of requested cart.
             product_id (ObjectId): The unique identifier of the product.
             data (CartProductQuantity): Cart product quantity.
 
@@ -215,18 +215,18 @@ class CartService(BaseService):
         """
 
         cart = await self.repository.update_product(
-            user_id=user_id,
+            id_=id_,
             product_id=product_id,
             quantity=data.quantity,
         )
 
         return Cart(**cart)
 
-    async def delete_product(self, user_id: ObjectId, product_id: ObjectId) -> Cart:
+    async def delete_product(self, id_: ObjectId, product_id: ObjectId) -> Cart:
         """Deletes product from the cart.
 
         Args:
-            user_id (ObjectId): BSON object identifier of requested user.
+            id_ (ObjectId): BSON object identifier of requested cart.
             product_id (ObjectId): The unique identifier of the product.
 
         Returns:
@@ -234,8 +234,6 @@ class CartService(BaseService):
 
         """
 
-        cart = await self.repository.delete_product(
-            user_id=user_id, product_id=product_id
-        )
+        cart = await self.repository.delete_product(id_=id_, product_id=product_id)
 
         return Cart(**cart)

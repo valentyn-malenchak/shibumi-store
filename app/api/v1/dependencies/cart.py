@@ -6,15 +6,61 @@ from bson import ObjectId
 from fastapi import Depends
 
 from app.api.v1.models.cart import (
+    Cart,
     CartProduct,
     CartProductQuantity,
 )
 from app.api.v1.validators.cart import (
+    CartByIdValidator,
+    CartByUserValidator,
     CartProductAddValidator,
     CartProductDeleteValidator,
     CartProductUpdateValidator,
 )
 from app.utils.pydantic import ObjectIdAnnotation
+
+
+class CartByIdDependency:
+    """Cart by identifier dependency."""
+
+    async def __call__(
+        self,
+        cart_id: Annotated[ObjectId, ObjectIdAnnotation],
+        cart_by_id_validator: CartByIdValidator = Depends(),
+    ) -> Cart:
+        """Checks cart from request by identifier.
+
+        Args:
+            cart_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
+            identifier of requested cart.
+            cart_by_id_validator (CartByIdValidator): Cart by identifier validator.
+
+        Returns:
+            Cart: Cart object.
+
+        """
+
+        return await cart_by_id_validator.validate(cart_id=cart_id)
+
+
+class CartByUserDependency:
+    """Cart by user dependency."""
+
+    async def __call__(
+        self,
+        cart_by_user_validator: CartByUserValidator = Depends(),
+    ) -> Cart:
+        """Checks cart by requested user.
+
+        Args:
+            cart_by_user_validator (CartByUserValidator): Cart by user validator.
+
+        Returns:
+            Cart: Cart object.
+
+        """
+
+        return await cart_by_user_validator.validate()
 
 
 class CartProductAddDependency:

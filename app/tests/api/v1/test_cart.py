@@ -40,7 +40,7 @@ class TestCart(BaseAPITest):
         """Test get cart."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/cart/",
+            f"{AppConstants.API_V1_PREFIX}/carts/me/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -64,7 +64,7 @@ class TestCart(BaseAPITest):
     async def test_get_cart_no_token(self, test_client: AsyncClient) -> None:
         """Test get cart in case there is no token."""
 
-        response = await test_client.get(f"{AppConstants.API_V1_PREFIX}/cart/")
+        response = await test_client.get(f"{AppConstants.API_V1_PREFIX}/carts/me/")
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED}
@@ -80,12 +80,32 @@ class TestCart(BaseAPITest):
         """Test get cart in case user does not have appropriate scope."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/cart/",
+            f"{AppConstants.API_V1_PREFIX}/carts/me/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
+    async def test_get_cart_user_cart_is_not_found(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get cart in case cart is not found."""
+
+        response = await test_client.get(
+            f"{AppConstants.API_V1_PREFIX}/carts/me/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Cart")
+        }
 
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
@@ -107,7 +127,7 @@ class TestCart(BaseAPITest):
         """Test add product to the cart."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/cart/",
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/",
             json={
                 "id": "65a7f143c064f4099808ad27",
                 "quantity": 3,
@@ -142,7 +162,7 @@ class TestCart(BaseAPITest):
         """Test add product to the cart in case there is no token."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/cart/",
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/",
             json={
                 "id": "65a7f143c064f4099808ad27",
                 "quantity": 3,
@@ -163,7 +183,7 @@ class TestCart(BaseAPITest):
         """Test add product to the cart in case user does not have appropriate scope."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/cart/",
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/",
             json={
                 "id": "65a7f143c064f4099808ad27",
                 "quantity": 3,
@@ -179,13 +199,61 @@ class TestCart(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
+    async def test_add_product_to_the_cart_cart_is_not_found(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test add product to the cart in case cart is not found."""
+
+        response = await test_client.post(
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/",
+            json={
+                "quantity": 0,
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Cart")
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.CARTS)],
+        indirect=True,
+    )
+    async def test_add_product_to_the_cart_another_user_cart(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test add product to the cart in case cart belongs to another user."""
+
+        response = await test_client.post(
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce958336962a87b140743/products/",
+            json={
+                "quantity": 0,
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.CART_ACCESS_DENIED}
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.CARTS)],
+        indirect=True,
+    )
     async def test_add_product_to_the_cart_validate_data(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
         """Test add product to the cart in case request data is invalid."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/cart/",
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/",
             json={
                 "quantity": 0,
             },
@@ -204,7 +272,9 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.CARTS)],
+        indirect=True,
     )
     async def test_add_product_to_the_cart_product_does_not_exist(
         self, test_client: AsyncClient, arrange_db: None
@@ -212,7 +282,7 @@ class TestCart(BaseAPITest):
         """Test add product to the cart in case product does not exist."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/cart/",
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/",
             json={
                 "id": "65a7f143c064f4099808ad27",
                 "quantity": 3,
@@ -229,7 +299,13 @@ class TestCart(BaseAPITest):
     @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
-        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
+        [
+            (
+                MongoCollectionsEnum.USERS,
+                MongoCollectionsEnum.CARTS,
+                MongoCollectionsEnum.PRODUCTS,
+            )
+        ],
         indirect=True,
     )
     async def test_add_product_to_the_cart_product_is_not_available(
@@ -238,7 +314,7 @@ class TestCart(BaseAPITest):
         """Test add product to the cart in case product is not available."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/cart/",
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/",
             json={
                 "id": "65d22fd0a83d80b9f0bd3e38",
                 "quantity": 3,
@@ -270,7 +346,7 @@ class TestCart(BaseAPITest):
         """Test add product to the cart in case product is already added."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/cart/",
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/",
             json={
                 "id": "65d22fd0a83d80b9f0bd3e39",
                 "quantity": 1,
@@ -302,7 +378,7 @@ class TestCart(BaseAPITest):
         """Test add product to the cart in case maximum quantity is exceeded."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/cart/",
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/",
             json={
                 "id": "65a7f143c064f4099808ad27",
                 "quantity": 100,
@@ -335,7 +411,7 @@ class TestCart(BaseAPITest):
         """Test update product in the cart."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/cart/65d22fd0a83d80b9f0bd3e39/",
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/65d22fd0a83d80b9f0bd3e39/",
             json={
                 "quantity": 4,
             },
@@ -365,7 +441,7 @@ class TestCart(BaseAPITest):
         """Test update product in the cart in case there is no token."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/cart/65a7f143c064f4099808ad27/",
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/65a7f143c064f4099808ad27/",
             json={
                 "quantity": 3,
             },
@@ -387,7 +463,7 @@ class TestCart(BaseAPITest):
         """
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/cart/65a7f143c064f4099808ad27/",
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/65a7f143c064f4099808ad27/",
             json={
                 "quantity": 3,
             },
@@ -402,13 +478,61 @@ class TestCart(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
+    async def test_update_product_in_the_cart_cart_is_not_found(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update product in the cart in case cart is not found."""
+
+        response = await test_client.patch(
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/65a7f143c064f4099808ad27/",
+            json={
+                "quantity": 0,
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Cart")
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.CARTS)],
+        indirect=True,
+    )
+    async def test_update_product_in_the_cart_another_user_cart(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update product in the cart in case cart belongs to another user."""
+
+        response = await test_client.patch(
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce958336962a87b140743/products/65a7f143c064f4099808ad27/",
+            json={
+                "quantity": 0,
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.CART_ACCESS_DENIED}
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.CARTS)],
+        indirect=True,
+    )
     async def test_update_product_in_the_cart_validate_data(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
         """Test update product in the cart in case request data is invalid."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/cart/65d22fd0a83d80b9f0bd3e39/",
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/65d22fd0a83d80b9f0bd3e39/",
             json={
                 "quantity": -2,
             },
@@ -426,7 +550,9 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.CARTS)],
+        indirect=True,
     )
     async def test_update_product_in_the_cart_product_does_not_exist(
         self, test_client: AsyncClient, arrange_db: None
@@ -434,7 +560,7 @@ class TestCart(BaseAPITest):
         """Test update product in the cart in case product does not exist."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/cart/65a7f143c064f4099808ad27/",
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/65a7f143c064f4099808ad27/",
             json={
                 "quantity": 3,
             },
@@ -450,7 +576,13 @@ class TestCart(BaseAPITest):
     @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
-        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
+        [
+            (
+                MongoCollectionsEnum.USERS,
+                MongoCollectionsEnum.CARTS,
+                MongoCollectionsEnum.PRODUCTS,
+            )
+        ],
         indirect=True,
     )
     async def test_update_product_in_the_cart_product_is_not_available(
@@ -459,7 +591,7 @@ class TestCart(BaseAPITest):
         """Test update product in the cart in case product is not available."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/cart/65d22fd0a83d80b9f0bd3e38/",
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/65d22fd0a83d80b9f0bd3e38/",
             json={
                 "quantity": 3,
             },
@@ -490,7 +622,7 @@ class TestCart(BaseAPITest):
         """Test update product in the cart in case product is not added."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/cart/65a7f143c064f4099808ad27/",
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/65a7f143c064f4099808ad27/",
             json={
                 "quantity": 1,
             },
@@ -521,7 +653,7 @@ class TestCart(BaseAPITest):
         """Test update product in the cart in case maximum quantity is exceeded."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/cart/65a7f143c064f4099808ad27/",
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/65a7f143c064f4099808ad27/",
             json={
                 "quantity": 100,
             },
@@ -553,7 +685,7 @@ class TestCart(BaseAPITest):
         """Test delete product from the cart."""
 
         response = await test_client.delete(
-            f"{AppConstants.API_V1_PREFIX}/cart/65d22fd0a83d80b9f0bd3e39/",
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/65d22fd0a83d80b9f0bd3e39/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -576,7 +708,7 @@ class TestCart(BaseAPITest):
         """Test delete product from the cart in case there is no token."""
 
         response = await test_client.delete(
-            f"{AppConstants.API_V1_PREFIX}/cart/65a7f143c064f4099808ad27/",
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/65a7f143c064f4099808ad27/",
         )
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -595,7 +727,7 @@ class TestCart(BaseAPITest):
         """
 
         response = await test_client.delete(
-            f"{AppConstants.API_V1_PREFIX}/cart/65a7f143c064f4099808ad27/",
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/65a7f143c064f4099808ad27/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -607,13 +739,55 @@ class TestCart(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
+    async def test_delete_product_from_the_cart_cart_is_not_found(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test delete product from the cart in case cart is not found."""
+
+        response = await test_client.delete(
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/65a7f143c064f4099808ad27/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Cart")
+        }
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.CARTS)],
+        indirect=True,
+    )
+    async def test_delete_product_from_the_cart_another_user_cart(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test delete product from the cart in case cart belongs to another user."""
+
+        response = await test_client.delete(
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce958336962a87b140743/products/65a7f143c064f4099808ad27/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.CART_ACCESS_DENIED}
+
+    @pytest.mark.asyncio
+    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.CARTS)],
+        indirect=True,
+    )
     async def test_delete_product_from_the_cart_product_does_not_exist(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
         """Test delete product from the cart in case product does not exist."""
 
         response = await test_client.delete(
-            f"{AppConstants.API_V1_PREFIX}/cart/65a7f143c064f4099808ad27/",
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/65a7f143c064f4099808ad27/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -626,7 +800,13 @@ class TestCart(BaseAPITest):
     @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
-        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
+        [
+            (
+                MongoCollectionsEnum.USERS,
+                MongoCollectionsEnum.CARTS,
+                MongoCollectionsEnum.PRODUCTS,
+            )
+        ],
         indirect=True,
     )
     async def test_delete_product_from_the_cart_product_is_not_available(
@@ -635,7 +815,7 @@ class TestCart(BaseAPITest):
         """Test delete product from the cart in case product is not available."""
 
         response = await test_client.delete(
-            f"{AppConstants.API_V1_PREFIX}/cart/65d22fd0a83d80b9f0bd3e38/",
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/65d22fd0a83d80b9f0bd3e38/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -663,7 +843,7 @@ class TestCart(BaseAPITest):
         """Test delete product from the cart in case product is not added."""
 
         response = await test_client.delete(
-            f"{AppConstants.API_V1_PREFIX}/cart/65a7f143c064f4099808ad27/",
+            f"{AppConstants.API_V1_PREFIX}/carts/663ce924336962a87b140742/products/65a7f143c064f4099808ad27/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 

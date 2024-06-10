@@ -156,7 +156,7 @@ class CartRepository(BaseRepository):
 
     async def add_product(
         self,
-        user_id: ObjectId,
+        id_: ObjectId,
         product_id: ObjectId,
         quantity: PositiveInt,
         *,
@@ -165,7 +165,7 @@ class CartRepository(BaseRepository):
         """Adds new product to the cart.
 
         Args:
-            user_id (ObjectId): BSON object identifier of requested user.
+            id_ (ObjectId): BSON object identifier of requested cart.
             product_id (ObjectId): BSON object identifier of requested product.
             quantity (PositiveInt): Product quantity.
             session (AsyncIOMotorClientSession | None): Defines a client session
@@ -178,7 +178,7 @@ class CartRepository(BaseRepository):
 
         return await self._mongo_service.find_one_and_update(
             collection=self._collection_name,
-            filter_={"user_id": user_id},
+            filter_={"_id": id_},
             update={
                 "$push": {"products": {"id": product_id, "quantity": quantity}},
                 "$set": {"updated_at": arrow.utcnow().datetime},
@@ -188,7 +188,7 @@ class CartRepository(BaseRepository):
 
     async def update_product(
         self,
-        user_id: ObjectId,
+        id_: ObjectId,
         product_id: ObjectId,
         quantity: PositiveInt,
         *,
@@ -197,7 +197,7 @@ class CartRepository(BaseRepository):
         """Updates product in the cart.
 
         Args:
-            user_id (ObjectId): BSON object identifier of requested user.
+            id_ (ObjectId): BSON object identifier of requested cart.
             product_id (ObjectId): BSON object identifier of requested product.
             quantity (PositiveInt): Product quantity.
             session (AsyncIOMotorClientSession | None): Defines a client session
@@ -210,7 +210,7 @@ class CartRepository(BaseRepository):
 
         return await self._mongo_service.find_one_and_update(
             collection=self._collection_name,
-            filter_={"user_id": user_id, "products.id": product_id},
+            filter_={"_id": id_, "products.id": product_id},
             update={
                 "$set": {
                     "products.$.quantity": quantity,
@@ -222,7 +222,7 @@ class CartRepository(BaseRepository):
 
     async def delete_product(
         self,
-        user_id: ObjectId,
+        id_: ObjectId,
         product_id: ObjectId,
         *,
         session: AsyncIOMotorClientSession | None = None,
@@ -230,7 +230,7 @@ class CartRepository(BaseRepository):
         """Deletes product from the cart.
 
         Args:
-            user_id (ObjectId): BSON object identifier of requested user.
+            id_ (ObjectId): BSON object identifier of requested cart.
             product_id (ObjectId): BSON object identifier of requested product.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
@@ -242,7 +242,7 @@ class CartRepository(BaseRepository):
 
         return await self._mongo_service.find_one_and_update(
             collection=self._collection_name,
-            filter_={"user_id": user_id},
+            filter_={"_id": id_},
             update={
                 "$pull": {"products": {"id": product_id}},
                 "$set": {"updated_at": arrow.utcnow().datetime},
