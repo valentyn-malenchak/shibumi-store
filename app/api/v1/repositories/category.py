@@ -188,7 +188,6 @@ class CategoryRepository(BaseRepository):
         id_: ObjectId,
         *,
         session: AsyncIOMotorClientSession | None = None,
-        upsert: bool = False,
         **fields: Any,
     ) -> None:
         """Updates a category in repository.
@@ -197,18 +196,13 @@ class CategoryRepository(BaseRepository):
             id_ (ObjectId): The unique identifier of the category.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            upsert (bool): Use update or insert. Defaults to False.
             fields (Any): Fields to update category.
 
-        """
+        Raises:
+            NotImplementedError: This method is not implemented.
 
-        await self._mongo_service.update_one(
-            collection=self._collection_name,
-            filter_={"_id": id_},
-            update={"$set": fields},
-            upsert=upsert,
-            session=session,
-        )
+        """
+        raise NotImplementedError
 
     async def calculate_category_parameters(
         self,

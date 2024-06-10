@@ -5,6 +5,7 @@ from typing import Any
 from bson import ObjectId
 from fastapi import Depends, HTTPException, Request, status
 
+from app.api.v1.models.cart import Cart
 from app.api.v1.services.cart import CartService
 from app.api.v1.validators import BaseValidator
 from app.api.v1.validators.product import (
@@ -12,6 +13,7 @@ from app.api.v1.validators.product import (
     ProductQuantityValidator,
 )
 from app.constants import HTTPErrorMessagesEnum
+from app.exceptions import EntityIsNotFoundError
 from app.utils.pydantic import PositiveInt
 
 
@@ -42,6 +44,77 @@ class BaseCartValidator(BaseValidator):
 
         """
         raise NotImplementedError
+
+
+class CartByIdValidator(BaseCartValidator):
+    """Cart by identifier validator."""
+
+    async def validate(self, cart_id: ObjectId) -> Cart:
+        """Validates requested cart by id and user.
+
+        Args:
+            cart_id (ObjectId): BSON object identifier of requested cart.
+
+        Returns:
+            Cart: Cart object.
+
+        Raises:
+            HTTPException: If requested cart is not found or user requests
+            cart of another user.
+
+        """
+
+        try:
+            cart = await self.cart_service.get_by_id(id_=cart_id)
+
+        except EntityIsNotFoundError:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Cart"),
+            )
+
+        current_user = self.request.state.current_user
+
+        if cart.user_id != current_user.object.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=HTTPErrorMessagesEnum.CART_ACCESS_DENIED,
+            )
+
+        # Save cart object in request
+        self.request.state.cart = cart
+
+        return cart
+
+
+class CartByUserValidator(BaseCartValidator):
+    """Cart by user validator."""
+
+    async def validate(self) -> Cart:
+        """Validates requested cart by user.
+
+        Returns:
+            Cart: Cart object.
+
+        Raises:
+            HTTPException: If requested user cart is not found.
+
+        """
+
+        current_user = self.request.state.current_user
+
+        try:
+            cart = await self.cart_service.get_by_user_id(
+                user_id=current_user.object.id
+            )
+
+        except EntityIsNotFoundError:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Cart"),
+            )
+
+        return cart
 
 
 class CartProductAddValidator(BaseCartValidator):
@@ -80,9 +153,7 @@ class CartProductAddValidator(BaseCartValidator):
             product_id=product_id, quantity=quantity
         )
 
-        current_user = self.request.state.current_user
-
-        cart = await self.cart_service.get_by_user_id(user_id=current_user.object.id)
+        cart = self.request.state.cart
 
         if product_id in {cart_product.id for cart_product in cart.products}:
             raise HTTPException(
@@ -127,9 +198,7 @@ class CartProductUpdateValidator(BaseCartValidator):
             product_id=product_id, quantity=quantity
         )
 
-        current_user = self.request.state.current_user
-
-        cart = await self.cart_service.get_by_user_id(user_id=current_user.object.id)
+        cart = self.request.state.cart
 
         if product_id not in {cart_product.id for cart_product in cart.products}:
             raise HTTPException(
@@ -171,9 +240,7 @@ class CartProductDeleteValidator(BaseCartValidator):
 
         await self.product_by_id_status_validator.validate(product_id=product_id)
 
-        current_user = self.request.state.current_user
-
-        cart = await self.cart_service.get_by_user_id(user_id=current_user.object.id)
+        cart = self.request.state.cart
 
         if product_id not in {cart_product.id for cart_product in cart.products}:
             raise HTTPException(

@@ -28,6 +28,7 @@ class HTTPErrorMessagesEnum(StrEnum):
     USER_ACCESS_DENIED = "Access denied to another user."
     ROLE_ACCESS_DENIED = "Access denied to use role."
     CLIENT_USER_ACCESS_DENIED = "Access denied to client user."
+    CART_ACCESS_DENIED = "Access denied to another user's cart."
 
     ENTITY_IS_NOT_FOUND = "{entity} is not found."
     ENTITY_FIELD_UNIQUENESS = "{entity} with such {field} is already exist."

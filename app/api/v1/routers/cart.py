@@ -8,6 +8,8 @@ from fastapi import APIRouter, Depends, Security, status
 from app.api.v1.auth.auth import StrictAuthorization
 from app.api.v1.constants import ScopesEnum
 from app.api.v1.dependencies.cart import (
+    CartByIdDependency,
+    CartByUserDependency,
     CartProductAddDependency,
     CartProductDeleteDependency,
     CartProductUpdateDependency,
@@ -21,41 +23,45 @@ from app.api.v1.models.user import CurrentUser
 from app.api.v1.services.cart import CartService
 from app.utils.pydantic import ObjectIdAnnotation
 
-router = APIRouter(prefix="/cart", tags=["cart"])
+router = APIRouter(prefix="/carts", tags=["carts"])
 
 
-@router.get("/", response_model=Cart, status_code=status.HTTP_200_OK)
+@router.get("/me/", response_model=Cart, status_code=status.HTTP_200_OK)
 async def get_cart(
-    current_user: CurrentUser = Security(
+    _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.CARTS_GET_CART.name]
     ),
-    cart_service: CartService = Depends(),
+    cart: Cart = Depends(CartByUserDependency()),
 ) -> Cart:
     """API which returns cart of current user.
 
     Args:
-        current_user (CurrentUser): Current user object.
-        cart_service (CartService): Cart service.
+        _ (CurrentUser): Current user object.
+        cart (Cart): Cart object.
 
     Returns:
         Cart: Cart object.
 
     """
-    return await cart_service.get_by_user_id(user_id=current_user.object.id)
+    return cart
 
 
-@router.post("/", response_model=Cart, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/{cart_id}/products/", response_model=Cart, status_code=status.HTTP_201_CREATED
+)
 async def add_product_to_the_cart(
-    current_user: CurrentUser = Security(
+    _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.CARTS_ADD_PRODUCT.name]
     ),
+    cart: Cart = Depends(CartByIdDependency()),
     cart_product: CartProduct = Depends(CartProductAddDependency()),
     cart_service: CartService = Depends(),
 ) -> Cart:
     """API which adds product to the cart.
 
     Args:
-        current_user (CurrentUser): Current user object.
+        _ (CurrentUser): Current user object.
+        cart (Cart): Cart object.
         cart_product (CartProduct): Cart product data.
         cart_service (CartService): Cart service.
 
@@ -63,17 +69,20 @@ async def add_product_to_the_cart(
         Cart: Cart object.
 
     """
-    return await cart_service.add_product(
-        user_id=current_user.object.id, data=cart_product
-    )
+    return await cart_service.add_product(id_=cart.id, data=cart_product)
 
 
-@router.patch("/{product_id}/", response_model=Cart, status_code=status.HTTP_200_OK)
+@router.patch(
+    "/{cart_id}/products/{product_id}/",
+    response_model=Cart,
+    status_code=status.HTTP_200_OK,
+)
 async def update_product_in_the_cart(
     product_id: Annotated[ObjectId, ObjectIdAnnotation],
-    current_user: CurrentUser = Security(
+    _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.CARTS_UPDATE_PRODUCT.name]
     ),
+    cart: Cart = Depends(CartByIdDependency()),
     cart_product_quantity: CartProductQuantity = Depends(CartProductUpdateDependency()),
     cart_service: CartService = Depends(),
 ) -> Cart:
@@ -82,7 +91,8 @@ async def update_product_in_the_cart(
     Args:
         product_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
         identifier of requested product.
-        current_user (CurrentUser): Current user object.
+        _ (CurrentUser): Current user object.
+        cart (Cart): Cart object.
         cart_product_quantity (CartProductQuantity): Cart product quantity data.
         cart_service (CartService): Cart service.
 
@@ -91,29 +101,35 @@ async def update_product_in_the_cart(
 
     """
     return await cart_service.update_product(
-        user_id=current_user.object.id,
+        id_=cart.id,
         product_id=product_id,
         data=cart_product_quantity,
     )
 
 
-@router.delete("/{product_id}/", response_model=Cart, status_code=status.HTTP_200_OK)
+@router.delete(
+    "/{cart_id}/products/{product_id}/",
+    response_model=Cart,
+    status_code=status.HTTP_200_OK,
+)
 async def delete_product_from_the_cart(
-    current_user: CurrentUser = Security(
+    _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.CARTS_DELETE_PRODUCT.name]
     ),
+    cart: Cart = Depends(CartByIdDependency()),
     product_id: ObjectId = Depends(CartProductDeleteDependency()),
     cart_service: CartService = Depends(),
 ) -> Cart:
     """API which deletes product from the cart.
 
     Args:
-        current_user (CurrentUser): Current user object.
+        _ (CurrentUser): Current user object.
+        cart (Cart): Cart object.
         product_id (ObjectId): BSON object identifier of requested product.
         cart_service (CartService): Cart service.
 
     """
     return await cart_service.delete_product(
-        user_id=current_user.object.id,
+        id_=cart.id,
         product_id=product_id,
     )
