@@ -2,11 +2,11 @@
 
 from unittest.mock import MagicMock, Mock, patch
 
+import jwt
 import pytest
 from fastapi import status
 from freezegun import freeze_time
 from httpx import AsyncClient
-from jose import ExpiredSignatureError
 from sendgrid import SendGridException  # type: ignore
 from tenacity import RetryError, wait_none
 
@@ -35,7 +35,7 @@ class TestUser(BaseAPITest):
     """Test class for user APIs endpoints in the FastAPI application."""
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -86,7 +86,7 @@ class TestUser(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.INVALID_CREDENTIALS}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(side_effect=ExpiredSignatureError()))
+    @patch("jwt.decode", Mock(side_effect=jwt.ExpiredSignatureError()))
     async def test_get_me_access_token_is_expired(
         self, test_client: AsyncClient
     ) -> None:
@@ -101,7 +101,7 @@ class TestUser(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.EXPIRED_TOKEN}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=FAKE_USER))
+    @patch("jwt.decode", Mock(return_value=FAKE_USER))
     async def test_get_me_user_does_not_exist(self, test_client: AsyncClient) -> None:
         """
         Test get me in case user from access token does not exist.
@@ -116,7 +116,7 @@ class TestUser(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -137,7 +137,7 @@ class TestUser(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    @patch("jose.jwt.decode", Mock(return_value=NOT_VERIFIED_EMAIL_USER))
+    @patch("jwt.decode", Mock(return_value=NOT_VERIFIED_EMAIL_USER))
     async def test_get_me_user_email_is_not_verified(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -222,7 +222,7 @@ class TestUser(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.ROLE_ACCESS_DENIED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -598,7 +598,7 @@ class TestUser(BaseAPITest):
         ]
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -661,7 +661,7 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -703,7 +703,7 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -730,7 +730,7 @@ class TestUser(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.ROLE_ACCESS_DENIED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -780,7 +780,7 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -829,7 +829,7 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -900,7 +900,7 @@ class TestUser(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -927,7 +927,7 @@ class TestUser(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -953,7 +953,7 @@ class TestUser(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.USER_ACCESS_DENIED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -979,7 +979,7 @@ class TestUser(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.USER_ACCESS_DENIED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1007,7 +1007,7 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1049,7 +1049,7 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1077,7 +1077,7 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1094,7 +1094,7 @@ class TestUser(BaseAPITest):
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1122,7 +1122,7 @@ class TestUser(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1140,7 +1140,7 @@ class TestUser(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1158,7 +1158,7 @@ class TestUser(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.USER_ACCESS_DENIED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1176,7 +1176,7 @@ class TestUser(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.USER_ACCESS_DENIED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1193,7 +1193,7 @@ class TestUser(BaseAPITest):
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1210,7 +1210,7 @@ class TestUser(BaseAPITest):
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1230,7 +1230,7 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1257,7 +1257,7 @@ class TestUser(BaseAPITest):
         ]
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1298,7 +1298,7 @@ class TestUser(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1316,7 +1316,7 @@ class TestUser(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1343,7 +1343,7 @@ class TestUser(BaseAPITest):
         ]
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1363,7 +1363,7 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1431,7 +1431,7 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1474,7 +1474,7 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1512,7 +1512,7 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1555,7 +1555,7 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1604,7 +1604,7 @@ class TestUser(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1622,7 +1622,7 @@ class TestUser(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1660,7 +1660,7 @@ class TestUser(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1678,7 +1678,7 @@ class TestUser(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1719,7 +1719,7 @@ class TestUser(BaseAPITest):
         ]
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1746,7 +1746,7 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1768,7 +1768,7 @@ class TestUser(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.USER_ACCESS_DENIED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )

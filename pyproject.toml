@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "shibumi-store"
 version = "0.1.0"
-description = ""
+description = "The 'Shibumi Store' backend project is a small e-commerce solution that provides a seamless and efficient shopping experience."
 authors = ["Valentyn Malenchak <valentyn17@gmail.com>"]
 readme = "README.md"
 packages = [{include = "shibumi_store"}]
@@ -13,13 +13,11 @@ uvicorn = {extras = ["standard"], version = "0.30.1"}
 pytest = "8.2.2"
 invoke = "2.2.0"
 motor = "3.4.0"
-python-jose = {extras = ["cryptography"], version = "3.3.0"}
 arrow = "1.3.0"
 httpx = "0.27.0"
 python-multipart = "0.0.9"
 passlib = "1.7.4"
 types-passlib = "1.7.7.20240327"
-types-python-jose = "3.3.4.20240106"
 injector = "0.21.0"
 pytest-asyncio = "0.23.7"
 motor-types = "1.0.0b4"
@@ -32,6 +30,7 @@ freezegun = "1.5.1"
 redis = "5.0.5"
 sendgrid = "6.11.0"
 tenacity = "8.3.0"
+pyjwt = "2.8.0"
 
 
 [tool.poetry.group.dev.dependencies]

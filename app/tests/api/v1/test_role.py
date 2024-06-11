@@ -72,7 +72,7 @@ class TestRole(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )

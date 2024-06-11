@@ -25,7 +25,7 @@ class TestCart(BaseAPITest):
     """Test class for cart APIs endpoints in the FastAPI application."""
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [
@@ -70,7 +70,7 @@ class TestCart(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -88,7 +88,7 @@ class TestCart(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -108,7 +108,7 @@ class TestCart(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [
@@ -173,7 +173,7 @@ class TestCart(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -195,7 +195,7 @@ class TestCart(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -218,7 +218,7 @@ class TestCart(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.CARTS)],
@@ -241,7 +241,7 @@ class TestCart(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.CART_ACCESS_DENIED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.CARTS)],
@@ -270,7 +270,7 @@ class TestCart(BaseAPITest):
         ]
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.CARTS)],
@@ -296,7 +296,7 @@ class TestCart(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [
@@ -328,7 +328,7 @@ class TestCart(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [
@@ -360,7 +360,7 @@ class TestCart(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [
@@ -392,7 +392,7 @@ class TestCart(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [
@@ -451,7 +451,7 @@ class TestCart(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -474,7 +474,7 @@ class TestCart(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -497,7 +497,7 @@ class TestCart(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.CARTS)],
@@ -520,7 +520,7 @@ class TestCart(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.CART_ACCESS_DENIED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.CARTS)],
@@ -548,7 +548,7 @@ class TestCart(BaseAPITest):
         ]
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.CARTS)],
@@ -573,7 +573,7 @@ class TestCart(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [
@@ -604,7 +604,7 @@ class TestCart(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [
@@ -635,7 +635,7 @@ class TestCart(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [
@@ -666,7 +666,7 @@ class TestCart(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [
@@ -715,7 +715,7 @@ class TestCart(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -735,7 +735,7 @@ class TestCart(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -755,7 +755,7 @@ class TestCart(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.CARTS)],
@@ -775,7 +775,7 @@ class TestCart(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.CART_ACCESS_DENIED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.CARTS)],
@@ -797,7 +797,7 @@ class TestCart(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [
@@ -825,7 +825,7 @@ class TestCart(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [

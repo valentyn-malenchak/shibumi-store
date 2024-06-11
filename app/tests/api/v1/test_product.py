@@ -27,7 +27,7 @@ class TestProduct(BaseAPITest):
     """Test class for product APIs endpoints in the FastAPI application."""
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -231,7 +231,7 @@ class TestProduct(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.INVALID_CREDENTIALS}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -261,7 +261,7 @@ class TestProduct(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -302,7 +302,7 @@ class TestProduct(BaseAPITest):
         ]
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -337,7 +337,7 @@ class TestProduct(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -370,7 +370,7 @@ class TestProduct(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -471,7 +471,7 @@ class TestProduct(BaseAPITest):
         ]
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -658,7 +658,7 @@ class TestProduct(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
@@ -728,7 +728,7 @@ class TestProduct(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
@@ -750,7 +750,7 @@ class TestProduct(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
@@ -791,7 +791,7 @@ class TestProduct(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -903,7 +903,7 @@ class TestProduct(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
@@ -950,7 +950,7 @@ class TestProduct(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
@@ -1254,7 +1254,7 @@ class TestProduct(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1364,7 +1364,7 @@ class TestProduct(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1388,7 +1388,7 @@ class TestProduct(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
@@ -1459,7 +1459,7 @@ class TestProduct(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [
@@ -1706,7 +1706,7 @@ class TestProduct(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.INVALID_CREDENTIALS}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1741,7 +1741,7 @@ class TestProduct(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -1774,7 +1774,7 @@ class TestProduct(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
@@ -1817,7 +1817,7 @@ class TestProduct(BaseAPITest):
         ]
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
@@ -1854,7 +1854,7 @@ class TestProduct(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
@@ -1889,7 +1889,7 @@ class TestProduct(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],

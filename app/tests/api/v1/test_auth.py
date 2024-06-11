@@ -2,10 +2,10 @@
 
 from unittest.mock import Mock, patch
 
+import jwt
 import pytest
 from fastapi import status
 from httpx import AsyncClient
-from jose import ExpiredSignatureError
 
 from app.api.v1.auth.jwt import JWT
 from app.api.v1.constants import ScopesEnum
@@ -244,7 +244,7 @@ class TestAuth(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    @patch("jose.jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     async def test_refresh_access_token(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -273,7 +273,7 @@ class TestAuth(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.INVALID_CREDENTIALS}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(side_effect=ExpiredSignatureError()))
+    @patch("jwt.decode", Mock(side_effect=jwt.ExpiredSignatureError()))
     async def test_refresh_access_token_is_expired(
         self, test_client: AsyncClient
     ) -> None:
@@ -288,7 +288,7 @@ class TestAuth(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.EXPIRED_TOKEN}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=FAKE_USER))
+    @patch("jwt.decode", Mock(return_value=FAKE_USER))
     async def test_refresh_access_token_user_does_not_exist(
         self, test_client: AsyncClient
     ) -> None:
@@ -308,7 +308,7 @@ class TestAuth(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    @patch("jose.jwt.decode", Mock(return_value=DELETED_USER))
+    @patch("jwt.decode", Mock(return_value=DELETED_USER))
     async def test_refresh_access_token_deleted_user(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -326,7 +326,7 @@ class TestAuth(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    @patch("jose.jwt.decode", Mock(return_value=NOT_VERIFIED_EMAIL_USER))
+    @patch("jwt.decode", Mock(return_value=NOT_VERIFIED_EMAIL_USER))
     async def test_refresh_access_token_user_email_is_not_verified(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -343,7 +343,7 @@ class TestAuth(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
