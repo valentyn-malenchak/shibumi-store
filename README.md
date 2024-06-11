@@ -21,7 +21,7 @@ Shibumi (渋み) (noun) or Shibui (渋い) (adjective) are Japanese words which 
 
 - **FastAPI**: Utilizing the FastAPI web framework for high-speed asynchronous API development.
 - **MongoDB with Motor**: Efficient and asynchronous data storage.
-- **Authentication and Security**: Secure user authentication with Python-Jose and password hashing using Passlib.
+- **Authentication and Security**: Secure user authentication with pyjwt and password hashing using Argon2.
 - **Data Validation and Serialization**: Robust data validation and serialization using Pydantic.
 - **Dependency Injection**: Improved code organization and maintainability with the Injector library.
 - **Date and Time Handling**: Efficient date and time handling using the Arrow library.

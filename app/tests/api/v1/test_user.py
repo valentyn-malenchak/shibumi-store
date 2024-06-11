@@ -171,7 +171,7 @@ class TestUser(BaseAPITest):
                 "patronymic_name": None,
                 "username": "joe.smith",
                 "email": "joe.smith@gmail.com",
-                "password": "Joe12345!",
+                "password": "?%J4Tvhb",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
                 "roles": [RolesEnum.CUSTOMER],
@@ -211,7 +211,7 @@ class TestUser(BaseAPITest):
                 "patronymic_name": None,
                 "username": "joe.smith",
                 "email": "joe.smith@gmail.com",
-                "password": "Joe12345!",
+                "password": "?%J4Tvhb",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
                 "roles": [RolesEnum.SUPPORT],
@@ -245,7 +245,7 @@ class TestUser(BaseAPITest):
                 "patronymic_name": None,
                 "username": "joe.smith",
                 "email": "joe.smith@gmail.com",
-                "password": "Joe12345!",
+                "password": "?%J4Tvhb",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
                 "roles": [
@@ -292,7 +292,7 @@ class TestUser(BaseAPITest):
                 "last_name": "Smith",
                 "patronymic_name": None,
                 "email": "john.smith@gmail",
-                "password": "Joe12345!",
+                "password": "?%J4Tvhb",
                 "phone_number": "+3809811",
                 "birthdate": "1997-12-34",
                 "roles": ["CEO"],
@@ -511,7 +511,7 @@ class TestUser(BaseAPITest):
                 "patronymic_name": None,
                 "username": "joe",
                 "email": "joe.smith@gmail.com",
-                "password": "Joe12345!~",
+                "password": "?%J4Tvhb",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
                 "roles": [RolesEnum.CUSTOMER],
@@ -543,7 +543,7 @@ class TestUser(BaseAPITest):
                 "patronymic_name": None,
                 "username": "joe.smith.joe.smith.joe.smith.joe.smith.joe.smith",
                 "email": "joe.smith@gmail.com",
-                "password": "Joe12345!~",
+                "password": "?%J4Tvhb",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
                 "roles": [RolesEnum.CUSTOMER],
@@ -577,7 +577,7 @@ class TestUser(BaseAPITest):
                 "patronymic_name": None,
                 "username": "joe@smith",
                 "email": "joe.smith@gmail.com",
-                "password": "Joe12345!~",
+                "password": "?%J4Tvhb",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
                 "roles": [RolesEnum.CUSTOMER],
@@ -619,7 +619,7 @@ class TestUser(BaseAPITest):
                 "patronymic_name": None,
                 "username": "john.smith",
                 "email": "john.smith@gmail.com",
-                "password": "joe12345",
+                "password": "?%J4Tvhb",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
                 "roles": [RolesEnum.CUSTOMER],
@@ -646,7 +646,7 @@ class TestUser(BaseAPITest):
                 "patronymic_name": None,
                 "username": "john.smith",
                 "email": "john.smith@gmail.com",
-                "password": "Joe12345!",
+                "password": "?%J4Tvhb",
                 "phone_number": "+380980000000",
                 "birthdate": "1997-12-07",
                 "roles": [RolesEnum.CUSTOMER],
@@ -1634,7 +1634,7 @@ class TestUser(BaseAPITest):
         response = await test_client.patch(
             f"{AppConstants.API_V1_PREFIX}/users/65844f12b6de26578d98c2c8/password/",
             json={
-                "old_password": "John1234!",
+                "old_password": "?%J4Tvhb",
                 "new_password": "NewP@ssw0rd",
             },
             headers={"Authorization": f"Bearer {TEST_JWT}"},
@@ -1651,7 +1651,7 @@ class TestUser(BaseAPITest):
         response = await test_client.patch(
             f"{AppConstants.API_V1_PREFIX}/users/65844f12b6de26578d98c2c8/password/",
             json={
-                "old_password": "John1234!",
+                "old_password": "?%J4Tvhb",
                 "new_password": "NewP@ssw0rd",
             },
         )
@@ -1734,7 +1734,7 @@ class TestUser(BaseAPITest):
         response = await test_client.patch(
             f"{AppConstants.API_V1_PREFIX}/users/6598495fdf97a8e0d7e612aa/password/",
             json={
-                "old_password": "John1234!",
+                "old_password": "?%J4Tvhb",
                 "new_password": "J0hn1234!@~",
             },
             headers={"Authorization": f"Bearer {TEST_JWT}"},
@@ -1758,7 +1758,7 @@ class TestUser(BaseAPITest):
         response = await test_client.patch(
             f"{AppConstants.API_V1_PREFIX}/users/659bf67868d14b47475ec11c/password/",
             json={
-                "old_password": "John1234",
+                "old_password": "?%J4Tvhb",
                 "new_password": "J0hn1234!@~",
             },
             headers={"Authorization": f"Bearer {TEST_JWT}"},
