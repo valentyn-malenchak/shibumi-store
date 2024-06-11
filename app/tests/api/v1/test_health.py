@@ -16,7 +16,7 @@ class TestHealth(BaseAPITest):
     """Test class for health API endpoints in the FastAPI application."""
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
@@ -30,7 +30,7 @@ class TestHealth(BaseAPITest):
         assert response.json() == {"status": "healthy"}
 
     @pytest.mark.asyncio
-    @patch("jose.jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )

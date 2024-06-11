@@ -1,8 +1,7 @@
 """Module that provides utility functions for manipulating JWT (JSON Web Token)."""
 
 import arrow
-from jose import ExpiredSignatureError, JWTError, jwt
-from pydantic import ValidationError
+import jwt
 
 from app.api.v1.models.auth import JWTPayload, JWTUser
 from app.exceptions import ExpiredTokenError, InvalidTokenError
@@ -135,8 +134,8 @@ class JWT:
 
             return JWTPayload(**payload)
 
-        except ExpiredSignatureError:
+        except jwt.ExpiredSignatureError:
             raise ExpiredTokenError
 
-        except (JWTError, ValidationError):
+        except jwt.InvalidTokenError:
             raise InvalidTokenError

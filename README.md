@@ -142,15 +142,23 @@ git clone https://github.com/valentyn-malenchak/shibumi-store.git
 
 ### 3. Build the application container:
 ```bash
+docker build -t shibumi-store:latest .
+```
+or
+```bash
 invoke build
 ```
 
 ### 4. Run the application:
 ```bash
+docker-compose up -d
+```
+or
+```bash
 invoke compose
 ```
 
-## Other useful [cli](tasks.py) commands
+## Check out useful [cli commands](tasks.py)
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

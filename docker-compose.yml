@@ -23,8 +23,8 @@ services:
       - AUTH_SECRET_KEY=  # Add your secret key here
       - AUTH_REFRESH_SECRET_KEY=  # Add your refresh secret key here
       - AUTH_ALGORITHM=HS256
-      - AUTH_ACCESS_TOKEN_EXPIRE_MINUTES = 15
-      - AUTH_REFRESH_TOKEN_EXPIRE_MINUTES = 24 * 60
+      - AUTH_ACCESS_TOKEN_EXPIRE_MINUTES=15
+      - AUTH_REFRESH_TOKEN_EXPIRE_MINUTES=1440
       - MONGODB_HOST=mongo
       - MONGODB_PORT=27017
       - MONGODB_USER=root
