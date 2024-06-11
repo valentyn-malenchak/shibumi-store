@@ -13,7 +13,7 @@
     "birthdate": {
       "$date": "1998-01-01T00:00:00.000Z"
     },
-    "hashed_password": "$2b$12$BuHaZV2.qZRYojxU.d1oJ.v65KKCgTH6b1MA4ztKxS.J6MnGJ6htC",
+    "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$3+LEAkCy9r7hh8jjVnJPXA$i4y8A8syGxNDnN4FW6soeSiey0kwB7gsmfdclKmQ1RM",
     "roles": [
       "customer"
     ],
@@ -39,7 +39,7 @@
         "$numberLong": "-970704000000"
       }
     },
-    "hashed_password": "$2b$12$Hi3/4nfK3ylx9cnOzuI.hO.WrdB5tEWNk/Rrp9dWWipN7q8RrHA32",
+    "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$3+LEAkCy9r7hh8jjVnJPXA$i4y8A8syGxNDnN4FW6soeSiey0kwB7gsmfdclKmQ1RM",
     "roles": [
       "customer"
     ],
@@ -63,7 +63,7 @@
     "birthdate": {
       "$date": "1994-11-14T00:00:00.000Z"
     },
-    "hashed_password": "$2b$12$WPb2AXKsUrdZvn.btRFSUugNIKOJ3OVacIyBG/nbHI/KoQwCgcLze",
+    "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$3+LEAkCy9r7hh8jjVnJPXA$i4y8A8syGxNDnN4FW6soeSiey0kwB7gsmfdclKmQ1RM",
     "roles": [
       "content_manager"
     ],
@@ -87,7 +87,7 @@
     "birthdate": {
       "$date": "1994-08-04T00:00:00.000Z"
     },
-    "hashed_password": "$2b$12$rFZEujzqs43rVaM9xthJEu5FpPG4aGmRxT0nmmPuLkw1fG2pWdB8S",
+    "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$3+LEAkCy9r7hh8jjVnJPXA$i4y8A8syGxNDnN4FW6soeSiey0kwB7gsmfdclKmQ1RM",
     "roles": [
       "support",
       "content_manager"
@@ -112,7 +112,7 @@
     "birthdate": {
       "$date": "1994-10-01T00:00:00.000Z"
     },
-    "hashed_password": "$2b$12$4UQ3d.YjtR09ZE8mQMsEKu1YMpsfM/QWGLw2QvU0Shz3Uqpw5BjxG",
+    "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$3+LEAkCy9r7hh8jjVnJPXA$i4y8A8syGxNDnN4FW6soeSiey0kwB7gsmfdclKmQ1RM",
     "roles": [
       "warehouse_stuff"
     ],
@@ -136,7 +136,7 @@
     "birthdate": {
       "$date": "1999-05-19T00:00:00.000Z"
     },
-    "hashed_password": "$2b$12$TcMm28bYcVgWi08AyylJe.D6QUWVqD9plbGdJ097PwV0LX1BXuPES",
+    "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$3+LEAkCy9r7hh8jjVnJPXA$i4y8A8syGxNDnN4FW6soeSiey0kwB7gsmfdclKmQ1RM",
     "roles": [
       "customer"
     ],
@@ -160,7 +160,7 @@
     "birthdate": {
       "$date": "1997-01-01T00:00:00.000Z"
     },
-    "hashed_password": "$2b$12$OkH.nDmcaCW9S28wqcZ41emHDmWHkB1Z5tjSGo/DZ5sUyYGVd.e5W",
+    "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$3+LEAkCy9r7hh8jjVnJPXA$i4y8A8syGxNDnN4FW6soeSiey0kwB7gsmfdclKmQ1RM",
     "roles": [
       "admin"
     ],

@@ -38,7 +38,7 @@ class TestAuth(BaseAPITest):
             f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
             data={
                 "username": "john.smith",
-                "password": "John1234!",
+                "password": "?%J4Tvhb",
                 "grant_type": "password",
             },
             headers={"Content-Type": "application/x-www-form-urlencoded"},
@@ -82,7 +82,7 @@ class TestAuth(BaseAPITest):
             f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
             data={
                 "username": "john.smith",
-                "password": "John1234!",
+                "password": "?%J4Tvhb",
                 "scope": " ".join(
                     [
                         ScopesEnum.USERS_GET_ME.name,
@@ -105,6 +105,36 @@ class TestAuth(BaseAPITest):
             ScopesEnum.USERS_GET_ME.name,
             ScopesEnum.AUTH_REFRESH_TOKEN.name,
         ]
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
+    @patch("argon2.PasswordHasher.check_needs_rehash", Mock(return_value=True))
+    @patch("app.api.v1.repositories.user.UserRepository.update_by_id")
+    @patch("argon2.PasswordHasher.hash")
+    async def test_create_tokens_password_rehash(
+        self,
+        hash_mock: Mock,
+        update_user_mock: Mock,
+        test_client: AsyncClient,
+        arrange_db: None,
+    ) -> None:
+        """Test auth token creation in case password should be rehashed."""
+
+        response = await test_client.post(
+            f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
+            data={
+                "username": "john.smith",
+                "password": "?%J4Tvhb",
+                "grant_type": "password",
+            },
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert hash_mock.call_count == 1
+        assert update_user_mock.call_count == 1
 
     @pytest.mark.asyncio
     async def test_create_tokens_missing_fields(self, test_client: AsyncClient) -> None:
@@ -180,7 +210,7 @@ class TestAuth(BaseAPITest):
             f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
             data={
                 "username": "sheila.fahey",
-                "password": "Sheila1234!",
+                "password": "?%J4Tvhb",
                 "grant_type": "password",
             },
             headers={"Content-Type": "application/x-www-form-urlencoded"},
@@ -204,7 +234,7 @@ class TestAuth(BaseAPITest):
             f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
             data={
                 "username": "lila.legro",
-                "password": "Lila1234!",
+                "password": "?%J4Tvhb",
                 "grant_type": "password",
             },
             headers={"Content-Type": "application/x-www-form-urlencoded"},
@@ -225,7 +255,7 @@ class TestAuth(BaseAPITest):
             f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
             data={
                 "username": "john.smith",
-                "password": "John1234!",
+                "password": "?%J4Tvhb",
                 "scope": " ".join(
                     [
                         ScopesEnum.USERS_GET_ME.name,

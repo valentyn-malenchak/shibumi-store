@@ -1,15 +1,16 @@
 """
 Module that provides utility functions for password hashing and verification
-using the passlib library.
+using the argon2 library.
 """
 
-from passlib.context import CryptContext
+from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
 
 
 class Password:
     """Utility class for password hashing and verification."""
 
-    _crypt_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    _hasher = PasswordHasher()
 
     @staticmethod
     def get_password_hash(password: str) -> str:
@@ -22,7 +23,7 @@ class Password:
             str: Hashed password.
 
         """
-        return Password._crypt_ctx.hash(password)
+        return Password._hasher.hash(password)
 
     @staticmethod
     def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -36,4 +37,20 @@ class Password:
             bool: True if passwords match else False.
 
         """
-        return Password._crypt_ctx.verify(plain_password, hashed_password)
+        try:
+            return Password._hasher.verify(hashed_password, plain_password)
+        except VerifyMismatchError:
+            return False
+
+    @staticmethod
+    def check_needs_rehash(hashed_password: str) -> bool:
+        """Checks if parameters of hashed password are outdated.
+
+        Args:
+            hashed_password (str): Hashed password.
+
+        Returns:
+            bool: True if hash parameters are outdated else False.
+
+        """
+        return Password._hasher.check_needs_rehash(hashed_password)
