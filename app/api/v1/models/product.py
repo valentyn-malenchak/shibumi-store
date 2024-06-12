@@ -37,6 +37,7 @@ class Product(BSONObjectId):
     available: bool  # defines if product should be shown for customers
     html_body: str | None
     parameters: dict[str, Any]
+    thread_id: Annotated[ObjectId, ObjectIdAnnotation]
     created_at: datetime
     updated_at: datetime | None
 

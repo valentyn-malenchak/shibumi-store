@@ -68,14 +68,14 @@ class CategoryService(BaseService):
         )
 
     async def count(self, filter_: CategoryFilter, *_: Any) -> int:
-        """Counts items based on parameters.
+        """Counts categories based on parameters.
 
         Args:
             filter_ (CategoryFilter): Parameters for list filtering.
             _ (Any): Parameters for list searching.
 
         Returns:
-            int: Count of items.
+            int: Count of categories.
 
         """
         return await self.repository.count(

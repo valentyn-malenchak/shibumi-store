@@ -50,6 +50,9 @@
       "color": "black",
       "custom_field": "some_value"
     },
+    "thread_id": {
+      "$oid": "6669b5634cef83e11dbc7abf"
+    },
     "created_at": {
       "$date": "2024-01-05T12:08:35.440Z"
     },
@@ -106,6 +109,9 @@
       "has_touch_screen": false,
       "color": "black",
       "custom_field": "another_value"
+    },
+    "thread_id": {
+      "$oid": "6669b5b94cef83e11dbc7ac0"
     },
     "created_at": {
       "$date": "2024-02-10T14:20:00.000Z"
@@ -164,6 +170,9 @@
       "color": "black",
       "custom_field": "extra_value"
     },
+    "thread_id": {
+      "$oid": "6669b5d04cef83e11dbc7ac1"
+    },
     "created_at": {
       "$date": "2024-03-02T09:45:00.000Z"
     },
@@ -221,6 +230,9 @@
       "color": "black",
       "custom_field": "additional_value"
     },
+    "thread_id": {
+      "$oid": "6669b5de4cef83e11dbc7ac2"
+    },
     "created_at": {
       "$date": "2024-03-15T14:30:00.000Z"
     },
@@ -276,6 +288,9 @@
       "has_touch_screen": true,
       "color": "silver",
       "custom_field": "different_value"
+    },
+    "thread_id": {
+      "$oid": "6669b5ef4cef83e11dbc7ac3"
     },
     "created_at": {
       "$date": "2024-04-05T10:15:00.000Z"
@@ -334,6 +349,9 @@
       "color": "black",
       "custom_field": "unique_value"
     },
+    "thread_id": {
+      "$oid": "6669b6024cef83e11dbc7ac4"
+    },
     "created_at": {
       "$date": "2024-04-18T15:20:00.000Z"
     },
@@ -389,6 +407,9 @@
       "has_touch_screen": false,
       "color": "silver",
       "custom_field": "specific_value"
+    },
+    "thread_id": {
+      "$oid": "6669b6114cef83e11dbc7ac5"
     },
     "created_at": {
       "$date": "2024-05-01T11:10:00.000Z"
@@ -446,6 +467,9 @@
       "color": "silver",
       "custom_field": "distinct_value"
     },
+    "thread_id": {
+      "$oid": "6669b61d4cef83e11dbc7ac6"
+    },
     "created_at": {
       "$date": "2024-05-14T09:00:00.000Z"
     },
@@ -501,6 +525,9 @@
       "has_touch_screen": true,
       "color": "platinum",
       "custom_field": "specific_value"
+    },
+    "thread_id": {
+      "$oid": "6669b6284cef83e11dbc7ac7"
     },
     "created_at": {
       "$date": "2024-06-05T12:30:00.000Z"
@@ -559,6 +586,9 @@
       "color": "mystic bronze",
       "custom_field": "unique_value"
     },
+    "thread_id": {
+      "$oid": "6669b6364cef83e11dbc7ac8"
+    },
     "created_at": {
       "$date": "2024-07-10T08:45:00.000Z"
     },
@@ -615,6 +645,9 @@
       "has_touch_screen": false,
       "color": "lunar light",
       "custom_field": "special_value"
+    },
+    "thread_id": {
+      "$oid": "6669b6474cef83e11dbc7ac9"
     },
     "created_at": {
       "$date": "2024-08-15T13:00:00.000Z"
@@ -673,6 +706,9 @@
       "color": "emerald green",
       "custom_field": "unique_value"
     },
+    "thread_id": {
+      "$oid": "6669b6584cef83e11dbc7aca"
+    },
     "created_at": {
       "$date": "2024-09-02T10:20:00.000Z"
     },
@@ -698,6 +734,9 @@
       "year": 2023,
       "warranty": "2 years",
       "country_of_production": "China"
+    },
+    "thread_id": {
+      "$oid": "6669b6664cef83e11dbc7acb"
     },
     "created_at": {
       "$date": "2024-02-18T16:26:56.913Z"
@@ -725,6 +764,9 @@
       "warranty": "18 months",
       "country_of_production": "China"
     },
+    "thread_id": {
+      "$oid": "6669b6734cef83e11dbc7acc"
+    },
     "created_at": {
       "$date": "2024-02-19T09:15:00.000Z"
     },
@@ -751,6 +793,9 @@
       "warranty": "1 year",
       "country_of_production": "China"
     },
+    "thread_id": {
+      "$oid": "6669b6854cef83e11dbc7acd"
+    },
     "created_at": {
       "$date": "2024-02-20T11:30:00.000Z"
     },
@@ -776,6 +821,9 @@
       "year": 2023,
       "warranty": "1 year",
       "country_of_production": "South Korea"
+    },
+    "thread_id": {
+      "$oid": "6669b6914cef83e11dbc7ace"
     },
     "created_at": {
       "$date": "2024-02-21T14:20:00.000Z"
@@ -824,6 +872,9 @@
       "warranty": "2 years",
       "country_of_production": "China"
     },
+    "thread_id": {
+      "$oid": "6669b69e4cef83e11dbc7acf"
+    },
     "created_at": {
       "$date": "2024-02-22T16:40:00.000Z"
     },
@@ -869,6 +920,9 @@
       "year": 2024,
       "warranty": "1 year",
       "country_of_production": "China"
+    },
+    "thread_id": {
+      "$oid": "6669b6ad4cef83e11dbc7ad0"
     },
     "created_at": {
       "$date": "2024-02-25T11:55:00.000Z"
@@ -917,6 +971,9 @@
       "warranty": "1 year",
       "country_of_production": "China"
     },
+    "thread_id": {
+      "$oid": "6669b6bb4cef83e11dbc7ad1"
+    },
     "created_at": {
       "$date": "2024-03-01T14:20:00.000Z"
     },
@@ -962,6 +1019,9 @@
       "year": 2024,
       "warranty": "3 years",
       "country_of_production": "China"
+    },
+    "thread_id": {
+      "$oid": "6669b6c94cef83e11dbc7ad2"
     },
     "created_at": {
       "$date": "2024-03-05T09:45:00.000Z"

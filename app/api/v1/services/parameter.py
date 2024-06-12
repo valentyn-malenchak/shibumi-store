@@ -72,13 +72,13 @@ class ParameterService(BaseService):
         return parameters
 
     async def count(self, *_: Any) -> int:
-        """Counts items based on parameters.
+        """Counts parameters based on parameters.
 
         Args:
              _ (Any): Parameters for list filtering and searching.
 
         Returns:
-            int: Count of items.
+            int: Count of parameters.
 
         Raises:
             NotImplementedError: This method is not implemented.
