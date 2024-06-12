@@ -67,6 +67,7 @@ class TestAuth(BaseAPITest):
             ScopesEnum.CARTS_ADD_PRODUCT.name,
             ScopesEnum.CARTS_UPDATE_PRODUCT.name,
             ScopesEnum.CARTS_DELETE_PRODUCT.name,
+            ScopesEnum.THREADS_GET_THREAD.name,
         }
 
     @pytest.mark.asyncio

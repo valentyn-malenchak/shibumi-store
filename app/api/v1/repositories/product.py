@@ -28,7 +28,7 @@ class ProductRepository(BaseRepository):
         parameters: dict[str, list[Any]] | None = None,
         **_: Any,
     ) -> Mapping[str, Any]:
-        """Returns a query filter for list.
+        """Returns a query filter for list of products.
 
         Args:
             search (str | None): Parameters for list searching.
@@ -69,7 +69,7 @@ class ProductRepository(BaseRepository):
 
     @staticmethod
     def _get_list_query_projection() -> Mapping[str, Any] | None:
-        """Returns a query projection for list.
+        """Returns a query projection for list of products.
 
         Returns:
             Mapping[str, Any] | None: List query projection or None.
@@ -84,7 +84,7 @@ class ProductRepository(BaseRepository):
 
     @staticmethod
     def _get_list_default_sorting() -> list[tuple[str, int | Mapping[str, Any]]] | None:
-        """Returns list default sorting.
+        """Returns default sorting for list of products.
 
         Returns:
             list[tuple[str, int | Mapping[str, Any]]] | None: Default sorting.

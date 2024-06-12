@@ -47,6 +47,8 @@ class ScopesEnum(Enum):
     CARTS_UPDATE_PRODUCT = "Allows to update product in the cart."
     CARTS_DELETE_PRODUCT = "Allows to delete product from the cart."
 
+    THREADS_GET_THREAD = "Allows to get thread."
+
 
 class RedisNamesEnum(StrEnum):
     """Redis names format enumerate."""

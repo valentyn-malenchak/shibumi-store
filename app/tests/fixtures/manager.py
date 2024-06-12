@@ -11,6 +11,7 @@ from app.api.v1.repositories.category_parameters import (
     CategoryParametersRepository,
 )
 from app.api.v1.repositories.product import ProductRepository
+from app.api.v1.repositories.thread import ThreadRepository
 from app.api.v1.repositories.user import UserRepository
 from app.loaders import JSONFileLoader
 from app.services.mongo.constants import MongoCollectionsEnum
@@ -30,6 +31,7 @@ class FileFixtureManager:
             CategoryParametersRepository
         ),
         MongoCollectionsEnum.CARTS: _injector.get(CartRepository),
+        MongoCollectionsEnum.THREADS: _injector.get(ThreadRepository),
     }
 
     def __init__(

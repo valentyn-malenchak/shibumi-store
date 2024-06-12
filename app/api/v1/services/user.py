@@ -100,14 +100,14 @@ class UserService(BaseService):
         )
 
     async def count(self, filter_: UserFilter, search: Search) -> int:
-        """Counts items based on parameters.
+        """Counts users based on parameters.
 
         Args:
             filter_ (UserFilter): Parameters for list filtering.
             search (Search): Parameters for list searching.
 
         Returns:
-            int: Count of items.
+            int: Count of users.
 
         """
 

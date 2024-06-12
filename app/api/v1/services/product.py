@@ -15,6 +15,7 @@ from app.api.v1.models.product import (
 from app.api.v1.repositories.product import ProductRepository
 from app.api.v1.services import BaseService
 from app.api.v1.services.category import CategoryService
+from app.api.v1.services.thread import ThreadService
 from app.exceptions import EntityIsNotFoundError
 from app.services.mongo.transaction_manager import TransactionManager
 from app.services.redis.service import RedisService
@@ -30,6 +31,7 @@ class ProductService(BaseService):
         transaction_manager: TransactionManager = Depends(),
         repository: ProductRepository = Depends(),
         category_service: CategoryService = Depends(),
+        thread_service: ThreadService = Depends(),
     ) -> None:
         """Initializes the product service.
 
@@ -39,6 +41,7 @@ class ProductService(BaseService):
             transaction_manager (TransactionManager): Transaction manager.
             repository (ProductRepository): An instance of the Product repository.
             category_service (CategoryService): Category service.
+            thread_service (ThreadService): Thread service.
 
         """
 
@@ -51,6 +54,8 @@ class ProductService(BaseService):
         self.repository = repository
 
         self.category_service = category_service
+
+        self.thread_service = thread_service
 
     async def get(
         self,
@@ -85,14 +90,14 @@ class ProductService(BaseService):
         )
 
     async def count(self, filter_: ProductFilter, search: Search) -> int:
-        """Counts items based on parameters.
+        """Counts products based on parameters.
 
         Args:
             filter_ (ProductFilter): Parameters for list filtering.
             search (Search): Parameters for list searching.
 
         Returns:
-            int: Count of items.
+            int: Count of products.
 
         """
 
@@ -136,6 +141,9 @@ class ProductService(BaseService):
 
         """
 
+        # Initialize product thread
+        thread = await self.thread_service.create(...)
+
         id_ = await self.repository.create(
             name=data.name,
             synopsis=data.synopsis,
@@ -146,6 +154,7 @@ class ProductService(BaseService):
             available=data.available,
             html_body=data.html_body,
             parameters=data.parameters,
+            thread_id=thread.id,
         )
 
         self.background_tasks.add_task(

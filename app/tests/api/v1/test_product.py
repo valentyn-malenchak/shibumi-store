@@ -91,7 +91,9 @@ class TestProduct(BaseAPITest):
 
         assert response.status_code == status.HTTP_201_CREATED
 
-        assert self._exclude_fields(response.json(), exclude_keys=["id"]) == {
+        assert self._exclude_fields(
+            response.json(), exclude_keys=["id", "thread_id"]
+        ) == {
             "name": "ASUS TUF Gaming F15",
             "synopsis": "Display 15.6 IPS (1920x1080) Full HD 144 Hz / "
             "Intel Core i5-12500H (2.5 - 4.5 GHz) / RAM 16 GB / "
@@ -138,6 +140,21 @@ class TestProduct(BaseAPITest):
                 "color": "black",
                 "custom_field": "some_value",
             },
+            "created_at": FROZEN_DATETIME,
+            "updated_at": None,
+        }
+
+        thread_id = response.json()["thread_id"]
+
+        # Check if product thread is initialized
+        response = await test_client.get(
+            f"{AppConstants.API_V1_PREFIX}/threads/{thread_id}/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "id": thread_id,
             "created_at": FROZEN_DATETIME,
             "updated_at": None,
         }
@@ -626,6 +643,7 @@ class TestProduct(BaseAPITest):
                 "color": "black",
                 "custom_field": "some_value",
             },
+            "thread_id": "6669b5634cef83e11dbc7abf",
             "created_at": "2024-01-05T12:08:35.440000",
             "updated_at": None,
         }
@@ -723,6 +741,7 @@ class TestProduct(BaseAPITest):
                 "color": "black",
                 "custom_field": "some_value",
             },
+            "thread_id": "6669b5634cef83e11dbc7abf",
             "created_at": "2024-01-05T12:08:35.440000",
             "updated_at": None,
         }
@@ -786,6 +805,7 @@ class TestProduct(BaseAPITest):
                 "warranty": "2 years",
                 "country_of_production": "China",
             },
+            "thread_id": "6669b6664cef83e11dbc7acb",
             "created_at": "2024-02-18T16:26:56.913000",
             "updated_at": None,
         }
@@ -1440,6 +1460,7 @@ class TestProduct(BaseAPITest):
                 "warranty": "3 year",
                 "country_of_production": "China",
             },
+            "thread_id": "6669b6854cef83e11dbc7acd",
             "created_at": "2024-02-20T11:30:00",
             "updated_at": FROZEN_DATETIME,
         }
@@ -1517,6 +1538,7 @@ class TestProduct(BaseAPITest):
                 "warranty": "3 year",
                 "country_of_production": "China",
             },
+            "thread_id": "6669b5634cef83e11dbc7abf",
             "created_at": "2024-01-05T12:08:35.440000",
             "updated_at": FROZEN_DATETIME,
         }

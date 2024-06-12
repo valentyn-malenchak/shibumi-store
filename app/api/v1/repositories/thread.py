@@ -1,24 +1,24 @@
-"""Module that contains parameter repository class."""
+"""Module that contains thread repository class."""
 
 from collections.abc import Mapping
 from typing import Any
 
+import arrow
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
 from app.api.v1.repositories import BaseRepository
-from app.constants import ProjectionValuesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
 
 
-class ParameterRepository(BaseRepository):
-    """Parameter repository for handling data access operations."""
+class ThreadRepository(BaseRepository):
+    """Thread repository for handling data access operations."""
 
-    _collection_name: str = MongoCollectionsEnum.PARAMETERS
+    _collection_name: str = MongoCollectionsEnum.THREADS
 
     @staticmethod
     async def _get_list_query_filter(*_: Any, **__: Any) -> Mapping[str, Any]:
-        """Returns a query filter for list of parameters.
+        """Returns a query filter for list of threads.
 
         Args:
             _ (Any): Parameters for list searching.
@@ -27,32 +27,37 @@ class ParameterRepository(BaseRepository):
         Returns:
             (Mapping[str, Any]): List query filter.
 
+        Raises:
+            NotImplementedError: This method is not implemented.
+
         """
-        return {}
+        raise NotImplementedError
 
     @staticmethod
     def _get_list_query_projection() -> Mapping[str, Any] | None:
-        """Returns a query projection for list of parameters.
+        """Returns a query projection for list of threads.
 
         Returns:
             Mapping[str, Any] | None: List query projection or None.
 
+        Raises:
+            NotImplementedError: This method is not implemented.
+
         """
-        return {
-            "_id": ProjectionValuesEnum.EXCLUDE,
-            "machine_name": ProjectionValuesEnum.INCLUDE,
-            "type": ProjectionValuesEnum.INCLUDE,
-        }
+        raise NotImplementedError
 
     @staticmethod
     def _get_list_default_sorting() -> list[tuple[str, int | Mapping[str, Any]]] | None:
-        """Returns default sorting for list of parameters.
+        """Returns default sorting for list of threads.
 
         Returns:
             list[tuple[str, int | Mapping[str, Any]]] | None: Default sorting.
 
+        Raises:
+            NotImplementedError: This method is not implemented.
+
         """
-        return None
+        raise NotImplementedError
 
     async def get_one_and_update_by_id(
         self,
@@ -62,17 +67,17 @@ class ParameterRepository(BaseRepository):
         **fields: Any,
     ) -> Mapping[str, Any]:
         """
-        Updates and retrieves a single parameter from the repository by its
+        Updates and retrieves a single thread from the repository by its
         unique identifier.
 
         Args:
-            id_ (ObjectId): The unique identifier of the parameter.
+            id_ (ObjectId): The unique identifier of the thread.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): Fields to update parameter.
+            fields (Any): Fields to update thread.
 
         Returns:
-            Mapping[str, Any]: The retrieved parameter.
+            Mapping[str, Any]: The retrieved thread.
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -83,21 +88,26 @@ class ParameterRepository(BaseRepository):
     async def create(
         self, *, session: AsyncIOMotorClientSession | None = None, **fields: Any
     ) -> Any:
-        """Creates a new parameter in repository.
+        """Creates a new thread in repository.
 
         Args:
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): The fields for the new parameter.
+            fields (Any): The fields for the new thread.
 
         Returns:
-            Any: The ID of created parameter.
-
-        Raises:
-            NotImplementedError: This method is not implemented.
+            Any: The ID of created thread.
 
         """
-        raise NotImplementedError
+        return await self._mongo_service.insert_one(
+            collection=self._collection_name,
+            document={
+                **fields,
+                "created_at": arrow.utcnow().datetime,
+                "updated_at": None,
+            },
+            session=session,
+        )
 
     async def update_by_id(
         self,
@@ -106,13 +116,13 @@ class ParameterRepository(BaseRepository):
         session: AsyncIOMotorClientSession | None = None,
         **fields: Any,
     ) -> None:
-        """Updates a parameter in repository.
+        """Updates a thread in repository.
 
         Args:
-            id_ (ObjectId): The unique identifier of the parameter.
+            id_ (ObjectId): The unique identifier of the thread.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): Fields to update parameter.
+            fields (Any): Fields to update thread.
 
         Raises:
             NotImplementedError: This method is not implemented.

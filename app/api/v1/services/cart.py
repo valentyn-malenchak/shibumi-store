@@ -61,13 +61,13 @@ class CartService(BaseService):
         raise NotImplementedError
 
     async def count(self, *_: Any) -> int:
-        """Counts items based on parameters.
+        """Counts carts based on parameters.
 
         Args:
             _ (Any): Parameters for list filtering and searching.
 
         Returns:
-            int: Count of items.
+            int: Count of carts.
 
         Raises:
             NotImplementedError: This method is not implemented.

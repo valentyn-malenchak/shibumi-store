@@ -19,7 +19,7 @@ class RoleRepository(BaseRepository):
 
     @staticmethod
     async def _get_list_query_filter(*_: Any, **__: Any) -> Mapping[str, Any]:
-        """Returns a query filter for list.
+        """Returns a query filter for list of roles.
 
         Args:
             _ (Any): Parameters for list searching.
@@ -33,7 +33,7 @@ class RoleRepository(BaseRepository):
 
     @staticmethod
     def _get_list_query_projection() -> Mapping[str, Any] | None:
-        """Returns a query projection for list.
+        """Returns a query projection for list of roles.
 
         Returns:
             Mapping[str, Any] | None: List query projection or None.
@@ -43,7 +43,7 @@ class RoleRepository(BaseRepository):
 
     @staticmethod
     def _get_list_default_sorting() -> list[tuple[str, int | Mapping[str, Any]]] | None:
-        """Returns list default sorting.
+        """Returns default sorting for list of roles.
 
         Returns:
             list[tuple[str, int | Mapping[str, Any]]] | None: Default sorting.

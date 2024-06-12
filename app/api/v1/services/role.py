@@ -70,13 +70,13 @@ class RoleService(BaseService):
         return roles
 
     async def count(self, *_: Any) -> int:
-        """Counts items based on parameters.
+        """Counts roles based on parameters.
 
         Args:
             _ (Any): Parameters for list filtering and searching.
 
         Returns:
-            int: Count of items.
+            int: Count of roles.
 
         """
 
