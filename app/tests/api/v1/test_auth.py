@@ -32,7 +32,7 @@ class TestAuth(BaseAPITest):
     async def test_create_tokens(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test auth token creation."""
+        """Test create auth token."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
@@ -77,7 +77,7 @@ class TestAuth(BaseAPITest):
     async def test_create_tokens_with_scopes_request(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test auth token creation with scopes request."""
+        """Test create auth token with scopes request."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
@@ -121,7 +121,7 @@ class TestAuth(BaseAPITest):
         test_client: AsyncClient,
         arrange_db: None,
     ) -> None:
-        """Test auth token creation in case password should be rehashed."""
+        """Test create auth token in case password should be rehashed."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
@@ -139,7 +139,7 @@ class TestAuth(BaseAPITest):
 
     @pytest.mark.asyncio
     async def test_create_tokens_missing_fields(self, test_client: AsyncClient) -> None:
-        """Test auth token creation in case username/password is missed."""
+        """Test create auth token in case username/password is missed."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
@@ -160,7 +160,7 @@ class TestAuth(BaseAPITest):
     async def test_create_tokens_user_does_not_exist(
         self, test_client: AsyncClient
     ) -> None:
-        """Test auth token creation in case user with such username does not exist."""
+        """Test create auth token in case user with such username does not exist."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
@@ -181,7 +181,7 @@ class TestAuth(BaseAPITest):
     async def test_create_tokens_invalid_password(
         self, test_client: AsyncClient
     ) -> None:
-        """Test auth token creation in case user with such username does not exist."""
+        """Test create auth token in case user with such username does not exist."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
@@ -205,7 +205,7 @@ class TestAuth(BaseAPITest):
     async def test_create_tokens_deleted_user(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test auth token creation in case user is deleted."""
+        """Test create auth token in case user is deleted."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
@@ -229,7 +229,7 @@ class TestAuth(BaseAPITest):
     async def test_create_tokens_user_email_is_not_verified(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test auth token creation in case user email is not verified."""
+        """Test create auth token in case user email is not verified."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
@@ -250,7 +250,7 @@ class TestAuth(BaseAPITest):
     async def test_create_tokens_request_not_permitted_scopes(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test auth token creation in case user request not permitted scopes."""
+        """Test create auth token in case user request not permitted scopes."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/auth/tokens/",

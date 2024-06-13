@@ -186,7 +186,7 @@ class CartProductUpdateValidator(BaseCartValidator):
         self.product_quantity_validator = product_quantity_validator
 
     async def validate(self, product_id: ObjectId, quantity: PositiveInt) -> None:
-        """Validates product on updating it in the cart.
+        """Validates product on update it in the cart.
 
         Args:
             product_id (ObjectId): BSON object identifier of requested product.

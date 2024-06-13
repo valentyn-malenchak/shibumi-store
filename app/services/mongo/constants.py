@@ -14,3 +14,4 @@ class MongoCollectionsEnum(StrEnum):
     CATEGORY_PARAMETERS = auto()
     CARTS = auto()
     THREADS = auto()
+    COMMENTS = auto()
