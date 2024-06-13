@@ -1,0 +1,236 @@
+[
+  {
+    "_id": {
+      "$oid": "666af8ae6aba47cfb60efb31"
+    },
+    "body": "first product message",
+    "thread_id": {
+      "$oid": "6669b5634cef83e11dbc7abf"
+    },
+    "author_id": {
+      "$oid": "6597f14332e631f7fed1a114"
+    },
+    "parent_comment_id": null,
+    "path": "/666af8ae6aba47cfb60efb31",
+    "upvotes": 0,
+    "downvotes": 0,
+    "created_at": {
+      "$date": "2024-06-13T13:48:30.209Z"
+    },
+    "updated_at": null
+  },
+  {
+    "_id": {
+      "$oid": "666af8c16aba47cfb60efb32"
+    },
+    "body": "second product message",
+    "thread_id": {
+      "$oid": "6669b5634cef83e11dbc7abf"
+    },
+    "author_id": {
+      "$oid": "6597f14332e631f7fed1a114"
+    },
+    "parent_comment_id": null,
+    "path": "/666af8c16aba47cfb60efb32",
+    "upvotes": 0,
+    "downvotes": 0,
+    "created_at": {
+      "$date": "2024-06-13T13:48:49.788Z"
+    },
+    "updated_at": null
+  },
+  {
+    "_id": {
+      "$oid": "666af8cb6aba47cfb60efb33"
+    },
+    "body": "third product message",
+    "thread_id": {
+      "$oid": "6669b5634cef83e11dbc7abf"
+    },
+    "author_id": {
+      "$oid": "6597f14332e631f7fed1a114"
+    },
+    "parent_comment_id": {
+      "$oid": "666af8ae6aba47cfb60efb31"
+    },
+    "path": "/666af8ae6aba47cfb60efb31/666af8cb6aba47cfb60efb33",
+    "upvotes": 0,
+    "downvotes": 0,
+    "created_at": {
+      "$date": "2024-06-13T13:48:59.113Z"
+    },
+    "updated_at": null
+  },
+  {
+    "_id": {
+      "$oid": "666af90e6aba47cfb60efb34"
+    },
+    "body": "forth product message",
+    "thread_id": {
+      "$oid": "6669b5634cef83e11dbc7abf"
+    },
+    "author_id": {
+      "$oid": "6597f14332e631f7fed1a114"
+    },
+    "parent_comment_id": {
+      "$oid": "666af8ae6aba47cfb60efb31"
+    },
+    "path": "/666af8ae6aba47cfb60efb31/666af90e6aba47cfb60efb34",
+    "upvotes": 0,
+    "downvotes": 0,
+    "created_at": {
+      "$date": "2024-06-13T13:50:06.714Z"
+    },
+    "updated_at": null
+  },
+  {
+    "_id": {
+      "$oid": "666af9176aba47cfb60efb35"
+    },
+    "body": "fifth product message",
+    "thread_id": {
+      "$oid": "6669b5634cef83e11dbc7abf"
+    },
+    "author_id": {
+      "$oid": "6597f14332e631f7fed1a114"
+    },
+    "parent_comment_id": null,
+    "path": "/666af9176aba47cfb60efb35",
+    "upvotes": 0,
+    "downvotes": 0,
+    "created_at": {
+      "$date": "2024-06-13T13:50:15.472Z"
+    },
+    "updated_at": null
+  },
+  {
+    "_id": {
+      "$oid": "666af91a6aba47cfb60efb36"
+    },
+    "body": "sixth product message",
+    "thread_id": {
+      "$oid": "6669b5634cef83e11dbc7abf"
+    },
+    "author_id": {
+      "$oid": "6597f14332e631f7fed1a114"
+    },
+    "parent_comment_id": null,
+    "path": "/666af91a6aba47cfb60efb36",
+    "upvotes": 0,
+    "downvotes": 0,
+    "created_at": {
+      "$date": "2024-06-13T13:50:18.890Z"
+    },
+    "updated_at": null
+  },
+  {
+    "_id": {
+      "$oid": "666af9246aba47cfb60efb37"
+    },
+    "body": "seventh product message",
+    "thread_id": {
+      "$oid": "6669b5634cef83e11dbc7abf"
+    },
+    "author_id": {
+      "$oid": "6597f14332e631f7fed1a114"
+    },
+    "parent_comment_id": {
+      "$oid": "666af91a6aba47cfb60efb36"
+    },
+    "path": "/666af91a6aba47cfb60efb36/666af9246aba47cfb60efb37",
+    "upvotes": 0,
+    "downvotes": 0,
+    "created_at": {
+      "$date": "2024-06-13T13:50:28.453Z"
+    },
+    "updated_at": null
+  },
+  {
+    "_id": {
+      "$oid": "666af9696aba47cfb60efb38"
+    },
+    "body": "eigth product message",
+    "thread_id": {
+      "$oid": "6669b5634cef83e11dbc7abf"
+    },
+    "author_id": {
+      "$oid": "6597f14332e631f7fed1a114"
+    },
+    "parent_comment_id": {
+      "$oid": "666af8cb6aba47cfb60efb33"
+    },
+    "path": "/666af8ae6aba47cfb60efb31/666af8cb6aba47cfb60efb33/666af9696aba47cfb60efb38",
+    "upvotes": 0,
+    "downvotes": 0,
+    "created_at": {
+      "$date": "2024-06-13T13:51:37.754Z"
+    },
+    "updated_at": null
+  },
+  {
+    "_id": {
+      "$oid": "666af9786aba47cfb60efb39"
+    },
+    "body": "ninth product message",
+    "thread_id": {
+      "$oid": "6669b5634cef83e11dbc7abf"
+    },
+    "author_id": {
+      "$oid": "6597f14332e631f7fed1a114"
+    },
+    "parent_comment_id": {
+      "$oid": "666af90e6aba47cfb60efb34"
+    },
+    "path": "/666af8ae6aba47cfb60efb31/666af90e6aba47cfb60efb34/666af9786aba47cfb60efb39",
+    "upvotes": 0,
+    "downvotes": 0,
+    "created_at": {
+      "$date": "2024-06-13T13:51:52.102Z"
+    },
+    "updated_at": null
+  },
+  {
+    "_id": {
+      "$oid": "666af9cf6aba47cfb60efb3a"
+    },
+    "body": "tenth product message",
+    "thread_id": {
+      "$oid": "6669b5634cef83e11dbc7abf"
+    },
+    "author_id": {
+      "$oid": "6597f14332e631f7fed1a114"
+    },
+    "parent_comment_id": {
+      "$oid": "666af91a6aba47cfb60efb36"
+    },
+    "path": "/666af91a6aba47cfb60efb36/666af9cf6aba47cfb60efb3a",
+    "upvotes": 0,
+    "downvotes": 0,
+    "created_at": {
+      "$date": "2024-06-13T13:53:19.053Z"
+    },
+    "updated_at": null
+  },
+  {
+    "_id": {
+      "$oid": "666afa3f6aba47cfb60efb3b"
+    },
+    "body": "elevens product message",
+    "thread_id": {
+      "$oid": "6669b5634cef83e11dbc7abf"
+    },
+    "author_id": {
+      "$oid": "6597f14332e631f7fed1a114"
+    },
+    "parent_comment_id": {
+      "$oid": "666af9246aba47cfb60efb37"
+    },
+    "path": "/666af91a6aba47cfb60efb36/666af9246aba47cfb60efb37/666afa3f6aba47cfb60efb3b",
+    "upvotes": 0,
+    "downvotes": 0,
+    "created_at": {
+      "$date": "2024-06-13T13:55:11.658Z"
+    },
+    "updated_at": null
+  }
+]

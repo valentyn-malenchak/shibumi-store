@@ -10,6 +10,7 @@ from app.api.v1.repositories.cart import CartRepository
 from app.api.v1.repositories.category_parameters import (
     CategoryParametersRepository,
 )
+from app.api.v1.repositories.comment import CommentRepository
 from app.api.v1.repositories.product import ProductRepository
 from app.api.v1.repositories.thread import ThreadRepository
 from app.api.v1.repositories.user import UserRepository
@@ -32,6 +33,7 @@ class FileFixtureManager:
         ),
         MongoCollectionsEnum.CARTS: _injector.get(CartRepository),
         MongoCollectionsEnum.THREADS: _injector.get(ThreadRepository),
+        MongoCollectionsEnum.COMMENTS: _injector.get(CommentRepository),
     }
 
     def __init__(
