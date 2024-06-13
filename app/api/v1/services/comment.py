@@ -1,35 +1,35 @@
-"""Module that contains thread service class."""
+"""Module that contains comment service class."""
 
 from typing import Any
 
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
 
-from app.api.v1.models.thread import Thread
-from app.api.v1.repositories.thread import ThreadRepository
+from app.api.v1.models.thread import Comment, CommentCreateData
+from app.api.v1.repositories.comment import CommentRepository
 from app.api.v1.services import BaseService
 from app.exceptions import EntityIsNotFoundError
 from app.services.mongo.transaction_manager import TransactionManager
 from app.services.redis.service import RedisService
 
 
-class ThreadService(BaseService):
-    """Thread service for encapsulating business logic."""
+class CommentService(BaseService):
+    """Comment service for encapsulating business logic."""
 
     def __init__(
         self,
         background_tasks: BackgroundTasks,
         redis_service: RedisService = Depends(),
         transaction_manager: TransactionManager = Depends(),
-        repository: ThreadRepository = Depends(),
+        repository: CommentRepository = Depends(),
     ) -> None:
-        """Initializes the thread service.
+        """Initializes the comment service.
 
         Args:
             background_tasks (BackgroundTasks): Background tasks.
             redis_service (RedisService): Redis service.
             transaction_manager (TransactionManager): Transaction manager.
-            repository (ThreadRepository):  An instance of the Thread repository.
+            repository (CommentRepository):  An instance of the Comment repository.
 
         """
 
@@ -42,13 +42,13 @@ class ThreadService(BaseService):
         self.repository = repository
 
     async def get(self, *_: Any) -> Any:
-        """Retrieves a list of threads based on parameters.
+        """Retrieves a list of comments based on parameters.
 
         Args:
             _ (Any): Parameters for list filtering, searching, sorting and pagination.
 
         Returns:
-            list[Mapping[str, Any]]: The retrieved list of threads.
+            list[Mapping[str, Any]]: The retrieved list of comments.
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -57,13 +57,13 @@ class ThreadService(BaseService):
         raise NotImplementedError
 
     async def count(self, *_: Any) -> int:
-        """Counts threads based on parameters.
+        """Counts comments based on parameters.
 
         Args:
             _ (Any): Parameters for list filtering and searching.
 
         Returns:
-            int: Count of threads.
+            int: Count of comments.
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -71,51 +71,64 @@ class ThreadService(BaseService):
         """
         raise NotImplementedError
 
-    async def get_by_id(self, id_: ObjectId) -> Thread:
-        """Retrieves a thread by its unique identifier.
+    async def get_by_id(self, id_: ObjectId) -> Comment:
+        """Retrieves a comment by its unique identifier.
 
         Args:
-            id_ (ObjectId): The unique identifier of the thread.
+            id_ (ObjectId): The unique identifier of the comment.
 
         Returns:
-            Thread: The retrieved thread.
+            Comment: The retrieved comment.
 
         Raises:
-            EntityIsNotFoundError: In case thread is not found.
+            EntityIsNotFoundError: In case comment is not found.
 
         """
 
-        thread = await self.repository.get_by_id(id_=id_)
+        comment = await self.repository.get_by_id(id_=id_)
 
-        if thread is None:
+        if comment is None:
             raise EntityIsNotFoundError
 
-        return Thread(**thread)
+        return Comment(**comment)
 
-    async def create(self, _: Any) -> Thread:
-        """Creates a new thread.
+    async def create(self, data: CommentCreateData) -> Comment:
+        """Creates a new comment.
 
         Args:
-            _ (Any): The data for the new thread.
+            data (CommentCreateData): The data for the new comment.
 
         Returns:
-            Thread: Created thread.
+            Comment: Created comment.
 
         """
 
-        id_ = await self.repository.create()
+        comment_id = ObjectId()
+
+        id_ = await self.repository.create(
+            _id=comment_id,
+            body=data.body,
+            thread_id=data.thread_id,
+            author_id=data.author_id,
+            parent_comment_id=data.parent_comment.id
+            if data.parent_comment is not None
+            else None,
+            path=f"{data.parent_comment.path}/{comment_id}"
+            if data.parent_comment is not None
+            else f"/{comment_id}",
+        )
 
         return await self.get_by_id(id_=id_)
 
     async def update(self, item: Any, data: Any) -> Any:
-        """Updates a thread object.
+        """Updates a comment object.
 
         Args:
-            item (Any): Thread object.
-            data (Any): Data to update thread.
+            item (Any): Comment object.
+            data (Any): Data to update comment.
 
         Returns:
-            Any: The updated thread.
+            Any: The updated comment.
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -124,14 +137,14 @@ class ThreadService(BaseService):
         raise NotImplementedError
 
     async def update_by_id(self, id_: ObjectId, data: Any) -> Any:
-        """Updates a thread by its unique identifier.
+        """Updates a comment by its unique identifier.
 
         Args:
-            id_ (ObjectId): The unique identifier of the thread.
-            data (Any): Data to update thread.
+            id_ (ObjectId): The unique identifier of the comment.
+            data (Any): Data to update comment.
 
         Returns:
-            Any: The updated thread.
+            Any: The updated comment.
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -140,10 +153,10 @@ class ThreadService(BaseService):
         raise NotImplementedError
 
     async def delete_by_id(self, id_: ObjectId) -> None:
-        """Deletes a thread by its unique identifier.
+        """Deletes a comment by its unique identifier.
 
         Args:
-            id_ (ObjectId): The unique identifier of the thread.
+            id_ (ObjectId): The unique identifier of the comment.
 
         Raises:
             NotImplementedError: This method is not implemented.

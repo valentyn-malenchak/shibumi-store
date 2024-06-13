@@ -75,7 +75,7 @@ class UserList(List):
 
 
 class UserCreateData(BaseModel):
-    """User creation data model."""
+    """User create data model."""
 
     first_name: str
     last_name: str
@@ -89,7 +89,7 @@ class UserCreateData(BaseModel):
 
 
 class UserUpdateData(BaseModel):
-    """User updating data model."""
+    """User update data model."""
 
     first_name: str
     last_name: str

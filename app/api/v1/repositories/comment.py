@@ -1,0 +1,133 @@
+"""Module that contains comment repository class."""
+
+from collections.abc import Mapping
+from typing import Any
+
+import arrow
+from bson import ObjectId
+from motor.motor_asyncio import AsyncIOMotorClientSession
+
+from app.api.v1.repositories import BaseRepository
+from app.services.mongo.constants import MongoCollectionsEnum
+
+
+class CommentRepository(BaseRepository):
+    """Comment repository for handling data access operations."""
+
+    _collection_name: str = MongoCollectionsEnum.COMMENTS
+
+    @staticmethod
+    async def _get_list_query_filter(*_: Any, **__: Any) -> Mapping[str, Any]:
+        """Returns a query filter for list of comments.
+
+        Args:
+            _ (Any): Parameters for list searching.
+            __ (Any): Parameters for list filtering.
+
+        Returns:
+            (Mapping[str, Any]): List query filter.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
+    @staticmethod
+    def _get_list_query_projection() -> Mapping[str, Any] | None:
+        """Returns a query projection for list of comments.
+
+        Returns:
+            Mapping[str, Any] | None: List query projection or None.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
+    @staticmethod
+    def _get_list_default_sorting() -> list[tuple[str, int | Mapping[str, Any]]] | None:
+        """Returns default sorting for list of comments.
+
+        Returns:
+            list[tuple[str, int | Mapping[str, Any]]] | None: Default sorting.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
+    async def get_one_and_update_by_id(
+        self,
+        id_: ObjectId,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+        **fields: Any,
+    ) -> Mapping[str, Any]:
+        """
+        Updates and retrieves a single comment from the repository by its
+        unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the comment.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+            fields (Any): Fields to update comment.
+
+        Returns:
+            Mapping[str, Any]: The retrieved comment.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
+    async def create(
+        self, *, session: AsyncIOMotorClientSession | None = None, **fields: Any
+    ) -> Any:
+        """Creates a new comment in repository.
+
+        Args:
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+            fields (Any): The fields for the new comment.
+
+        Returns:
+            Any: The ID of created comment.
+
+        """
+        return await self._mongo_service.insert_one(
+            collection=self._collection_name,
+            document={
+                **fields,
+                "upvotes": 0,
+                "downvotes": 0,
+                "created_at": arrow.utcnow().datetime,
+                "updated_at": None,
+            },
+            session=session,
+        )
+
+    async def update_by_id(
+        self,
+        id_: ObjectId,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+        **fields: Any,
+    ) -> None:
+        """Updates a comment in repository.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the comment.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+            fields (Any): Fields to update comment.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError

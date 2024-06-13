@@ -48,6 +48,7 @@ class ScopesEnum(Enum):
     CARTS_DELETE_PRODUCT = "Allows to delete product from the cart."
 
     THREADS_GET_THREAD = "Allows to get thread."
+    THREADS_CREATE_MESSAGE = "Allows to create a thread message."
 
 
 class RedisNamesEnum(StrEnum):
