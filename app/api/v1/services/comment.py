@@ -5,7 +5,7 @@ from typing import Any
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
 
-from app.api.v1.models.thread import Comment, CommentCreateData
+from app.api.v1.models.thread import Comment, CommentCreateData, CommentUpdateData
 from app.api.v1.repositories.comment import CommentRepository
 from app.api.v1.services import BaseService
 from app.exceptions import EntityIsNotFoundError
@@ -136,21 +136,24 @@ class CommentService(BaseService):
         """
         raise NotImplementedError
 
-    async def update_by_id(self, id_: ObjectId, data: Any) -> Any:
+    async def update_by_id(self, id_: ObjectId, data: CommentUpdateData) -> Comment:
         """Updates a comment by its unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the comment.
-            data (Any): Data to update comment.
+            data (CommentUpdateData): Data to update comment.
 
         Returns:
-            Any: The updated comment.
-
-        Raises:
-            NotImplementedError: This method is not implemented.
+            Comment: The updated comment.
 
         """
-        raise NotImplementedError
+
+        updated_comment = await self.repository.get_one_and_update_by_id(
+            id_=id_,
+            body=data.body,
+        )
+
+        return Comment(**updated_comment)
 
     async def delete_by_id(self, id_: ObjectId) -> None:
         """Deletes a comment by its unique identifier.

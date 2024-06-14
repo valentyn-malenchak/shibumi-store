@@ -49,7 +49,8 @@ class ScopesEnum(Enum):
 
     THREADS_GET_THREAD = "Allows to get thread."
     THREADS_GET_COMMENT = "Allows to get thread comment."
-    THREADS_CREATE_MESSAGE = "Allows to create a thread message."
+    THREADS_CREATE_COMMENT = "Allows to create a thread comment."
+    THREADS_UPDATE_COMMENT = "Allows to update a thread comment."
 
 
 class RedisNamesEnum(StrEnum):
