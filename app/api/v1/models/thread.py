@@ -44,3 +44,9 @@ class CommentCreateData(BaseModel):
     author_id: Annotated[ObjectId, ObjectIdAnnotation]
     thread_id: Annotated[ObjectId, ObjectIdAnnotation]
     parent_comment: Comment | None
+
+
+class CommentUpdateData(BaseModel):
+    """Thread comment update data model."""
+
+    body: str

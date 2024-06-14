@@ -51,6 +51,7 @@ class HTTPErrorMessagesEnum(StrEnum):
     PRODUCT_IS_NOT_ADDED_TO_THE_CART = "Product is not added to the cart."
 
     COMMENT_DOES_NOT_BELONG_TO_THREAD = "Comment does not belong to requested thread."
+    COMMENT_ACCESS_DENIED = "Access denied to comment."
 
 
 class ValidationErrorMessagesEnum(StrEnum):

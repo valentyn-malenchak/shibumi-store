@@ -5,11 +5,18 @@ from fastapi import APIRouter, Depends, Security, status
 from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
 from app.api.v1.dependencies.comment import (
+    CommentAuthorDependency,
     CommentByIdDependency,
     CommentDataCreateDependency,
+    CommentDataUpdateDependency,
 )
 from app.api.v1.dependencies.thread import ThreadByIdDependency
-from app.api.v1.models.thread import Comment, CommentCreateData, Thread
+from app.api.v1.models.thread import (
+    Comment,
+    CommentCreateData,
+    CommentUpdateData,
+    Thread,
+)
 from app.api.v1.models.user import CurrentUser
 from app.api.v1.services.comment import CommentService
 
@@ -71,7 +78,7 @@ async def get_thread_comment(
 )
 async def create_thread_comment(
     _: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.THREADS_CREATE_MESSAGE.name]
+        StrictAuthorization(), scopes=[ScopesEnum.THREADS_CREATE_COMMENT.name]
     ),
     comment_data: CommentCreateData = Depends(CommentDataCreateDependency()),
     comment_service: CommentService = Depends(),
@@ -88,3 +95,31 @@ async def create_thread_comment(
 
     """
     return await comment_service.create(data=comment_data)
+
+
+@router.patch(
+    "/{thread_id}/comments/{comment_id}/",
+    response_model=Comment,
+    status_code=status.HTTP_200_OK,
+)
+async def update_thread_comment(
+    _: CurrentUser = Security(
+        StrictAuthorization(), scopes=[ScopesEnum.THREADS_UPDATE_COMMENT.name]
+    ),
+    comment_data: CommentUpdateData = Depends(CommentDataUpdateDependency()),
+    comment: Comment = Depends(CommentAuthorDependency()),
+    comment_service: CommentService = Depends(),
+) -> Comment:
+    """API which updates thread comment.
+
+    Args:
+        _ (CurrentUser): Current user object.
+        comment_data (CommentUpdateData): Comment update data.
+        comment (CommentCreateData): Comment object.
+        comment_service (CommentService): Comment service.
+
+    Returns:
+        Comment: Comment object.
+
+    """
+    return await comment_service.update_by_id(id_=comment.id, data=comment_data)

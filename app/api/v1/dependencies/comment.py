@@ -5,8 +5,17 @@ from typing import Annotated
 from bson import ObjectId
 from fastapi import Depends
 
-from app.api.v1.models.thread import BaseCommentCreateData, Comment, CommentCreateData
-from app.api.v1.validators.comment import CommentByIdValidator, CommentCreateValidator
+from app.api.v1.models.thread import (
+    BaseCommentCreateData,
+    Comment,
+    CommentCreateData,
+    CommentUpdateData,
+)
+from app.api.v1.validators.comment import (
+    CommentAuthorValidator,
+    CommentByIdValidator,
+    CommentCreateValidator,
+)
 from app.utils.pydantic import ObjectIdAnnotation
 
 
@@ -39,6 +48,35 @@ class CommentByIdDependency:
         )
 
 
+class CommentAuthorDependency:
+    """Comment author dependency."""
+
+    async def __call__(
+        self,
+        thread_id: Annotated[ObjectId, ObjectIdAnnotation],
+        comment_id: Annotated[ObjectId, ObjectIdAnnotation],
+        comment_author_validator: CommentAuthorValidator = Depends(),
+    ) -> Comment:
+        """Validates comment author.
+
+        Args:
+            thread_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
+            identifier of requested thread.
+            comment_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
+            identifier of requested comment.
+            comment_author_validator (CommentAuthorValidator): Comment author validator.
+
+        Returns:
+            Comment: Comment object.
+
+        """
+
+        return await comment_author_validator.validate(
+            thread_id=thread_id,
+            comment_id=comment_id,
+        )
+
+
 class CommentDataCreateDependency:
     """Comment data create dependency."""
 
@@ -66,3 +104,20 @@ class CommentDataCreateDependency:
             parent_id=comment_data.parent_comment_id,
             body=comment_data.body,
         )
+
+
+class CommentDataUpdateDependency:
+    """Comment data update dependency."""
+
+    async def __call__(self, comment_data: CommentUpdateData) -> CommentUpdateData:
+        """Validates data on user update operation.
+
+        Args:
+            comment_data (CommentUpdateData): Comment update data.
+
+        Returns:
+            CommentUpdateData: Comment update data.
+
+        """
+
+        return comment_data

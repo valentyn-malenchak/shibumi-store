@@ -103,6 +103,58 @@ class CommentByIdValidator(BaseCommentValidator):
         return comment
 
 
+class CommentAuthorValidator(BaseCommentValidator):
+    """Comment author validator."""
+
+    def __init__(
+        self,
+        request: Request,
+        comment_service: CommentService = Depends(),
+        comment_by_id_validator: CommentByIdValidator = Depends(),
+    ) -> None:
+        """Initializes comment author validator.
+
+        Args:
+            request (Request): Current request object.
+            comment_service (CommentService): Comment service.
+            comment_by_id_validator (CommentByIdValidator): Comment by id validator.
+
+        """
+
+        super().__init__(request=request, comment_service=comment_service)
+
+        self.comment_by_id_validator = comment_by_id_validator
+
+    async def validate(self, thread_id: ObjectId, comment_id: ObjectId) -> Comment:
+        """Validates requested comment author.
+
+        Args:
+            thread_id (ObjectId): BSON object identifier of requested thread.
+            comment_id (ObjectId): BSON object identifier of requested comment.
+
+        Returns:
+            Comment: Comment object.
+
+        Raises:
+            HTTPException: If current user is not comment author.
+
+        """
+
+        comment = await self.comment_by_id_validator.validate(
+            thread_id=thread_id, comment_id=comment_id
+        )
+
+        current_user = self.request.state.current_user
+
+        if comment.author_id != current_user.object.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=HTTPErrorMessagesEnum.COMMENT_ACCESS_DENIED,
+            )
+
+        return comment
+
+
 class CommentCreateValidator(BaseCommentValidator):
     """Comment create validator."""
 

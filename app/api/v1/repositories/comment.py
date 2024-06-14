@@ -79,11 +79,14 @@ class CommentRepository(BaseRepository):
         Returns:
             Mapping[str, Any]: The retrieved comment.
 
-        Raises:
-            NotImplementedError: This method is not implemented.
-
         """
-        raise NotImplementedError
+
+        return await self._mongo_service.find_one_and_update(
+            collection=self._collection_name,
+            filter_={"_id": id_},
+            update={"$set": {**fields, "updated_at": arrow.utcnow().datetime}},
+            session=session,
+        )
 
     async def create(
         self, *, session: AsyncIOMotorClientSession | None = None, **fields: Any
