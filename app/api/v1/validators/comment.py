@@ -45,19 +45,42 @@ class BaseCommentValidator(BaseValidator):
 class CommentByIdValidator(BaseCommentValidator):
     """Comment by identifier validator."""
 
-    async def validate(self, comment_id: ObjectId) -> Comment:
+    def __init__(
+        self,
+        request: Request,
+        comment_service: CommentService = Depends(),
+        thread_by_id_validator: ThreadByIdValidator = Depends(),
+    ) -> None:
+        """Initializes comment create validator.
+
+        Args:
+            request (Request): Current request object.
+            comment_service (CommentService): Comment service.
+            thread_by_id_validator (ThreadByIdValidator): Thread by id validator.
+
+        """
+
+        super().__init__(request=request, comment_service=comment_service)
+
+        self.thread_by_id_validator = thread_by_id_validator
+
+    async def validate(self, thread_id: ObjectId, comment_id: ObjectId) -> Comment:
         """Validates requested comment by id.
 
         Args:
+            thread_id (ObjectId): BSON object identifier of requested thread.
             comment_id (ObjectId): BSON object identifier of requested comment.
 
         Returns:
             Comment: Comment object.
 
         Raises:
-            HTTPException: If requested comment is not found.
+            HTTPException: If requested comment is not found or comment does not
+            belong to thread.
 
         """
+
+        thread = await self.thread_by_id_validator.validate(thread_id=thread_id)
 
         try:
             comment = await self.comment_service.get_by_id(id_=comment_id)
@@ -68,6 +91,13 @@ class CommentByIdValidator(BaseCommentValidator):
                 detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(
                     entity="Comment"
                 ),
+            )
+
+        # Check if comment belongs to thread
+        if comment.thread_id != thread.id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=HTTPErrorMessagesEnum.COMMENT_DOES_NOT_BELONG_TO_THREAD,
             )
 
         return comment
@@ -115,13 +145,16 @@ class CommentCreateValidator(BaseCommentValidator):
 
         """
 
-        await self.thread_by_id_validator.validate(thread_id=thread_id)
+        if parent_id is not None:
+            # Validates thread and parent comment if it is set
+            parent_comment = await self.comment_by_id_validator.validate(
+                thread_id=thread_id, comment_id=parent_id
+            )
+        else:
+            # Otherwise just validates thread
+            await self.thread_by_id_validator.validate(thread_id=thread_id)
 
-        parent_comment = (
-            await self.comment_by_id_validator.validate(comment_id=parent_id)
-            if parent_id is not None
-            else None
-        )
+            parent_comment = None
 
         return CommentCreateData(
             body=body,
