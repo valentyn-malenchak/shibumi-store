@@ -4,7 +4,10 @@ from fastapi import APIRouter, Depends, Security, status
 
 from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
-from app.api.v1.dependencies.comment import CommentDataCreateDependency
+from app.api.v1.dependencies.comment import (
+    CommentByIdDependency,
+    CommentDataCreateDependency,
+)
 from app.api.v1.dependencies.thread import ThreadByIdDependency
 from app.api.v1.models.thread import Comment, CommentCreateData, Thread
 from app.api.v1.models.user import CurrentUser
@@ -35,6 +38,30 @@ async def get_thread(
 
     """
     return thread
+
+
+@router.get(
+    "/{thread_id}/comments/{comment_id}/",
+    response_model=Comment,
+    status_code=status.HTTP_200_OK,
+)
+async def get_thread_comment(
+    _: CurrentUser | None = Security(
+        OptionalAuthorization(), scopes=[ScopesEnum.THREADS_GET_COMMENT.name]
+    ),
+    comment: Comment = Depends(CommentByIdDependency()),
+) -> Comment:
+    """API which returns thread comment.
+
+    Args:
+        _ (CurrentUser | None): Current user object or None.
+        comment (Comment): Comment object.
+
+    Returns:
+        Comment: Comment object.
+
+    """
+    return comment
 
 
 @router.post(

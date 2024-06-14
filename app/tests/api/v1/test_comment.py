@@ -32,6 +32,166 @@ class TestComment(BaseAPITest):
             (
                 MongoCollectionsEnum.USERS,
                 MongoCollectionsEnum.THREADS,
+                MongoCollectionsEnum.COMMENTS,
+            )
+        ],
+        indirect=True,
+    )
+    async def test_get_thread_comment(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get thread comment."""
+
+        response = await test_client.get(
+            f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af9246aba47cfb60efb37/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "id": "666af9246aba47cfb60efb37",
+            "body": "seventh product message",
+            "thread_id": "6669b5634cef83e11dbc7abf",
+            "author_id": "6597f14332e631f7fed1a114",
+            "parent_comment_id": "666af91a6aba47cfb60efb36",
+            "path": "/666af91a6aba47cfb60efb36/666af9246aba47cfb60efb37",
+            "upvotes": 0,
+            "downvotes": 0,
+            "created_at": "2024-06-13T13:50:28.453000",
+            "updated_at": None,
+        }
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [
+            (
+                MongoCollectionsEnum.USERS,
+                MongoCollectionsEnum.THREADS,
+                MongoCollectionsEnum.COMMENTS,
+            )
+        ],
+        indirect=True,
+    )
+    async def test_get_thread_comment_no_token(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get thread comment in case there is no token."""
+
+        response = await test_client.get(
+            f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af9246aba47cfb60efb37/",
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "id": "666af9246aba47cfb60efb37",
+            "body": "seventh product message",
+            "thread_id": "6669b5634cef83e11dbc7abf",
+            "author_id": "6597f14332e631f7fed1a114",
+            "parent_comment_id": "666af91a6aba47cfb60efb36",
+            "path": "/666af91a6aba47cfb60efb36/666af9246aba47cfb60efb37",
+            "upvotes": 0,
+            "downvotes": 0,
+            "created_at": "2024-06-13T13:50:28.453000",
+            "updated_at": None,
+        }
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
+    async def test_get_thread_comment_no_scope(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get thread comment in case user does not have appropriate scope."""
+
+        response = await test_client.get(
+            f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af9246aba47cfb60efb37/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
+    async def test_get_thread_comment_thread_is_not_found(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get thread comment in case thread is not found."""
+
+        response = await test_client.get(
+            f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af9246aba47cfb60efb37/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Thread")
+        }
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.THREADS)],
+        indirect=True,
+    )
+    async def test_get_thread_comment_comment_is_not_found(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get thread comment in case comment is not found."""
+
+        response = await test_client.get(
+            f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af9246aba47cfb60efb37/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Comment")
+        }
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [
+            (
+                MongoCollectionsEnum.USERS,
+                MongoCollectionsEnum.THREADS,
+                MongoCollectionsEnum.COMMENTS,
+            )
+        ],
+        indirect=True,
+    )
+    async def test_get_thread_comment_comment_does_not_belong_to_thread(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test get thread comment in case comment does not belong to thread."""
+
+        response = await test_client.get(
+            f"{AppConstants.API_V1_PREFIX}/threads/6669b5de4cef83e11dbc7ac2/comments/666af9246aba47cfb60efb37/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.COMMENT_DOES_NOT_BELONG_TO_THREAD
+        }
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [
+            (
+                MongoCollectionsEnum.USERS,
+                MongoCollectionsEnum.THREADS,
             )
         ],
         indirect=True,
@@ -206,4 +366,38 @@ class TestComment(BaseAPITest):
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
             "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Comment")
+        }
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [
+            (
+                MongoCollectionsEnum.USERS,
+                MongoCollectionsEnum.THREADS,
+                MongoCollectionsEnum.COMMENTS,
+            )
+        ],
+        indirect=True,
+    )
+    async def test_create_thread_comment_parent_comment_does_not_belong_to_thread(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """
+        Test create thread comment in case parent comment does not belong to thread.
+        """
+
+        response = await test_client.post(
+            f"{AppConstants.API_V1_PREFIX}/threads/6669b5de4cef83e11dbc7ac2/comments/",
+            json={
+                "body": "some product question 1",
+                "parent_comment_id": "666af8cb6aba47cfb60efb33",
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.COMMENT_DOES_NOT_BELONG_TO_THREAD
         }

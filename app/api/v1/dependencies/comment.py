@@ -5,9 +5,38 @@ from typing import Annotated
 from bson import ObjectId
 from fastapi import Depends
 
-from app.api.v1.models.thread import BaseCommentCreateData, CommentCreateData
-from app.api.v1.validators.comment import CommentCreateValidator
+from app.api.v1.models.thread import BaseCommentCreateData, Comment, CommentCreateData
+from app.api.v1.validators.comment import CommentByIdValidator, CommentCreateValidator
 from app.utils.pydantic import ObjectIdAnnotation
+
+
+class CommentByIdDependency:
+    """Comment by identifier dependency."""
+
+    async def __call__(
+        self,
+        thread_id: Annotated[ObjectId, ObjectIdAnnotation],
+        comment_id: Annotated[ObjectId, ObjectIdAnnotation],
+        comment_by_id_validator: CommentByIdValidator = Depends(),
+    ) -> Comment:
+        """Checks comment from request by identifier.
+
+        Args:
+            thread_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
+            identifier of requested thread.
+            comment_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
+            identifier of requested comment.
+            comment_by_id_validator (CommentByIdValidator): Comment by identifier
+            validator.
+
+        Returns:
+            Comment: Comment object.
+
+        """
+
+        return await comment_by_id_validator.validate(
+            thread_id=thread_id, comment_id=comment_id
+        )
 
 
 class CommentDataCreateDependency:
