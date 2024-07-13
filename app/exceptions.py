@@ -15,3 +15,7 @@ class InvalidTokenError(AppExceptionError):
 
 class EntityIsNotFoundError(AppExceptionError):
     """Entity is not found error."""
+
+
+class EntityDuplicateKeyError(AppExceptionError):
+    """Entity duplicate key error."""

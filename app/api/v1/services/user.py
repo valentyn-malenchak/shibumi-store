@@ -6,7 +6,6 @@ from typing import Any
 import arrow
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends, HTTPException, status
-from pymongo.errors import DuplicateKeyError
 
 from app.api.v1.auth.password import Password
 from app.api.v1.constants import (
@@ -26,7 +25,7 @@ from app.api.v1.repositories.user import UserRepository
 from app.api.v1.services import BaseService
 from app.api.v1.services.cart import CartService
 from app.constants import HTTPErrorMessagesEnum
-from app.exceptions import EntityIsNotFoundError
+from app.exceptions import EntityDuplicateKeyError, EntityIsNotFoundError
 from app.services.mongo.transaction_manager import TransactionManager
 from app.services.redis.service import RedisService
 from app.services.send_grid.service import SendGridService
@@ -147,6 +146,9 @@ class UserService(BaseService):
         Returns:
             User: The created user.
 
+        Raises:
+            HTTPException: if user with specified username is already created.
+
         """
 
         password = Password.get_password_hash(password=data.password)
@@ -164,7 +166,7 @@ class UserService(BaseService):
                 roles=data.roles,
             )
 
-        except DuplicateKeyError:
+        except EntityDuplicateKeyError:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail=HTTPErrorMessagesEnum.ENTITY_FIELD_UNIQUENESS.format(

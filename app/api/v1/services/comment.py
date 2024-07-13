@@ -166,3 +166,15 @@ class CommentService(BaseService):
 
         """
         raise NotImplementedError
+
+    async def increment_votes(self, id_: ObjectId, value: bool) -> None:
+        """Increments a vote counter field for comment by its unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the comment.
+            value (bool): Vote value.
+
+        """
+        self.background_tasks.add_task(
+            self.repository.increment_votes, id_=id_, value=value
+        )

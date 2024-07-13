@@ -50,3 +50,27 @@ class CommentUpdateData(BaseModel):
     """Thread comment update data model."""
 
     body: str
+
+
+class Vote(BSONObjectId):
+    """Thread comment vote model."""
+
+    value: bool
+    comment_id: Annotated[ObjectId, ObjectIdAnnotation]
+    user_id: Annotated[ObjectId, ObjectIdAnnotation]
+    created_at: datetime
+    updated_at: datetime | None
+
+
+class VoteData(BaseModel):
+    """Vote data model."""
+
+    value: bool
+
+
+class VoteCreateData(BaseModel):
+    """Vote create data model."""
+
+    value: bool
+    user_id: Annotated[ObjectId, ObjectIdAnnotation]
+    comment_id: Annotated[ObjectId, ObjectIdAnnotation]

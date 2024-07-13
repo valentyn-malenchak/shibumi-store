@@ -1,0 +1,18 @@
+[
+  {
+    "_id": {
+      "$oid": "6692aa64c8c252998d87ad2b"
+    },
+    "value": true,
+    "comment_id": {
+      "$oid": "666af8ae6aba47cfb60efb31"
+    },
+    "user_id": {
+      "$oid": "65844f12b6de26578d98c2c8"
+    },
+    "created_at": {
+      "$date": "2024-07-13T13:48:30.209Z"
+    },
+    "updated_at": null
+  }
+]
