@@ -1,4 +1,4 @@
-"""Module that contains comment repository class."""
+"""Module that contains vote repository class."""
 
 from collections.abc import Mapping
 from typing import Any
@@ -6,19 +6,21 @@ from typing import Any
 import arrow
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClientSession
+from pymongo.errors import DuplicateKeyError
 
 from app.api.v1.repositories import BaseRepository
+from app.exceptions import EntityDuplicateKeyError
 from app.services.mongo.constants import MongoCollectionsEnum
 
 
-class CommentRepository(BaseRepository):
-    """Comment repository for handling data access operations."""
+class VoteRepository(BaseRepository):
+    """Vote repository for handling data access operations."""
 
-    _collection_name: str = MongoCollectionsEnum.COMMENTS
+    _collection_name: str = MongoCollectionsEnum.VOTES
 
     @staticmethod
     async def _get_list_query_filter(*_: Any, **__: Any) -> Mapping[str, Any]:
-        """Returns a query filter for list of comments.
+        """Returns a query filter for list of votes.
 
         Args:
             _ (Any): Parameters for list searching.
@@ -35,7 +37,7 @@ class CommentRepository(BaseRepository):
 
     @staticmethod
     def _get_list_query_projection() -> Mapping[str, Any] | None:
-        """Returns a query projection for list of comments.
+        """Returns a query projection for list of votes.
 
         Returns:
             Mapping[str, Any] | None: List query projection or None.
@@ -48,7 +50,7 @@ class CommentRepository(BaseRepository):
 
     @staticmethod
     def _get_list_default_sorting() -> list[tuple[str, int | Mapping[str, Any]]] | None:
-        """Returns default sorting for list of comments.
+        """Returns default sorting for list of votes.
 
         Returns:
             list[tuple[str, int | Mapping[str, Any]]] | None: Default sorting.
@@ -67,52 +69,52 @@ class CommentRepository(BaseRepository):
         **fields: Any,
     ) -> Mapping[str, Any]:
         """
-        Updates and retrieves a single comment from the repository by its
+        Updates and retrieves a single vote from the repository by its
         unique identifier.
 
         Args:
-            id_ (ObjectId): The unique identifier of the comment.
+            id_ (ObjectId): The unique identifier of the vote.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): Fields to update comment.
+            fields (Any): Fields to update vote.
 
         Returns:
-            Mapping[str, Any]: The retrieved comment.
+            Mapping[str, Any]: The retrieved vote.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
 
         """
-
-        return await self._mongo_service.find_one_and_update(
-            collection=self._collection_name,
-            filter_={"_id": id_},
-            update={"$set": {**fields, "updated_at": arrow.utcnow().datetime}},
-            session=session,
-        )
+        raise NotImplementedError
 
     async def create(
         self, *, session: AsyncIOMotorClientSession | None = None, **fields: Any
     ) -> Any:
-        """Creates a new comment in repository.
+        """Creates a new vote in repository.
 
         Args:
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): The fields for the new comment.
+            fields (Any): The fields for the new vote.
 
         Returns:
-            Any: The ID of created comment.
+            Any: The ID of created vote.
 
         """
-        return await self._mongo_service.insert_one(
-            collection=self._collection_name,
-            document={
-                **fields,
-                "upvotes": 0,
-                "downvotes": 0,
-                "created_at": arrow.utcnow().datetime,
-                "updated_at": None,
-            },
-            session=session,
-        )
+
+        try:
+            return await self._mongo_service.insert_one(
+                collection=self._collection_name,
+                document={
+                    **fields,
+                    "created_at": arrow.utcnow().datetime,
+                    "updated_at": None,
+                },
+                session=session,
+            )
+
+        except DuplicateKeyError:
+            raise EntityDuplicateKeyError
 
     async def update_by_id(
         self,
@@ -121,40 +123,17 @@ class CommentRepository(BaseRepository):
         session: AsyncIOMotorClientSession | None = None,
         **fields: Any,
     ) -> None:
-        """Updates a comment in repository.
+        """Updates a vote in repository.
 
         Args:
-            id_ (ObjectId): The unique identifier of the comment.
+            id_ (ObjectId): The unique identifier of the vote.
+            id_ (ObjectId): The unique identifier of the vote.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): Fields to update comment.
+            fields (Any): Fields to update vote.
 
         Raises:
             NotImplementedError: This method is not implemented.
 
         """
         raise NotImplementedError
-
-    async def increment_votes(
-        self,
-        id_: ObjectId,
-        value: bool,
-        *,
-        session: AsyncIOMotorClientSession | None = None,
-    ) -> None:
-        """Increments a vote counter field for comment by its unique identifier.
-
-        Args:
-            id_ (ObjectId): The unique identifier of the comment.
-            value (bool): Vote value.
-            session (AsyncIOMotorClientSession | None): Defines a client session
-            if operation is transactional. Defaults to None.
-
-        """
-
-        await self._mongo_service.update_one(
-            collection=self._collection_name,
-            filter_={"_id": id_},
-            update={"$inc": {"upvotes" if value is True else "downvotes": 1}},
-            session=session,
-        )

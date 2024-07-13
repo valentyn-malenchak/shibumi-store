@@ -7,8 +7,10 @@ import arrow
 from bson import ObjectId
 from injector import inject
 from motor.motor_asyncio import AsyncIOMotorClientSession
+from pymongo.errors import DuplicateKeyError
 
 from app.api.v1.repositories import BaseRepository
+from app.exceptions import EntityDuplicateKeyError
 from app.services.mongo.constants import MongoCollectionsEnum
 
 
@@ -115,17 +117,21 @@ class UserRepository(BaseRepository):
 
         """
 
-        return await self._mongo_service.insert_one(
-            collection=self._collection_name,
-            document={
-                **fields,
-                "email_verified": False,
-                "deleted": False,
-                "created_at": arrow.utcnow().datetime,
-                "updated_at": None,
-            },
-            session=session,
-        )
+        try:
+            return await self._mongo_service.insert_one(
+                collection=self._collection_name,
+                document={
+                    **fields,
+                    "email_verified": False,
+                    "deleted": False,
+                    "created_at": arrow.utcnow().datetime,
+                    "updated_at": None,
+                },
+                session=session,
+            )
+
+        except DuplicateKeyError:
+            raise EntityDuplicateKeyError
 
     async def update_by_id(
         self,

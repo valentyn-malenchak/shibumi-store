@@ -15,3 +15,4 @@ class MongoCollectionsEnum(StrEnum):
     CARTS = auto()
     THREADS = auto()
     COMMENTS = auto()
+    VOTES = auto()

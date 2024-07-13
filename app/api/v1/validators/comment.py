@@ -1,4 +1,4 @@
-"""Contains message domain validators."""
+"""Contains comment domain validators."""
 
 from typing import Any
 
@@ -51,7 +51,7 @@ class CommentByIdValidator(BaseCommentValidator):
         comment_service: CommentService = Depends(),
         thread_by_id_validator: ThreadByIdValidator = Depends(),
     ) -> None:
-        """Initializes comment create validator.
+        """Initializes comment by identifier validator.
 
         Args:
             request (Request): Current request object.

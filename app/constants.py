@@ -31,7 +31,7 @@ class HTTPErrorMessagesEnum(StrEnum):
     CART_ACCESS_DENIED = "Access denied to another user's cart."
 
     ENTITY_IS_NOT_FOUND = "{entity} is not found."
-    ENTITY_FIELD_UNIQUENESS = "{entity} with such {field} is already exist."
+    ENTITY_FIELD_UNIQUENESS = "{entity} with such '{field}' is already created."
 
     PASSWORD_DOES_NOT_MATCH = "The current password does not match."
 

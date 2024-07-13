@@ -14,6 +14,7 @@ from app.api.v1.repositories.comment import CommentRepository
 from app.api.v1.repositories.product import ProductRepository
 from app.api.v1.repositories.thread import ThreadRepository
 from app.api.v1.repositories.user import UserRepository
+from app.api.v1.repositories.vote import VoteRepository
 from app.loaders import JSONFileLoader
 from app.services.mongo.constants import MongoCollectionsEnum
 from app.services.mongo.transaction_manager import TransactionManager
@@ -34,6 +35,7 @@ class FileFixtureManager:
         MongoCollectionsEnum.CARTS: _injector.get(CartRepository),
         MongoCollectionsEnum.THREADS: _injector.get(ThreadRepository),
         MongoCollectionsEnum.COMMENTS: _injector.get(CommentRepository),
+        MongoCollectionsEnum.VOTES: _injector.get(VoteRepository),
     }
 
     def __init__(

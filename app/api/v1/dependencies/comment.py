@@ -86,7 +86,7 @@ class CommentDataCreateDependency:
         comment_data: BaseCommentCreateData,
         comment_create_validator: CommentCreateValidator = Depends(),
     ) -> CommentCreateData:
-        """Validates data on user create operation.
+        """Validates data on comment create operation.
 
         Args:
             thread_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
