@@ -8,7 +8,6 @@ from fastapi import BackgroundTasks, Depends
 from app.api.v1.models.thread import Thread
 from app.api.v1.repositories.thread import ThreadRepository
 from app.api.v1.services import BaseService
-from app.exceptions import EntityIsNotFoundError
 from app.services.mongo.transaction_manager import TransactionManager
 from app.services.redis.service import RedisService
 
@@ -80,15 +79,9 @@ class ThreadService(BaseService):
         Returns:
             Thread: The retrieved thread.
 
-        Raises:
-            EntityIsNotFoundError: In case thread is not found.
-
         """
 
         thread = await self.repository.get_by_id(id_=id_)
-
-        if thread is None:
-            raise EntityIsNotFoundError
 
         return Thread(**thread)
 

@@ -8,7 +8,6 @@ from fastapi import BackgroundTasks, Depends
 from app.api.v1.models.thread import Comment, CommentCreateData, CommentUpdateData
 from app.api.v1.repositories.comment import CommentRepository
 from app.api.v1.services import BaseService
-from app.exceptions import EntityIsNotFoundError
 from app.services.mongo.transaction_manager import TransactionManager
 from app.services.redis.service import RedisService
 
@@ -80,15 +79,9 @@ class CommentService(BaseService):
         Returns:
             Comment: The retrieved comment.
 
-        Raises:
-            EntityIsNotFoundError: In case comment is not found.
-
         """
 
         comment = await self.repository.get_by_id(id_=id_)
-
-        if comment is None:
-            raise EntityIsNotFoundError
 
         return Comment(**comment)
 
@@ -148,7 +141,7 @@ class CommentService(BaseService):
 
         """
 
-        updated_comment = await self.repository.get_one_and_update_by_id(
+        updated_comment = await self.repository.get_and_update_by_id(
             id_=id_,
             body=data.body,
         )

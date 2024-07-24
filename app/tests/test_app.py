@@ -2,6 +2,7 @@
 
 from unittest.mock import MagicMock, patch
 
+from fastapi import status
 from fastapi.testclient import TestClient
 
 from app.app import app
@@ -28,7 +29,9 @@ class TestApp(BaseTest):
         """Test application startup and shutdown events."""
 
         with TestClient(app) as client:
-            client.get(f"{AppConstants.API_V1_PREFIX}/health/")
+            response = client.get(f"{AppConstants.API_V1_PREFIX}/health/")
+
+            assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
         assert mongo_client_close_mock.call_count == 1
         assert redis_client_close_mock.call_count == 1

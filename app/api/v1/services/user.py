@@ -25,7 +25,7 @@ from app.api.v1.repositories.user import UserRepository
 from app.api.v1.services import BaseService
 from app.api.v1.services.cart import CartService
 from app.constants import HTTPErrorMessagesEnum
-from app.exceptions import EntityDuplicateKeyError, EntityIsNotFoundError
+from app.exceptions import EntityDuplicateKeyError
 from app.services.mongo.transaction_manager import TransactionManager
 from app.services.redis.service import RedisService
 from app.services.send_grid.service import SendGridService
@@ -125,15 +125,9 @@ class UserService(BaseService):
         Returns:
             User: User object.
 
-        Raises:
-            EntityIsNotFoundError: In case user is not found.
-
         """
 
         user = await self.repository.get_by_id(id_=id_)
-
-        if user is None:
-            raise EntityIsNotFoundError
 
         return User(**user)
 
@@ -197,7 +191,7 @@ class UserService(BaseService):
 
         emails_match = item.email == data.email
 
-        updated_user = await self.repository.get_one_and_update_by_id(
+        updated_user = await self.repository.get_and_update_by_id(
             id_=item.id,
             first_name=data.first_name,
             last_name=data.last_name,
@@ -274,15 +268,9 @@ class UserService(BaseService):
         Returns:
             User: User object.
 
-        Raises:
-            EntityIsNotFoundError: In case user is not found.
-
         """
 
-        user = await self.repository.get_by_username(username=username)
-
-        if user is None:
-            raise EntityIsNotFoundError
+        user = await self.repository.get_one(username=username)
 
         return User(**user)
 

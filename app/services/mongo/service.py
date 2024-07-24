@@ -278,7 +278,7 @@ class MongoDBService(BaseService):
 
         return result.inserted_ids
 
-    async def update_one(  # noqa: PLR0913
+    async def update_one(
         self,
         collection: str,
         filter_: Mapping[str, Any],

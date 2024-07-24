@@ -9,6 +9,7 @@ from fastapi import Depends
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
 from app.constants import SortingTypesEnum, SortingValuesEnum
+from app.exceptions import EntityIsNotFoundError
 from app.services.mongo.service import MongoDBService
 
 
@@ -193,9 +194,39 @@ class BaseRepository(abc.ABC):
             session=session,
         )
 
+    async def get_one(
+        self,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+        **filters: Any,
+    ) -> Mapping[str, Any]:
+        """Retrieves a single document from the repository by filters.
+
+        Args:
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+            filters (Any): Parameters for document filtering.
+
+        Returns:
+            Mapping[str, Any]: The retrieved document.
+
+        Raises:
+            EntityIsNotFoundError: In case document is not found.
+
+        """
+
+        document = await self._mongo_service.find_one(
+            collection=self._collection_name, filter_=filters, session=session
+        )
+
+        if document is None:
+            raise EntityIsNotFoundError
+
+        return document
+
     async def get_by_id(
         self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
-    ) -> Mapping[str, Any] | None:
+    ) -> Mapping[str, Any]:
         """Retrieves a document from the repository by its unique identifier.
 
         Args:
@@ -204,16 +235,14 @@ class BaseRepository(abc.ABC):
             if operation is transactional. Defaults to None.
 
         Returns:
-            Mapping[str, Any] | None: The retrieved document.
+            Mapping[str, Any]: The retrieved document.
 
         """
 
-        return await self._mongo_service.find_one(
-            collection=self._collection_name, filter_={"_id": id_}, session=session
-        )
+        return await self.get_one(_id=id_)
 
     @abc.abstractmethod
-    async def get_one_and_update_by_id(
+    async def get_and_update_by_id(
         self,
         id_: ObjectId,
         *,

@@ -91,15 +91,9 @@ class CategoryService(BaseService):
         Returns:
             Category: The retrieved category.
 
-        Raises:
-            EntityIsNotFoundError: In case category is not found.
-
         """
 
         category = await self.repository.get_by_id(id_=id_)
-
-        if category is None:
-            raise EntityIsNotFoundError
 
         return Category(**category)
 
@@ -173,7 +167,10 @@ class CategoryService(BaseService):
 
         """
 
-        return await self.repository.get_category_parameters(id_=id_)
+        try:
+            return await self.repository.get_category_parameters(id_=id_)
+        except EntityIsNotFoundError:
+            return None
 
     async def calculate_category_parameters(self, id_: ObjectId) -> None:
         """Calculates list of parameters for specific product category.

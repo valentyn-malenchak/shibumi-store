@@ -16,7 +16,6 @@ from app.api.v1.repositories.product import ProductRepository
 from app.api.v1.services import BaseService
 from app.api.v1.services.category import CategoryService
 from app.api.v1.services.thread import ThreadService
-from app.exceptions import EntityIsNotFoundError
 from app.services.mongo.transaction_manager import TransactionManager
 from app.services.redis.service import RedisService
 
@@ -118,15 +117,9 @@ class ProductService(BaseService):
         Returns:
             Product: The retrieved product.
 
-        Raises:
-            EntityIsNotFoundError: In case product is not found.
-
         """
 
         product = await self.repository.get_by_id(id_=id_)
-
-        if product is None:
-            raise EntityIsNotFoundError
 
         return Product(**product)
 
@@ -176,7 +169,7 @@ class ProductService(BaseService):
 
         """
 
-        updated_product = await self.repository.get_one_and_update_by_id(
+        updated_product = await self.repository.get_and_update_by_id(
             id_=item.id,
             name=data.name,
             synopsis=data.synopsis,
