@@ -60,7 +60,7 @@ class CartRepository(BaseRepository):
         """
         raise NotImplementedError
 
-    async def get_one_and_update_by_id(
+    async def get_and_update_by_id(
         self,
         id_: ObjectId,
         *,
@@ -132,27 +132,6 @@ class CartRepository(BaseRepository):
 
         """
         raise NotImplementedError
-
-    async def get_by_user_id(
-        self, user_id: ObjectId, *, session: AsyncIOMotorClientSession | None = None
-    ) -> Mapping[str, Any] | None:
-        """Retrieves a cart from the repository by user unique identifier.
-
-        Args:
-            user_id (ObjectId): BSON object identifier of requested user.
-            session (AsyncIOMotorClientSession | None): Defines a client session
-            if operation is transactional. Defaults to None.
-
-        Returns:
-            Mapping[str, Any] | None: The retrieved cart.
-
-        """
-
-        return await self._mongo_service.find_one(
-            collection=self._collection_name,
-            filter_={"user_id": user_id},
-            session=session,
-        )
 
     async def add_product(
         self,

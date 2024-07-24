@@ -12,7 +12,6 @@ from app.api.v1.models.cart import (
 )
 from app.api.v1.repositories.cart import CartRepository
 from app.api.v1.services import BaseService
-from app.exceptions import EntityIsNotFoundError
 from app.services.mongo.transaction_manager import TransactionManager
 from app.services.redis.service import RedisService
 
@@ -84,15 +83,9 @@ class CartService(BaseService):
         Returns:
             Cart: The retrieved cart.
 
-        Raises:
-            EntityIsNotFoundError: In case cart is not found.
-
         """
 
         cart = await self.repository.get_by_id(id_=id_)
-
-        if cart is None:
-            raise EntityIsNotFoundError
 
         return Cart(**cart)
 
@@ -105,15 +98,9 @@ class CartService(BaseService):
         Returns:
             Cart: The retrieved cart.
 
-        Raises:
-            EntityIsNotFoundError: In case cart is not found.
-
         """
 
-        cart = await self.repository.get_by_user_id(user_id=user_id)
-
-        if cart is None:
-            raise EntityIsNotFoundError
+        cart = await self.repository.get_one(user_id=user_id)
 
         return Cart(**cart)
 

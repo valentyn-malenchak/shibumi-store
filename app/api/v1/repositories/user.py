@@ -73,7 +73,7 @@ class UserRepository(BaseRepository):
         """
         return None
 
-    async def get_one_and_update_by_id(
+    async def get_and_update_by_id(
         self,
         id_: ObjectId,
         *,
@@ -154,26 +154,5 @@ class UserRepository(BaseRepository):
             collection=self._collection_name,
             filter_={"_id": id_},
             update={"$set": {**fields, "updated_at": arrow.utcnow().datetime}},
-            session=session,
-        )
-
-    async def get_by_username(
-        self, username: str, *, session: AsyncIOMotorClientSession | None = None
-    ) -> Mapping[str, Any] | None:
-        """Retrieves a user from the repository by its username.
-
-        Args:
-            username (str): Username.
-            session (AsyncIOMotorClientSession | None): Defines a client session
-            if operation is transactional. Defaults to None.
-
-        Returns:
-            Mapping[str, Any] | None: User document or None.
-
-        """
-
-        return await self._mongo_service.find_one(
-            collection=self._collection_name,
-            filter_={"username": username},
             session=session,
         )

@@ -54,7 +54,7 @@ class ParameterRepository(BaseRepository):
         """
         return None
 
-    async def get_one_and_update_by_id(
+    async def get_and_update_by_id(
         self,
         id_: ObjectId,
         *,

@@ -1853,7 +1853,7 @@ class TestUser(BaseAPITest):
     @pytest.mark.parametrize(
         "send_grid_send_mock", [SendGridException()], indirect=True
     )
-    async def test_request_reset_user_password_send_grid_error(  # noqa: PLR0913
+    async def test_request_reset_user_password_send_grid_error(
         self,
         monkeypatch: pytest.MonkeyPatch,
         test_client: AsyncClient,
@@ -2104,7 +2104,7 @@ class TestUser(BaseAPITest):
     @pytest.mark.parametrize(
         "send_grid_send_mock", [SendGridException()], indirect=True
     )
-    async def test_request_verify_user_email_send_grid_error(  # noqa: PLR0913
+    async def test_request_verify_user_email_send_grid_error(
         self,
         monkeypatch: pytest.MonkeyPatch,
         test_client: AsyncClient,

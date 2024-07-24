@@ -10,7 +10,7 @@ from app.api.v1.repositories.vote import VoteRepository
 from app.api.v1.services import BaseService
 from app.api.v1.services.comment import CommentService
 from app.constants import HTTPErrorMessagesEnum
-from app.exceptions import EntityDuplicateKeyError, EntityIsNotFoundError
+from app.exceptions import EntityDuplicateKeyError
 from app.services.mongo.transaction_manager import TransactionManager
 from app.services.redis.service import RedisService
 
@@ -18,7 +18,7 @@ from app.services.redis.service import RedisService
 class VoteService(BaseService):
     """Vote service for encapsulating business logic."""
 
-    def __init__(  # noqa: PLR0913
+    def __init__(
         self,
         background_tasks: BackgroundTasks,
         redis_service: RedisService = Depends(),
@@ -86,15 +86,9 @@ class VoteService(BaseService):
         Returns:
             Vote: The retrieved vote.
 
-        Raises:
-            EntityIsNotFoundError: In case vote is not found.
-
         """
 
         vote = await self.repository.get_by_id(id_=id_)
-
-        if vote is None:
-            raise EntityIsNotFoundError
 
         return Vote(**vote)
 
