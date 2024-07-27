@@ -85,6 +85,18 @@ class ThreadService(BaseService):
 
         return Thread(**thread)
 
+    async def create_raw(self, _: Any) -> Any:
+        """Creates a raw new thread.
+
+        Args:
+            _ (Any): The data for the new thread.
+
+        Returns:
+            Any: The ID of created thread.
+
+        """
+        return await self.repository.create()
+
     async def create(self, _: Any) -> Thread:
         """Creates a new thread.
 
@@ -96,7 +108,7 @@ class ThreadService(BaseService):
 
         """
 
-        id_ = await self.repository.create()
+        id_ = await self.create_raw(...)
 
         return await self.get_by_id(id_=id_)
 

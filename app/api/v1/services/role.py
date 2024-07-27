@@ -102,6 +102,21 @@ class RoleService(BaseService):
         """
         raise NotImplementedError
 
+    async def create_raw(self, data: Any) -> Any:
+        """Creates a raw new role.
+
+        Args:
+            data (Any): The data for the new role.
+
+        Returns:
+            Any: The ID of created role.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
     async def create(self, data: Any) -> Any:
         """Creates a new role.
 
@@ -109,7 +124,7 @@ class RoleService(BaseService):
             data (Any): The data for the new role.
 
         Returns:
-            Any: The ID of created role.
+            Any: Created role.
 
         Raises:
             NotImplementedError: This method is not implemented.

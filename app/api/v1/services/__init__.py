@@ -94,6 +94,22 @@ class BaseService(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
+    async def create_raw(self, data: Any) -> Any:
+        """Creates a raw new item.
+
+        Args:
+            data (Any): The data for the new item.
+
+        Returns:
+            Any: The ID of created item.
+
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses.
+
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
     async def create(self, data: Any) -> Any:
         """Creates a new item.
 
@@ -101,7 +117,7 @@ class BaseService(abc.ABC):
             data (Any): The data for the new item.
 
         Returns:
-            Any: The created item.
+            Any: Created item.
 
         Raises:
             NotImplementedError: This method must be implemented by subclasses.
