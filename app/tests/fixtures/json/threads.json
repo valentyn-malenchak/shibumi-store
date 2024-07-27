@@ -3,6 +3,8 @@
     "_id": {
       "$oid": "6669b5634cef83e11dbc7abf"
     },
+    "name": "ASUS TUF Gaming F15",
+    "body": "Product discussion",
     "created_at": {
       "$date": "2024-01-05T12:08:35.440Z"
     },
@@ -12,6 +14,8 @@
     "_id": {
       "$oid": "6669b5b94cef83e11dbc7ac0"
     },
+    "name": "MSI GS66 Stealth",
+    "body": "Product discussion",
     "created_at": {
       "$date": "2024-02-10T14:20:00.000Z"
     },
@@ -21,6 +25,8 @@
     "_id": {
       "$oid": "6669b5d04cef83e11dbc7ac1"
     },
+    "name": "Lenovo Legion 7i",
+    "body": "Product discussion",
     "created_at": {
       "$date": "2024-03-02T09:45:00.000Z"
     },
@@ -30,6 +36,8 @@
     "_id": {
       "$oid": "6669b5de4cef83e11dbc7ac2"
     },
+    "name": "Acer Predator Helios 300",
+    "body": "Product discussion",
     "created_at": {
       "$date": "2024-03-15T14:30:00.000Z"
     },
@@ -39,6 +47,8 @@
     "_id": {
       "$oid": "6669b5ef4cef83e11dbc7ac3"
     },
+    "name": "HP Envy x360",
+    "body": "Product discussion",
     "created_at": {
       "$date": "2024-04-05T10:15:00.000Z"
     },
@@ -48,6 +58,8 @@
     "_id": {
       "$oid": "6669b6024cef83e11dbc7ac4"
     },
+    "name": "Razer Blade 15",
+    "body": "Product discussion",
     "created_at": {
       "$date": "2024-04-18T15:20:00.000Z"
     },
@@ -57,6 +69,8 @@
     "_id": {
       "$oid": "6669b6114cef83e11dbc7ac5"
     },
+    "name": "Dell Inspiron 15",
+    "body": "Product discussion",
     "created_at": {
       "$date": "2024-05-01T11:10:00.000Z"
     },
@@ -66,6 +80,8 @@
     "_id": {
       "$oid": "6669b61d4cef83e11dbc7ac6"
     },
+    "name": "Apple MacBook Air M2",
+    "body": "Product discussion",
     "created_at": {
       "$date": "2024-05-14T09:00:00.000Z"
     },
@@ -75,6 +91,8 @@
     "_id": {
       "$oid": "6669b6284cef83e11dbc7ac7"
     },
+    "name": "Microsoft Surface Laptop Studio",
+    "body": "Product discussion",
     "created_at": {
       "$date": "2024-06-05T12:30:00.000Z"
     },
@@ -84,6 +102,8 @@
     "_id": {
       "$oid": "6669b6364cef83e11dbc7ac8"
     },
+    "name": "Samsung Galaxy Book Pro 360",
+    "body": "Product discussion",
     "created_at": {
       "$date": "2024-07-10T08:45:00.000Z"
     },
@@ -93,6 +113,8 @@
     "_id": {
       "$oid": "6669b6474cef83e11dbc7ac9"
     },
+    "name": "Alienware x17",
+    "body": "Product discussion",
     "created_at": {
       "$date": "2024-08-15T13:00:00.000Z"
     },
@@ -102,6 +124,8 @@
     "_id": {
       "$oid": "6669b6584cef83e11dbc7aca"
     },
+    "name": "Huawei MateBook X Pro",
+    "body": "Product discussion",
     "created_at": {
       "$date": "2024-09-02T10:20:00.000Z"
     },
@@ -111,6 +135,8 @@
     "_id": {
       "$oid": "6669b6664cef83e11dbc7acb"
     },
+    "name": "Xiaomi Mi Power Bank (BHR6109CN)",
+    "body": "Product discussion",
     "created_at": {
       "$date": "2024-02-18T16:26:56.913Z"
     },
@@ -120,6 +146,8 @@
     "_id": {
       "$oid": "6669b6734cef83e11dbc7acc"
     },
+    "name": "Anker PowerCore 26800mAh Portable Charger",
+    "body": "Product discussion",
     "created_at": {
       "$date": "2024-02-19T09:15:00.000Z"
     },
@@ -129,6 +157,8 @@
     "_id": {
       "$oid": "6669b6854cef83e11dbc7acd"
     },
+    "name": "RAVPower Portable Charger 20000mAh",
+    "body": "Product discussion",
     "created_at": {
       "$date": "2024-02-20T11:30:00.000Z"
     },
@@ -138,6 +168,8 @@
     "_id": {
       "$oid": "6669b6914cef83e11dbc7ace"
     },
+    "name": "Samsung Wireless Charger Portable Battery",
+    "body": "Product discussion",
     "created_at": {
       "$date": "2024-02-21T14:20:00.000Z"
     },
@@ -147,6 +179,8 @@
     "_id": {
       "$oid": "6669b69e4cef83e11dbc7acf"
     },
+    "name": "Dell XPS 8940 Desktop",
+    "body": "Product discussion",
     "created_at": {
       "$date": "2024-02-22T16:40:00.000Z"
     },
@@ -156,6 +190,8 @@
     "_id": {
       "$oid": "6669b6ad4cef83e11dbc7ad0"
     },
+    "name": "HP Pavilion Gaming Desktop",
+    "body": "Product discussion",
     "created_at": {
       "$date": "2024-02-25T11:55:00.000Z"
     },
@@ -165,6 +201,8 @@
     "_id": {
       "$oid": "6669b6bb4cef83e11dbc7ad1"
     },
+    "name": "Apple Mac mini",
+    "body": "Product discussion",
     "created_at": {
       "$date": "2024-03-01T14:20:00.000Z"
     },
@@ -174,6 +212,8 @@
     "_id": {
       "$oid": "6669b6c94cef83e11dbc7ad2"
     },
+    "name": "Lenovo ThinkCentre M80q",
+    "body": "Product discussion",
     "created_at": {
       "$date": "2024-03-05T09:45:00.000Z"
     },

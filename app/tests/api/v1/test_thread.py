@@ -45,6 +45,8 @@ class TestThread(BaseAPITest):
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
             "id": "6669b5634cef83e11dbc7abf",
+            "name": "ASUS TUF Gaming F15",
+            "body": "Product discussion",
             "created_at": "2024-01-05T12:08:35.440000",
             "updated_at": None,
         }
@@ -67,6 +69,8 @@ class TestThread(BaseAPITest):
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
             "id": "6669b5634cef83e11dbc7abf",
+            "name": "ASUS TUF Gaming F15",
+            "body": "Product discussion",
             "created_at": "2024-01-05T12:08:35.440000",
             "updated_at": None,
         }

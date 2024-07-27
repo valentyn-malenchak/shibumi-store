@@ -155,6 +155,11 @@ class TestProduct(BaseAPITest):
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == {
             "id": thread_id,
+            "name": "ASUS TUF Gaming F15",
+            "body": "Display 15.6 IPS (1920x1080) Full HD 144 Hz / "
+            "Intel Core i5-12500H (2.5 - 4.5 GHz) / RAM 16 GB / "
+            "SSD 512 GB / nVidia GeForce RTX 3050, 4 GB / LAN / "
+            "Wi-Fi / Bluetooth / webcamera / no OS / 2.2 kg / black",
             "created_at": FROZEN_DATETIME,
             "updated_at": None,
         }

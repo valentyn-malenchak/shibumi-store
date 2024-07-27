@@ -5,7 +5,7 @@ from typing import Any
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
 
-from app.api.v1.models.thread import Thread
+from app.api.v1.models.thread import Thread, ThreadCreateData
 from app.api.v1.repositories.thread import ThreadRepository
 from app.api.v1.services import BaseService
 from app.services.mongo.transaction_manager import TransactionManager
@@ -85,30 +85,30 @@ class ThreadService(BaseService):
 
         return Thread(**thread)
 
-    async def create_raw(self, _: Any) -> Any:
+    async def create_raw(self, data: ThreadCreateData) -> Any:
         """Creates a raw new thread.
 
         Args:
-            _ (Any): The data for the new thread.
+            data (ThreadCreateData): The data for the new thread.
 
         Returns:
             Any: The ID of created thread.
 
         """
-        return await self.repository.create()
+        return await self.repository.create(name=data.name, body=data.body)
 
-    async def create(self, _: Any) -> Thread:
+    async def create(self, data: ThreadCreateData) -> Thread:
         """Creates a new thread.
 
         Args:
-            _ (Any): The data for the new thread.
+            data (ThreadCreateData): The data for the new thread.
 
         Returns:
             Thread: Created thread.
 
         """
 
-        id_ = await self.create_raw(...)
+        id_ = await self.create_raw(data=data)
 
         return await self.get_by_id(id_=id_)
 
