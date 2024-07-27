@@ -12,8 +12,17 @@ from app.utils.pydantic import ObjectIdAnnotation
 class Thread(BSONObjectId):
     """Thread model."""
 
+    name: str
+    body: str
     created_at: datetime
     updated_at: datetime | None
+
+
+class ThreadCreateData(BaseModel):
+    """Thread create data model."""
+
+    name: str
+    body: str
 
 
 class Comment(BSONObjectId):
