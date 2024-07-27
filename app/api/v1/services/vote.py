@@ -92,22 +92,21 @@ class VoteService(BaseService):
 
         return Vote(**vote)
 
-    async def create(self, data: VoteCreateData) -> Vote:
-        """Creates a new vote.
+    async def create_raw(self, data: VoteCreateData) -> Any:
+        """Creates a raw new vote.
 
         Args:
             data (VoteCreateData): The data for the new vote.
 
         Returns:
-            Vote: Created vote.
+            Any: The ID of created vote.
 
         Raises:
             HTTPException: if vote with specified comment is already created for user.
 
         """
-
         try:
-            id_ = await self.repository.create(
+            return await self.repository.create(
                 value=data.value,
                 comment_id=data.comment_id,
                 user_id=data.user_id,
@@ -120,6 +119,19 @@ class VoteService(BaseService):
                     entity="Vote", field="comment_id"
                 ),
             )
+
+    async def create(self, data: VoteCreateData) -> Vote:
+        """Creates a new vote.
+
+        Args:
+            data (VoteCreateData): The data for the new vote.
+
+        Returns:
+            Vote: Created vote.
+
+        """
+
+        id_ = await self.create_raw(data=data)
 
         # increments upvote/downvote counter by one
         await self.comment_service.increment_votes(

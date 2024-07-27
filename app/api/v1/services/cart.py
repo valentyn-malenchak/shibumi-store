@@ -7,6 +7,7 @@ from fastapi import BackgroundTasks, Depends
 
 from app.api.v1.models.cart import (
     Cart,
+    CartCreateData,
     CartProduct,
     CartProductQuantity,
 )
@@ -104,20 +105,32 @@ class CartService(BaseService):
 
         return Cart(**cart)
 
-    async def create(self, user_id: ObjectId) -> Cart:
+    async def create_raw(self, data: CartCreateData) -> Any:
+        """Creates a raw new cart.
+
+        Args:
+            data (CartCreateData): The data for the new cart.
+
+        Returns:
+            Any: The ID of created cart.
+
+        """
+        return await self.repository.create(user_id=data.user_id)
+
+    async def create(self, data: Any) -> Any:
         """Creates a new cart.
 
         Args:
-            user_id (ObjectId): User unique identifier.
+            data (Any): The data for the new cart.
 
         Returns:
-            Cart: Created cart.
+            Any: Created cart.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
 
         """
-
-        id_ = await self.repository.create(user_id=user_id)
-
-        return await self.get_by_id(id_=id_)
+        raise NotImplementedError
 
     async def update(self, item: Any, data: Any) -> Any:
         """Updates a cart object.

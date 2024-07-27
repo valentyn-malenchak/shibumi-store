@@ -97,6 +97,21 @@ class CategoryService(BaseService):
 
         return Category(**category)
 
+    async def create_raw(self, data: Any) -> Any:
+        """Creates a raw new category.
+
+        Args:
+            data (Any): The data for the new category.
+
+        Returns:
+            Any: The ID of created category.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
     async def create(self, data: Any) -> Any:
         """Creates a new category.
 
@@ -104,7 +119,7 @@ class CategoryService(BaseService):
             data (Any): The data for the new category.
 
         Returns:
-            Any: The ID of created category.
+            Any: Created category.
 
         Raises:
             NotImplementedError: This method is not implemented.

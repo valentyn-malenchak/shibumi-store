@@ -85,20 +85,20 @@ class CommentService(BaseService):
 
         return Comment(**comment)
 
-    async def create(self, data: CommentCreateData) -> Comment:
-        """Creates a new comment.
+    async def create_raw(self, data: CommentCreateData) -> Any:
+        """Creates a raw new comment.
 
         Args:
             data (CommentCreateData): The data for the new comment.
 
         Returns:
-            Comment: Created comment.
+            Any: The ID of created comment.
 
         """
 
         comment_id = ObjectId()
 
-        id_ = await self.repository.create(
+        return await self.repository.create(
             _id=comment_id,
             body=data.body,
             thread_id=data.thread_id,
@@ -110,6 +110,19 @@ class CommentService(BaseService):
             if data.parent_comment is not None
             else f"/{comment_id}",
         )
+
+    async def create(self, data: CommentCreateData) -> Comment:
+        """Creates a new comment.
+
+        Args:
+            data (CommentCreateData): The data for the new comment.
+
+        Returns:
+            Comment: Created comment.
+
+        """
+
+        id_ = await self.create_raw(data=data)
 
         return await self.get_by_id(id_=id_)
 

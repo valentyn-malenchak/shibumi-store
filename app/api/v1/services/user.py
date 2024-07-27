@@ -15,6 +15,7 @@ from app.api.v1.constants import (
     RedisNamesTTLEnum,
 )
 from app.api.v1.models import Pagination, Search, Sorting
+from app.api.v1.models.cart import CartCreateData
 from app.api.v1.models.user import (
     User,
     UserCreateData,
@@ -131,14 +132,14 @@ class UserService(BaseService):
 
         return User(**user)
 
-    async def create(self, data: UserCreateData) -> User:
-        """Creates a new user.
+    async def create_raw(self, data: UserCreateData) -> Any:
+        """Creates a raw new user.
 
         Args:
             data (UserCreateData): The data for the new user.
 
         Returns:
-            User: The created user.
+            Any: The ID of created user.
 
         Raises:
             HTTPException: if user with specified username is already created.
@@ -148,7 +149,7 @@ class UserService(BaseService):
         password = Password.get_password_hash(password=data.password)
 
         try:
-            id_ = await self.repository.create(
+            return await self.repository.create(
                 first_name=data.first_name,
                 last_name=data.last_name,
                 patronymic_name=data.patronymic_name,
@@ -168,8 +169,21 @@ class UserService(BaseService):
                 ),
             )
 
+    async def create(self, data: UserCreateData) -> User:
+        """Creates a new user.
+
+        Args:
+            data (UserCreateData): The data for the new user.
+
+        Returns:
+            User: Created user.
+
+        """
+
+        id_ = await self.create_raw(data=data)
+
         # Initialize user's cart
-        await self.cart_service.create(user_id=id_)
+        await self.cart_service.create_raw(data=CartCreateData(user_id=id_))
 
         user = await self.get_by_id(id_=id_)
 

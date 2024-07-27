@@ -29,3 +29,9 @@ class Cart(BSONObjectId):
     products: list[CartProduct]
     created_at: datetime
     updated_at: datetime | None
+
+
+class CartCreateData(BaseModel):
+    """Cart create data model."""
+
+    user_id: Annotated[ObjectId, ObjectIdAnnotation]

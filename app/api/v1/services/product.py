@@ -123,21 +123,21 @@ class ProductService(BaseService):
 
         return Product(**product)
 
-    async def create(self, data: ProductData) -> Product:
-        """Creates a new product.
+    async def create_raw(self, data: ProductData) -> Any:
+        """Creates a raw new product.
 
         Args:
             data (ProductData): The data for the new product.
 
         Returns:
-            Product: The created product.
+            Any: The ID of created product.
 
         """
 
         # Initialize product thread
         thread = await self.thread_service.create(...)
 
-        id_ = await self.repository.create(
+        return await self.repository.create(
             name=data.name,
             synopsis=data.synopsis,
             description=data.description,
@@ -149,6 +149,19 @@ class ProductService(BaseService):
             parameters=data.parameters,
             thread_id=thread.id,
         )
+
+    async def create(self, data: ProductData) -> Product:
+        """Creates a new product.
+
+        Args:
+            data (ProductData): The data for the new product.
+
+        Returns:
+            Product: Created product.
+
+        """
+
+        id_ = await self.create_raw(data=data)
 
         self.background_tasks.add_task(
             self.category_service.calculate_category_parameters,
