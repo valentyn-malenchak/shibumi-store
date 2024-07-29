@@ -52,6 +52,8 @@ class HTTPErrorMessagesEnum(StrEnum):
     PRODUCT_IS_NOT_ADDED_TO_THE_CART = "Product is not added to the cart."
 
     COMMENT_ACCESS_DENIED = "Access denied to comment."
+    VOTE_ACCESS_DENIED = "Access denied to vote."
+    INVALID_VOTE_VALUE = "Vote is already upvoted/downvoted."
 
 
 class ValidationErrorMessagesEnum(StrEnum):

@@ -173,7 +173,7 @@ class CommentService(BaseService):
         """
         raise NotImplementedError
 
-    async def increment_votes(self, id_: ObjectId, value: bool) -> None:
+    async def add_vote(self, id_: ObjectId, value: bool) -> None:
         """Increments a vote counter field for comment by its unique identifier.
 
         Args:
@@ -181,6 +181,14 @@ class CommentService(BaseService):
             value (bool): Vote value.
 
         """
-        self.background_tasks.add_task(
-            self.repository.increment_votes, id_=id_, value=value
-        )
+        await self.repository.add_vote(id_=id_, value=value)
+
+    async def update_vote(self, id_: ObjectId, value: bool) -> None:
+        """Updates a vote counter fields for comment by its unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the comment.
+            value (bool): Vote value.
+
+        """
+        await self.repository.update_vote(id_=id_, value=value)

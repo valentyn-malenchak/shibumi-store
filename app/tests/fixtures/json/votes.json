@@ -14,5 +14,21 @@
       "$date": "2024-07-13T13:48:30.209Z"
     },
     "updated_at": null
+  },
+  {
+    "_id": {
+      "$oid": "66a7f2196da2a20f1db87a29"
+    },
+    "value": false,
+    "comment_id": {
+      "$oid": "666af8ae6aba47cfb60efb31"
+    },
+    "user_id": {
+      "$oid": "6598495fdf97a8e0d7e612ae"
+    },
+    "created_at": {
+      "$date": "2024-07-13T13:48:30.209Z"
+    },
+    "updated_at": null
   }
 ]

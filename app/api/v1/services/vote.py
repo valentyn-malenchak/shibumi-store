@@ -5,7 +5,7 @@ from typing import Any
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends, HTTPException, status
 
-from app.api.v1.models.thread import Vote, VoteCreateData
+from app.api.v1.models.thread import Vote, VoteCreateData, VoteUpdateData
 from app.api.v1.repositories.vote import VoteRepository
 from app.api.v1.services import BaseService
 from app.api.v1.services.comment import CommentService
@@ -134,9 +134,7 @@ class VoteService(BaseService):
         id_ = await self.create_raw(data=data)
 
         # increments upvote/downvote counter by one
-        await self.comment_service.increment_votes(
-            id_=data.comment_id, value=data.value
-        )
+        await self.comment_service.add_vote(id_=data.comment_id, value=data.value)
 
         return await self.get_by_id(id_=id_)
 
@@ -156,22 +154,27 @@ class VoteService(BaseService):
         """
         raise NotImplementedError
 
-    async def update_by_id(self, id_: ObjectId, data: Any) -> Any:
+    async def update_by_id(self, id_: ObjectId, data: VoteUpdateData) -> Vote:
         """Updates a vote by its unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the vote.
-            data (Any): Data to update vote.
+            data (VoteUpdateData): Data to update vote.
 
         Returns:
-            Any: The updated vote.
-
-        Raises:
-            NotImplementedError: This method is not implemented.
+            Vote: The updated vote.
 
         """
 
-        raise NotImplementedError
+        updated_vote = await self.repository.get_and_update_by_id(
+            id_=id_,
+            value=data.value,
+        )
+
+        # updates upvote/downvote counters depends on value
+        await self.comment_service.update_vote(id_=data.comment_id, value=data.value)
+
+        return Vote(**updated_vote)
 
     async def delete_by_id(self, id_: ObjectId) -> None:
         """Deletes a vote by its unique identifier.
