@@ -11,7 +11,7 @@ from app.api.v1.dependencies.comment import (
     CommentDataUpdateDependency,
 )
 from app.api.v1.dependencies.thread import ThreadByIdDependency
-from app.api.v1.dependencies.vote import VoteDataCreateDependency
+from app.api.v1.dependencies.vote import VoteByIdDependency, VoteDataCreateDependency
 from app.api.v1.models.thread import (
     Comment,
     CommentCreateData,
@@ -127,6 +127,30 @@ async def update_thread_comment(
 
     """
     return await comment_service.update_by_id(id_=comment.id, data=comment_data)
+
+
+@router.get(
+    "/{thread_id}/comments/{comment_id}/votes/{vote_id}/",
+    response_model=Vote,
+    status_code=status.HTTP_200_OK,
+)
+async def get_thread_comment_vote(
+    _: CurrentUser = Security(
+        StrictAuthorization(), scopes=[ScopesEnum.THREADS_GET_VOTE.name]
+    ),
+    vote: Vote = Depends(VoteByIdDependency()),
+) -> Vote:
+    """API which returns thread comment vote.
+
+    Args:
+        _ (CurrentUser): Current user object.
+        vote (Vote): Vote object.
+
+    Returns:
+        Vote: Vote object.
+
+    """
+    return vote
 
 
 @router.post(

@@ -97,7 +97,9 @@ class CommentByIdValidator(BaseCommentValidator):
         if comment.thread_id != thread.id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=HTTPErrorMessagesEnum.COMMENT_DOES_NOT_BELONG_TO_THREAD,
+                detail=HTTPErrorMessagesEnum.ENTITIES_ARE_NOT_RELATED.format(
+                    child_entity="Comment", parent_entity="thread"
+                ),
             )
 
         return comment
