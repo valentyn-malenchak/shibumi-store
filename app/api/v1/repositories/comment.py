@@ -135,7 +135,7 @@ class CommentRepository(BaseRepository):
         """
         raise NotImplementedError
 
-    async def increment_votes(
+    async def add_vote(
         self,
         id_: ObjectId,
         value: bool,
@@ -156,5 +156,33 @@ class CommentRepository(BaseRepository):
             collection=self._collection_name,
             filter_={"_id": id_},
             update={"$inc": {"upvotes" if value is True else "downvotes": 1}},
+            session=session,
+        )
+
+    async def update_vote(
+        self,
+        id_: ObjectId,
+        value: bool,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+    ) -> None:
+        """Updates vote counter fields for comment by its unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the comment.
+            value (bool): Updated vote value.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        """
+
+        await self._mongo_service.update_one(
+            collection=self._collection_name,
+            filter_={"_id": id_},
+            update={
+                "$inc": {"upvotes": 1, "downvotes": -1}
+                if value is True
+                else {"upvotes": -1, "downvotes": 1}
+            },
             session=session,
         )

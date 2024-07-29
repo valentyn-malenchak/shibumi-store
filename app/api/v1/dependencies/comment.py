@@ -110,7 +110,7 @@ class CommentDataUpdateDependency:
     """Comment data update dependency."""
 
     async def __call__(self, comment_data: CommentUpdateData) -> CommentUpdateData:
-        """Validates data on user update operation.
+        """Validates data on comment update operation.
 
         Args:
             comment_data (CommentUpdateData): Comment update data.

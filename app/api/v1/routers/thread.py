@@ -11,7 +11,11 @@ from app.api.v1.dependencies.comment import (
     CommentDataUpdateDependency,
 )
 from app.api.v1.dependencies.thread import ThreadByIdDependency
-from app.api.v1.dependencies.vote import VoteByIdDependency, VoteDataCreateDependency
+from app.api.v1.dependencies.vote import (
+    VoteAuthorDependency,
+    VoteDataCreateDependency,
+    VoteDataUpdateDependency,
+)
 from app.api.v1.models.thread import (
     Comment,
     CommentCreateData,
@@ -19,6 +23,7 @@ from app.api.v1.models.thread import (
     Thread,
     Vote,
     VoteCreateData,
+    VoteUpdateData,
 )
 from app.api.v1.models.user import CurrentUser
 from app.api.v1.services.comment import CommentService
@@ -138,7 +143,7 @@ async def get_thread_comment_vote(
     _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.THREADS_GET_VOTE.name]
     ),
-    vote: Vote = Depends(VoteByIdDependency()),
+    vote: Vote = Depends(VoteAuthorDependency()),
 ) -> Vote:
     """API which returns thread comment vote.
 
@@ -177,3 +182,29 @@ async def create_thread_comment_vote(
 
     """
     return await vote_service.create(data=vote_data)
+
+
+@router.patch(
+    "/{thread_id}/comments/{comment_id}/votes/{vote_id}/",
+    response_model=Vote,
+    status_code=status.HTTP_200_OK,
+)
+async def update_thread_comment_vote(
+    _: CurrentUser = Security(
+        StrictAuthorization(), scopes=[ScopesEnum.THREADS_UPDATE_VOTE.name]
+    ),
+    vote_data: VoteUpdateData = Depends(VoteDataUpdateDependency()),
+    vote_service: VoteService = Depends(),
+) -> Vote:
+    """API which updates thread comment vote.
+
+    Args:
+        _ (CurrentUser): Current user object.
+        vote_data (VoteUpdateData): Vote update data.
+        vote_service (VoteService): Vote service.
+
+    Returns:
+        Vote: Vote object.
+
+    """
+    return await vote_service.update_by_id(id_=vote_data.vote_id, data=vote_data)

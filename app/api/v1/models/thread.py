@@ -71,8 +71,8 @@ class Vote(BSONObjectId):
     updated_at: datetime | None
 
 
-class VoteData(BaseModel):
-    """Vote data model."""
+class BaseVoteData(BaseModel):
+    """Base vote data model."""
 
     value: bool
 
@@ -82,4 +82,12 @@ class VoteCreateData(BaseModel):
 
     value: bool
     user_id: Annotated[ObjectId, ObjectIdAnnotation]
+    comment_id: Annotated[ObjectId, ObjectIdAnnotation]
+
+
+class VoteUpdateData(BaseModel):
+    """Vote update data."""
+
+    value: bool
+    vote_id: Annotated[ObjectId, ObjectIdAnnotation]
     comment_id: Annotated[ObjectId, ObjectIdAnnotation]

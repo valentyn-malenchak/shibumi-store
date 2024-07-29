@@ -5,7 +5,7 @@ from typing import Any
 from bson import ObjectId
 from fastapi import Depends, HTTPException, Request, status
 
-from app.api.v1.models.thread import Vote, VoteCreateData
+from app.api.v1.models.thread import Vote, VoteCreateData, VoteUpdateData
 from app.api.v1.services.vote import VoteService
 from app.api.v1.validators import BaseValidator
 from app.api.v1.validators.comment import CommentByIdValidator
@@ -108,6 +108,61 @@ class VoteByIdValidator(BaseVoteValidator):
         return vote
 
 
+class VoteAuthorValidator(BaseVoteValidator):
+    """Vote author validator."""
+
+    def __init__(
+        self,
+        request: Request,
+        vote_service: VoteService = Depends(),
+        vote_by_id_validator: VoteByIdValidator = Depends(),
+    ) -> None:
+        """Initializes vote author validator.
+
+        Args:
+            request (Request): Current request object.
+            vote_service (VoteService): Vote service.
+            vote_by_id_validator (VoteByIdValidator): Vote by id validator.
+
+        """
+
+        super().__init__(request=request, vote_service=vote_service)
+
+        self.vote_by_id_validator = vote_by_id_validator
+
+    async def validate(
+        self, thread_id: ObjectId, comment_id: ObjectId, vote_id: ObjectId
+    ) -> Vote:
+        """Validates requested vote author.
+
+        Args:
+            thread_id (ObjectId): BSON object identifier of requested thread.
+            comment_id (ObjectId): BSON object identifier of requested comment.
+            vote_id (ObjectId): BSON object identifier of requested vote.
+
+        Returns:
+            Vote: Vote object.
+
+        Raises:
+            HTTPException: If current user is not vote author.
+
+        """
+
+        vote = await self.vote_by_id_validator.validate(
+            thread_id=thread_id, comment_id=comment_id, vote_id=vote_id
+        )
+
+        current_user = self.request.state.current_user
+
+        if vote.user_id != current_user.object.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=HTTPErrorMessagesEnum.VOTE_ACCESS_DENIED,
+            )
+
+        return vote
+
+
 class VoteCreateValidator(BaseVoteValidator):
     """Vote create validator."""
 
@@ -154,3 +209,54 @@ class VoteCreateValidator(BaseVoteValidator):
             user_id=self.request.state.current_user.object.id,
             comment_id=comment_id,
         )
+
+
+class VoteUpdateValidator(BaseVoteValidator):
+    """Vote update validator."""
+
+    def __init__(
+        self,
+        request: Request,
+        vote_service: VoteService = Depends(),
+        vote_author_validator: VoteAuthorValidator = Depends(),
+    ) -> None:
+        """Initializes vote update validator.
+
+        Args:
+            request (Request): Current request object.
+            vote_service (VoteService): Vote service.
+            vote_author_validator (VoteAuthorValidator): Vote author validator.
+
+        """
+
+        super().__init__(request=request, vote_service=vote_service)
+
+        self.vote_author_validator = vote_author_validator
+
+    async def validate(
+        self, thread_id: ObjectId, comment_id: ObjectId, vote_id: ObjectId, value: bool
+    ) -> VoteUpdateData:
+        """Checks if thread comment vote can be updated.
+
+        Args:
+            thread_id (ObjectId): BSON object identifier of requested thread.
+            comment_id (ObjectId): BSON object identifier of requested comment.
+            vote_id (ObjectId): BSON object identifier of requested vote.
+            value (bool): Vote value.
+
+        Returns:
+            VoteUpdateData: Vote update data.
+
+        """
+
+        vote = await self.vote_author_validator.validate(
+            thread_id=thread_id, comment_id=comment_id, vote_id=vote_id
+        )
+
+        if vote.value == value:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=HTTPErrorMessagesEnum.INVALID_VOTE_VALUE,
+            )
+
+        return VoteUpdateData(value=value, vote_id=vote.id, comment_id=vote.comment_id)
