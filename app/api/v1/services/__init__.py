@@ -171,3 +171,16 @@ class BaseService(abc.ABC):
 
         """
         raise NotImplementedError
+
+    @abc.abstractmethod
+    async def delete(self, item: Any) -> None:
+        """Deletes an item.
+
+        Args:
+            item (Any): Current item object.
+
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses.
+
+        """
+        raise NotImplementedError

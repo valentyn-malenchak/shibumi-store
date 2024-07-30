@@ -174,3 +174,15 @@ class ParameterService(BaseService):
 
         """
         raise NotImplementedError
+
+    async def delete(self, item: Any) -> None:
+        """Deletes a parameter.
+
+        Args:
+            item (Any): Parameter object.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError

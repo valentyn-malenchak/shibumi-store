@@ -176,6 +176,18 @@ class RoleService(BaseService):
         """
         raise NotImplementedError
 
+    async def delete(self, item: Any) -> None:
+        """Deletes a role.
+
+        Args:
+            item (Any): Role object.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
     async def get_scopes_by_roles(self, roles: list[RolesEnum]) -> list[str]:
         """Retrieves a list of scopes from the repository by roles name list.
 

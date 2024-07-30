@@ -305,6 +305,27 @@ class MongoDBService(BaseService):
             filter=filter_, update=update, upsert=upsert, session=session
         )
 
+    async def delete_one(
+        self,
+        collection: str,
+        filter_: Mapping[str, Any],
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+    ) -> None:
+        """Deletes a document in the chosen collection.
+
+        Args:
+            collection (str): Collection name.
+            filter_ (Mapping[str, Any]): Specifies query selection criteria.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        """
+
+        collection_ = self._get_collection_by_name(collection=collection)
+
+        await collection_.delete_one(filter=filter_, session=session)
+
     async def delete_many(
         self, collection: str, *, session: AsyncIOMotorClientSession | None = None
     ) -> None:

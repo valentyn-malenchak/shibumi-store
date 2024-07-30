@@ -162,7 +162,7 @@ class CommentRepository(BaseRepository):
     async def update_vote(
         self,
         id_: ObjectId,
-        value: bool,
+        new_value: bool,
         *,
         session: AsyncIOMotorClientSession | None = None,
     ) -> None:
@@ -170,7 +170,7 @@ class CommentRepository(BaseRepository):
 
         Args:
             id_ (ObjectId): The unique identifier of the comment.
-            value (bool): Updated vote value.
+            new_value (bool): Updated vote value.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
@@ -181,8 +181,32 @@ class CommentRepository(BaseRepository):
             filter_={"_id": id_},
             update={
                 "$inc": {"upvotes": 1, "downvotes": -1}
-                if value is True
+                if new_value is True
                 else {"upvotes": -1, "downvotes": 1}
             },
+            session=session,
+        )
+
+    async def delete_vote(
+        self,
+        id_: ObjectId,
+        value: bool,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+    ) -> None:
+        """Decrements vote counter field for comment by its unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the comment.
+            value (bool): Vote value.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        """
+
+        await self._mongo_service.update_one(
+            collection=self._collection_name,
+            filter_={"_id": id_},
+            update={"$inc": {"upvotes" if value is True else "downvotes": -1}},
             session=session,
         )

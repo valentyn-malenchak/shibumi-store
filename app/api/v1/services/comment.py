@@ -173,6 +173,18 @@ class CommentService(BaseService):
         """
         raise NotImplementedError
 
+    async def delete(self, item: Any) -> None:
+        """Deletes a comment.
+
+        Args:
+            item (Any): Comment object.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
     async def add_vote(self, id_: ObjectId, value: bool) -> None:
         """Increments a vote counter field for comment by its unique identifier.
 
@@ -183,12 +195,22 @@ class CommentService(BaseService):
         """
         await self.repository.add_vote(id_=id_, value=value)
 
-    async def update_vote(self, id_: ObjectId, value: bool) -> None:
+    async def update_vote(self, id_: ObjectId, new_value: bool) -> None:
         """Updates a vote counter fields for comment by its unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the comment.
+            new_value (bool): Updated vote value.
+
+        """
+        await self.repository.update_vote(id_=id_, new_value=new_value)
+
+    async def delete_vote(self, id_: ObjectId, value: bool) -> None:
+        """Decrements a vote counter fields for comment by its unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the comment.
             value (bool): Vote value.
 
         """
-        await self.repository.update_vote(id_=id_, value=value)
+        await self.repository.delete_vote(id_=id_, value=value)

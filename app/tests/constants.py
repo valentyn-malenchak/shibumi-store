@@ -27,6 +27,7 @@ CUSTOMER_USER = dict(
         ScopesEnum.THREADS_GET_VOTE.name,
         ScopesEnum.THREADS_CREATE_VOTE.name,
         ScopesEnum.THREADS_UPDATE_VOTE.name,
+        ScopesEnum.THREADS_DELETE_VOTE.name,
     ],
     exp=1703194093,
 )

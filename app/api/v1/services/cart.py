@@ -176,6 +176,18 @@ class CartService(BaseService):
         """
         raise NotImplementedError
 
+    async def delete(self, item: Any) -> None:
+        """Deletes a cart.
+
+        Args:
+            item (Any): Cart object.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
     async def add_product(self, id_: ObjectId, data: CartProduct) -> Cart:
         """Adds new product to the cart.
 
