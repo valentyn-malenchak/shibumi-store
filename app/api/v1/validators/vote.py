@@ -108,8 +108,8 @@ class VoteByIdValidator(BaseVoteValidator):
         return vote
 
 
-class VoteAuthorValidator(BaseVoteValidator):
-    """Vote author validator."""
+class VoteUserValidator(BaseVoteValidator):
+    """Vote user validator."""
 
     def __init__(
         self,
@@ -117,7 +117,7 @@ class VoteAuthorValidator(BaseVoteValidator):
         vote_service: VoteService = Depends(),
         vote_by_id_validator: VoteByIdValidator = Depends(),
     ) -> None:
-        """Initializes vote author validator.
+        """Initializes vote user validator.
 
         Args:
             request (Request): Current request object.
@@ -133,7 +133,7 @@ class VoteAuthorValidator(BaseVoteValidator):
     async def validate(
         self, thread_id: ObjectId, comment_id: ObjectId, vote_id: ObjectId
     ) -> Vote:
-        """Validates requested vote author.
+        """Validates requested vote user.
 
         Args:
             thread_id (ObjectId): BSON object identifier of requested thread.
@@ -144,7 +144,7 @@ class VoteAuthorValidator(BaseVoteValidator):
             Vote: Vote object.
 
         Raises:
-            HTTPException: If current user is not vote author.
+            HTTPException: If current user is not related to vote.
 
         """
 
@@ -218,14 +218,14 @@ class VoteUpdateValidator(BaseVoteValidator):
         self,
         request: Request,
         vote_service: VoteService = Depends(),
-        vote_author_validator: VoteAuthorValidator = Depends(),
+        vote_author_validator: VoteUserValidator = Depends(),
     ) -> None:
         """Initializes vote update validator.
 
         Args:
             request (Request): Current request object.
             vote_service (VoteService): Vote service.
-            vote_author_validator (VoteAuthorValidator): Vote author validator.
+            vote_author_validator (VoteUserValidator): Vote user validator.
 
         """
 

@@ -105,8 +105,8 @@ class CommentByIdValidator(BaseCommentValidator):
         return comment
 
 
-class CommentAuthorValidator(BaseCommentValidator):
-    """Comment author validator."""
+class CommentUserValidator(BaseCommentValidator):
+    """Comment user validator."""
 
     def __init__(
         self,
@@ -114,7 +114,7 @@ class CommentAuthorValidator(BaseCommentValidator):
         comment_service: CommentService = Depends(),
         comment_by_id_validator: CommentByIdValidator = Depends(),
     ) -> None:
-        """Initializes comment author validator.
+        """Initializes comment user validator.
 
         Args:
             request (Request): Current request object.
@@ -128,7 +128,7 @@ class CommentAuthorValidator(BaseCommentValidator):
         self.comment_by_id_validator = comment_by_id_validator
 
     async def validate(self, thread_id: ObjectId, comment_id: ObjectId) -> Comment:
-        """Validates requested comment author.
+        """Validates requested comment user.
 
         Args:
             thread_id (ObjectId): BSON object identifier of requested thread.
@@ -138,7 +138,7 @@ class CommentAuthorValidator(BaseCommentValidator):
             Comment: Comment object.
 
         Raises:
-            HTTPException: If current user is not comment author.
+            HTTPException: If current user is not related to comment.
 
         """
 
@@ -148,7 +148,7 @@ class CommentAuthorValidator(BaseCommentValidator):
 
         current_user = self.request.state.current_user
 
-        if comment.author_id != current_user.object.id:
+        if comment.user_id != current_user.object.id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=HTTPErrorMessagesEnum.COMMENT_ACCESS_DENIED,
@@ -212,7 +212,7 @@ class CommentCreateValidator(BaseCommentValidator):
 
         return CommentCreateData(
             body=body,
-            author_id=self.request.state.current_user.object.id,
+            user_id=self.request.state.current_user.object.id,
             thread_id=thread_id,
             parent_comment=parent_comment,
         )

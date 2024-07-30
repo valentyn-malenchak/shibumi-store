@@ -102,7 +102,7 @@ class CommentService(BaseService):
             _id=comment_id,
             body=data.body,
             thread_id=data.thread_id,
-            author_id=data.author_id,
+            user_id=data.user_id,
             parent_comment_id=data.parent_comment.id
             if data.parent_comment is not None
             else None,

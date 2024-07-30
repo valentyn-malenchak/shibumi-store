@@ -30,7 +30,7 @@ class Comment(BSONObjectId):
 
     body: str
     thread_id: Annotated[ObjectId, ObjectIdAnnotation]
-    author_id: Annotated[ObjectId, ObjectIdAnnotation]
+    user_id: Annotated[ObjectId, ObjectIdAnnotation]
     parent_comment_id: Annotated[ObjectId, ObjectIdAnnotation] | None
     path: str
     upvotes: int
@@ -50,7 +50,7 @@ class CommentCreateData(BaseModel):
     """Thread comment create data model."""
 
     body: str
-    author_id: Annotated[ObjectId, ObjectIdAnnotation]
+    user_id: Annotated[ObjectId, ObjectIdAnnotation]
     thread_id: Annotated[ObjectId, ObjectIdAnnotation]
     parent_comment: Comment | None
 

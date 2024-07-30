@@ -12,10 +12,10 @@ from app.api.v1.models.thread import (
     VoteUpdateData,
 )
 from app.api.v1.validators.vote import (
-    VoteAuthorValidator,
     VoteByIdValidator,
     VoteCreateValidator,
     VoteUpdateValidator,
+    VoteUserValidator,
 )
 from app.utils.pydantic import ObjectIdAnnotation
 
@@ -52,17 +52,17 @@ class VoteByIdDependency:
         )
 
 
-class VoteAuthorDependency:
-    """Vote author dependency."""
+class VoteUserDependency:
+    """Vote user dependency."""
 
     async def __call__(
         self,
         thread_id: Annotated[ObjectId, ObjectIdAnnotation],
         comment_id: Annotated[ObjectId, ObjectIdAnnotation],
         vote_id: Annotated[ObjectId, ObjectIdAnnotation],
-        vote_author_validator: VoteAuthorValidator = Depends(),
+        vote_user_validator: VoteUserValidator = Depends(),
     ) -> Vote:
-        """Validates vote author.
+        """Validates vote user.
 
         Args:
             thread_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
@@ -71,14 +71,14 @@ class VoteAuthorDependency:
             identifier of requested comment.
             vote_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
             identifier of requested vote.
-            vote_author_validator (VoteAuthorValidator): Vote author validator.
+            vote_user_validator (VoteUserValidator): Vote user validator.
 
         Returns:
             Vote: Vote object.
 
         """
 
-        return await vote_author_validator.validate(
+        return await vote_user_validator.validate(
             thread_id=thread_id, comment_id=comment_id, vote_id=vote_id
         )
 

@@ -5,16 +5,16 @@ from fastapi import APIRouter, Depends, Security, status
 from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
 from app.api.v1.dependencies.comment import (
-    CommentAuthorDependency,
     CommentByIdDependency,
     CommentDataCreateDependency,
     CommentDataUpdateDependency,
+    CommentUserDependency,
 )
 from app.api.v1.dependencies.thread import ThreadByIdDependency
 from app.api.v1.dependencies.vote import (
-    VoteAuthorDependency,
     VoteDataCreateDependency,
     VoteDataUpdateDependency,
+    VoteUserDependency,
 )
 from app.api.v1.models.thread import (
     Comment,
@@ -116,7 +116,7 @@ async def update_thread_comment(
         StrictAuthorization(), scopes=[ScopesEnum.THREADS_UPDATE_COMMENT.name]
     ),
     comment_data: CommentUpdateData = Depends(CommentDataUpdateDependency()),
-    comment: Comment = Depends(CommentAuthorDependency()),
+    comment: Comment = Depends(CommentUserDependency()),
     comment_service: CommentService = Depends(),
 ) -> Comment:
     """API which updates thread comment.
@@ -143,7 +143,7 @@ async def get_thread_comment_vote(
     _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.THREADS_GET_VOTE.name]
     ),
-    vote: Vote = Depends(VoteAuthorDependency()),
+    vote: Vote = Depends(VoteUserDependency()),
 ) -> Vote:
     """API which returns thread comment vote.
 
@@ -218,7 +218,7 @@ async def delete_thread_comment_vote(
     _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.THREADS_DELETE_VOTE.name]
     ),
-    vote: Vote = Depends(VoteAuthorDependency()),
+    vote: Vote = Depends(VoteUserDependency()),
     vote_service: VoteService = Depends(),
 ) -> None:
     """API which updates thread comment vote.
