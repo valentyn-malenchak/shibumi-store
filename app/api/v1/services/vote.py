@@ -172,7 +172,9 @@ class VoteService(BaseService):
         )
 
         # updates upvote/downvote counters depends on value
-        await self.comment_service.update_vote(id_=data.comment_id, value=data.value)
+        await self.comment_service.update_vote(
+            id_=data.comment_id, new_value=data.value
+        )
 
         return Vote(**updated_vote)
 
@@ -187,3 +189,16 @@ class VoteService(BaseService):
 
         """
         raise NotImplementedError
+
+    async def delete(self, item: Vote) -> None:
+        """Deletes a vote.
+
+        Args:
+            item (Vote): Vote object.
+
+        """
+
+        await self.repository.delete_by_id(id_=item.id)
+
+        # decrements upvote/downvote counter depends on value
+        await self.comment_service.delete_vote(id_=item.comment_id, value=item.value)

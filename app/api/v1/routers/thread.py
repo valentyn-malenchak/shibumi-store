@@ -208,3 +208,25 @@ async def update_thread_comment_vote(
 
     """
     return await vote_service.update_by_id(id_=vote_data.vote_id, data=vote_data)
+
+
+@router.delete(
+    "/{thread_id}/comments/{comment_id}/votes/{vote_id}/",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def delete_thread_comment_vote(
+    _: CurrentUser = Security(
+        StrictAuthorization(), scopes=[ScopesEnum.THREADS_DELETE_VOTE.name]
+    ),
+    vote: Vote = Depends(VoteAuthorDependency()),
+    vote_service: VoteService = Depends(),
+) -> None:
+    """API which updates thread comment vote.
+
+    Args:
+        _ (CurrentUser): Current user object.
+        vote (Vote): Vote object.
+        vote_service (VoteService): Vote service.
+
+    """
+    return await vote_service.delete(item=vote)

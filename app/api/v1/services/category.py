@@ -171,6 +171,18 @@ class CategoryService(BaseService):
         """
         raise NotImplementedError
 
+    async def delete(self, item: Any) -> None:
+        """Deletes a category.
+
+        Args:
+            item (Any): Category object.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
     async def get_category_parameters(self, id_: ObjectId) -> Mapping[str, Any] | None:
         """Retrieves a category parameters by its identifier.
 

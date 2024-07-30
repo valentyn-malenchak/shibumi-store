@@ -334,6 +334,25 @@ class BaseRepository(abc.ABC):
         """
         raise NotImplementedError
 
+    async def delete_by_id(
+        self,
+        id_: ObjectId,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+    ) -> None:
+        """Deletes a document in repository.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the document.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        """
+
+        await self._mongo_service.delete_one(
+            collection=self._collection_name, filter_={"_id": id_}, session=session
+        )
+
     async def delete_all(
         self, *, session: AsyncIOMotorClientSession | None = None
     ) -> None:

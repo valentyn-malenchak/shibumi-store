@@ -273,6 +273,18 @@ class UserService(BaseService):
 
         await self.repository.update_by_id(id_=id_, deleted=True)
 
+    async def delete(self, item: Any) -> None:
+        """Deletes a user.
+
+        Args:
+            item (Any): User object.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
     async def get_by_username(self, username: str) -> User:
         """Retrieves a user by its username.
 

@@ -74,6 +74,7 @@ class TestAuth(BaseAPITest):
             ScopesEnum.THREADS_GET_VOTE.name,
             ScopesEnum.THREADS_CREATE_VOTE.name,
             ScopesEnum.THREADS_UPDATE_VOTE.name,
+            ScopesEnum.THREADS_DELETE_VOTE.name,
         }
 
     @pytest.mark.asyncio

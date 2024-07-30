@@ -54,6 +54,7 @@ class ScopesEnum(Enum):
     THREADS_GET_VOTE = "Allows to get thread comment vote."
     THREADS_CREATE_VOTE = "Allows to create a thread comment vote."
     THREADS_UPDATE_VOTE = "Allows to update a thread comment vote."
+    THREADS_DELETE_VOTE = "Allows to delete thread comment vote."
 
 
 class RedisNamesEnum(StrEnum):

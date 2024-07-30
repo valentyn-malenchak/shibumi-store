@@ -242,6 +242,18 @@ class ProductService(BaseService):
         """
         raise NotImplementedError
 
+    async def delete(self, item: Any) -> None:
+        """Deletes a product.
+
+        Args:
+            item (Any): Product object.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
     async def increment_views(self, id_: ObjectId) -> None:
         """Increments a views field for product by its unique identifier.
 

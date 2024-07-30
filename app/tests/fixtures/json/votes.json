@@ -30,5 +30,21 @@
       "$date": "2024-07-13T13:48:30.209Z"
     },
     "updated_at": null
+  },
+    {
+    "_id": {
+      "$oid": "66a8ef35a657f1c11c1b759e"
+    },
+    "value": true,
+    "comment_id": {
+      "$oid": "666af8ae6aba47cfb60efb31"
+    },
+    "user_id": {
+      "$oid": "6597f14332e631f7fed1a114"
+    },
+    "created_at": {
+      "$date": "2024-07-13T13:48:30.209Z"
+    },
+    "updated_at": null
   }
 ]
