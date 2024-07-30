@@ -12,9 +12,9 @@ from app.api.v1.models.thread import (
     CommentUpdateData,
 )
 from app.api.v1.validators.comment import (
-    CommentAuthorValidator,
     CommentByIdValidator,
     CommentCreateValidator,
+    CommentUserValidator,
 )
 from app.utils.pydantic import ObjectIdAnnotation
 
@@ -48,30 +48,30 @@ class CommentByIdDependency:
         )
 
 
-class CommentAuthorDependency:
-    """Comment author dependency."""
+class CommentUserDependency:
+    """Comment user dependency."""
 
     async def __call__(
         self,
         thread_id: Annotated[ObjectId, ObjectIdAnnotation],
         comment_id: Annotated[ObjectId, ObjectIdAnnotation],
-        comment_author_validator: CommentAuthorValidator = Depends(),
+        comment_user_validator: CommentUserValidator = Depends(),
     ) -> Comment:
-        """Validates comment author.
+        """Validates comment user.
 
         Args:
             thread_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
             identifier of requested thread.
             comment_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
             identifier of requested comment.
-            comment_author_validator (CommentAuthorValidator): Comment author validator.
+            comment_user_validator (CommentUserValidator): Comment user validator.
 
         Returns:
             Comment: Comment object.
 
         """
 
-        return await comment_author_validator.validate(
+        return await comment_user_validator.validate(
             thread_id=thread_id,
             comment_id=comment_id,
         )
