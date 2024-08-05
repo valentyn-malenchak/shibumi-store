@@ -5,10 +5,10 @@ from typing import Any
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends, HTTPException, status
 
-from app.api.v1.models.thread import Vote, VoteCreateData, VoteUpdateData
+from app.api.v1.models.vote import Vote, VoteCreateData, VoteData
+from app.api.v1.repositories.comment import CommentRepository
 from app.api.v1.repositories.vote import VoteRepository
 from app.api.v1.services import BaseService
-from app.api.v1.services.comment import CommentService
 from app.constants import HTTPErrorMessagesEnum
 from app.exceptions import EntityDuplicateKeyError
 from app.services.mongo.transaction_manager import TransactionManager
@@ -24,7 +24,7 @@ class VoteService(BaseService):
         redis_service: RedisService = Depends(),
         transaction_manager: TransactionManager = Depends(),
         repository: VoteRepository = Depends(),
-        comment_service: CommentService = Depends(),
+        comment_repository: CommentRepository = Depends(),
     ) -> None:
         """Initializes the vote service.
 
@@ -33,7 +33,8 @@ class VoteService(BaseService):
             redis_service (RedisService): Redis service.
             transaction_manager (TransactionManager): Transaction manager.
             repository (VoteRepository):  An instance of the Vote repository.
-            comment_service (CommentService): Comment service.
+            comment_repository (CommentRepository):  An instance of the comment
+            repository.
 
         """
 
@@ -45,7 +46,7 @@ class VoteService(BaseService):
 
         self.repository = repository
 
-        self.comment_service = comment_service
+        self.comment_repository = comment_repository
 
     async def get(self, *_: Any) -> Any:
         """Retrieves a list of votes based on parameters.
@@ -88,37 +89,7 @@ class VoteService(BaseService):
 
         """
 
-        vote = await self.repository.get_by_id(id_=id_)
-
-        return Vote(**vote)
-
-    async def create_raw(self, data: VoteCreateData) -> Any:
-        """Creates a raw new vote.
-
-        Args:
-            data (VoteCreateData): The data for the new vote.
-
-        Returns:
-            Any: The ID of created vote.
-
-        Raises:
-            HTTPException: if vote with specified comment is already created for user.
-
-        """
-        try:
-            return await self.repository.create(
-                value=data.value,
-                comment_id=data.comment_id,
-                user_id=data.user_id,
-            )
-
-        except EntityDuplicateKeyError:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail=HTTPErrorMessagesEnum.ENTITY_FIELD_UNIQUENESS.format(
-                    entity="Vote", field="comment_id"
-                ),
-            )
+        return await self.repository.get_by_id(id_=id_)
 
     async def create(self, data: VoteCreateData) -> Vote:
         """Creates a new vote.
@@ -131,10 +102,19 @@ class VoteService(BaseService):
 
         """
 
-        id_ = await self.create_raw(data=data)
+        try:
+            id_ = await self.repository.create(data=data)
+
+        except EntityDuplicateKeyError:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=HTTPErrorMessagesEnum.ENTITY_FIELD_UNIQUENESS.format(
+                    entity="Vote", field="comment_id"
+                ),
+            )
 
         # increments upvote/downvote counter by one
-        await self.comment_service.add_vote(id_=data.comment_id, value=data.value)
+        await self.comment_repository.add_vote(id_=data.comment_id, value=data.value)
 
         return await self.get_by_id(id_=id_)
 
@@ -154,29 +134,29 @@ class VoteService(BaseService):
         """
         raise NotImplementedError
 
-    async def update_by_id(self, id_: ObjectId, data: VoteUpdateData) -> Vote:
+    async def update_by_id(self, id_: ObjectId, data: VoteData) -> Vote:
         """Updates a vote by its unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the vote.
-            data (VoteUpdateData): Data to update vote.
+            data (VoteData): Data to update vote.
 
         Returns:
             Vote: The updated vote.
 
         """
 
-        updated_vote = await self.repository.get_and_update_by_id(
+        vote = await self.repository.get_and_update_by_id(
             id_=id_,
-            value=data.value,
+            data=data,
         )
 
         # updates upvote/downvote counters depends on value
-        await self.comment_service.update_vote(
-            id_=data.comment_id, new_value=data.value
+        await self.comment_repository.update_vote(
+            id_=vote.comment_id, new_value=data.value
         )
 
-        return Vote(**updated_vote)
+        return vote
 
     async def delete_by_id(self, id_: ObjectId) -> None:
         """Deletes a vote by its unique identifier.
@@ -201,4 +181,4 @@ class VoteService(BaseService):
         await self.repository.delete_by_id(id_=item.id)
 
         # decrements upvote/downvote counter depends on value
-        await self.comment_service.delete_vote(id_=item.comment_id, value=item.value)
+        await self.comment_repository.delete_vote(id_=item.comment_id, value=item.value)

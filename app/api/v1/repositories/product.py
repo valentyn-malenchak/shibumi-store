@@ -8,6 +8,7 @@ from bson import ObjectId
 from injector import inject
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
+from app.api.v1.models.product import Product, ProductCreateData, ProductData
 from app.api.v1.repositories import BaseRepository
 from app.constants import ProjectionValuesEnum, SortingValuesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
@@ -92,44 +93,81 @@ class ProductRepository(BaseRepository):
         """
         return [("views", SortingValuesEnum.DESC)]
 
+    async def get_by_id(
+        self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
+    ) -> Product:
+        """Retrieves a product from the repository by its unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the product.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            Product: The retrieved product object.
+
+        """
+
+        product = await self._get_one(_id=id_, session=session)
+
+        return Product(**product)
+
     async def get_and_update_by_id(
         self,
         id_: ObjectId,
+        data: ProductData,
         *,
         session: AsyncIOMotorClientSession | None = None,
-        **fields: Any,
-    ) -> Mapping[str, Any]:
+    ) -> Product:
         """
         Updates and retrieves a single product from the repository by its
         unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the product.
+            data (ProductData): Data to update product.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): Fields to update product.
 
         Returns:
-            Mapping[str, Any]: The retrieved product.
+            Product: The retrieved product object.
 
         """
 
-        return await self._mongo_service.find_one_and_update(
+        product = await self._mongo_service.find_one_and_update(
             collection=self._collection_name,
             filter_={"_id": id_},
-            update={"$set": {**fields, "updated_at": arrow.utcnow().datetime}},
+            update={
+                "$set": {
+                    "name": data.name,
+                    "synopsis": data.synopsis,
+                    "description": data.description,
+                    "quantity": data.quantity,
+                    "price": data.price,
+                    "category_id": data.category_id,
+                    "available": data.available,
+                    "html_body": data.html_body,
+                    "parameters": data.parameters,
+                    "updated_at": arrow.utcnow().datetime,
+                }
+            },
             session=session,
         )
 
+        return Product(**product)
+
     async def create(
-        self, *, session: AsyncIOMotorClientSession | None = None, **fields: Any
+        self,
+        data: ProductCreateData,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
     ) -> Any:
         """Creates a new product in repository.
 
         Args:
+            data (ProductCreateData): The data for the new product.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): The fields for the new product.
 
         Returns:
             Any: The ID of created product.
@@ -139,7 +177,16 @@ class ProductRepository(BaseRepository):
         return await self._mongo_service.insert_one(
             collection=self._collection_name,
             document={
-                **fields,
+                "name": data.name,
+                "synopsis": data.synopsis,
+                "description": data.description,
+                "quantity": data.quantity,
+                "price": data.price,
+                "category_id": data.category_id,
+                "available": data.available,
+                "html_body": data.html_body,
+                "parameters": data.parameters,
+                "thread_id": data.thread_id,
                 "views": 0,
                 "created_at": arrow.utcnow().datetime,
                 "updated_at": None,
@@ -150,17 +197,17 @@ class ProductRepository(BaseRepository):
     async def update_by_id(
         self,
         id_: ObjectId,
+        data: Any,
         *,
         session: AsyncIOMotorClientSession | None = None,
-        **fields: Any,
     ) -> None:
         """Updates a product in repository.
 
         Args:
             id_ (ObjectId): The unique identifier of the product.
+            data (Any): Data to update product.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): Fields to update product.
 
         Raises:
             NotImplementedError: This method is not implemented.

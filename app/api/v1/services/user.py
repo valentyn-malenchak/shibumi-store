@@ -3,7 +3,6 @@
 from collections.abc import Mapping
 from typing import Any
 
-import arrow
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends, HTTPException, status
 
@@ -17,14 +16,16 @@ from app.api.v1.constants import (
 from app.api.v1.models import Pagination, Search, Sorting
 from app.api.v1.models.cart import CartCreateData
 from app.api.v1.models.user import (
+    BaseUserCreateData,
+    BaseUserUpdateData,
     User,
     UserCreateData,
     UserFilter,
     UserUpdateData,
 )
+from app.api.v1.repositories.cart import CartRepository
 from app.api.v1.repositories.user import UserRepository
 from app.api.v1.services import BaseService
-from app.api.v1.services.cart import CartService
 from app.constants import HTTPErrorMessagesEnum
 from app.exceptions import EntityDuplicateKeyError
 from app.services.mongo.transaction_manager import TransactionManager
@@ -42,7 +43,7 @@ class UserService(BaseService):
         redis_service: RedisService = Depends(),
         transaction_manager: TransactionManager = Depends(),
         repository: UserRepository = Depends(),
-        cart_service: CartService = Depends(),
+        cart_repository: CartRepository = Depends(),
         send_grid_service: SendGridService = Depends(),
     ) -> None:
         """Initializes the UserService.
@@ -52,7 +53,7 @@ class UserService(BaseService):
             redis_service (RedisService): Redis service.
             transaction_manager (TransactionManager): Transaction manager.
             repository (UserRepository): An instance of the User repository.
-            cart_service (CartService): An instance of the cart service.
+            cart_repository (CartRepository): An instance of the cart repository.
             send_grid_service (SendGridService): SendGrid service.
 
         """
@@ -65,7 +66,7 @@ class UserService(BaseService):
 
         self.repository = repository
 
-        self.cart_service = cart_service
+        self.cart_repository = cart_repository
 
         self.send_grid_service = send_grid_service
 
@@ -128,37 +129,24 @@ class UserService(BaseService):
 
         """
 
-        user = await self.repository.get_by_id(id_=id_)
+        return await self.repository.get_by_id(id_=id_)
 
-        return User(**user)
-
-    async def create_raw(self, data: UserCreateData) -> Any:
-        """Creates a raw new user.
+    async def create(self, data: BaseUserCreateData) -> User:
+        """Creates a new user.
 
         Args:
-            data (UserCreateData): The data for the new user.
+            data (BaseUserCreateData): The data for the new user.
 
         Returns:
-            Any: The ID of created user.
-
-        Raises:
-            HTTPException: if user with specified username is already created.
+            User: Created user.
 
         """
 
         password = Password.get_password_hash(password=data.password)
 
         try:
-            return await self.repository.create(
-                first_name=data.first_name,
-                last_name=data.last_name,
-                patronymic_name=data.patronymic_name,
-                username=data.username,
-                email=data.email,
-                hashed_password=password,
-                phone_number=data.phone_number,
-                birthdate=arrow.get(data.birthdate).datetime,
-                roles=data.roles,
+            id_ = await self.repository.create(
+                data=UserCreateData(**data.model_dump(), hashed_password=password)
             )
 
         except EntityDuplicateKeyError:
@@ -169,21 +157,8 @@ class UserService(BaseService):
                 ),
             )
 
-    async def create(self, data: UserCreateData) -> User:
-        """Creates a new user.
-
-        Args:
-            data (UserCreateData): The data for the new user.
-
-        Returns:
-            User: Created user.
-
-        """
-
-        id_ = await self.create_raw(data=data)
-
         # Initialize user's cart
-        await self.cart_service.create_raw(data=CartCreateData(user_id=id_))
+        await self.cart_repository.create(data=CartCreateData(user_id=id_))
 
         user = await self.get_by_id(id_=id_)
 
@@ -191,12 +166,12 @@ class UserService(BaseService):
 
         return user
 
-    async def update(self, item: User, data: UserUpdateData) -> User:
+    async def update(self, item: User, data: BaseUserUpdateData) -> User:
         """Updates a user object.
 
         Args:
             item (User): User object.
-            data (UserUpdateData): Data to update user.
+            data (BaseUserUpdateData): Data to update user.
 
         Returns:
             User: The updated user.
@@ -205,19 +180,12 @@ class UserService(BaseService):
 
         emails_match = item.email == data.email
 
-        updated_user = await self.repository.get_and_update_by_id(
+        user = await self.repository.get_and_update_by_id(
             id_=item.id,
-            first_name=data.first_name,
-            last_name=data.last_name,
-            patronymic_name=data.patronymic_name,
-            email=data.email,
-            phone_number=data.phone_number,
-            birthdate=arrow.get(data.birthdate).datetime,
-            roles=data.roles,
-            email_verified=emails_match and item.email_verified,
+            data=UserUpdateData(
+                **data.model_dump(), email_verified=emails_match and item.email_verified
+            ),
         )
-
-        user = User(**updated_user)
 
         if emails_match is False:
             await self.request_verify_email(item=user)
@@ -251,17 +219,7 @@ class UserService(BaseService):
 
         password = Password.get_password_hash(password=password)
 
-        await self.repository.update_by_id(id_=id_, hashed_password=password)
-
-    async def _update_email_verified(self, id_: ObjectId) -> None:
-        """Updates user's email verification flag.
-
-        Args:
-            id_ (ObjectId): The unique identifier of the user.
-
-        """
-
-        await self.repository.update_by_id(id_=id_, email_verified=True)
+        await self.repository.update_password(id_=id_, hashed_password=password)
 
     async def delete_by_id(self, id_: ObjectId) -> None:
         """Softly deletes a user by its unique identifier.
@@ -271,7 +229,7 @@ class UserService(BaseService):
 
         """
 
-        await self.repository.update_by_id(id_=id_, deleted=True)
+        await self.repository.delete_by_id(id_=id_)
 
     async def delete(self, item: Any) -> None:
         """Deletes a user.
@@ -296,9 +254,7 @@ class UserService(BaseService):
 
         """
 
-        user = await self.repository.get_one(username=username)
-
-        return User(**user)
+        return await self.repository.get_by_username(username=username)
 
     async def request_reset_password(self, item: User) -> None:
         """Requests user's password reset.
@@ -397,7 +353,7 @@ class UserService(BaseService):
                 detail=HTTPErrorMessagesEnum.INVALID_EMAIL_VERIFICATION_TOKEN,
             )
 
-        await self._update_email_verified(id_=id_)
+        await self.repository.verify_email(id_=id_)
 
         self.redis_service.delete(
             name=RedisNamesEnum.EMAIL_VERIFICATION.format(user_id=id_)

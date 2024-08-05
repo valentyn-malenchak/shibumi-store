@@ -21,7 +21,7 @@ class User(BSONObjectId):
     last_name: str
     patronymic_name: str | None
     username: str
-    email: EmailStr
+    email: str
     email_verified: bool
     hashed_password: str
     phone_number: str
@@ -74,8 +74,8 @@ class UserList(List):
     data: list[ShortUser]
 
 
-class UserCreateData(BaseModel):
-    """User create data model."""
+class BaseUserCreateData(BaseModel):
+    """Base user create data model."""
 
     first_name: str
     last_name: str
@@ -88,14 +88,41 @@ class UserCreateData(BaseModel):
     roles: list[RolesEnum]
 
 
-class UserUpdateData(BaseModel):
-    """User update data model."""
+class UserCreateData(BaseModel):
+    """User create data model."""
+
+    first_name: str
+    last_name: str
+    patronymic_name: str | None
+    username: str
+    email: str
+    hashed_password: str
+    phone_number: str
+    birthdate: date
+    roles: list[RolesEnum]
+
+
+class BaseUserUpdateData(BaseModel):
+    """Base user update data model."""
 
     first_name: str
     last_name: str
     patronymic_name: str | None
     email: EmailStr
     phone_number: PhoneNumber
+    birthdate: date
+    roles: list[RolesEnum]
+
+
+class UserUpdateData(BaseModel):
+    """User update data model."""
+
+    first_name: str
+    last_name: str
+    patronymic_name: str | None
+    email: str
+    email_verified: bool
+    phone_number: str
     birthdate: date
     roles: list[RolesEnum]
 

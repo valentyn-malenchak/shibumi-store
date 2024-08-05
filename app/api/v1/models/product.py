@@ -24,6 +24,12 @@ class ProductData(BaseModel):
     parameters: dict[str, Any]
 
 
+class ProductCreateData(ProductData):
+    """Product create data model."""
+
+    thread_id: Annotated[ObjectId, ObjectIdAnnotation]
+
+
 class Product(BSONObjectId):
     """Product model."""
 

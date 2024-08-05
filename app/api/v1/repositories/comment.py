@@ -7,6 +7,7 @@ import arrow
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
+from app.api.v1.models.comment import Comment, CommentCreateData, CommentUpdateData
 from app.api.v1.repositories import BaseRepository
 from app.services.mongo.constants import MongoCollectionsEnum
 
@@ -59,53 +60,89 @@ class CommentRepository(BaseRepository):
         """
         raise NotImplementedError
 
+    async def get_by_id(
+        self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
+    ) -> Comment:
+        """Retrieves a comment from the repository by its unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the comment.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            Comment: The retrieved comment object.
+
+        """
+
+        comment = await self._get_one(_id=id_, session=session)
+
+        return Comment(**comment)
+
     async def get_and_update_by_id(
         self,
         id_: ObjectId,
+        data: CommentUpdateData,
         *,
         session: AsyncIOMotorClientSession | None = None,
-        **fields: Any,
-    ) -> Mapping[str, Any]:
+    ) -> Comment:
         """
         Updates and retrieves a single comment from the repository by its
         unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the comment.
+            data (CommentUpdateData): Data to update comment.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): Fields to update comment.
 
         Returns:
-            Mapping[str, Any]: The retrieved comment.
+            Comment: The retrieved comment object.
 
         """
 
-        return await self._mongo_service.find_one_and_update(
+        comment = await self._mongo_service.find_one_and_update(
             collection=self._collection_name,
             filter_={"_id": id_},
-            update={"$set": {**fields, "updated_at": arrow.utcnow().datetime}},
+            update={"$set": {"body": data.body, "updated_at": arrow.utcnow().datetime}},
             session=session,
         )
 
+        return Comment(**comment)
+
     async def create(
-        self, *, session: AsyncIOMotorClientSession | None = None, **fields: Any
+        self,
+        data: CommentCreateData,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
     ) -> Any:
         """Creates a new comment in repository.
 
         Args:
+            data (CommentCreateData): The data for the new comment.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): The fields for the new comment.
 
         Returns:
             Any: The ID of created comment.
 
         """
+
+        comment_id = ObjectId()
+
         return await self._mongo_service.insert_one(
             collection=self._collection_name,
             document={
-                **fields,
+                "_id": comment_id,
+                "body": data.body,
+                "thread_id": data.thread_id,
+                "user_id": data.user_id,
+                "parent_comment_id": data.parent_comment.id
+                if data.parent_comment is not None
+                else None,
+                "path": f"{data.parent_comment.path}/{comment_id}"
+                if data.parent_comment is not None
+                else f"/{comment_id}",
                 "upvotes": 0,
                 "downvotes": 0,
                 "created_at": arrow.utcnow().datetime,
@@ -117,17 +154,17 @@ class CommentRepository(BaseRepository):
     async def update_by_id(
         self,
         id_: ObjectId,
+        data: Any,
         *,
         session: AsyncIOMotorClientSession | None = None,
-        **fields: Any,
     ) -> None:
         """Updates a comment in repository.
 
         Args:
             id_ (ObjectId): The unique identifier of the comment.
+            data (Any): Data to update comment.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): Fields to update comment.
 
         Raises:
             NotImplementedError: This method is not implemented.

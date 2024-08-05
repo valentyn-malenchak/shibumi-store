@@ -5,7 +5,7 @@ from typing import Any
 from bson import ObjectId
 from fastapi import Depends, HTTPException, Request, status
 
-from app.api.v1.models.thread import Vote, VoteCreateData, VoteUpdateData
+from app.api.v1.models.vote import Vote, VoteCreateData
 from app.api.v1.services.vote import VoteService
 from app.api.v1.validators import BaseValidator
 from app.api.v1.validators.comment import CommentByIdValidator
@@ -235,7 +235,7 @@ class VoteUpdateValidator(BaseVoteValidator):
 
     async def validate(
         self, thread_id: ObjectId, comment_id: ObjectId, vote_id: ObjectId, value: bool
-    ) -> VoteUpdateData:
+    ) -> Vote:
         """Checks if thread comment vote can be updated.
 
         Args:
@@ -245,7 +245,7 @@ class VoteUpdateValidator(BaseVoteValidator):
             value (bool): Vote value.
 
         Returns:
-            VoteUpdateData: Vote update data.
+            Vote: Vote object.
 
         """
 
@@ -259,4 +259,4 @@ class VoteUpdateValidator(BaseVoteValidator):
                 detail=HTTPErrorMessagesEnum.INVALID_VOTE_VALUE,
             )
 
-        return VoteUpdateData(value=value, vote_id=vote.id, comment_id=vote.comment_id)
+        return vote

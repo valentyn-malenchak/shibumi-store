@@ -18,15 +18,15 @@ from app.api.v1.dependencies.user import (
 )
 from app.api.v1.models import Pagination, Search, Sorting
 from app.api.v1.models.user import (
+    BaseUserCreateData,
+    BaseUserUpdateData,
     CurrentUser,
     ShortUser,
     User,
-    UserCreateData,
     UserFilter,
     UserList,
     UserPasswordResetData,
     UserPasswordUpdateData,
-    UserUpdateData,
     VerificationToken,
 )
 from app.api.v1.services.user import UserService
@@ -111,14 +111,14 @@ async def create_user(
     _: CurrentUser | None = Security(
         OptionalAuthorization(), scopes=[ScopesEnum.USERS_CREATE_USER.name]
     ),
-    user_data: UserCreateData = Depends(UserDataCreateDependency()),
+    user_data: BaseUserCreateData = Depends(UserDataCreateDependency()),
     user_service: UserService = Depends(),
 ) -> User:
     """API which creates a new user.
 
     Args:
         _ (CurrentUser | None): Current user object or None.
-        user_data (UserCreateData): User registration data.
+        user_data (BaseUserCreateData): User registration data.
         user_service (UserService): User service.
 
     Returns:
@@ -166,7 +166,7 @@ async def update_user(
         StrictAuthorization(), scopes=[ScopesEnum.USERS_UPDATE_USER.name]
     ),
     user: User = Depends(UserUpdateDependency()),
-    user_data: UserUpdateData = Depends(UserDataUpdateDependency()),
+    user_data: BaseUserUpdateData = Depends(UserDataUpdateDependency()),
     user_service: UserService = Depends(),
 ) -> User:
     """API which updates a user object.
@@ -174,7 +174,7 @@ async def update_user(
     Args:
         _ (CurrentUser): Current user object.
         user (User): User object.
-        user_data (UserUpdateData): User data to update.
+        user_data (BaseUserUpdateData): User data to update.
         user_service (UserService): User service.
 
     Returns:

@@ -101,21 +101,6 @@ class ParameterService(BaseService):
         """
         raise NotImplementedError
 
-    async def create_raw(self, data: Any) -> Any:
-        """Creates a raw new parameter.
-
-        Args:
-            data (Any): The data for the new parameter.
-
-        Returns:
-            Any: The ID of created parameter.
-
-        Raises:
-            NotImplementedError: This method is not implemented.
-
-        """
-        raise NotImplementedError
-
     async def create(self, data: Any) -> Any:
         """Creates a new parameter.
 

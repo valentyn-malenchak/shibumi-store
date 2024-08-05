@@ -5,7 +5,7 @@ from typing import Any
 from bson import ObjectId
 from fastapi import Depends, HTTPException, Request, status
 
-from app.api.v1.models.thread import Comment, CommentCreateData
+from app.api.v1.models.comment import Comment, CommentCreateData
 from app.api.v1.services.comment import CommentService
 from app.api.v1.validators import BaseValidator
 from app.api.v1.validators.thread import ThreadByIdValidator

@@ -81,21 +81,7 @@ class ThreadService(BaseService):
 
         """
 
-        thread = await self.repository.get_by_id(id_=id_)
-
-        return Thread(**thread)
-
-    async def create_raw(self, data: ThreadCreateData) -> Any:
-        """Creates a raw new thread.
-
-        Args:
-            data (ThreadCreateData): The data for the new thread.
-
-        Returns:
-            Any: The ID of created thread.
-
-        """
-        return await self.repository.create(name=data.name, body=data.body)
+        return await self.repository.get_by_id(id_=id_)
 
     async def create(self, data: ThreadCreateData) -> Thread:
         """Creates a new thread.
@@ -106,11 +92,11 @@ class ThreadService(BaseService):
         Returns:
             Thread: Created thread.
 
+        Raises:
+            NotImplementedError: This method is not implemented.
+
         """
-
-        id_ = await self.create_raw(data=data)
-
-        return await self.get_by_id(id_=id_)
+        raise NotImplementedError
 
     async def update(self, item: Any, data: Any) -> Any:
         """Updates a thread object.

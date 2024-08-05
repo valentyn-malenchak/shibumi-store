@@ -7,7 +7,6 @@ from fastapi import BackgroundTasks, Depends
 
 from app.api.v1.models.cart import (
     Cart,
-    CartCreateData,
     CartProduct,
     CartProductQuantity,
 )
@@ -86,9 +85,7 @@ class CartService(BaseService):
 
         """
 
-        cart = await self.repository.get_by_id(id_=id_)
-
-        return Cart(**cart)
+        return await self.repository.get_by_id(id_=id_)
 
     async def get_by_user_id(self, user_id: ObjectId) -> Cart:
         """Retrieves a cart by user unique identifier.
@@ -101,21 +98,7 @@ class CartService(BaseService):
 
         """
 
-        cart = await self.repository.get_one(user_id=user_id)
-
-        return Cart(**cart)
-
-    async def create_raw(self, data: CartCreateData) -> Any:
-        """Creates a raw new cart.
-
-        Args:
-            data (CartCreateData): The data for the new cart.
-
-        Returns:
-            Any: The ID of created cart.
-
-        """
-        return await self.repository.create(user_id=data.user_id)
+        return await self.repository.get_by_user_id(user_id=user_id)
 
     async def create(self, data: Any) -> Any:
         """Creates a new cart.

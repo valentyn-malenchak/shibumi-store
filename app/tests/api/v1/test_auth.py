@@ -119,7 +119,7 @@ class TestAuth(BaseAPITest):
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
     @patch("argon2.PasswordHasher.check_needs_rehash", Mock(return_value=True))
-    @patch("app.api.v1.repositories.user.UserRepository.update_by_id")
+    @patch("app.api.v1.repositories.user.UserRepository.update_password")
     @patch("argon2.PasswordHasher.hash")
     async def test_create_tokens_password_rehash(
         self,

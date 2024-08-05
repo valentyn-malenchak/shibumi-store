@@ -7,6 +7,7 @@ import arrow
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
+from app.api.v1.models.cart import Cart, CartCreateData
 from app.api.v1.repositories import BaseRepository
 from app.services.mongo.constants import MongoCollectionsEnum
 from app.utils.pydantic import PositiveInt
@@ -60,25 +61,44 @@ class CartRepository(BaseRepository):
         """
         raise NotImplementedError
 
+    async def get_by_id(
+        self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
+    ) -> Cart:
+        """Retrieves a cart from the repository by its unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the cart.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            Cart: The retrieved cart object.
+
+        """
+
+        cart = await self._get_one(_id=id_, session=session)
+
+        return Cart(**cart)
+
     async def get_and_update_by_id(
         self,
         id_: ObjectId,
+        data: Any,
         *,
         session: AsyncIOMotorClientSession | None = None,
-        **fields: Any,
-    ) -> Mapping[str, Any]:
+    ) -> Any:
         """
         Updates and retrieves a single cart from the repository by its
         unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the cart.
+            data (Any): Data to update cart.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): Fields to update cart.
 
         Returns:
-            Mapping[str, Any]: The retrieved cart.
+            Any: The retrieved cart object.
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -87,14 +107,17 @@ class CartRepository(BaseRepository):
         raise NotImplementedError
 
     async def create(
-        self, *, session: AsyncIOMotorClientSession | None = None, **fields: Any
+        self,
+        data: CartCreateData,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
     ) -> Any:
         """Creates a new cart in repository.
 
         Args:
+            data (CartCreateData): The data for the new cart.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): The fields for the new cart.
 
         Returns:
             Any: The ID of created cart.
@@ -104,7 +127,7 @@ class CartRepository(BaseRepository):
         return await self._mongo_service.insert_one(
             collection=self._collection_name,
             document={
-                **fields,
+                "user_id": data.user_id,
                 "products": [],
                 "created_at": arrow.utcnow().datetime,
                 "updated_at": None,
@@ -115,23 +138,45 @@ class CartRepository(BaseRepository):
     async def update_by_id(
         self,
         id_: ObjectId,
+        data: Any,
         *,
         session: AsyncIOMotorClientSession | None = None,
-        **fields: Any,
     ) -> None:
         """Updates a cart in repository.
 
         Args:
             id_ (ObjectId): The unique identifier of the cart.
+            data (Any): Data to update cart.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): Fields to update cart.
 
         Raises:
             NotImplementedError: This method is not implemented.
 
         """
         raise NotImplementedError
+
+    async def get_by_user_id(
+        self,
+        user_id: ObjectId,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+    ) -> Cart:
+        """Retrieves a cart from the repository by user identifier.
+
+        Args:
+            user_id (ObjectId): The unique identifier of the user.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            Cart: The retrieved cart object.
+
+        """
+
+        cart = await self._get_one(user_id=user_id, session=session)
+
+        return Cart(**cart)
 
     async def add_product(
         self,

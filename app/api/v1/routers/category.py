@@ -1,6 +1,5 @@
 """Module that contains category domain routers."""
 
-from collections.abc import Mapping
 from typing import Any
 
 from fastapi import APIRouter, Depends, Security, status
@@ -82,7 +81,7 @@ async def get_category_parameters(
     ),
     category: Category = Depends(CategoryByIdDependency()),
     category_service: CategoryService = Depends(),
-) -> Mapping[str, Any] | None:
+) -> CategoryParameters | None:
     """API which returns category parameters by its identifier.
 
     Args:
@@ -91,7 +90,7 @@ async def get_category_parameters(
         category_service (CategoryService): Category service.
 
     Returns:
-         Mapping[str, Any] | None: Category parameters or None.
+         CategoryParameters | None: Category parameters or None.
 
     """
     return await category_service.get_category_parameters(id_=category.id)
