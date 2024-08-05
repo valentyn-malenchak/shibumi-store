@@ -7,6 +7,7 @@ import arrow
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
+from app.api.v1.models import Search
 from app.api.v1.models.cart import Cart, CartCreateData
 from app.api.v1.repositories import BaseRepository
 from app.services.mongo.constants import MongoCollectionsEnum
@@ -18,13 +19,14 @@ class CartRepository(BaseRepository):
 
     _collection_name: str = MongoCollectionsEnum.CARTS
 
-    @staticmethod
-    async def _get_list_query_filter(*_: Any, **__: Any) -> Mapping[str, Any]:
+    async def _get_list_query_filter(
+        self, filter_: Any, search: Search | None
+    ) -> Mapping[str, Any]:
         """Returns a query filter for list of carts.
 
         Args:
-            _ (Any): Parameters for list searching.
-            __ (Any): Parameters for list filtering.
+            filter_ (Any): Parameters for list filtering.
+            search (Search | None): Parameters for list searching.
 
         Returns:
             (Mapping[str, Any]): List query filter.

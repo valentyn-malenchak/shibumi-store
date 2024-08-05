@@ -9,7 +9,8 @@ from injector import inject
 from motor.motor_asyncio import AsyncIOMotorClientSession
 from pymongo.errors import DuplicateKeyError
 
-from app.api.v1.models.user import User, UserCreateData, UserUpdateData
+from app.api.v1.models import Search
+from app.api.v1.models.user import User, UserCreateData, UserFilter, UserUpdateData
 from app.api.v1.repositories import BaseRepository
 from app.exceptions import EntityDuplicateKeyError
 from app.services.mongo.constants import MongoCollectionsEnum
@@ -21,20 +22,14 @@ class UserRepository(BaseRepository):
 
     _collection_name: str = MongoCollectionsEnum.USERS
 
-    @staticmethod
     async def _get_list_query_filter(
-        search: str | None,
-        roles: list[str] | None = None,
-        deleted: bool | None = None,
-        **_: Any,
+        self, filter_: UserFilter, search: Search | None
     ) -> Mapping[str, Any]:
         """Returns a query filter for list of users.
 
         Args:
-            search (str | None): Parameters for list searching.
-            roles (list[str] | None): List of roles for filtering. Defaults to None.
-            deleted (bool | None): Deleted status filtering. Defaults to None.
-            _ (Any): Parameters for list filtering.
+            filter_ (UserFilter): Parameters for list filtering.
+            search (Search | None): Parameters for list searching.
 
         Returns:
             (Mapping[str, Any]): List query filter.
@@ -43,14 +38,13 @@ class UserRepository(BaseRepository):
 
         query_filter: dict[str, Any] = {}
 
-        if search is not None:
-            query_filter["$text"] = {"$search": search}
+        self._apply_list_search(query_filter=query_filter, search=search)
 
-        if roles:
-            query_filter["roles"] = {"$in": roles}
+        if filter_.roles:
+            query_filter["roles"] = {"$in": filter_.roles}
 
-        if deleted is not None:
-            query_filter["deleted"] = deleted
+        if filter_.deleted is not None:
+            query_filter["deleted"] = filter_.deleted
 
         return query_filter
 

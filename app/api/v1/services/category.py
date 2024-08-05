@@ -62,15 +62,7 @@ class CategoryService(BaseService):
             list[Any]: The retrieved list of categories.
 
         """
-        return await self.repository.get(
-            search=None,
-            page=None,
-            page_size=None,
-            sort_by=None,
-            sort_order=None,
-            path=filter_.path,
-            leafs=filter_.leafs,
-        )
+        return await self.repository.get(filter_=filter_)
 
     async def count(self, filter_: CategoryFilter, *_: Any) -> int:
         """Counts categories based on parameters.
@@ -83,9 +75,7 @@ class CategoryService(BaseService):
             int: Count of categories.
 
         """
-        return await self.repository.count(
-            search=None, path=filter_.path, leafs=filter_.leafs
-        )
+        return await self.repository.count(filter_=filter_)
 
     async def get_by_id(self, id_: ObjectId) -> Category:
         """Retrieves a category by its unique identifier.

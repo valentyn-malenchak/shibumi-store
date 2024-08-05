@@ -86,15 +86,10 @@ class ProductService(BaseService):
         """
 
         return await self.repository.get(
-            search=search.search,
-            sort_by=sorting.sort_by,
-            sort_order=sorting.sort_order,
-            page=pagination.page,
-            page_size=pagination.page_size,
-            category_id=filter_.category_id,
-            available=filter_.available,
-            ids=filter_.ids,
-            parameters=filter_.parameters,
+            filter_=filter_,
+            search=search,
+            sorting=sorting,
+            pagination=pagination,
         )
 
     async def count(self, filter_: ProductFilter, search: Search) -> int:
@@ -110,11 +105,8 @@ class ProductService(BaseService):
         """
 
         return await self.repository.count(
-            search=search.search,
-            category_id=filter_.category_id,
-            available=filter_.available,
-            ids=filter_.ids,
-            parameters=filter_.parameters,
+            filter_=filter_,
+            search=search,
         )
 
     async def get_by_id(self, id_: ObjectId) -> Product:
