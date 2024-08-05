@@ -51,25 +51,44 @@ class RoleRepository(BaseRepository):
         """
         return None
 
+    async def get_by_id(
+        self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
+    ) -> Any:
+        """Retrieves a role from the repository by its unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the role.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            Any: The retrieved role object.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
     async def get_and_update_by_id(
         self,
         id_: ObjectId,
+        data: Any,
         *,
         session: AsyncIOMotorClientSession | None = None,
-        **fields: Any,
-    ) -> Mapping[str, Any]:
+    ) -> Any:
         """
         Updates and retrieves a single role from the repository by its
         unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the role.
+            data (Any): Data to update role.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): Fields to update role.
 
         Returns:
-            Mapping[str, Any]: The retrieved role.
+            Any: The retrieved role object.
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -78,14 +97,17 @@ class RoleRepository(BaseRepository):
         raise NotImplementedError
 
     async def create(
-        self, *, session: AsyncIOMotorClientSession | None = None, **fields: Any
+        self,
+        data: Any,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
     ) -> Any:
         """Creates a new role in repository.
 
         Args:
+            data (Any): The data for the new role.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): The fields for the new role.
 
         Returns:
             Any: The ID of created role.
@@ -99,17 +121,17 @@ class RoleRepository(BaseRepository):
     async def update_by_id(
         self,
         id_: ObjectId,
+        data: Any,
         *,
         session: AsyncIOMotorClientSession | None = None,
-        **fields: Any,
     ) -> None:
         """Updates a role in repository.
 
         Args:
             id_ (ObjectId): The unique identifier of the role.
+            data (Any): Data to update role.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): Fields to update role.
 
         Raises:
             NotImplementedError: This method is not implemented.

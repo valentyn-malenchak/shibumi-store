@@ -5,7 +5,7 @@ from typing import Annotated
 from bson import ObjectId
 from fastapi import Depends
 
-from app.api.v1.models.thread import (
+from app.api.v1.models.comment import (
     BaseCommentCreateData,
     Comment,
     CommentCreateData,

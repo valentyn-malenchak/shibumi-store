@@ -1,13 +1,13 @@
 """Module that contains category service class."""
 
-from collections.abc import Mapping
 from typing import Any
 
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
 
-from app.api.v1.models.category import Category, CategoryFilter
+from app.api.v1.models.category import Category, CategoryFilter, CategoryParameters
 from app.api.v1.repositories.category import CategoryRepository
+from app.api.v1.repositories.category_parameters import CategoryParametersRepository
 from app.api.v1.services import BaseService
 from app.exceptions import EntityIsNotFoundError
 from app.services.mongo.transaction_manager import TransactionManager
@@ -23,6 +23,7 @@ class CategoryService(BaseService):
         redis_service: RedisService = Depends(),
         transaction_manager: TransactionManager = Depends(),
         repository: CategoryRepository = Depends(),
+        category_parameters_repository: CategoryParametersRepository = Depends(),
     ) -> None:
         """Initializes the category service.
 
@@ -31,6 +32,8 @@ class CategoryService(BaseService):
             redis_service (RedisService): Redis service.
             transaction_manager (TransactionManager): Transaction manager.
             repository (CategoryRepository): An instance of the Category repository.
+            category_parameters_repository (CategoryParametersRepository): An instance
+            of the category-parameters repository.
 
         """
 
@@ -41,6 +44,8 @@ class CategoryService(BaseService):
         )
 
         self.repository = repository
+
+        self.category_parameters_repository = category_parameters_repository
 
     async def get(
         self,
@@ -93,24 +98,7 @@ class CategoryService(BaseService):
 
         """
 
-        category = await self.repository.get_by_id(id_=id_)
-
-        return Category(**category)
-
-    async def create_raw(self, data: Any) -> Any:
-        """Creates a raw new category.
-
-        Args:
-            data (Any): The data for the new category.
-
-        Returns:
-            Any: The ID of created category.
-
-        Raises:
-            NotImplementedError: This method is not implemented.
-
-        """
-        raise NotImplementedError
+        return await self.repository.get_by_id(id_=id_)
 
     async def create(self, data: Any) -> Any:
         """Creates a new category.
@@ -183,30 +171,18 @@ class CategoryService(BaseService):
         """
         raise NotImplementedError
 
-    async def get_category_parameters(self, id_: ObjectId) -> Mapping[str, Any] | None:
+    async def get_category_parameters(self, id_: ObjectId) -> CategoryParameters | None:
         """Retrieves a category parameters by its identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the category.
 
         Returns:
-             Mapping[str, Any] | None: The retrieved parameters or None if not found.
+             CategoryParameters | None: The retrieved parameters or None if not found.
 
         """
 
         try:
-            return await self.repository.get_category_parameters(id_=id_)
+            return await self.category_parameters_repository.get_by_id(id_=id_)
         except EntityIsNotFoundError:
             return None
-
-    async def calculate_category_parameters(self, id_: ObjectId) -> None:
-        """Calculates list of parameters for specific product category.
-
-        Args:
-            id_ (ObjectId): The unique identifier of the category.
-
-        """
-        async with self.transaction_manager as session:
-            await self.repository.calculate_category_parameters(
-                id_=id_, session=session
-            )

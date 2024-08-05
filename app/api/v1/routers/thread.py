@@ -1,5 +1,8 @@
 """Module that contains thread domain routers."""
 
+from typing import Annotated
+
+from bson import ObjectId
 from fastapi import APIRouter, Depends, Security, status
 
 from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
@@ -16,18 +19,23 @@ from app.api.v1.dependencies.vote import (
     VoteDataUpdateDependency,
     VoteUserDependency,
 )
-from app.api.v1.models.thread import (
+from app.api.v1.models.comment import (
     Comment,
     CommentCreateData,
     CommentUpdateData,
+)
+from app.api.v1.models.thread import (
     Thread,
-    Vote,
-    VoteCreateData,
-    VoteUpdateData,
 )
 from app.api.v1.models.user import CurrentUser
+from app.api.v1.models.vote import (
+    Vote,
+    VoteCreateData,
+    VoteData,
+)
 from app.api.v1.services.comment import CommentService
 from app.api.v1.services.vote import VoteService
+from app.utils.pydantic import ObjectIdAnnotation
 
 router = APIRouter(prefix="/threads", tags=["threads"])
 
@@ -190,24 +198,27 @@ async def create_thread_comment_vote(
     status_code=status.HTTP_200_OK,
 )
 async def update_thread_comment_vote(
+    vote_id: Annotated[ObjectId, ObjectIdAnnotation],
     _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.THREADS_UPDATE_VOTE.name]
     ),
-    vote_data: VoteUpdateData = Depends(VoteDataUpdateDependency()),
+    vote_data: VoteData = Depends(VoteDataUpdateDependency()),
     vote_service: VoteService = Depends(),
 ) -> Vote:
     """API which updates thread comment vote.
 
     Args:
+        vote_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
+        identifier of requested vote.
         _ (CurrentUser): Current user object.
-        vote_data (VoteUpdateData): Vote update data.
+        vote_data (VoteData): Vote update data.
         vote_service (VoteService): Vote service.
 
     Returns:
         Vote: Vote object.
 
     """
-    return await vote_service.update_by_id(id_=vote_data.vote_id, data=vote_data)
+    return await vote_service.update_by_id(id_=vote_id, data=vote_data)
 
 
 @router.delete(

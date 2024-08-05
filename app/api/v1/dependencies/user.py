@@ -6,10 +6,10 @@ from bson import ObjectId
 from fastapi import Depends
 
 from app.api.v1.models.user import (
+    BaseUserCreateData,
+    BaseUserUpdateData,
     User,
-    UserCreateData,
     UserPasswordUpdateData,
-    UserUpdateData,
 )
 from app.api.v1.validators.user import (
     UserByIdValidator,
@@ -150,17 +150,17 @@ class UserDataCreateDependency:
 
     async def __call__(
         self,
-        user_data: UserCreateData,
+        user_data: BaseUserCreateData,
         user_roles_validator: UserRolesValidator = Depends(),
-    ) -> UserCreateData:
+    ) -> BaseUserCreateData:
         """Validates data on user create operation.
 
         Args:
-            user_data (UserCreateData): Requested user's data.
+            user_data (BaseUserCreateData): Requested user's data.
             user_roles_validator (UserRolesValidator): Roles validator.
 
         Returns:
-            UserCreateData: Requested user's data.
+            BaseUserCreateData: Requested user's data.
 
         """
 
@@ -174,17 +174,17 @@ class UserDataUpdateDependency:
 
     async def __call__(
         self,
-        user_data: UserUpdateData,
+        user_data: BaseUserUpdateData,
         user_roles_validator: UserRolesValidator = Depends(),
-    ) -> UserUpdateData:
+    ) -> BaseUserUpdateData:
         """Validates data on user update operation.
 
         Args:
-            user_data (UserUpdateData): Requested user's data.
+            user_data (BaseUserUpdateData): Requested user's data.
             user_roles_validator (UserRolesValidator): Roles validator.
 
         Returns:
-            UserUpdateData: Requested user's data.
+            BaseUserUpdateData: Requested user's data.
 
         """
 

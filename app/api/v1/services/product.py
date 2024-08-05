@@ -9,14 +9,16 @@ from fastapi import BackgroundTasks, Depends
 from app.api.v1.models import Pagination, Search, Sorting
 from app.api.v1.models.product import (
     Product,
+    ProductCreateData,
     ProductData,
     ProductFilter,
 )
 from app.api.v1.models.thread import ThreadCreateData
+from app.api.v1.repositories.category import CategoryRepository
+from app.api.v1.repositories.category_parameters import CategoryParametersRepository
 from app.api.v1.repositories.product import ProductRepository
+from app.api.v1.repositories.thread import ThreadRepository
 from app.api.v1.services import BaseService
-from app.api.v1.services.category import CategoryService
-from app.api.v1.services.thread import ThreadService
 from app.services.mongo.transaction_manager import TransactionManager
 from app.services.redis.service import RedisService
 
@@ -30,8 +32,9 @@ class ProductService(BaseService):
         redis_service: RedisService = Depends(),
         transaction_manager: TransactionManager = Depends(),
         repository: ProductRepository = Depends(),
-        category_service: CategoryService = Depends(),
-        thread_service: ThreadService = Depends(),
+        category_repository: CategoryRepository = Depends(),
+        category_parameters_repository: CategoryParametersRepository = Depends(),
+        thread_repository: ThreadRepository = Depends(),
     ) -> None:
         """Initializes the product service.
 
@@ -40,8 +43,11 @@ class ProductService(BaseService):
             redis_service (RedisService): Redis service.
             transaction_manager (TransactionManager): Transaction manager.
             repository (ProductRepository): An instance of the Product repository.
-            category_service (CategoryService): Category service.
-            thread_service (ThreadService): Thread service.
+            category_repository (CategoryRepository): An instance of the category
+            repository.
+            category_parameters_repository (CategoryParametersRepository): An instance
+            of the category-parameters repository.
+            thread_repository (ThreadRepository): An instance of the thread repository.
 
         """
 
@@ -53,9 +59,11 @@ class ProductService(BaseService):
 
         self.repository = repository
 
-        self.category_service = category_service
+        self.category_repository = category_repository
 
-        self.thread_service = thread_service
+        self.category_parameters_repository = category_parameters_repository
+
+        self.thread_repository = thread_repository
 
     async def get(
         self,
@@ -120,38 +128,7 @@ class ProductService(BaseService):
 
         """
 
-        product = await self.repository.get_by_id(id_=id_)
-
-        return Product(**product)
-
-    async def create_raw(self, data: ProductData) -> Any:
-        """Creates a raw new product.
-
-        Args:
-            data (ProductData): The data for the new product.
-
-        Returns:
-            Any: The ID of created product.
-
-        """
-
-        # Initialize product thread
-        thread = await self.thread_service.create(
-            data=ThreadCreateData(name=data.name, body=data.synopsis)
-        )
-
-        return await self.repository.create(
-            name=data.name,
-            synopsis=data.synopsis,
-            description=data.description,
-            quantity=data.quantity,
-            price=data.price,
-            category_id=data.category_id,
-            available=data.available,
-            html_body=data.html_body,
-            parameters=data.parameters,
-            thread_id=thread.id,
-        )
+        return await self.repository.get_by_id(id_=id_)
 
     async def create(self, data: ProductData) -> Product:
         """Creates a new product.
@@ -164,11 +141,18 @@ class ProductService(BaseService):
 
         """
 
-        id_ = await self.create_raw(data=data)
+        # Initialize product thread
+        thread_id = await self.thread_repository.create(
+            data=ThreadCreateData(name=data.name, body=data.synopsis)
+        )
+
+        id_ = await self.repository.create(
+            data=ProductCreateData(**data.model_dump(), thread_id=thread_id)
+        )
 
         self.background_tasks.add_task(
-            self.category_service.calculate_category_parameters,
-            id_=data.category_id,
+            self.calculate_category_parameters,
+            category_id=data.category_id,
         )
 
         return await self.get_by_id(id_=id_)
@@ -185,31 +169,18 @@ class ProductService(BaseService):
 
         """
 
-        updated_product = await self.repository.get_and_update_by_id(
-            id_=item.id,
-            name=data.name,
-            synopsis=data.synopsis,
-            description=data.description,
-            quantity=data.quantity,
-            price=data.price,
-            category_id=data.category_id,
-            available=data.available,
-            html_body=data.html_body,
-            parameters=data.parameters,
-        )
-
-        product = Product(**updated_product)
+        product = await self.repository.get_and_update_by_id(id_=item.id, data=data)
 
         self.background_tasks.add_task(
-            self.category_service.calculate_category_parameters,
-            id_=data.category_id,
+            self.calculate_category_parameters,
+            category_id=data.category_id,
         )
 
         # Recalculate parameters for "old" category, if category field is updated
         if item.category_id != data.category_id:
             self.background_tasks.add_task(
-                self.category_service.calculate_category_parameters,
-                id_=item.category_id,
+                self.calculate_category_parameters,
+                category_id=item.category_id,
             )
 
         return product
@@ -262,3 +233,25 @@ class ProductService(BaseService):
 
         """
         self.background_tasks.add_task(self.repository.increment_views, id_=id_)
+
+    async def calculate_category_parameters(self, category_id: ObjectId) -> None:
+        """Calculates and stores list of parameters for specific product category.
+
+        Args:
+            category_id (ObjectId): The unique identifier of the category.
+
+        """
+
+        async with self.transaction_manager as session:
+            category_parameters = (
+                await self.category_repository.calculate_category_parameters(
+                    id_=category_id, session=session
+                )
+            )
+
+            await self.category_parameters_repository.update_by_id(
+                id_=category_parameters["_id"],
+                data=category_parameters,
+                upsert=True,
+                session=session,
+            )

@@ -8,6 +8,7 @@ from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClientSession
 from pymongo.errors import DuplicateKeyError
 
+from app.api.v1.models.vote import Vote, VoteCreateData, VoteData
 from app.api.v1.repositories import BaseRepository
 from app.exceptions import EntityDuplicateKeyError
 from app.services.mongo.constants import MongoCollectionsEnum
@@ -61,44 +62,70 @@ class VoteRepository(BaseRepository):
         """
         raise NotImplementedError
 
+    async def get_by_id(
+        self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
+    ) -> Vote:
+        """Retrieves a vote from the repository by its unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the vote.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            Vote: The retrieved vote object.
+
+        """
+
+        vote = await self._get_one(_id=id_, session=session)
+
+        return Vote(**vote)
+
     async def get_and_update_by_id(
         self,
         id_: ObjectId,
+        data: VoteData,
         *,
         session: AsyncIOMotorClientSession | None = None,
-        **fields: Any,
-    ) -> Mapping[str, Any]:
+    ) -> Vote:
         """
         Updates and retrieves a single vote from the repository by its
         unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the vote.
+            data (VoteData): Data to update vote.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): Fields to update vote.
 
         Returns:
-            Mapping[str, Any]: The retrieved vote.
+            Vote: The retrieved vote object.
 
         """
 
-        return await self._mongo_service.find_one_and_update(
+        vote = await self._mongo_service.find_one_and_update(
             collection=self._collection_name,
             filter_={"_id": id_},
-            update={"$set": {**fields, "updated_at": arrow.utcnow().datetime}},
+            update={
+                "$set": {"value": data.value, "updated_at": arrow.utcnow().datetime}
+            },
             session=session,
         )
 
+        return Vote(**vote)
+
     async def create(
-        self, *, session: AsyncIOMotorClientSession | None = None, **fields: Any
+        self,
+        data: VoteCreateData,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
     ) -> Any:
         """Creates a new vote in repository.
 
         Args:
+            data (VoteCreateData): The data for the new vote.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): The fields for the new vote.
 
         Returns:
             Any: The ID of created vote.
@@ -109,7 +136,9 @@ class VoteRepository(BaseRepository):
             return await self._mongo_service.insert_one(
                 collection=self._collection_name,
                 document={
-                    **fields,
+                    "value": data.value,
+                    "comment_id": data.comment_id,
+                    "user_id": data.user_id,
                     "created_at": arrow.utcnow().datetime,
                     "updated_at": None,
                 },
@@ -122,18 +151,17 @@ class VoteRepository(BaseRepository):
     async def update_by_id(
         self,
         id_: ObjectId,
+        data: Any,
         *,
         session: AsyncIOMotorClientSession | None = None,
-        **fields: Any,
     ) -> None:
         """Updates a vote in repository.
 
         Args:
             id_ (ObjectId): The unique identifier of the vote.
-            id_ (ObjectId): The unique identifier of the vote.
+            data (Any): Data to update vote.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): Fields to update vote.
 
         Raises:
             NotImplementedError: This method is not implemented.

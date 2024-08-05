@@ -6,6 +6,7 @@ from typing import Any
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
+from app.api.v1.models.category import CategoryParameters
 from app.api.v1.repositories import BaseRepository
 from app.services.mongo.constants import MongoCollectionsEnum
 
@@ -58,25 +59,44 @@ class CategoryParametersRepository(BaseRepository):
         """
         raise NotImplementedError
 
+    async def get_by_id(
+        self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
+    ) -> CategoryParameters:
+        """Retrieves a category-parameters from the repository by its unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the category-parameters.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            CategoryParameters: The retrieved category-parameters object.
+
+        """
+
+        category_parameters = await self._get_one(_id=id_, session=session)
+
+        return CategoryParameters(**category_parameters)
+
     async def get_and_update_by_id(
         self,
         id_: ObjectId,
+        data: Any,
         *,
         session: AsyncIOMotorClientSession | None = None,
-        **fields: Any,
-    ) -> Mapping[str, Any]:
+    ) -> Any:
         """
-        Updates and retrieves a single category-parameter from the repository by its
+        Updates and retrieves a single category-parameters from the repository by its
         unique identifier.
 
         Args:
-            id_ (ObjectId): The unique identifier of the category-parameter.
+            id_ (ObjectId): The unique identifier of the category-parameters.
+            data (Any): Data to update category-parameters.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): Fields to update category-parameter.
 
         Returns:
-            Mapping[str, Any]: The retrieved category-parameter.
+            Any: The retrieved category-parameters object.
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -85,14 +105,17 @@ class CategoryParametersRepository(BaseRepository):
         raise NotImplementedError
 
     async def create(
-        self, *, session: AsyncIOMotorClientSession | None = None, **fields: Any
+        self,
+        data: Any,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
     ) -> Any:
         """Creates a new category-parameter in repository.
 
         Args:
+            data (Any): The data for the new category-parameters.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): The fields for the new category-parameter.
 
         Returns:
             Any: The ID of created category-parameter.
@@ -106,26 +129,26 @@ class CategoryParametersRepository(BaseRepository):
     async def update_by_id(
         self,
         id_: ObjectId,
+        data: dict[str, Any],
         *,
         session: AsyncIOMotorClientSession | None = None,
         upsert: bool = False,
-        **fields: Any,
     ) -> None:
-        """Updates a category-parameter in repository.
+        """Updates a category-parameters in repository.
 
         Args:
-            id_ (ObjectId): The unique identifier of the category-parameter.
+            id_ (ObjectId): The unique identifier of the category-parameters.
+            data (dict[str, Any]): Data to update category-parameters.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
             upsert (bool): Use update or insert. Defaults to False.
-            fields (Any): Fields to update category-parameter.
 
         """
 
         await self._mongo_service.update_one(
             collection=self._collection_name,
             filter_={"_id": id_},
-            update={"$set": fields},
+            update={"$set": data},
             upsert=upsert,
             session=session,
         )

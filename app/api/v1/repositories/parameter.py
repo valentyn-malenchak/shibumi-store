@@ -54,25 +54,44 @@ class ParameterRepository(BaseRepository):
         """
         return None
 
+    async def get_by_id(
+        self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
+    ) -> Any:
+        """Retrieves a parameter from the repository by its unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the parameter.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            Any: The retrieved parameter object.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
+
     async def get_and_update_by_id(
         self,
         id_: ObjectId,
+        data: Any,
         *,
         session: AsyncIOMotorClientSession | None = None,
-        **fields: Any,
-    ) -> Mapping[str, Any]:
+    ) -> Any:
         """
         Updates and retrieves a single parameter from the repository by its
         unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the parameter.
+            data (Any): Data to update parameter.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): Fields to update parameter.
 
         Returns:
-            Mapping[str, Any]: The retrieved parameter.
+            Any: The retrieved parameter object.
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -81,14 +100,17 @@ class ParameterRepository(BaseRepository):
         raise NotImplementedError
 
     async def create(
-        self, *, session: AsyncIOMotorClientSession | None = None, **fields: Any
+        self,
+        data: Any,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
     ) -> Any:
         """Creates a new parameter in repository.
 
         Args:
+            data (Any): The data for the new parameter.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): The fields for the new parameter.
 
         Returns:
             Any: The ID of created parameter.
@@ -102,17 +124,17 @@ class ParameterRepository(BaseRepository):
     async def update_by_id(
         self,
         id_: ObjectId,
+        data: Any,
         *,
         session: AsyncIOMotorClientSession | None = None,
-        **fields: Any,
     ) -> None:
         """Updates a parameter in repository.
 
         Args:
             id_ (ObjectId): The unique identifier of the parameter.
+            data (Any): Data to update parameter.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): Fields to update parameter.
 
         Raises:
             NotImplementedError: This method is not implemented.

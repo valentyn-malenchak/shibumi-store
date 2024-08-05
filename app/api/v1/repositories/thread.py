@@ -7,6 +7,7 @@ import arrow
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
+from app.api.v1.models.thread import Thread, ThreadCreateData
 from app.api.v1.repositories import BaseRepository
 from app.services.mongo.constants import MongoCollectionsEnum
 
@@ -59,25 +60,44 @@ class ThreadRepository(BaseRepository):
         """
         raise NotImplementedError
 
+    async def get_by_id(
+        self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
+    ) -> Thread:
+        """Retrieves a thread from the repository by its unique identifier.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the thread.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            Thread: The retrieved thread object.
+
+        """
+
+        thread = await self._get_one(_id=id_, session=session)
+
+        return Thread(**thread)
+
     async def get_and_update_by_id(
         self,
         id_: ObjectId,
+        data: Any,
         *,
         session: AsyncIOMotorClientSession | None = None,
-        **fields: Any,
-    ) -> Mapping[str, Any]:
+    ) -> Any:
         """
         Updates and retrieves a single thread from the repository by its
         unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the thread.
+            data (Any): Data to update thread.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): Fields to update thread.
 
         Returns:
-            Mapping[str, Any]: The retrieved thread.
+            Any: The retrieved thread object.
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -86,14 +106,17 @@ class ThreadRepository(BaseRepository):
         raise NotImplementedError
 
     async def create(
-        self, *, session: AsyncIOMotorClientSession | None = None, **fields: Any
+        self,
+        data: ThreadCreateData,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
     ) -> Any:
         """Creates a new thread in repository.
 
         Args:
+            data (ThreadCreateData): The data for the new thread.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): The fields for the new thread.
 
         Returns:
             Any: The ID of created thread.
@@ -102,7 +125,8 @@ class ThreadRepository(BaseRepository):
         return await self._mongo_service.insert_one(
             collection=self._collection_name,
             document={
-                **fields,
+                "name": data.name,
+                "body": data.body,
                 "created_at": arrow.utcnow().datetime,
                 "updated_at": None,
             },
@@ -112,17 +136,17 @@ class ThreadRepository(BaseRepository):
     async def update_by_id(
         self,
         id_: ObjectId,
+        data: Any,
         *,
         session: AsyncIOMotorClientSession | None = None,
-        **fields: Any,
     ) -> None:
         """Updates a thread in repository.
 
         Args:
             id_ (ObjectId): The unique identifier of the thread.
+            data (Any): Data to update thread.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): Fields to update thread.
 
         Raises:
             NotImplementedError: This method is not implemented.

@@ -4,42 +4,20 @@ from collections.abc import Mapping
 from typing import Any
 
 from bson import ObjectId
-from fastapi import Depends
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
 from app.api.v1.constants import ProductParameterTypesEnum
+from app.api.v1.models.category import Category
 from app.api.v1.repositories import BaseRepository
-from app.api.v1.repositories.category_parameters import CategoryParametersRepository
 from app.constants import ProjectionValuesEnum, SortingValuesEnum
 from app.exceptions import EntityIsNotFoundError
 from app.services.mongo.constants import MongoCollectionsEnum
-from app.services.mongo.service import MongoDBService
 
 
 class CategoryRepository(BaseRepository):
     """Category repository for handling data access operations."""
 
     _collection_name: str = MongoCollectionsEnum.CATEGORIES
-
-    def __init__(
-        self,
-        mongo_service: MongoDBService = Depends(),
-        category_parameters_repository: CategoryParametersRepository = Depends(),
-    ) -> None:
-        """Initializes the ProductRepository.
-
-        This method sets up the MongoDB service instance for data access.
-
-        Args:
-            mongo_service (MongoDBService): An instance of the MongoDB service.
-            category_parameters_repository (CategoryParametersRepository): Category
-            parameters repository.
-
-        """
-
-        super().__init__(mongo_service=mongo_service)
-
-        self.category_parameters_repository = category_parameters_repository
 
     async def _get_list_query_filter(
         self,
@@ -98,7 +76,7 @@ class CategoryRepository(BaseRepository):
 
     async def get_by_id(
         self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
-    ) -> Mapping[str, Any]:
+    ) -> Category:
         """Retrieves a category with related data from the repository by its unique
         identifier.
 
@@ -108,10 +86,10 @@ class CategoryRepository(BaseRepository):
             if operation is transactional. Defaults to None.
 
         Returns:
-            Mapping[str, Any]: The retrieved category.
+            Category: The retrieved category object.
 
         Raises:
-            EntityIsNotFoundError: In case document is not found.
+            EntityIsNotFoundError: In case category is not found.
 
         """
 
@@ -143,27 +121,27 @@ class CategoryRepository(BaseRepository):
         if not result:
             raise EntityIsNotFoundError
 
-        return result[0]
+        return Category(**result[0])
 
     async def get_and_update_by_id(
         self,
         id_: ObjectId,
+        data: Any,
         *,
         session: AsyncIOMotorClientSession | None = None,
-        **fields: Any,
-    ) -> Mapping[str, Any]:
+    ) -> Any:
         """
         Updates and retrieves a single category from the repository by its
         unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the category.
+            data (Any): Data to update category.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): Fields to update category.
 
         Returns:
-            Mapping[str, Any]: The retrieved category.
+            Any: The retrieved category object.
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -172,14 +150,17 @@ class CategoryRepository(BaseRepository):
         raise NotImplementedError
 
     async def create(
-        self, *, session: AsyncIOMotorClientSession | None = None, **fields: Any
+        self,
+        data: Any,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
     ) -> Any:
         """Creates a new category in repository.
 
         Args:
+            data (Any): The data for the new category.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): The fields for the new category.
 
         Returns:
             Any: The ID of created category.
@@ -193,17 +174,17 @@ class CategoryRepository(BaseRepository):
     async def update_by_id(
         self,
         id_: ObjectId,
+        data: Any,
         *,
         session: AsyncIOMotorClientSession | None = None,
-        **fields: Any,
     ) -> None:
         """Updates a category in repository.
 
         Args:
             id_ (ObjectId): The unique identifier of the category.
+            data (Any): Data to update category.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            fields (Any): Fields to update category.
 
         Raises:
             NotImplementedError: This method is not implemented.
@@ -216,7 +197,7 @@ class CategoryRepository(BaseRepository):
         id_: ObjectId,
         *,
         session: AsyncIOMotorClientSession | None = None,
-    ) -> None:
+    ) -> dict[str, Any]:
         """Calculates list of parameters for specific product category.
 
         Args:
@@ -224,19 +205,22 @@ class CategoryRepository(BaseRepository):
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
+        Returns:
+            dict[str, Any]: The calculated category-parameters.
+
         """
 
         category = await self.get_by_id(id_=id_, session=session)
 
         # Ignore exception handling, category is validated earlier
-        parameters = category["parameters"]
+        parameters = category.parameters
 
         pipeline: list[dict[str, Any]] = [{"$match": {"category_id": id_}}]
 
         list_type_parameters = [
             parameter
             for parameter in parameters
-            if parameter["type"] == ProductParameterTypesEnum.LIST.name
+            if parameter.type == ProductParameterTypesEnum.LIST.name
         ]
 
         if list_type_parameters:
@@ -244,7 +228,7 @@ class CategoryRepository(BaseRepository):
                 [
                     {
                         "$unwind": {
-                            "path": f"$parameters.{parameter['machine_name']}",
+                            "path": f"$parameters.{parameter.machine_name}",
                             "preserveNullAndEmptyArrays": True,
                         }
                     }
@@ -257,8 +241,8 @@ class CategoryRepository(BaseRepository):
                 "$group": {
                     "_id": "$category_id",
                     **{
-                        parameter["machine_name"]: {
-                            "$addToSet": f"$parameters.{parameter['machine_name']}"
+                        parameter.machine_name: {
+                            "$addToSet": f"$parameters.{parameter.machine_name}"
                         }
                         for parameter in parameters
                     },
@@ -272,7 +256,7 @@ class CategoryRepository(BaseRepository):
             session=session,
         )
 
-        category_parameters = {
+        return {
             parameter: sorted(
                 value,
                 # 'None' values will be in the end of list, not case-sensitive
@@ -285,29 +269,3 @@ class CategoryRepository(BaseRepository):
             else value
             for parameter, value in result[0].items()
         }
-
-        await self.category_parameters_repository.update_by_id(
-            id_=category_parameters["_id"],
-            upsert=True,
-            session=session,
-            **category_parameters,
-        )
-
-    async def get_category_parameters(
-        self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
-    ) -> Mapping[str, Any] | None:
-        """Retrieves parameters data from the repository by category identifier.
-
-        Args:
-            id_ (ObjectId): The unique identifier of the category.
-            session (AsyncIOMotorClientSession | None): Defines a client session
-            if operation is transactional. Defaults to None.
-
-        Returns:
-            Mapping[str, Any] | None: The retrieved parameters.
-
-        """
-
-        return await self.category_parameters_repository.get_by_id(
-            id_=id_, session=session
-        )

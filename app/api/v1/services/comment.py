@@ -5,7 +5,7 @@ from typing import Any
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
 
-from app.api.v1.models.thread import Comment, CommentCreateData, CommentUpdateData
+from app.api.v1.models.comment import Comment, CommentCreateData, CommentUpdateData
 from app.api.v1.repositories.comment import CommentRepository
 from app.api.v1.services import BaseService
 from app.services.mongo.transaction_manager import TransactionManager
@@ -81,35 +81,7 @@ class CommentService(BaseService):
 
         """
 
-        comment = await self.repository.get_by_id(id_=id_)
-
-        return Comment(**comment)
-
-    async def create_raw(self, data: CommentCreateData) -> Any:
-        """Creates a raw new comment.
-
-        Args:
-            data (CommentCreateData): The data for the new comment.
-
-        Returns:
-            Any: The ID of created comment.
-
-        """
-
-        comment_id = ObjectId()
-
-        return await self.repository.create(
-            _id=comment_id,
-            body=data.body,
-            thread_id=data.thread_id,
-            user_id=data.user_id,
-            parent_comment_id=data.parent_comment.id
-            if data.parent_comment is not None
-            else None,
-            path=f"{data.parent_comment.path}/{comment_id}"
-            if data.parent_comment is not None
-            else f"/{comment_id}",
-        )
+        return await self.repository.get_by_id(id_=id_)
 
     async def create(self, data: CommentCreateData) -> Comment:
         """Creates a new comment.
@@ -122,7 +94,7 @@ class CommentService(BaseService):
 
         """
 
-        id_ = await self.create_raw(data=data)
+        id_ = await self.repository.create(data=data)
 
         return await self.get_by_id(id_=id_)
 
@@ -154,12 +126,10 @@ class CommentService(BaseService):
 
         """
 
-        updated_comment = await self.repository.get_and_update_by_id(
+        return await self.repository.get_and_update_by_id(
             id_=id_,
-            body=data.body,
+            data=data,
         )
-
-        return Comment(**updated_comment)
 
     async def delete_by_id(self, id_: ObjectId) -> None:
         """Deletes a comment by its unique identifier.
@@ -184,33 +154,3 @@ class CommentService(BaseService):
 
         """
         raise NotImplementedError
-
-    async def add_vote(self, id_: ObjectId, value: bool) -> None:
-        """Increments a vote counter field for comment by its unique identifier.
-
-        Args:
-            id_ (ObjectId): The unique identifier of the comment.
-            value (bool): Vote value.
-
-        """
-        await self.repository.add_vote(id_=id_, value=value)
-
-    async def update_vote(self, id_: ObjectId, new_value: bool) -> None:
-        """Updates a vote counter fields for comment by its unique identifier.
-
-        Args:
-            id_ (ObjectId): The unique identifier of the comment.
-            new_value (bool): Updated vote value.
-
-        """
-        await self.repository.update_vote(id_=id_, new_value=new_value)
-
-    async def delete_vote(self, id_: ObjectId, value: bool) -> None:
-        """Decrements a vote counter fields for comment by its unique identifier.
-
-        Args:
-            id_ (ObjectId): The unique identifier of the comment.
-            value (bool): Vote value.
-
-        """
-        await self.repository.delete_vote(id_=id_, value=value)
