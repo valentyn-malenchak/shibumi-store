@@ -8,6 +8,7 @@ from bson import ObjectId
 from fastapi import Depends
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
+from app.api.v1.models import Pagination, Search, Sorting
 from app.constants import SortingTypesEnum, SortingValuesEnum
 from app.exceptions import EntityIsNotFoundError
 from app.services.mongo.service import MongoDBService
@@ -29,28 +30,24 @@ class BaseRepository(abc.ABC):
         """
         self._mongo_service = mongo_service
 
-    async def get(  # noqa: PLR0913
+    async def get(
         self,
-        search: str | None,
-        sort_by: str | None,
-        sort_order: SortingTypesEnum | None,
-        page: int | None,
-        page_size: int | None,
+        filter_: Any = None,
+        search: Search | None = None,
+        sorting: Sorting | None = None,
+        pagination: Pagination | None = None,
+        *,
         session: AsyncIOMotorClientSession | None = None,
-        **filters: Any,
     ) -> list[Mapping[str, Any]]:
         """Retrieves a list of documents based on parameters.
 
         Args:
-            search (str | None): Parameters for list searching.
-            sort_by (str | None): Specifies a field for sorting.
-            sort_order (SortingTypesEnum | None): Defines sort order - ascending
-            or descending.
-            page (int | None): Page number.
-            page_size (int | None): Number of documents on each page.
+            filter_ (Any): Parameters for list filtering. Defaults to None.
+            search (Search): Parameters for list searching. Defaults to None.
+            sorting (Sorting): Parameters for sorting. Defaults to None.
+            pagination (Pagination): Parameters for pagination. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            filters (Any): Parameters for list filtering.
 
         Returns:
             list[Mapping[str, Any]]: The retrieved list of documents.
@@ -59,43 +56,42 @@ class BaseRepository(abc.ABC):
 
         return await self._mongo_service.find(
             collection=self._collection_name,
-            filter_=await self._get_list_query_filter(search, **filters),
+            filter_=await self._get_list_query_filter(filter_=filter_, search=search),
             projection=self._get_list_query_projection(),
-            sort=self._get_list_sorting(
-                sort_by=sort_by, sort_order=sort_order, search=search is not None
-            ),
-            skip=self._calculate_skip(page=page, page_size=page_size),
-            limit=page_size,
+            sort=self._get_list_sorting(sorting=sorting, search=search),
+            skip=self._calculate_skip(pagination),
+            limit=pagination.page_size if pagination is not None else None,
             session=session,
         )
 
     @staticmethod
-    def _calculate_skip(page: int | None, page_size: int | None) -> int | None:
+    def _calculate_skip(pagination: Pagination | None) -> int | None:
         """Calculates count of documents to skip for reaching page.
 
         Args:
-            page (int | None): Page number.
-            page_size (int | None): Number of documents on each page.
+            pagination (Pagination | None): Parameters for pagination.
 
         Returns:
             int | None: Skip number or None.
 
         """
         return (
-            (page - 1) * page_size
-            if page is not None and page_size is not None
+            (pagination.page - 1) * pagination.page_size
+            if pagination is not None
+            and pagination.page is not None
+            and pagination.page_size is not None
             else None
         )
 
     @abc.abstractmethod
     async def _get_list_query_filter(
-        self, search: str | None, **filters: Any
+        self, filter_: Any, search: Search | None
     ) -> Mapping[str, Any]:
         """Returns a query filter for list.
 
         Args:
-            search (str | None): Parameters for list searching.
-            filters (Any): Parameters for list filtering.
+            filter_ (Any): Parameters for list filtering.
+            search (Search | None): Parameters for list searching.
 
         Returns:
             Mapping[str, Any]: List query filter.
@@ -122,38 +118,54 @@ class BaseRepository(abc.ABC):
 
     def _get_list_sorting(
         self,
-        sort_by: str | None,
-        sort_order: SortingTypesEnum | None,
-        search: bool = False,
+        sorting: Sorting | None,
+        search: Search | None,
     ) -> list[tuple[str, int | Mapping[str, Any]]] | None:
         """Returns list sorting depends on parameters.
 
         Args:
-            sort_by (str | None): Specifies a field for sorting.
-            sort_order (SortingTypesEnum | None): Defines sort order - ascending
-            or descending.
-            search (bool): Defines if search is included in query. Defaults to False.
+            sorting (Sorting): Parameters for sorting.
+            search (Search): Parameters for list searching.
 
         Returns:
             list[tuple[str, int | Mapping[str, Any]]] | None: Sorting.
 
         """
 
-        if sort_by is not None:
+        if sorting is not None and sorting.sort_by is not None:
             sort_value = (
                 SortingValuesEnum.DESC
-                if sort_order == SortingTypesEnum.DESC
+                if sorting.sort_order == SortingTypesEnum.DESC
                 else SortingValuesEnum.ASC
             )
 
-            return [(sort_by, sort_value)]
+            return [(sorting.sort_by, sort_value)]
 
         # If search is included to query, return documents sorted by search scores
         return (
             self._get_list_default_sorting()
-            if search is False
+            if search is None or search.search is None
             else [("score", {"$meta": "textScore"})]
         )
+
+    @staticmethod
+    def _apply_list_search(
+        query_filter: dict[str, Any], search: Search | None
+    ) -> dict[str, Any]:
+        """Applies list search to query filter depends on parameters.
+
+        Args:
+            search (Search | None): Parameters for list searching.
+
+        Returns:
+            dict[str, Any]: Updated query filter.
+
+        """
+
+        if search is not None and search.search is not None:
+            query_filter["$text"] = {"$search": search.search}
+
+        return query_filter
 
     @staticmethod
     @abc.abstractmethod
@@ -171,17 +183,18 @@ class BaseRepository(abc.ABC):
 
     async def count(
         self,
-        search: str | None,
+        filter_: Any = None,
+        search: Search | None = None,
+        *,
         session: AsyncIOMotorClientSession | None = None,
-        **filters: Any,
     ) -> int:
         """Counts documents based on parameters.
 
         Args:
-            search (str | None): Parameters for list searching.
+            filter_ (Any): Parameters for list filtering. Defaults to None.
+            search (Search | None): Parameters for list searching. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
-            filters (Any): Parameters for list filtering.
 
         Returns:
             int: Count of documents.
@@ -190,7 +203,7 @@ class BaseRepository(abc.ABC):
 
         return await self._mongo_service.count_documents(
             collection=self._collection_name,
-            filter_=await self._get_list_query_filter(search, **filters),
+            filter_=await self._get_list_query_filter(filter_=filter_, search=search),
             session=session,
         )
 

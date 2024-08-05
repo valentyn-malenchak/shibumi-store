@@ -7,7 +7,8 @@ from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
 from app.api.v1.constants import ProductParameterTypesEnum
-from app.api.v1.models.category import Category
+from app.api.v1.models import Search
+from app.api.v1.models.category import Category, CategoryFilter
 from app.api.v1.repositories import BaseRepository
 from app.constants import ProjectionValuesEnum, SortingValuesEnum
 from app.exceptions import EntityIsNotFoundError
@@ -20,20 +21,13 @@ class CategoryRepository(BaseRepository):
     _collection_name: str = MongoCollectionsEnum.CATEGORIES
 
     async def _get_list_query_filter(
-        self,
-        *_: Any,
-        path: str | None = None,
-        leafs: bool = False,
-        **__: Any,
+        self, filter_: CategoryFilter, search: Search | None
     ) -> Mapping[str, Any]:
         """Returns a query filter for list of categories.
 
         Args:
-            _ (Any): Parameters for list searching.
-            path (str | None): Category tree path filtering. Defaults to None.
-            leafs (bool): Defines if only leaf categories will be returned.
-            Defaults to False.
-            __ (Any): Parameters for list filtering.
+            filter_ (CategoryFilter): Parameters for list filtering.
+            search (Search | None): Parameters for list searching.
 
         Returns:
             (Mapping[str, Any]): List query filter.
@@ -42,10 +36,10 @@ class CategoryRepository(BaseRepository):
 
         query_filter: dict[str, Any] = {}
 
-        if path is not None:
-            query_filter["path"] = {"$regex": f"^{path}"}
+        if filter_.path is not None:
+            query_filter["path"] = {"$regex": f"^{filter_.path}"}
 
-        if leafs is True:
+        if filter_.leafs is True:
             parent_ids = await self._mongo_service.distinct(
                 self._collection_name, "parent_id", filter_={"parent_id": {"$ne": None}}
             )

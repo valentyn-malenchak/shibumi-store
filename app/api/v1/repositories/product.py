@@ -8,7 +8,13 @@ from bson import ObjectId
 from injector import inject
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
-from app.api.v1.models.product import Product, ProductCreateData, ProductData
+from app.api.v1.models import Search
+from app.api.v1.models.product import (
+    Product,
+    ProductCreateData,
+    ProductData,
+    ProductFilter,
+)
 from app.api.v1.repositories import BaseRepository
 from app.constants import ProjectionValuesEnum, SortingValuesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
@@ -20,26 +26,14 @@ class ProductRepository(BaseRepository):
 
     _collection_name: str = MongoCollectionsEnum.PRODUCTS
 
-    @staticmethod
     async def _get_list_query_filter(
-        search: str | None,
-        category_id: ObjectId | None = None,
-        available: bool | None = None,
-        ids: list[ObjectId] | None = None,
-        parameters: dict[str, list[Any]] | None = None,
-        **_: Any,
+        self, filter_: ProductFilter, search: Search | None
     ) -> Mapping[str, Any]:
         """Returns a query filter for list of products.
 
         Args:
-            search (str | None): Parameters for list searching.
-            category_id (ObjectId | None): Category identifier. Defaults to None.
-            available (bool | None): Available products filter. Defaults to None.
-            ids (list[ObjectId] | None): Filter by list of product identifiers.
-            Defaults to None.
-            parameters (dict[str, list[Any]] | None): Product parameters filter.
-            Defaults to None.
-            _ (Any): Parameters for list filtering.
+            filter_ (ProductFilter): Parameters for list filtering.
+            search (Search | None): Parameters for list searching.
 
         Returns:
             (Mapping[str, Any]): List query filter.
@@ -48,20 +42,19 @@ class ProductRepository(BaseRepository):
 
         query_filter: dict[str, Any] = {}
 
-        if search is not None:
-            query_filter["$text"] = {"$search": search}
+        self._apply_list_search(query_filter=query_filter, search=search)
 
-        if category_id is not None:
-            query_filter["category_id"] = category_id
+        if filter_.category_id is not None:
+            query_filter["category_id"] = filter_.category_id
 
-        if available is not None:
-            query_filter["available"] = available
+        if filter_.available is not None:
+            query_filter["available"] = filter_.available
 
-        if ids:
-            query_filter["_id"] = {"$in": ids}
+        if filter_.ids:
+            query_filter["_id"] = {"$in": filter_.ids}
 
-        if parameters:
-            for name, values in parameters.items():
+        if filter_.parameters:
+            for name, values in filter_.parameters.items():
                 query_filter[f"parameters.{name}"] = (
                     values[0] if len(values) == 1 else {"$in": values}
                 )

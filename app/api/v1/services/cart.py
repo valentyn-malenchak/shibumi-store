@@ -5,6 +5,7 @@ from typing import Any
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
 
+from app.api.v1.models import Pagination, Search, Sorting
 from app.api.v1.models.cart import (
     Cart,
     CartProduct,
@@ -44,11 +45,16 @@ class CartService(BaseService):
 
         self.repository = repository
 
-    async def get(self, *_: Any) -> Any:
+    async def get(
+        self, filter_: Any, search: Search, sorting: Sorting, pagination: Pagination
+    ) -> Any:
         """Retrieves a list of carts based on parameters.
 
         Args:
-            _ (Any): Parameters for list filtering, searching, sorting and pagination.
+            filter_ (Any): Parameters for list filtering.
+            search (Search): Parameters for list searching.
+            sorting (Sorting): Parameters for sorting.
+            pagination (Pagination): Parameters for pagination.
 
         Returns:
             list[Mapping[str, Any]]: The retrieved list of carts.
@@ -59,11 +65,12 @@ class CartService(BaseService):
         """
         raise NotImplementedError
 
-    async def count(self, *_: Any) -> int:
+    async def count(self, filter_: Any, search: Search) -> int:
         """Counts carts based on parameters.
 
         Args:
-            _ (Any): Parameters for list filtering and searching.
+            filter_ (Any): Parameters for list filtering.
+            search (Search): Parameters for list searching.
 
         Returns:
             int: Count of carts.

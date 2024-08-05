@@ -91,13 +91,10 @@ class UserService(BaseService):
         """
 
         return await self.repository.get(
-            search=search.search,
-            sort_by=sorting.sort_by,
-            sort_order=sorting.sort_order,
-            page=pagination.page,
-            page_size=pagination.page_size,
-            roles=filter_.roles,
-            deleted=filter_.deleted,
+            filter_=filter_,
+            search=search,
+            sorting=sorting,
+            pagination=pagination,
         )
 
     async def count(self, filter_: UserFilter, search: Search) -> int:
@@ -113,9 +110,8 @@ class UserService(BaseService):
         """
 
         return await self.repository.count(
-            search=search.search,
-            roles=filter_.roles,
-            deleted=filter_.deleted,
+            filter_=filter_,
+            search=search,
         )
 
     async def get_by_id(self, id_: ObjectId) -> User:
