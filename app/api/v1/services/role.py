@@ -57,7 +57,7 @@ class RoleService(BaseService):
         if cached_roles is not None:
             return json_util.loads(cached_roles)  # type: ignore
 
-        roles = await self.repository.get()
+        roles = await self.repository.get(filter_=None)
 
         self.redis_service.set(
             name=RedisNamesEnum.ROLES_LIST,
@@ -83,7 +83,7 @@ class RoleService(BaseService):
         if cached_roles is not None:
             return len(json_util.loads(cached_roles))
 
-        return await self.repository.count()
+        return await self.repository.count(filter_=None)
 
     async def get_by_id(self, id_: ObjectId) -> Any:
         """Retrieves a role by its unique identifier.

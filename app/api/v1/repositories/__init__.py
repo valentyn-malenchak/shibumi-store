@@ -30,9 +30,9 @@ class BaseRepository(abc.ABC):
         """
         self._mongo_service = mongo_service
 
-    async def get(
+    async def _get(
         self,
-        filter_: Any = None,
+        filter_: Mapping[str, Any] | None = None,
         search: Search | None = None,
         sorting: Sorting | None = None,
         pagination: Pagination | None = None,
@@ -42,7 +42,42 @@ class BaseRepository(abc.ABC):
         """Retrieves a list of documents based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering. Defaults to None.
+            filter_ (Mapping[str, Any] | None): Parameters for list filtering.
+            Defaults to None.
+            search (Search | None): Parameters for list searching. Defaults to None.
+            sorting (Sorting | None): Parameters for sorting. Defaults to None.
+            pagination (Pagination | None): Parameters for pagination. Defaults to None.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            list[Mapping[str, Any]]: The retrieved list of documents.
+
+        """
+
+        return await self._mongo_service.find(
+            collection=self._collection_name,
+            filter_=filter_,
+            projection=self._get_list_query_projection(),
+            sort=self._get_list_sorting(sorting=sorting, search=search),
+            skip=self._calculate_skip(pagination),
+            limit=pagination.page_size if pagination is not None else None,
+            session=session,
+        )
+
+    async def get(
+        self,
+        filter_: Any,
+        search: Search | None = None,
+        sorting: Sorting | None = None,
+        pagination: Pagination | None = None,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+    ) -> list[Mapping[str, Any]]:
+        """Retrieves a list of documents based on parameters.
+
+        Args:
+            filter_ (Any): Parameters for list filtering.
             search (Search | None): Parameters for list searching. Defaults to None.
             sorting (Sorting | None): Parameters for sorting. Defaults to None.
             pagination (Pagination | None): Parameters for pagination. Defaults to None.
@@ -175,9 +210,34 @@ class BaseRepository(abc.ABC):
         """
         raise NotImplementedError
 
+    async def _count(
+        self,
+        filter_: Mapping[str, Any] | None = None,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+    ) -> int:
+        """Counts documents based on parameters.
+
+        Args:
+            filter_ (Mapping[str, Any] | None): Parameters for list filtering.
+            Defaults to None.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            int: Count of documents.
+
+        """
+
+        return await self._mongo_service.count_documents(
+            collection=self._collection_name,
+            filter_=filter_,
+            session=session,
+        )
+
     async def count(
         self,
-        filter_: Any = None,
+        filter_: Any,
         search: Search | None = None,
         *,
         session: AsyncIOMotorClientSession | None = None,
@@ -185,7 +245,7 @@ class BaseRepository(abc.ABC):
         """Counts documents based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering. Defaults to None.
+            filter_ (Any): Parameters for list filtering.
             search (Search | None): Parameters for list searching. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.

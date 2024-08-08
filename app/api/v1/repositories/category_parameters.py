@@ -19,7 +19,7 @@ class CategoryParametersRepository(BaseRepository):
 
     async def get(
         self,
-        filter_: Any = None,
+        filter_: Any,
         search: Search | None = None,
         sorting: Sorting | None = None,
         pagination: Pagination | None = None,
@@ -29,7 +29,7 @@ class CategoryParametersRepository(BaseRepository):
         """Retrieves a list of category-parameters based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering. Defaults to None.
+            filter_ (Any): Parameters for list filtering.
             search (Search | None): Parameters for list searching. Defaults to None.
             sorting (Sorting | None): Parameters for sorting. Defaults to None.
             pagination (Pagination | None): Parameters for pagination. Defaults to None.
@@ -91,7 +91,7 @@ class CategoryParametersRepository(BaseRepository):
 
     async def count(
         self,
-        filter_: Any = None,
+        filter_: Any,
         search: Search | None = None,
         *,
         session: AsyncIOMotorClientSession | None = None,
@@ -99,7 +99,7 @@ class CategoryParametersRepository(BaseRepository):
         """Counts category-parameters based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering. Defaults to None.
+            filter_ (Any): Parameters for list filtering.
             search (Search | None): Parameters for list searching. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.

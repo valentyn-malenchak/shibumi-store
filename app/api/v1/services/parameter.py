@@ -60,7 +60,7 @@ class ParameterService(BaseService):
         if cached_parameters is not None:
             return json_util.loads(cached_parameters)  # type: ignore
 
-        parameters = await self.repository.get()
+        parameters = await self.repository.get(filter_=None)
 
         self.redis_service.set(
             name=RedisNamesEnum.PRODUCT_PARAMETERS_LIST,
