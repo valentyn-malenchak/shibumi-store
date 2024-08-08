@@ -28,7 +28,7 @@ class ProductRepository(BaseRepository):
 
     async def get(
         self,
-        filter_: ProductFilter | None = None,
+        filter_: ProductFilter,
         search: Search | None = None,
         sorting: Sorting | None = None,
         pagination: Pagination | None = None,
@@ -38,8 +38,7 @@ class ProductRepository(BaseRepository):
         """Retrieves a list of products based on parameters.
 
         Args:
-            filter_ (ProductFilter | None): Parameters for list filtering.
-            Defaults to None.
+            filter_ (ProductFilter): Parameters for list filtering.
             search (Search | None): Parameters for list searching. Defaults to None.
             sorting (Sorting | None): Parameters for sorting. Defaults to None.
             pagination (Pagination | None): Parameters for pagination. Defaults to None.
@@ -51,23 +50,21 @@ class ProductRepository(BaseRepository):
 
         """
 
-        return await self._mongo_service.find(
-            collection=self._collection_name,
+        return await self._get(
             filter_=await self._get_list_query_filter(filter_=filter_, search=search),
-            projection=self._get_list_query_projection(),
-            sort=self._get_list_sorting(sorting=sorting, search=search),
-            skip=self._calculate_skip(pagination),
-            limit=pagination.page_size if pagination is not None else None,
+            search=search,
+            sorting=sorting,
+            pagination=pagination,
             session=session,
         )
 
     async def _get_list_query_filter(
-        self, filter_: ProductFilter | None, search: Search | None
+        self, filter_: ProductFilter, search: Search | None
     ) -> Mapping[str, Any] | None:
         """Returns a query filter for list of products.
 
         Args:
-            filter_ (ProductFilter | None): Parameters for list filtering.
+            filter_ (ProductFilter): Parameters for list filtering.
             search (Search | None): Parameters for list searching.
 
         Returns:
@@ -78,9 +75,6 @@ class ProductRepository(BaseRepository):
         query_filter: dict[str, Any] = {}
 
         self._apply_list_search(query_filter=query_filter, search=search)
-
-        if filter_ is None:
-            return query_filter
 
         if filter_.category_id is not None:
             query_filter["category_id"] = filter_.category_id
@@ -126,7 +120,7 @@ class ProductRepository(BaseRepository):
 
     async def count(
         self,
-        filter_: ProductFilter | None = None,
+        filter_: ProductFilter,
         search: Search | None = None,
         *,
         session: AsyncIOMotorClientSession | None = None,
@@ -134,8 +128,7 @@ class ProductRepository(BaseRepository):
         """Counts products based on parameters.
 
         Args:
-            filter_ (ProductFilter | None): Parameters for list filtering.
-            Defaults to None.
+            filter_ (ProductFilter): Parameters for list filtering.
             search (Search | None): Parameters for list searching. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
@@ -145,8 +138,7 @@ class ProductRepository(BaseRepository):
 
         """
 
-        return await self._mongo_service.count_documents(
-            collection=self._collection_name,
+        return await self._count(
             filter_=await self._get_list_query_filter(filter_=filter_, search=search),
             session=session,
         )

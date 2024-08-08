@@ -20,7 +20,7 @@ class RoleRepository(BaseRepository):
 
     async def get(
         self,
-        filter_: Any = None,
+        filter_: Any,
         search: Search | None = None,
         sorting: Sorting | None = None,
         pagination: Pagination | None = None,
@@ -30,7 +30,7 @@ class RoleRepository(BaseRepository):
         """Retrieves a list of roles based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering. Defaults to None.
+            filter_ (Any): Parameters for list filtering.
             search (Search | None): Parameters for list searching. Defaults to None.
             sorting (Sorting | None): Parameters for sorting. Defaults to None.
             pagination (Pagination | None): Parameters for pagination. Defaults to None.
@@ -42,13 +42,11 @@ class RoleRepository(BaseRepository):
 
         """
 
-        return await self._mongo_service.find(
-            collection=self._collection_name,
+        return await self._get(
             filter_=await self._get_list_query_filter(filter_=filter_, search=search),
-            projection=self._get_list_query_projection(),
-            sort=self._get_list_sorting(sorting=sorting, search=search),
-            skip=self._calculate_skip(pagination),
-            limit=pagination.page_size if pagination is not None else None,
+            search=search,
+            sorting=sorting,
+            pagination=pagination,
             session=session,
         )
 
@@ -88,7 +86,7 @@ class RoleRepository(BaseRepository):
 
     async def count(
         self,
-        filter_: Any = None,
+        filter_: Any,
         search: Search | None = None,
         *,
         session: AsyncIOMotorClientSession | None = None,
@@ -96,7 +94,7 @@ class RoleRepository(BaseRepository):
         """Counts roles based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering. Defaults to None.
+            filter_ (Any): Parameters for list filtering.
             search (Search | None): Parameters for list searching. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
@@ -106,8 +104,7 @@ class RoleRepository(BaseRepository):
 
         """
 
-        return await self._mongo_service.count_documents(
-            collection=self._collection_name,
+        return await self._count(
             filter_=await self._get_list_query_filter(filter_=filter_, search=search),
             session=session,
         )
