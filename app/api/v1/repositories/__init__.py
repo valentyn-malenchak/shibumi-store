@@ -43,26 +43,20 @@ class BaseRepository(abc.ABC):
 
         Args:
             filter_ (Any): Parameters for list filtering. Defaults to None.
-            search (Search): Parameters for list searching. Defaults to None.
-            sorting (Sorting): Parameters for sorting. Defaults to None.
-            pagination (Pagination): Parameters for pagination. Defaults to None.
+            search (Search | None): Parameters for list searching. Defaults to None.
+            sorting (Sorting | None): Parameters for sorting. Defaults to None.
+            pagination (Pagination | None): Parameters for pagination. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
         Returns:
             list[Mapping[str, Any]]: The retrieved list of documents.
 
-        """
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses.
 
-        return await self._mongo_service.find(
-            collection=self._collection_name,
-            filter_=await self._get_list_query_filter(filter_=filter_, search=search),
-            projection=self._get_list_query_projection(),
-            sort=self._get_list_sorting(sorting=sorting, search=search),
-            skip=self._calculate_skip(pagination),
-            limit=pagination.page_size if pagination is not None else None,
-            session=session,
-        )
+        """
+        raise NotImplementedError
 
     @staticmethod
     def _calculate_skip(pagination: Pagination | None) -> int | None:
@@ -86,7 +80,7 @@ class BaseRepository(abc.ABC):
     @abc.abstractmethod
     async def _get_list_query_filter(
         self, filter_: Any, search: Search | None
-    ) -> Mapping[str, Any]:
+    ) -> Mapping[str, Any] | None:
         """Returns a query filter for list.
 
         Args:
@@ -94,7 +88,7 @@ class BaseRepository(abc.ABC):
             search (Search | None): Parameters for list searching.
 
         Returns:
-            Mapping[str, Any]: List query filter.
+            Mapping[str, Any] | None: List query filter or None.
 
         Raises:
             NotImplementedError: This method must be implemented by subclasses.
@@ -124,8 +118,8 @@ class BaseRepository(abc.ABC):
         """Returns list sorting depends on parameters.
 
         Args:
-            sorting (Sorting): Parameters for sorting.
-            search (Search): Parameters for list searching.
+            sorting (Sorting | None): Parameters for sorting.
+            search (Search | None): Parameters for list searching.
 
         Returns:
             list[tuple[str, int | Mapping[str, Any]]] | None: Sorting.
@@ -199,13 +193,11 @@ class BaseRepository(abc.ABC):
         Returns:
             int: Count of documents.
 
-        """
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses.
 
-        return await self._mongo_service.count_documents(
-            collection=self._collection_name,
-            filter_=await self._get_list_query_filter(filter_=filter_, search=search),
-            session=session,
-        )
+        """
+        raise NotImplementedError
 
     async def _get_one(
         self,
