@@ -7,7 +7,7 @@ from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
 from app.api.v1.constants import ProductParameterTypesEnum
-from app.api.v1.models import Search
+from app.api.v1.models import Pagination, Search, Sorting
 from app.api.v1.models.category import Category, CategoryFilter
 from app.api.v1.repositories import BaseRepository
 from app.constants import ProjectionValuesEnum, SortingValuesEnum
@@ -20,19 +20,57 @@ class CategoryRepository(BaseRepository):
 
     _collection_name: str = MongoCollectionsEnum.CATEGORIES
 
+    async def get(
+        self,
+        filter_: CategoryFilter | None = None,
+        search: Search | None = None,
+        sorting: Sorting | None = None,
+        pagination: Pagination | None = None,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+    ) -> list[Mapping[str, Any]]:
+        """Retrieves a list of categories based on parameters.
+
+        Args:
+            filter_ (CategoryFilter | None): Parameters for list filtering.
+            Defaults to None.
+            search (Search | None): Parameters for list searching. Defaults to None.
+            sorting (Sorting | None): Parameters for sorting. Defaults to None.
+            pagination (Pagination | None): Parameters for pagination. Defaults to None.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            list[Mapping[str, Any]]: The retrieved list of categories.
+
+        """
+
+        return await self._mongo_service.find(
+            collection=self._collection_name,
+            filter_=await self._get_list_query_filter(filter_=filter_, search=search),
+            projection=self._get_list_query_projection(),
+            sort=self._get_list_sorting(sorting=sorting, search=search),
+            skip=self._calculate_skip(pagination),
+            limit=pagination.page_size if pagination is not None else None,
+            session=session,
+        )
+
     async def _get_list_query_filter(
-        self, filter_: CategoryFilter, search: Search | None
-    ) -> Mapping[str, Any]:
+        self, filter_: CategoryFilter | None, search: Search | None
+    ) -> Mapping[str, Any] | None:
         """Returns a query filter for list of categories.
 
         Args:
-            filter_ (CategoryFilter): Parameters for list filtering.
+            filter_ (CategoryFilter | None): Parameters for list filtering.
             search (Search | None): Parameters for list searching.
 
         Returns:
-            (Mapping[str, Any]): List query filter.
+            Mapping[str, Any] | None: List query filter or None.
 
         """
+
+        if filter_ is None:
+            return filter_
 
         query_filter: dict[str, Any] = {}
 
@@ -67,6 +105,33 @@ class CategoryRepository(BaseRepository):
 
         """
         return [("_id", SortingValuesEnum.ASC)]
+
+    async def count(
+        self,
+        filter_: CategoryFilter | None = None,
+        search: Search | None = None,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+    ) -> int:
+        """Counts categories based on parameters.
+
+        Args:
+            filter_ (CategoryFilter | None): Parameters for list filtering.
+            Defaults to None.
+            search (Search | None): Parameters for list searching. Defaults to None.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            int: Count of categories.
+
+        """
+
+        return await self._mongo_service.count_documents(
+            collection=self._collection_name,
+            filter_=await self._get_list_query_filter(filter_=filter_, search=search),
+            session=session,
+        )
 
     async def get_by_id(
         self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None

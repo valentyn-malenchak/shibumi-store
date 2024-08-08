@@ -6,7 +6,7 @@ from typing import Any
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
-from app.api.v1.models import Search
+from app.api.v1.models import Pagination, Search, Sorting
 from app.api.v1.repositories import BaseRepository
 from app.constants import ProjectionValuesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
@@ -17,9 +17,43 @@ class ParameterRepository(BaseRepository):
 
     _collection_name: str = MongoCollectionsEnum.PARAMETERS
 
+    async def get(
+        self,
+        filter_: Any = None,
+        search: Search | None = None,
+        sorting: Sorting | None = None,
+        pagination: Pagination | None = None,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+    ) -> list[Mapping[str, Any]]:
+        """Retrieves a list of parameters based on parameters.
+
+        Args:
+            filter_ (Any): Parameters for list filtering. Defaults to None.
+            search (Search | None): Parameters for list searching. Defaults to None.
+            sorting (Sorting | None): Parameters for sorting. Defaults to None.
+            pagination (Pagination | None): Parameters for pagination. Defaults to None.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            list[Mapping[str, Any]]: The retrieved list of parameters.
+
+        """
+
+        return await self._mongo_service.find(
+            collection=self._collection_name,
+            filter_=await self._get_list_query_filter(filter_=filter_, search=search),
+            projection=self._get_list_query_projection(),
+            sort=self._get_list_sorting(sorting=sorting, search=search),
+            skip=self._calculate_skip(pagination),
+            limit=pagination.page_size if pagination is not None else None,
+            session=session,
+        )
+
     async def _get_list_query_filter(
         self, filter_: Any, search: Search | None
-    ) -> Mapping[str, Any]:
+    ) -> Mapping[str, Any] | None:
         """Returns a query filter for list of parameters.
 
         Args:
@@ -27,10 +61,9 @@ class ParameterRepository(BaseRepository):
             search (Search | None): Parameters for list searching.
 
         Returns:
-            (Mapping[str, Any]): List query filter.
+            Mapping[str, Any] | None: List query filter or None.
 
         """
-        return {}
 
     @staticmethod
     def _get_list_query_projection() -> Mapping[str, Any] | None:
@@ -55,6 +88,30 @@ class ParameterRepository(BaseRepository):
 
         """
         return None
+
+    async def count(
+        self,
+        filter_: Any = None,
+        search: Search | None = None,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+    ) -> int:
+        """Counts parameters based on parameters.
+
+        Args:
+            filter_ (Any): Parameters for list filtering. Defaults to None.
+            search (Search | None): Parameters for list searching. Defaults to None.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        Returns:
+            int: Count of parameters.
+
+        Raises:
+            NotImplementedError: This method is not implemented.
+
+        """
+        raise NotImplementedError
 
     async def get_by_id(
         self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
