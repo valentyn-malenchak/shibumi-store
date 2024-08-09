@@ -25,6 +25,13 @@ class VoteData(BaseModel):
     value: bool
 
 
+class BaseVoteCreateData(BaseModel):
+    """Base vote create data model."""
+
+    comment_id: Annotated[ObjectId, ObjectIdAnnotation]
+    value: bool
+
+
 class VoteCreateData(BaseModel):
     """Vote create data model."""
 

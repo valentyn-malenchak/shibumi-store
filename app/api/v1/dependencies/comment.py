@@ -24,15 +24,12 @@ class CommentByIdDependency:
 
     async def __call__(
         self,
-        thread_id: Annotated[ObjectId, ObjectIdAnnotation],
         comment_id: Annotated[ObjectId, ObjectIdAnnotation],
         comment_by_id_validator: CommentByIdValidator = Depends(),
     ) -> Comment:
         """Checks comment from request by identifier.
 
         Args:
-            thread_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
-            identifier of requested thread.
             comment_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
             identifier of requested comment.
             comment_by_id_validator (CommentByIdValidator): Comment by identifier
@@ -43,9 +40,7 @@ class CommentByIdDependency:
 
         """
 
-        return await comment_by_id_validator.validate(
-            thread_id=thread_id, comment_id=comment_id
-        )
+        return await comment_by_id_validator.validate(comment_id=comment_id)
 
 
 class CommentUserDependency:
@@ -53,15 +48,12 @@ class CommentUserDependency:
 
     async def __call__(
         self,
-        thread_id: Annotated[ObjectId, ObjectIdAnnotation],
         comment_id: Annotated[ObjectId, ObjectIdAnnotation],
         comment_user_validator: CommentUserValidator = Depends(),
     ) -> Comment:
         """Validates comment user.
 
         Args:
-            thread_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
-            identifier of requested thread.
             comment_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
             identifier of requested comment.
             comment_user_validator (CommentUserValidator): Comment user validator.
@@ -71,10 +63,7 @@ class CommentUserDependency:
 
         """
 
-        return await comment_user_validator.validate(
-            thread_id=thread_id,
-            comment_id=comment_id,
-        )
+        return await comment_user_validator.validate(comment_id=comment_id)
 
 
 class CommentDataCreateDependency:
@@ -82,15 +71,12 @@ class CommentDataCreateDependency:
 
     async def __call__(
         self,
-        thread_id: Annotated[ObjectId, ObjectIdAnnotation],
         comment_data: BaseCommentCreateData,
         comment_create_validator: CommentCreateValidator = Depends(),
     ) -> CommentCreateData:
         """Validates data on comment create operation.
 
         Args:
-            thread_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
-            identifier of requested thread.
             comment_data (BaseCommentCreateData): Base comment create data.
             comment_create_validator (CommentCreateValidator): Comment create validator.
 
@@ -100,7 +86,7 @@ class CommentDataCreateDependency:
         """
 
         return await comment_create_validator.validate(
-            thread_id=thread_id,
+            thread_id=comment_data.thread_id,
             parent_id=comment_data.parent_comment_id,
             body=comment_data.body,
         )

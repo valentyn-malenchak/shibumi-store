@@ -45,47 +45,19 @@ class BaseVoteValidator(BaseValidator):
 class VoteByIdValidator(BaseVoteValidator):
     """Vote by identifier validator."""
 
-    def __init__(
-        self,
-        request: Request,
-        vote_service: VoteService = Depends(),
-        comment_by_id_validator: CommentByIdValidator = Depends(),
-    ) -> None:
-        """Initializes comment by identifier validator.
-
-        Args:
-            request (Request): Current request object.
-            vote_service (VoteService): Vote service.
-            comment_by_id_validator (CommentByIdValidator): Comment by id validator.
-
-        """
-
-        super().__init__(request=request, vote_service=vote_service)
-
-        self.comment_by_id_validator = comment_by_id_validator
-
-    async def validate(
-        self, thread_id: ObjectId, comment_id: ObjectId, vote_id: ObjectId
-    ) -> Vote:
+    async def validate(self, vote_id: ObjectId) -> Vote:
         """Validates requested vote by id.
 
         Args:
-            thread_id (ObjectId): BSON object identifier of requested thread.
-            comment_id (ObjectId): BSON object identifier of requested comment.
             vote_id (ObjectId): BSON object identifier of requested vote.
 
         Returns:
             Vote: Vote object.
 
         Raises:
-            HTTPException: If requested vote is not found or vote does not
-            belong to comment.
+            HTTPException: If requested vote is not found.
 
         """
-
-        comment = await self.comment_by_id_validator.validate(
-            thread_id=thread_id, comment_id=comment_id
-        )
 
         try:
             vote = await self.vote_service.get_by_id(id_=vote_id)
@@ -94,15 +66,6 @@ class VoteByIdValidator(BaseVoteValidator):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Vote"),
-            )
-
-        # Check if vote belongs to comment
-        if vote.comment_id != comment.id:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=HTTPErrorMessagesEnum.ENTITIES_ARE_NOT_RELATED.format(
-                    child_entity="Vote", parent_entity="comment"
-                ),
             )
 
         return vote
@@ -130,14 +93,10 @@ class VoteUserValidator(BaseVoteValidator):
 
         self.vote_by_id_validator = vote_by_id_validator
 
-    async def validate(
-        self, thread_id: ObjectId, comment_id: ObjectId, vote_id: ObjectId
-    ) -> Vote:
+    async def validate(self, vote_id: ObjectId) -> Vote:
         """Validates requested vote user.
 
         Args:
-            thread_id (ObjectId): BSON object identifier of requested thread.
-            comment_id (ObjectId): BSON object identifier of requested comment.
             vote_id (ObjectId): BSON object identifier of requested vote.
 
         Returns:
@@ -148,9 +107,7 @@ class VoteUserValidator(BaseVoteValidator):
 
         """
 
-        vote = await self.vote_by_id_validator.validate(
-            thread_id=thread_id, comment_id=comment_id, vote_id=vote_id
-        )
+        vote = await self.vote_by_id_validator.validate(vote_id=vote_id)
 
         current_user = self.request.state.current_user
 
@@ -185,13 +142,10 @@ class VoteCreateValidator(BaseVoteValidator):
 
         self.comment_by_id_validator = comment_by_id_validator
 
-    async def validate(
-        self, thread_id: ObjectId, comment_id: ObjectId, value: bool
-    ) -> VoteCreateData:
+    async def validate(self, comment_id: ObjectId, value: bool) -> VoteCreateData:
         """Checks if vote can be created.
 
         Args:
-            thread_id (ObjectId): BSON object identifier of requested thread.
             comment_id (ObjectId): BSON object identifier of requested comment.
             value (bool): Vote value.
 
@@ -200,9 +154,7 @@ class VoteCreateValidator(BaseVoteValidator):
 
         """
 
-        await self.comment_by_id_validator.validate(
-            thread_id=thread_id, comment_id=comment_id
-        )
+        await self.comment_by_id_validator.validate(comment_id=comment_id)
 
         return VoteCreateData(
             value=value,
@@ -233,14 +185,10 @@ class VoteUpdateValidator(BaseVoteValidator):
 
         self.vote_author_validator = vote_author_validator
 
-    async def validate(
-        self, thread_id: ObjectId, comment_id: ObjectId, vote_id: ObjectId, value: bool
-    ) -> Vote:
+    async def validate(self, vote_id: ObjectId, value: bool) -> Vote:
         """Checks if vote can be updated.
 
         Args:
-            thread_id (ObjectId): BSON object identifier of requested thread.
-            comment_id (ObjectId): BSON object identifier of requested comment.
             vote_id (ObjectId): BSON object identifier of requested vote.
             value (bool): Vote value.
 
@@ -249,9 +197,7 @@ class VoteUpdateValidator(BaseVoteValidator):
 
         """
 
-        vote = await self.vote_author_validator.validate(
-            thread_id=thread_id, comment_id=comment_id, vote_id=vote_id
-        )
+        vote = await self.vote_author_validator.validate(vote_id=vote_id)
 
         if vote.value == value:
             raise HTTPException(

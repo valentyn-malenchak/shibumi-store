@@ -42,8 +42,7 @@ class TestVote(BaseAPITest):
         """Test get vote."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/votes/6692aa64c8c252998d87ad2b/",
+            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -62,8 +61,7 @@ class TestVote(BaseAPITest):
         """Test get vote in case there is no token."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/votes/6692aa64c8c252998d87ad2b/",
+            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
         )
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -80,88 +78,12 @@ class TestVote(BaseAPITest):
         """Test get vote in case user does not have appropriate scope."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/votes/6692aa64c8c252998d87ad2b/",
+            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
-
-    @pytest.mark.asyncio
-    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
-    async def test_get_vote_thread_is_not_found(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
-        """Test get vote in case thread is not found."""
-
-        response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/votes/6692aa64c8c252998d87ad2b/",
-            headers={"Authorization": f"Bearer {TEST_JWT}"},
-        )
-
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Thread")
-        }
-
-    @pytest.mark.asyncio
-    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db",
-        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.THREADS)],
-        indirect=True,
-    )
-    async def test_get_vote_comment_is_not_found(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
-        """Test get vote in case comment is not found."""
-
-        response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af9246aba47cfb60efb37/votes/6692aa64c8c252998d87ad2b/",
-            headers={"Authorization": f"Bearer {TEST_JWT}"},
-        )
-
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Comment")
-        }
-
-    @pytest.mark.asyncio
-    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db",
-        [
-            (
-                MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
-                MongoCollectionsEnum.COMMENTS,
-            )
-        ],
-        indirect=True,
-    )
-    async def test_get_vote_comment_is_not_related_to_thread(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
-        """Test get vote in case comment does not belong to thread."""
-
-        response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5de4cef83e11dbc7ac2/comments/666af9246aba47cfb60efb37/votes/6692aa64c8c252998d87ad2b/",
-            headers={"Authorization": f"Bearer {TEST_JWT}"},
-        )
-
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITIES_ARE_NOT_RELATED.format(
-                child_entity="Comment", parent_entity="thread"
-            ),
-        }
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
@@ -182,8 +104,7 @@ class TestVote(BaseAPITest):
         """Test get vote in case vote is not found."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af9246aba47cfb60efb37/votes/6692aa64c8c252998d87ad2b/",
+            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -206,46 +127,13 @@ class TestVote(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_get_vote_vote_is_not_related_to_comment(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
-        """Test get vote in case vote does not belong to comment."""
-
-        response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af8c16aba47cfb60efb32/votes/6692aa64c8c252998d87ad2b/",
-            headers={"Authorization": f"Bearer {TEST_JWT}"},
-        )
-
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITIES_ARE_NOT_RELATED.format(
-                child_entity="Vote", parent_entity="comment"
-            )
-        }
-
-    @pytest.mark.asyncio
-    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db",
-        [
-            (
-                MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
-                MongoCollectionsEnum.COMMENTS,
-                MongoCollectionsEnum.VOTES,
-            )
-        ],
-        indirect=True,
-    )
     async def test_get_vote_user_gets_vote_of_another_user(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
         """Test get vote in case user tries to get vote of another user."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/votes/66a7f2196da2a20f1db87a29/",
+            f"{AppConstants.API_V1_PREFIX}/votes/66a7f2196da2a20f1db87a29/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -272,8 +160,8 @@ class TestVote(BaseAPITest):
         """Test create vote in case of upvote."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af8c16aba47cfb60efb32/votes/",
-            json={"value": True},
+            f"{AppConstants.API_V1_PREFIX}/votes/",
+            json={"comment_id": "666af8c16aba47cfb60efb32", "value": True},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -288,7 +176,7 @@ class TestVote(BaseAPITest):
 
         # Checks if upvote counter changes
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af8c16aba47cfb60efb32/",
+            f"{AppConstants.API_V1_PREFIX}/comments/666af8c16aba47cfb60efb32/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -325,8 +213,8 @@ class TestVote(BaseAPITest):
         """Test create vote in case of downvote."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af8c16aba47cfb60efb32/votes/",
-            json={"value": False},
+            f"{AppConstants.API_V1_PREFIX}/votes/",
+            json={"comment_id": "666af8c16aba47cfb60efb32", "value": False},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -341,7 +229,7 @@ class TestVote(BaseAPITest):
 
         # Checks if downvote counter changes
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af8c16aba47cfb60efb32/",
+            f"{AppConstants.API_V1_PREFIX}/comments/666af8c16aba47cfb60efb32/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -365,8 +253,8 @@ class TestVote(BaseAPITest):
         """Test create vote in case there is no token."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af8c16aba47cfb60efb32/votes/",
-            json={"value": True},
+            f"{AppConstants.API_V1_PREFIX}/votes/",
+            json={"comment_id": "666af8c16aba47cfb60efb32", "value": True},
         )
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -383,8 +271,8 @@ class TestVote(BaseAPITest):
         """Test create vote in case user does not have appropriate scope."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af8c16aba47cfb60efb32/votes/",
-            json={"value": True},
+            f"{AppConstants.API_V1_PREFIX}/votes/",
+            json={"comment_id": "666af8c16aba47cfb60efb32", "value": True},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -402,7 +290,7 @@ class TestVote(BaseAPITest):
         """Test create vote in case request data is invalid."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af8c16aba47cfb60efb32/votes/",
+            f"{AppConstants.API_V1_PREFIX}/votes/",
             json={},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -412,29 +300,9 @@ class TestVote(BaseAPITest):
             (error["type"], error["loc"], error["msg"])
             for error in response.json()["detail"]
         ] == [
+            ("missing", ["body", "comment_id"], "Field required"),
             ("missing", ["body", "value"], "Field required"),
         ]
-
-    @pytest.mark.asyncio
-    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
-    async def test_create_vote_thread_is_not_found(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
-        """Test create vote in case thread is not found."""
-
-        response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af8c16aba47cfb60efb32/votes/",
-            json={"value": True},
-            headers={"Authorization": f"Bearer {TEST_JWT}"},
-        )
-
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Thread")
-        }
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
@@ -449,45 +317,14 @@ class TestVote(BaseAPITest):
         """Test create vote in case comment is not found."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af8c16aba47cfb60efb32/votes/",
-            json={"value": True},
+            f"{AppConstants.API_V1_PREFIX}/votes/",
+            json={"comment_id": "666af8c16aba47cfb60efb32", "value": True},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json() == {
             "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Comment")
-        }
-
-    @pytest.mark.asyncio
-    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db",
-        [
-            (
-                MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
-                MongoCollectionsEnum.COMMENTS,
-            )
-        ],
-        indirect=True,
-    )
-    async def test_create_vote_comment_is_not_related_to_thread(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
-        """Test create vote in case comment does not belong to thread."""
-
-        response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/threads/6669b5de4cef83e11dbc7ac2/comments/666af9246aba47cfb60efb37/votes/",
-            json={"value": True},
-            headers={"Authorization": f"Bearer {TEST_JWT}"},
-        )
-
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITIES_ARE_NOT_RELATED.format(
-                child_entity="Comment", parent_entity="thread"
-            ),
         }
 
     @pytest.mark.asyncio
@@ -510,8 +347,8 @@ class TestVote(BaseAPITest):
         """Test create vote in case user vote for comment is already created."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/votes/",
-            json={"value": True},
+            f"{AppConstants.API_V1_PREFIX}/votes/",
+            json={"comment_id": "666af8ae6aba47cfb60efb31", "value": True},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -545,8 +382,7 @@ class TestVote(BaseAPITest):
 
         # Change to downvote
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/votes/6692aa64c8c252998d87ad2b/",
+            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             json={"value": False},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -563,7 +399,7 @@ class TestVote(BaseAPITest):
 
         # Check if count of upvotes/downvotes changed
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/",
+            f"{AppConstants.API_V1_PREFIX}/comments/666af8ae6aba47cfb60efb31/",
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -582,8 +418,7 @@ class TestVote(BaseAPITest):
 
         # Change to upvote
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/votes/6692aa64c8c252998d87ad2b/",
+            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             json={"value": True},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -600,7 +435,7 @@ class TestVote(BaseAPITest):
 
         # Check if count of upvotes/downvotes changed
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/",
+            f"{AppConstants.API_V1_PREFIX}/comments/666af8ae6aba47cfb60efb31/",
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -622,8 +457,7 @@ class TestVote(BaseAPITest):
         """Test update vote in case there is no token."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/votes/6692aa64c8c252998d87ad2b/",
+            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             json={"value": False},
         )
 
@@ -641,8 +475,7 @@ class TestVote(BaseAPITest):
         """Test update vote in case user does not have appropriate scope."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/votes/6692aa64c8c252998d87ad2b/",
+            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             json={"value": False},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -661,8 +494,7 @@ class TestVote(BaseAPITest):
         """Test update vote in case request data is invalid."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/votes/6692aa64c8c252998d87ad2b/",
+            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             json={},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -674,84 +506,6 @@ class TestVote(BaseAPITest):
         ] == [
             ("missing", ["body", "value"], "Field required"),
         ]
-
-    @pytest.mark.asyncio
-    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
-    async def test_update_vote_thread_is_not_found(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
-        """Test update vote in case thread is not found."""
-
-        response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/votes/6692aa64c8c252998d87ad2b/",
-            json={"value": False},
-            headers={"Authorization": f"Bearer {TEST_JWT}"},
-        )
-
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Thread")
-        }
-
-    @pytest.mark.asyncio
-    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db",
-        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.THREADS)],
-        indirect=True,
-    )
-    async def test_update_vote_comment_is_not_found(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
-        """Test update vote in case comment is not found."""
-
-        response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af9246aba47cfb60efb37/votes/6692aa64c8c252998d87ad2b/",
-            json={"value": False},
-            headers={"Authorization": f"Bearer {TEST_JWT}"},
-        )
-
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Comment")
-        }
-
-    @pytest.mark.asyncio
-    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db",
-        [
-            (
-                MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
-                MongoCollectionsEnum.COMMENTS,
-            )
-        ],
-        indirect=True,
-    )
-    async def test_update_vote_comment_is_not_related_to_thread(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
-        """Test update vote in case comment does not belong to thread."""
-
-        response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5de4cef83e11dbc7ac2/comments/666af9246aba47cfb60efb37/votes/6692aa64c8c252998d87ad2b/",
-            json={"value": False},
-            headers={"Authorization": f"Bearer {TEST_JWT}"},
-        )
-
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITIES_ARE_NOT_RELATED.format(
-                child_entity="Comment", parent_entity="thread"
-            ),
-        }
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
@@ -772,8 +526,7 @@ class TestVote(BaseAPITest):
         """Test update vote in case vote is not found."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af9246aba47cfb60efb37/votes/6692aa64c8c252998d87ad2b/",
+            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             json={"value": False},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -797,47 +550,13 @@ class TestVote(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_update_vote_vote_is_not_related_to_comment(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
-        """Test update vote in case vote does not belong to comment."""
-
-        response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af8c16aba47cfb60efb32/votes/6692aa64c8c252998d87ad2b/",
-            json={"value": False},
-            headers={"Authorization": f"Bearer {TEST_JWT}"},
-        )
-
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITIES_ARE_NOT_RELATED.format(
-                child_entity="Vote", parent_entity="comment"
-            )
-        }
-
-    @pytest.mark.asyncio
-    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db",
-        [
-            (
-                MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
-                MongoCollectionsEnum.COMMENTS,
-                MongoCollectionsEnum.VOTES,
-            )
-        ],
-        indirect=True,
-    )
     async def test_update_vote_user_updates_vote_of_another_user(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
         """Test update vote in case user tries to update vote of another user."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/votes/66a7f2196da2a20f1db87a29/",
+            f"{AppConstants.API_V1_PREFIX}/votes/66a7f2196da2a20f1db87a29/",
             json={"value": False},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -865,8 +584,7 @@ class TestVote(BaseAPITest):
         """Test update vote in case user tries to set the same value."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/votes/6692aa64c8c252998d87ad2b/",
+            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             json={"value": True},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -894,8 +612,7 @@ class TestVote(BaseAPITest):
         """Test delete vote."""
 
         response = await test_client.delete(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/votes/6692aa64c8c252998d87ad2b/",
+            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -903,7 +620,7 @@ class TestVote(BaseAPITest):
 
         # Check if count of upvotes/downvotes changed
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/",
+            f"{AppConstants.API_V1_PREFIX}/comments/666af8ae6aba47cfb60efb31/",
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -925,8 +642,7 @@ class TestVote(BaseAPITest):
         """Test delete vote in case there is no token."""
 
         response = await test_client.delete(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/votes/6692aa64c8c252998d87ad2b/",
+            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
         )
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -943,88 +659,12 @@ class TestVote(BaseAPITest):
         """Test delete vote in case user does not have appropriate scope."""
 
         response = await test_client.delete(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/votes/6692aa64c8c252998d87ad2b/",
+            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
-
-    @pytest.mark.asyncio
-    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
-    async def test_delete_vote_thread_is_not_found(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
-        """Test delete vote in case thread is not found."""
-
-        response = await test_client.delete(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/votes/6692aa64c8c252998d87ad2b/",
-            headers={"Authorization": f"Bearer {TEST_JWT}"},
-        )
-
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Thread")
-        }
-
-    @pytest.mark.asyncio
-    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db",
-        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.THREADS)],
-        indirect=True,
-    )
-    async def test_delete_vote_comment_is_not_found(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
-        """Test delete vote in case comment is not found."""
-
-        response = await test_client.delete(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af9246aba47cfb60efb37/votes/6692aa64c8c252998d87ad2b/",
-            headers={"Authorization": f"Bearer {TEST_JWT}"},
-        )
-
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Comment")
-        }
-
-    @pytest.mark.asyncio
-    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db",
-        [
-            (
-                MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
-                MongoCollectionsEnum.COMMENTS,
-            )
-        ],
-        indirect=True,
-    )
-    async def test_delete_vote_comment_is_not_related_to_thread(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
-        """Test delete vote in case comment does not belong to thread."""
-
-        response = await test_client.delete(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5de4cef83e11dbc7ac2/comments/666af9246aba47cfb60efb37/votes/6692aa64c8c252998d87ad2b/",
-            headers={"Authorization": f"Bearer {TEST_JWT}"},
-        )
-
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITIES_ARE_NOT_RELATED.format(
-                child_entity="Comment", parent_entity="thread"
-            ),
-        }
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
@@ -1045,8 +685,7 @@ class TestVote(BaseAPITest):
         """Test delete vote in case vote is not found."""
 
         response = await test_client.delete(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af9246aba47cfb60efb37/votes/6692aa64c8c252998d87ad2b/",
+            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -1069,46 +708,13 @@ class TestVote(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_delete_vote_vote_is_not_related_to_comment(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
-        """Test delete vote in case vote does not belong to comment."""
-
-        response = await test_client.delete(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af8c16aba47cfb60efb32/votes/6692aa64c8c252998d87ad2b/",
-            headers={"Authorization": f"Bearer {TEST_JWT}"},
-        )
-
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.ENTITIES_ARE_NOT_RELATED.format(
-                child_entity="Vote", parent_entity="comment"
-            )
-        }
-
-    @pytest.mark.asyncio
-    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db",
-        [
-            (
-                MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
-                MongoCollectionsEnum.COMMENTS,
-                MongoCollectionsEnum.VOTES,
-            )
-        ],
-        indirect=True,
-    )
     async def test_delete_vote_user_deletes_vote_of_another_user(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
         """Test delete vote in case user tries to delete vote of another user."""
 
         response = await test_client.delete(
-            f"{AppConstants.API_V1_PREFIX}"
-            f"/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/votes/66a7f2196da2a20f1db87a29/",
+            f"{AppConstants.API_V1_PREFIX}/votes/66a7f2196da2a20f1db87a29/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 

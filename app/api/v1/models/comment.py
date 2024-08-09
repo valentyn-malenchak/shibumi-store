@@ -26,6 +26,7 @@ class Comment(BSONObjectId):
 class BaseCommentCreateData(BaseModel):
     """Base comment create data model."""
 
+    thread_id: Annotated[ObjectId, ObjectIdAnnotation]
     body: str
     parent_comment_id: Annotated[ObjectId, ObjectIdAnnotation] | None
 

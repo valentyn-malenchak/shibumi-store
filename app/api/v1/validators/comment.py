@@ -45,42 +45,19 @@ class BaseCommentValidator(BaseValidator):
 class CommentByIdValidator(BaseCommentValidator):
     """Comment by identifier validator."""
 
-    def __init__(
-        self,
-        request: Request,
-        comment_service: CommentService = Depends(),
-        thread_by_id_validator: ThreadByIdValidator = Depends(),
-    ) -> None:
-        """Initializes comment by identifier validator.
-
-        Args:
-            request (Request): Current request object.
-            comment_service (CommentService): Comment service.
-            thread_by_id_validator (ThreadByIdValidator): Thread by id validator.
-
-        """
-
-        super().__init__(request=request, comment_service=comment_service)
-
-        self.thread_by_id_validator = thread_by_id_validator
-
-    async def validate(self, thread_id: ObjectId, comment_id: ObjectId) -> Comment:
+    async def validate(self, comment_id: ObjectId) -> Comment:
         """Validates requested comment by id.
 
         Args:
-            thread_id (ObjectId): BSON object identifier of requested thread.
             comment_id (ObjectId): BSON object identifier of requested comment.
 
         Returns:
             Comment: Comment object.
 
         Raises:
-            HTTPException: If requested comment is not found or comment does not
-            belong to thread.
+            HTTPException: If requested comment is not found.
 
         """
-
-        thread = await self.thread_by_id_validator.validate(thread_id=thread_id)
 
         try:
             comment = await self.comment_service.get_by_id(id_=comment_id)
@@ -90,15 +67,6 @@ class CommentByIdValidator(BaseCommentValidator):
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(
                     entity="Comment"
-                ),
-            )
-
-        # Check if comment belongs to thread
-        if comment.thread_id != thread.id:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=HTTPErrorMessagesEnum.ENTITIES_ARE_NOT_RELATED.format(
-                    child_entity="Comment", parent_entity="thread"
                 ),
             )
 
@@ -127,11 +95,10 @@ class CommentUserValidator(BaseCommentValidator):
 
         self.comment_by_id_validator = comment_by_id_validator
 
-    async def validate(self, thread_id: ObjectId, comment_id: ObjectId) -> Comment:
+    async def validate(self, comment_id: ObjectId) -> Comment:
         """Validates requested comment user.
 
         Args:
-            thread_id (ObjectId): BSON object identifier of requested thread.
             comment_id (ObjectId): BSON object identifier of requested comment.
 
         Returns:
@@ -142,9 +109,7 @@ class CommentUserValidator(BaseCommentValidator):
 
         """
 
-        comment = await self.comment_by_id_validator.validate(
-            thread_id=thread_id, comment_id=comment_id
-        )
+        comment = await self.comment_by_id_validator.validate(comment_id=comment_id)
 
         current_user = self.request.state.current_user
 
@@ -199,15 +164,25 @@ class CommentCreateValidator(BaseCommentValidator):
 
         """
 
-        if parent_id is not None:
-            # Validates thread and parent comment if it is set
-            parent_comment = await self.comment_by_id_validator.validate(
-                thread_id=thread_id, comment_id=parent_id
-            )
-        else:
-            # Otherwise just validates thread
-            await self.thread_by_id_validator.validate(thread_id=thread_id)
+        # Validates thread
+        thread = await self.thread_by_id_validator.validate(thread_id=thread_id)
 
+        if parent_id is not None:
+            # Validates parent comment if it is set
+            parent_comment = await self.comment_by_id_validator.validate(
+                comment_id=parent_id
+            )
+
+            # Check if parent comment belongs to thread
+            if parent_comment.thread_id != thread.id:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=HTTPErrorMessagesEnum.ENTITIES_ARE_NOT_RELATED.format(
+                        child_entity="Comment", parent_entity="thread"
+                    ),
+                )
+
+        else:
             parent_comment = None
 
         return CommentCreateData(
