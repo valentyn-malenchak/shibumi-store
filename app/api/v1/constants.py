@@ -48,13 +48,15 @@ class ScopesEnum(Enum):
     CARTS_DELETE_PRODUCT = "Allows to delete product from the cart."
 
     THREADS_GET_THREAD = "Allows to get thread."
-    THREADS_GET_COMMENT = "Allows to get thread comment."
-    THREADS_CREATE_COMMENT = "Allows to create a thread comment."
-    THREADS_UPDATE_COMMENT = "Allows to update a thread comment."
-    THREADS_GET_VOTE = "Allows to get thread comment vote."
-    THREADS_CREATE_VOTE = "Allows to create a thread comment vote."
-    THREADS_UPDATE_VOTE = "Allows to update a thread comment vote."
-    THREADS_DELETE_VOTE = "Allows to delete thread comment vote."
+
+    COMMENTS_GET_COMMENT = "Allows to get comment."
+    COMMENTS_CREATE_COMMENT = "Allows to create a comment."
+    COMMENTS_UPDATE_COMMENT = "Allows to update a comment."
+
+    VOTES_GET_VOTE = "Allows to get vote."
+    VOTES_CREATE_VOTE = "Allows to create a vote."
+    VOTES_UPDATE_VOTE = "Allows to update a vote."
+    VOTES_DELETE_VOTE = "Allows to delete vote."
 
 
 class RedisNamesEnum(StrEnum):

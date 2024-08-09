@@ -10,7 +10,7 @@ from app.utils.pydantic import ObjectIdAnnotation
 
 
 class Comment(BSONObjectId):
-    """Thread comment model."""
+    """Comment model."""
 
     body: str
     thread_id: Annotated[ObjectId, ObjectIdAnnotation]
@@ -24,14 +24,14 @@ class Comment(BSONObjectId):
 
 
 class BaseCommentCreateData(BaseModel):
-    """Base thread comment create data model."""
+    """Base comment create data model."""
 
     body: str
     parent_comment_id: Annotated[ObjectId, ObjectIdAnnotation] | None
 
 
 class CommentCreateData(BaseModel):
-    """Thread comment create data model."""
+    """Comment create data model."""
 
     body: str
     user_id: Annotated[ObjectId, ObjectIdAnnotation]

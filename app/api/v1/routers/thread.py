@@ -69,13 +69,13 @@ async def get_thread(
     response_model=Comment,
     status_code=status.HTTP_200_OK,
 )
-async def get_thread_comment(
+async def get_comment(
     _: CurrentUser | None = Security(
-        OptionalAuthorization(), scopes=[ScopesEnum.THREADS_GET_COMMENT.name]
+        OptionalAuthorization(), scopes=[ScopesEnum.COMMENTS_GET_COMMENT.name]
     ),
     comment: Comment = Depends(CommentByIdDependency()),
 ) -> Comment:
-    """API which returns thread comment.
+    """API which returns comment.
 
     Args:
         _ (CurrentUser | None): Current user object or None.
@@ -93,14 +93,14 @@ async def get_thread_comment(
     response_model=Comment,
     status_code=status.HTTP_201_CREATED,
 )
-async def create_thread_comment(
+async def create_comment(
     _: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.THREADS_CREATE_COMMENT.name]
+        StrictAuthorization(), scopes=[ScopesEnum.COMMENTS_CREATE_COMMENT.name]
     ),
     comment_data: CommentCreateData = Depends(CommentDataCreateDependency()),
     comment_service: CommentService = Depends(),
 ) -> Comment:
-    """API which creates thread comment.
+    """API which creates comment.
 
     Args:
         _ (CurrentUser): Current user object.
@@ -119,15 +119,15 @@ async def create_thread_comment(
     response_model=Comment,
     status_code=status.HTTP_200_OK,
 )
-async def update_thread_comment(
+async def update_comment(
     _: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.THREADS_UPDATE_COMMENT.name]
+        StrictAuthorization(), scopes=[ScopesEnum.COMMENTS_UPDATE_COMMENT.name]
     ),
     comment_data: CommentUpdateData = Depends(CommentDataUpdateDependency()),
     comment: Comment = Depends(CommentUserDependency()),
     comment_service: CommentService = Depends(),
 ) -> Comment:
-    """API which updates thread comment.
+    """API which updates comment.
 
     Args:
         _ (CurrentUser): Current user object.
@@ -147,13 +147,13 @@ async def update_thread_comment(
     response_model=Vote,
     status_code=status.HTTP_200_OK,
 )
-async def get_thread_comment_vote(
+async def get_vote(
     _: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.THREADS_GET_VOTE.name]
+        StrictAuthorization(), scopes=[ScopesEnum.VOTES_GET_VOTE.name]
     ),
     vote: Vote = Depends(VoteUserDependency()),
 ) -> Vote:
-    """API which returns thread comment vote.
+    """API which returns vote.
 
     Args:
         _ (CurrentUser): Current user object.
@@ -171,14 +171,14 @@ async def get_thread_comment_vote(
     response_model=Vote,
     status_code=status.HTTP_201_CREATED,
 )
-async def create_thread_comment_vote(
+async def create_vote(
     _: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.THREADS_CREATE_VOTE.name]
+        StrictAuthorization(), scopes=[ScopesEnum.VOTES_CREATE_VOTE.name]
     ),
     vote_data: VoteCreateData = Depends(VoteDataCreateDependency()),
     vote_service: VoteService = Depends(),
 ) -> Vote:
-    """API which creates thread comment vote.
+    """API which creates vote.
 
     Args:
         _ (CurrentUser): Current user object.
@@ -197,15 +197,15 @@ async def create_thread_comment_vote(
     response_model=Vote,
     status_code=status.HTTP_200_OK,
 )
-async def update_thread_comment_vote(
+async def update_vote(
     vote_id: Annotated[ObjectId, ObjectIdAnnotation],
     _: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.THREADS_UPDATE_VOTE.name]
+        StrictAuthorization(), scopes=[ScopesEnum.VOTES_UPDATE_VOTE.name]
     ),
     vote_data: VoteData = Depends(VoteDataUpdateDependency()),
     vote_service: VoteService = Depends(),
 ) -> Vote:
-    """API which updates thread comment vote.
+    """API which updates vote.
 
     Args:
         vote_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
@@ -225,14 +225,14 @@ async def update_thread_comment_vote(
     "/{thread_id}/comments/{comment_id}/votes/{vote_id}/",
     status_code=status.HTTP_204_NO_CONTENT,
 )
-async def delete_thread_comment_vote(
+async def delete_vote(
     _: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.THREADS_DELETE_VOTE.name]
+        StrictAuthorization(), scopes=[ScopesEnum.VOTES_DELETE_VOTE.name]
     ),
     vote: Vote = Depends(VoteUserDependency()),
     vote_service: VoteService = Depends(),
 ) -> None:
-    """API which updates thread comment vote.
+    """API which deletes vote.
 
     Args:
         _ (CurrentUser): Current user object.
