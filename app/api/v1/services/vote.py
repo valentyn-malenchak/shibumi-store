@@ -109,19 +109,22 @@ class VoteService(BaseService):
 
         """
 
-        try:
-            id_ = await self.repository.create(data=data)
+        async with self.transaction_manager as session:
+            try:
+                id_ = await self.repository.create(data=data, session=session)
 
-        except EntityDuplicateKeyError:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail=HTTPErrorMessagesEnum.ENTITY_FIELD_UNIQUENESS.format(
-                    entity="Vote", field="comment_id"
-                ),
+            except EntityDuplicateKeyError:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail=HTTPErrorMessagesEnum.ENTITY_FIELD_UNIQUENESS.format(
+                        entity="Vote", field="comment_id"
+                    ),
+                )
+
+            # increments upvote/downvote counter by one
+            await self.comment_repository.add_vote(
+                id_=data.comment_id, value=data.value, session=session
             )
-
-        # increments upvote/downvote counter by one
-        await self.comment_repository.add_vote(id_=data.comment_id, value=data.value)
 
         return await self.get_by_id(id_=id_)
 
@@ -153,17 +156,17 @@ class VoteService(BaseService):
 
         """
 
-        vote = await self.repository.get_and_update_by_id(
-            id_=id_,
-            data=data,
-        )
+        async with self.transaction_manager as session:
+            vote = await self.repository.get_and_update_by_id(
+                id_=id_, data=data, session=session
+            )
 
-        # updates upvote/downvote counters depends on value
-        await self.comment_repository.update_vote(
-            id_=vote.comment_id, new_value=data.value
-        )
+            # updates upvote/downvote counters depends on value
+            await self.comment_repository.update_vote(
+                id_=vote.comment_id, new_value=data.value, session=session
+            )
 
-        return vote
+            return vote
 
     async def delete_by_id(self, id_: ObjectId) -> None:
         """Deletes a vote by its unique identifier.
@@ -185,7 +188,10 @@ class VoteService(BaseService):
 
         """
 
-        await self.repository.delete_by_id(id_=item.id)
+        async with self.transaction_manager as session:
+            await self.repository.delete_by_id(id_=item.id, session=session)
 
-        # decrements upvote/downvote counter depends on value
-        await self.comment_repository.delete_vote(id_=item.comment_id, value=item.value)
+            # decrements upvote/downvote counter depends on value
+            await self.comment_repository.delete_vote(
+                id_=item.comment_id, value=item.value, session=session
+            )
