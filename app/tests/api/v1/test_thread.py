@@ -4,6 +4,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 from fastapi import status
+from freezegun import freeze_time
 from httpx import AsyncClient
 
 from app.constants import (
@@ -14,6 +15,8 @@ from app.services.mongo.constants import MongoCollectionsEnum
 from app.tests.api.v1 import BaseAPITest
 from app.tests.constants import (
     CUSTOMER_USER,
+    FROZEN_DATETIME,
+    SHOP_SIDE_USER,
     TEST_JWT,
     USER_NO_SCOPES,
 )
@@ -112,3 +115,95 @@ class TestThread(BaseAPITest):
         assert response.json() == {
             "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Thread")
         }
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS,)],
+        indirect=True,
+    )
+    @freeze_time(FROZEN_DATETIME)
+    async def test_create_thread(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test create thread."""
+
+        response = await test_client.post(
+            f"{AppConstants.API_V1_PREFIX}/threads/",
+            json={
+                "name": "Thread name",
+                "body": "Thread body!",
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert self._exclude_fields(response.json(), exclude_keys=["id"]) == {
+            "name": "Thread name",
+            "body": "Thread body!",
+            "created_at": FROZEN_DATETIME,
+            "updated_at": None,
+        }
+
+    @pytest.mark.asyncio
+    async def test_create_thread_no_token(self, test_client: AsyncClient) -> None:
+        """Test create thread in case there is no token."""
+
+        response = await test_client.post(
+            f"{AppConstants.API_V1_PREFIX}/threads/",
+            json={
+                "name": "Thread name",
+                "body": "Thread body!",
+            },
+        )
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED}
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
+    async def test_create_thread_no_scope(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test create thread in case user does not have appropriate scope."""
+
+        response = await test_client.post(
+            f"{AppConstants.API_V1_PREFIX}/threads/",
+            json={
+                "name": "Thread name",
+                "body": "Thread body!",
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
+    async def test_create_thread_validate_data(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test create thread in case request data is invalid."""
+
+        response = await test_client.post(
+            f"{AppConstants.API_V1_PREFIX}/threads/",
+            json={},
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            ("missing", ["body", "name"], "Field required"),
+            ("missing", ["body", "body"], "Field required"),
+        ]

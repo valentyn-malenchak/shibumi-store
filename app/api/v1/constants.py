@@ -48,6 +48,7 @@ class ScopesEnum(Enum):
     CARTS_DELETE_PRODUCT = "Allows to delete product from the cart."
 
     THREADS_GET_THREAD = "Allows to get thread."
+    THREADS_CREATE_THREAD = "Allows to create a thread."
 
     COMMENTS_GET_COMMENT = "Allows to get comment."
     COMMENTS_CREATE_COMMENT = "Allows to create a comment."
