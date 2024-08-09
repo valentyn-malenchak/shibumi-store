@@ -7,8 +7,8 @@ from pydantic import AliasChoices, BaseModel, Field
 
 from app.constants import (
     AppConstants,
-    SortingTypesEnum,
 )
+from app.services.mongo.constants import SortingTypesEnum
 from app.utils.pydantic import ObjectIdAnnotation
 
 

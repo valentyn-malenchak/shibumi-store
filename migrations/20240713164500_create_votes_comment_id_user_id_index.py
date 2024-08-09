@@ -5,8 +5,7 @@ fields unique index.
 
 from mongodb_migrations.base import BaseMigration
 
-from app.constants import SortingValuesEnum
-from app.services.mongo.constants import MongoCollectionsEnum
+from app.services.mongo.constants import MongoCollectionsEnum, SortingValuesEnum
 
 
 class Migration(BaseMigration):  # type: ignore

@@ -5,7 +5,6 @@ from typing import Any
 
 import arrow
 from bson import ObjectId
-from injector import inject
 from motor.motor_asyncio import AsyncIOMotorClientSession
 from pymongo.errors import DuplicateKeyError
 
@@ -16,7 +15,6 @@ from app.exceptions import EntityDuplicateKeyError
 from app.services.mongo.constants import MongoCollectionsEnum
 
 
-@inject
 class UserRepository(BaseRepository):
     """User repository for handling data access operations."""
 

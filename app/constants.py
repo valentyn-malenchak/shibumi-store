@@ -1,10 +1,10 @@
 """Module that provides application level constants."""
 
-from enum import IntEnum, StrEnum, auto
+from enum import StrEnum
 
 
 class AppConstants:
-    """Application level constants enum."""
+    """Application level constants enumerate."""
 
     API_V1_PREFIX = "/api/v1"
 
@@ -85,22 +85,7 @@ class ValidationErrorMessagesEnum(StrEnum):
     )
 
 
-class SortingTypesEnum(StrEnum):
-    """Sorting types enumerate."""
+class AppEventsEnum(StrEnum):
+    """Application events enumerate."""
 
-    ASC = auto()
-    DESC = auto()
-
-
-class SortingValuesEnum(IntEnum):
-    """Sorting values enum."""
-
-    ASC = 1
-    DESC = -1
-
-
-class ProjectionValuesEnum(IntEnum):
-    """Projection values enumerate."""
-
-    INCLUDE = 1
-    EXCLUDE = 0
+    SHUTDOWN = "shutdown"

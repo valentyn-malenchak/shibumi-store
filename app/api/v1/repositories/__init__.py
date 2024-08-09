@@ -6,14 +6,16 @@ from typing import Any
 
 from bson import ObjectId
 from fastapi import Depends
+from injector import inject
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
 from app.api.v1.models import Pagination, Search, Sorting
-from app.constants import SortingTypesEnum, SortingValuesEnum
 from app.exceptions import EntityIsNotFoundError
+from app.services.mongo.constants import SortingTypesEnum, SortingValuesEnum
 from app.services.mongo.service import MongoDBService
 
 
+@inject
 class BaseRepository(abc.ABC):
     """Base repository for handling data access operations."""
 

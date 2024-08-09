@@ -10,9 +10,12 @@ from app.api.v1.constants import ProductParameterTypesEnum
 from app.api.v1.models import Pagination, Search, Sorting
 from app.api.v1.models.category import Category, CategoryFilter
 from app.api.v1.repositories import BaseRepository
-from app.constants import ProjectionValuesEnum, SortingValuesEnum
 from app.exceptions import EntityIsNotFoundError
-from app.services.mongo.constants import MongoCollectionsEnum
+from app.services.mongo.constants import (
+    MongoCollectionsEnum,
+    ProjectionValuesEnum,
+    SortingValuesEnum,
+)
 
 
 class CategoryRepository(BaseRepository):

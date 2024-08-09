@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1 import ROUTERS
-from app.constants import AppConstants
+from app.constants import AppConstants, AppEventsEnum
 from app.services import SERVICE_CLIENTS
 from app.settings import SETTINGS
 
@@ -46,7 +46,7 @@ class App(FastAPI):
 
     def _configure_handlers(self) -> None:
         """Configure the handlers for the FastAPI app."""
-        self.add_event_handler("shutdown", self._shutdown)
+        self.add_event_handler(AppEventsEnum.SHUTDOWN, self._shutdown)
 
     @staticmethod
     async def _shutdown() -> None:
@@ -55,12 +55,13 @@ class App(FastAPI):
         for client in SERVICE_CLIENTS:
             client.close()
 
-    def run(self) -> None:
+    @staticmethod
+    def run() -> None:
         """Run the FastAPI app."""
         uvicorn.run(
             "__main__:app",
-            host="0.0.0.0",
-            port=8000,
+            host=SETTINGS.APP_HOST,
+            port=SETTINGS.APP_PORT,
             reload=SETTINGS.APP_DEBUG,
             workers=SETTINGS.APP_WORKERS,
         )
