@@ -103,9 +103,7 @@ class TestUser(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=FAKE_USER))
     async def test_get_me_user_does_not_exist(self, test_client: AsyncClient) -> None:
-        """
-        Test get me in case user from access token does not exist.
-        """
+        """Test get me in case user from access token does not exist."""
 
         response = await test_client.get(
             f"{AppConstants.API_V1_PREFIX}/users/me/",

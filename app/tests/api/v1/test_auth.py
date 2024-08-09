@@ -68,13 +68,13 @@ class TestAuth(BaseAPITest):
             ScopesEnum.CARTS_UPDATE_PRODUCT.name,
             ScopesEnum.CARTS_DELETE_PRODUCT.name,
             ScopesEnum.THREADS_GET_THREAD.name,
-            ScopesEnum.THREADS_GET_COMMENT.name,
-            ScopesEnum.THREADS_CREATE_COMMENT.name,
-            ScopesEnum.THREADS_UPDATE_COMMENT.name,
-            ScopesEnum.THREADS_GET_VOTE.name,
-            ScopesEnum.THREADS_CREATE_VOTE.name,
-            ScopesEnum.THREADS_UPDATE_VOTE.name,
-            ScopesEnum.THREADS_DELETE_VOTE.name,
+            ScopesEnum.COMMENTS_GET_COMMENT.name,
+            ScopesEnum.COMMENTS_CREATE_COMMENT.name,
+            ScopesEnum.COMMENTS_UPDATE_COMMENT.name,
+            ScopesEnum.VOTES_GET_VOTE.name,
+            ScopesEnum.VOTES_CREATE_VOTE.name,
+            ScopesEnum.VOTES_UPDATE_VOTE.name,
+            ScopesEnum.VOTES_DELETE_VOTE.name,
         }
 
     @pytest.mark.asyncio

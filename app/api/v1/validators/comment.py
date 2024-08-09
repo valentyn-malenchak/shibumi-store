@@ -186,7 +186,7 @@ class CommentCreateValidator(BaseCommentValidator):
     async def validate(
         self, thread_id: ObjectId, parent_id: ObjectId | None, body: str
     ) -> CommentCreateData:
-        """Checks if thread comment can be created.
+        """Checks if comment can be created.
 
         Args:
             thread_id (ObjectId): BSON object identifier of requested thread.

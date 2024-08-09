@@ -37,10 +37,10 @@ class TestComment(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_get_thread_comment(
+    async def test_get_comment(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test get thread comment."""
+        """Test get comment."""
 
         response = await test_client.get(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af9246aba47cfb60efb37/",
@@ -73,10 +73,10 @@ class TestComment(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_get_thread_comment_no_token(
+    async def test_get_comment_no_token(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test get thread comment in case there is no token."""
+        """Test get comment in case there is no token."""
 
         response = await test_client.get(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af9246aba47cfb60efb37/",
@@ -101,10 +101,10 @@ class TestComment(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    async def test_get_thread_comment_no_scope(
+    async def test_get_comment_no_scope(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test get thread comment in case user does not have appropriate scope."""
+        """Test get comment in case user does not have appropriate scope."""
 
         response = await test_client.get(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af9246aba47cfb60efb37/",
@@ -119,10 +119,10 @@ class TestComment(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    async def test_get_thread_comment_thread_is_not_found(
+    async def test_get_comment_thread_is_not_found(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test get thread comment in case thread is not found."""
+        """Test get comment in case thread is not found."""
 
         response = await test_client.get(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af9246aba47cfb60efb37/",
@@ -141,10 +141,10 @@ class TestComment(BaseAPITest):
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.THREADS)],
         indirect=True,
     )
-    async def test_get_thread_comment_comment_is_not_found(
+    async def test_get_comment_comment_is_not_found(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test get thread comment in case comment is not found."""
+        """Test get comment in case comment is not found."""
 
         response = await test_client.get(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af9246aba47cfb60efb37/",
@@ -169,10 +169,10 @@ class TestComment(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_get_thread_comment_comment_is_not_related_to_thread(
+    async def test_get_comment_comment_is_not_related_to_thread(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test get thread comment in case comment does not belong to thread."""
+        """Test get comment in case comment does not belong to thread."""
 
         response = await test_client.get(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5de4cef83e11dbc7ac2/comments/666af9246aba47cfb60efb37/",
@@ -199,10 +199,10 @@ class TestComment(BaseAPITest):
         indirect=True,
     )
     @freeze_time(FROZEN_DATETIME)
-    async def test_create_thread_comment_root_comment(
+    async def test_create_comment_root_comment(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test create thread comment in case of root comment."""
+        """Test create comment in case of root comment."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/",
@@ -237,10 +237,10 @@ class TestComment(BaseAPITest):
         indirect=True,
     )
     @freeze_time(FROZEN_DATETIME)
-    async def test_create_thread_comment_with_parent(
+    async def test_create_comment_with_parent(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test create thread comment in case comment has parent."""
+        """Test create comment in case comment has parent."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/",
@@ -266,10 +266,10 @@ class TestComment(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    async def test_create_thread_comment_no_token(
+    async def test_create_comment_no_token(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test create thread comment in case there is no token."""
+        """Test create comment in case there is no token."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/",
@@ -284,10 +284,10 @@ class TestComment(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    async def test_create_thread_comment_no_scope(
+    async def test_create_comment_no_scope(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test create thread comment in case user does not have appropriate scope."""
+        """Test create comment in case user does not have appropriate scope."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/",
@@ -303,10 +303,10 @@ class TestComment(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    async def test_create_thread_comment_validate_data(
+    async def test_create_comment_validate_data(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test create thread comment in case request data is invalid."""
+        """Test create comment in case request data is invalid."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/",
@@ -328,10 +328,10 @@ class TestComment(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    async def test_create_thread_comment_thread_is_not_found(
+    async def test_create_comment_thread_is_not_found(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test create thread comment in case thread is not found."""
+        """Test create comment in case thread is not found."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/",
@@ -351,10 +351,10 @@ class TestComment(BaseAPITest):
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.THREADS)],
         indirect=True,
     )
-    async def test_create_thread_comment_parent_comment_is_not_found(
+    async def test_create_comment_parent_comment_is_not_found(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test create thread comment in case parent comment is not found."""
+        """Test create comment in case parent comment is not found."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/",
@@ -383,11 +383,11 @@ class TestComment(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_create_thread_comment_parent_comment_is_not_related_to_thread(
+    async def test_create_comment_parent_comment_is_not_related_to_thread(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
         """
-        Test create thread comment in case parent comment does not belong to thread.
+        Test create comment in case parent comment does not belong to thread.
         """
 
         response = await test_client.post(
@@ -420,10 +420,10 @@ class TestComment(BaseAPITest):
         indirect=True,
     )
     @freeze_time(FROZEN_DATETIME)
-    async def test_update_thread_comment(
+    async def test_update_comment(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test update thread comment."""
+        """Test update comment."""
 
         response = await test_client.patch(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af9246aba47cfb60efb37/",
@@ -446,10 +446,10 @@ class TestComment(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    async def test_update_thread_comment_no_token(
+    async def test_update_comment_no_token(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test update thread comment in case there is no token."""
+        """Test update comment in case there is no token."""
 
         response = await test_client.patch(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af9246aba47cfb60efb37/",
@@ -464,10 +464,10 @@ class TestComment(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    async def test_update_thread_comment_no_scope(
+    async def test_update_comment_no_scope(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test update thread comment in case user does not have appropriate scope."""
+        """Test update comment in case user does not have appropriate scope."""
 
         response = await test_client.patch(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af9246aba47cfb60efb37/",
@@ -491,10 +491,10 @@ class TestComment(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_update_thread_comment_validate_data(
+    async def test_update_comment_validate_data(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test update thread comment in case request data is invalid."""
+        """Test update comment in case request data is invalid."""
 
         response = await test_client.patch(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af9246aba47cfb60efb37/",
@@ -515,10 +515,10 @@ class TestComment(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    async def test_update_thread_comment_thread_is_not_found(
+    async def test_update_comment_thread_is_not_found(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test update thread comment in case thread is not found."""
+        """Test update comment in case thread is not found."""
 
         response = await test_client.patch(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af9246aba47cfb60efb37/",
@@ -538,10 +538,10 @@ class TestComment(BaseAPITest):
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.THREADS)],
         indirect=True,
     )
-    async def test_update_thread_comment_comment_is_not_found(
+    async def test_update_comment_comment_is_not_found(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test update thread comment in case comment is not found."""
+        """Test update comment in case comment is not found."""
 
         response = await test_client.patch(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af9246aba47cfb60efb37/",
@@ -567,11 +567,11 @@ class TestComment(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_update_thread_comment_comment_is_not_related_to_thread(
+    async def test_update_comment_comment_is_not_related_to_thread(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
         """
-        Test update thread comment in case comment does not belong to thread.
+        Test update comment in case comment does not belong to thread.
         """
 
         response = await test_client.patch(
@@ -600,11 +600,11 @@ class TestComment(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_update_thread_comment_user_updates_comment_of_another_user(
+    async def test_update_comment_user_updates_comment_of_another_user(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
         """
-        Test update thread comment in case user tries to update comment of another user.
+        Test update comment in case user tries to update comment of another user.
         """
 
         response = await test_client.patch(

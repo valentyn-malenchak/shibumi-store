@@ -188,7 +188,7 @@ class VoteCreateValidator(BaseVoteValidator):
     async def validate(
         self, thread_id: ObjectId, comment_id: ObjectId, value: bool
     ) -> VoteCreateData:
-        """Checks if thread comment vote can be created.
+        """Checks if vote can be created.
 
         Args:
             thread_id (ObjectId): BSON object identifier of requested thread.
@@ -236,7 +236,7 @@ class VoteUpdateValidator(BaseVoteValidator):
     async def validate(
         self, thread_id: ObjectId, comment_id: ObjectId, vote_id: ObjectId, value: bool
     ) -> Vote:
-        """Checks if thread comment vote can be updated.
+        """Checks if vote can be updated.
 
         Args:
             thread_id (ObjectId): BSON object identifier of requested thread.

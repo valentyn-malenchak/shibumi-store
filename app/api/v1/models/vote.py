@@ -10,7 +10,7 @@ from app.utils.pydantic import ObjectIdAnnotation
 
 
 class Vote(BSONObjectId):
-    """Thread comment vote model."""
+    """Vote model."""
 
     value: bool
     comment_id: Annotated[ObjectId, ObjectIdAnnotation]

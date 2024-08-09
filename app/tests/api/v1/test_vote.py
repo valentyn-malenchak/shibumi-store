@@ -38,10 +38,8 @@ class TestVote(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_get_thread_comment_vote(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
-        """Test get thread comment vote."""
+    async def test_get_vote(self, test_client: AsyncClient, arrange_db: None) -> None:
+        """Test get vote."""
 
         response = await test_client.get(
             f"{AppConstants.API_V1_PREFIX}"
@@ -60,10 +58,8 @@ class TestVote(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    async def test_get_thread_comment_vote_no_token(
-        self, test_client: AsyncClient
-    ) -> None:
-        """Test get thread comment vote in case there is no token."""
+    async def test_get_vote_no_token(self, test_client: AsyncClient) -> None:
+        """Test get vote in case there is no token."""
 
         response = await test_client.get(
             f"{AppConstants.API_V1_PREFIX}"
@@ -78,10 +74,10 @@ class TestVote(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    async def test_get_thread_comment_vote_no_scope(
+    async def test_get_vote_no_scope(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test get thread comment vote in case user does not have appropriate scope."""
+        """Test get vote in case user does not have appropriate scope."""
 
         response = await test_client.get(
             f"{AppConstants.API_V1_PREFIX}"
@@ -97,10 +93,10 @@ class TestVote(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    async def test_get_thread_comment_vote_thread_is_not_found(
+    async def test_get_vote_thread_is_not_found(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test get thread comment vote in case thread is not found."""
+        """Test get vote in case thread is not found."""
 
         response = await test_client.get(
             f"{AppConstants.API_V1_PREFIX}"
@@ -120,10 +116,10 @@ class TestVote(BaseAPITest):
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.THREADS)],
         indirect=True,
     )
-    async def test_get_thread_comment_vote_comment_is_not_found(
+    async def test_get_vote_comment_is_not_found(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test get thread comment vote in case comment is not found."""
+        """Test get vote in case comment is not found."""
 
         response = await test_client.get(
             f"{AppConstants.API_V1_PREFIX}"
@@ -149,10 +145,10 @@ class TestVote(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_get_thread_comment_vote_comment_is_not_related_to_thread(
+    async def test_get_vote_comment_is_not_related_to_thread(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test get thread comment vote in case comment does not belong to thread."""
+        """Test get vote in case comment does not belong to thread."""
 
         response = await test_client.get(
             f"{AppConstants.API_V1_PREFIX}"
@@ -180,10 +176,10 @@ class TestVote(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_get_thread_comment_vote_vote_is_not_found(
+    async def test_get_vote_vote_is_not_found(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test get thread comment vote in case vote is not found."""
+        """Test get vote in case vote is not found."""
 
         response = await test_client.get(
             f"{AppConstants.API_V1_PREFIX}"
@@ -210,10 +206,10 @@ class TestVote(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_get_thread_comment_vote_vote_is_not_related_to_comment(
+    async def test_get_vote_vote_is_not_related_to_comment(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test get thread comment vote in case vote does not belong to comment."""
+        """Test get vote in case vote does not belong to comment."""
 
         response = await test_client.get(
             f"{AppConstants.API_V1_PREFIX}"
@@ -242,12 +238,10 @@ class TestVote(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_get_thread_comment_vote_user_gets_vote_of_another_user(
+    async def test_get_vote_user_gets_vote_of_another_user(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """
-        Test get thread comment vote in case user tries to get vote of another user.
-        """
+        """Test get vote in case user tries to get vote of another user."""
 
         response = await test_client.get(
             f"{AppConstants.API_V1_PREFIX}"
@@ -272,10 +266,10 @@ class TestVote(BaseAPITest):
         indirect=True,
     )
     @freeze_time(FROZEN_DATETIME)
-    async def test_create_thread_comment_vote_positive(
+    async def test_create_vote_positive(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test create thread comment vote in case of upvote."""
+        """Test create vote in case of upvote."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af8c16aba47cfb60efb32/votes/",
@@ -325,10 +319,10 @@ class TestVote(BaseAPITest):
         indirect=True,
     )
     @freeze_time(FROZEN_DATETIME)
-    async def test_create_thread_comment_vote_negative(
+    async def test_create_vote_negative(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test create thread comment vote in case of downvote."""
+        """Test create vote in case of downvote."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af8c16aba47cfb60efb32/votes/",
@@ -365,10 +359,10 @@ class TestVote(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    async def test_create_thread_comment_vote_no_token(
+    async def test_create_vote_no_token(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test create thread comment vote in case there is no token."""
+        """Test create vote in case there is no token."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af8c16aba47cfb60efb32/votes/",
@@ -383,12 +377,10 @@ class TestVote(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    async def test_create_thread_comment_vote_no_scope(
+    async def test_create_vote_no_scope(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """
-        Test create thread comment vote in case user does not have appropriate scope.
-        """
+        """Test create vote in case user does not have appropriate scope."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af8c16aba47cfb60efb32/votes/",
@@ -404,10 +396,10 @@ class TestVote(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    async def test_create_thread_comment_vote_validate_data(
+    async def test_create_vote_validate_data(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test create thread comment vote in case request data is invalid."""
+        """Test create vote in case request data is invalid."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af8c16aba47cfb60efb32/votes/",
@@ -428,10 +420,10 @@ class TestVote(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    async def test_create_thread_comment_vote_thread_is_not_found(
+    async def test_create_vote_thread_is_not_found(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test create thread comment vote in case thread is not found."""
+        """Test create vote in case thread is not found."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af8c16aba47cfb60efb32/votes/",
@@ -451,10 +443,10 @@ class TestVote(BaseAPITest):
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.THREADS)],
         indirect=True,
     )
-    async def test_create_thread_comment_vote_comment_is_not_found(
+    async def test_create_vote_comment_is_not_found(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test create thread comment vote in case comment is not found."""
+        """Test create vote in case comment is not found."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af8c16aba47cfb60efb32/votes/",
@@ -480,12 +472,10 @@ class TestVote(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_create_thread_comment_vote_comment_is_not_related_to_thread(
+    async def test_create_vote_comment_is_not_related_to_thread(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """
-        Test create thread comment vote in case comment does not belong to thread.
-        """
+        """Test create vote in case comment does not belong to thread."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5de4cef83e11dbc7ac2/comments/666af9246aba47cfb60efb37/votes/",
@@ -514,13 +504,10 @@ class TestVote(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_create_thread_comment_vote_user_comment_vote_is_already_created(
+    async def test_create_vote_user_comment_vote_is_already_created(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """
-        Test create thread comment vote in case user vote for comment is already
-        created.
-        """
+        """Test create vote in case user vote for comment is already created."""
 
         response = await test_client.post(
             f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/comments/666af8ae6aba47cfb60efb31/votes/",
@@ -551,10 +538,10 @@ class TestVote(BaseAPITest):
         indirect=True,
     )
     @freeze_time(FROZEN_DATETIME)
-    async def test_update_thread_comment_vote(
+    async def test_update_vote(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test update thread comment vote."""
+        """Test update vote."""
 
         # Change to downvote
         response = await test_client.patch(
@@ -631,10 +618,8 @@ class TestVote(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    async def test_update_thread_comment_vote_no_token(
-        self, test_client: AsyncClient
-    ) -> None:
-        """Test update thread comment vote in case there is no token."""
+    async def test_update_vote_no_token(self, test_client: AsyncClient) -> None:
+        """Test update vote in case there is no token."""
 
         response = await test_client.patch(
             f"{AppConstants.API_V1_PREFIX}"
@@ -650,12 +635,10 @@ class TestVote(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    async def test_update_thread_comment_vote_no_scope(
+    async def test_update_vote_no_scope(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """
-        Test update thread comment vote in case user does not have appropriate scope.
-        """
+        """Test update vote in case user does not have appropriate scope."""
 
         response = await test_client.patch(
             f"{AppConstants.API_V1_PREFIX}"
@@ -672,10 +655,10 @@ class TestVote(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    async def test_update_thread_comment_vote_validate_data(
+    async def test_update_vote_validate_data(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test update thread comment vote in case request data is invalid."""
+        """Test update vote in case request data is invalid."""
 
         response = await test_client.patch(
             f"{AppConstants.API_V1_PREFIX}"
@@ -697,10 +680,10 @@ class TestVote(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    async def test_update_thread_comment_vote_thread_is_not_found(
+    async def test_update_vote_thread_is_not_found(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test update thread comment vote in case thread is not found."""
+        """Test update vote in case thread is not found."""
 
         response = await test_client.patch(
             f"{AppConstants.API_V1_PREFIX}"
@@ -721,10 +704,10 @@ class TestVote(BaseAPITest):
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.THREADS)],
         indirect=True,
     )
-    async def test_update_thread_comment_vote_comment_is_not_found(
+    async def test_update_vote_comment_is_not_found(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test update thread comment vote in case comment is not found."""
+        """Test update vote in case comment is not found."""
 
         response = await test_client.patch(
             f"{AppConstants.API_V1_PREFIX}"
@@ -751,10 +734,10 @@ class TestVote(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_update_thread_comment_vote_comment_is_not_related_to_thread(
+    async def test_update_vote_comment_is_not_related_to_thread(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test update thread comment vote in case comment does not belong to thread."""
+        """Test update vote in case comment does not belong to thread."""
 
         response = await test_client.patch(
             f"{AppConstants.API_V1_PREFIX}"
@@ -783,10 +766,10 @@ class TestVote(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_update_thread_comment_vote_vote_is_not_found(
+    async def test_update_vote_vote_is_not_found(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test update thread comment vote in case vote is not found."""
+        """Test update vote in case vote is not found."""
 
         response = await test_client.patch(
             f"{AppConstants.API_V1_PREFIX}"
@@ -814,10 +797,10 @@ class TestVote(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_update_thread_comment_vote_vote_is_not_related_to_comment(
+    async def test_update_vote_vote_is_not_related_to_comment(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test update thread comment vote in case vote does not belong to comment."""
+        """Test update vote in case vote does not belong to comment."""
 
         response = await test_client.patch(
             f"{AppConstants.API_V1_PREFIX}"
@@ -847,13 +830,10 @@ class TestVote(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_update_thread_comment_vote_user_updates_vote_of_another_user(
+    async def test_update_vote_user_updates_vote_of_another_user(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """
-        Test update thread comment vote in case user tries to update vote
-        of another user.
-        """
+        """Test update vote in case user tries to update vote of another user."""
 
         response = await test_client.patch(
             f"{AppConstants.API_V1_PREFIX}"
@@ -879,12 +859,10 @@ class TestVote(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_update_thread_comment_vote_same_value(
+    async def test_update_vote_same_value(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """
-        Test update thread comment vote in case user tries to set the same value.
-        """
+        """Test update vote in case user tries to set the same value."""
 
         response = await test_client.patch(
             f"{AppConstants.API_V1_PREFIX}"
@@ -910,10 +888,10 @@ class TestVote(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_delete_thread_comment_vote(
+    async def test_delete_vote(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test delete thread comment vote."""
+        """Test delete vote."""
 
         response = await test_client.delete(
             f"{AppConstants.API_V1_PREFIX}"
@@ -943,10 +921,8 @@ class TestVote(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    async def test_delete_thread_comment_vote_no_token(
-        self, test_client: AsyncClient
-    ) -> None:
-        """Test delete thread comment vote in case there is no token."""
+    async def test_delete_vote_no_token(self, test_client: AsyncClient) -> None:
+        """Test delete vote in case there is no token."""
 
         response = await test_client.delete(
             f"{AppConstants.API_V1_PREFIX}"
@@ -961,12 +937,10 @@ class TestVote(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    async def test_delete_thread_comment_vote_no_scope(
+    async def test_delete_vote_no_scope(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """
-        Test delete thread comment vote in case user does not have appropriate scope.
-        """
+        """Test delete vote in case user does not have appropriate scope."""
 
         response = await test_client.delete(
             f"{AppConstants.API_V1_PREFIX}"
@@ -982,10 +956,10 @@ class TestVote(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    async def test_delete_thread_comment_vote_thread_is_not_found(
+    async def test_delete_vote_thread_is_not_found(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test delete thread comment vote in case thread is not found."""
+        """Test delete vote in case thread is not found."""
 
         response = await test_client.delete(
             f"{AppConstants.API_V1_PREFIX}"
@@ -1005,10 +979,10 @@ class TestVote(BaseAPITest):
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.THREADS)],
         indirect=True,
     )
-    async def test_delete_thread_comment_vote_comment_is_not_found(
+    async def test_delete_vote_comment_is_not_found(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test delete thread comment vote in case comment is not found."""
+        """Test delete vote in case comment is not found."""
 
         response = await test_client.delete(
             f"{AppConstants.API_V1_PREFIX}"
@@ -1034,10 +1008,10 @@ class TestVote(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_delete_thread_comment_vote_comment_is_not_related_to_thread(
+    async def test_delete_vote_comment_is_not_related_to_thread(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test delete thread comment vote in case comment does not belong to thread."""
+        """Test delete vote in case comment does not belong to thread."""
 
         response = await test_client.delete(
             f"{AppConstants.API_V1_PREFIX}"
@@ -1065,10 +1039,10 @@ class TestVote(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_delete_thread_comment_vote_vote_is_not_found(
+    async def test_delete_vote_vote_is_not_found(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test delete thread comment vote in case vote is not found."""
+        """Test delete vote in case vote is not found."""
 
         response = await test_client.delete(
             f"{AppConstants.API_V1_PREFIX}"
@@ -1095,10 +1069,10 @@ class TestVote(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_delete_thread_comment_vote_vote_is_not_related_to_comment(
+    async def test_delete_vote_vote_is_not_related_to_comment(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test delete thread comment vote in case vote does not belong to comment."""
+        """Test delete vote in case vote does not belong to comment."""
 
         response = await test_client.delete(
             f"{AppConstants.API_V1_PREFIX}"
@@ -1127,13 +1101,10 @@ class TestVote(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_delete_thread_comment_vote_user_deletes_vote_of_another_user(
+    async def test_delete_vote_user_deletes_vote_of_another_user(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """
-        Test delete thread comment vote in case user tries to delete vote of
-        another user.
-        """
+        """Test delete vote in case user tries to delete vote of another user."""
 
         response = await test_client.delete(
             f"{AppConstants.API_V1_PREFIX}"
