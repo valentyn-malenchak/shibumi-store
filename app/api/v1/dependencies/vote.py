@@ -6,6 +6,7 @@ from bson import ObjectId
 from fastapi import Depends
 
 from app.api.v1.models.vote import (
+    BaseVoteCreateData,
     Vote,
     VoteCreateData,
     VoteData,
@@ -23,18 +24,12 @@ class VoteUserDependency:
 
     async def __call__(
         self,
-        thread_id: Annotated[ObjectId, ObjectIdAnnotation],
-        comment_id: Annotated[ObjectId, ObjectIdAnnotation],
         vote_id: Annotated[ObjectId, ObjectIdAnnotation],
         vote_user_validator: VoteUserValidator = Depends(),
     ) -> Vote:
         """Validates vote user.
 
         Args:
-            thread_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
-            identifier of requested thread.
-            comment_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
-            identifier of requested comment.
             vote_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
             identifier of requested vote.
             vote_user_validator (VoteUserValidator): Vote user validator.
@@ -44,9 +39,7 @@ class VoteUserDependency:
 
         """
 
-        return await vote_user_validator.validate(
-            thread_id=thread_id, comment_id=comment_id, vote_id=vote_id
-        )
+        return await vote_user_validator.validate(vote_id=vote_id)
 
 
 class VoteDataCreateDependency:
@@ -54,19 +47,13 @@ class VoteDataCreateDependency:
 
     async def __call__(
         self,
-        thread_id: Annotated[ObjectId, ObjectIdAnnotation],
-        comment_id: Annotated[ObjectId, ObjectIdAnnotation],
-        vote_data: VoteData,
+        vote_data: BaseVoteCreateData,
         vote_create_validator: VoteCreateValidator = Depends(),
     ) -> VoteCreateData:
         """Validates data on vote create operation.
 
         Args:
-            thread_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
-            identifier of requested thread.
-            comment_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
-            identifier of requested comment.
-            vote_data (VoteData): Vote data.
+            vote_data (BaseVoteCreateData): Base vote create data.
             vote_create_validator (VoteCreateValidator): Vote create validator.
 
         Returns:
@@ -75,8 +62,7 @@ class VoteDataCreateDependency:
         """
 
         return await vote_create_validator.validate(
-            thread_id=thread_id,
-            comment_id=comment_id,
+            comment_id=vote_data.comment_id,
             value=vote_data.value,
         )
 
@@ -86,8 +72,6 @@ class VoteDataUpdateDependency:
 
     async def __call__(
         self,
-        thread_id: Annotated[ObjectId, ObjectIdAnnotation],
-        comment_id: Annotated[ObjectId, ObjectIdAnnotation],
         vote_id: Annotated[ObjectId, ObjectIdAnnotation],
         vote_data: VoteData,
         vote_update_validator: VoteUpdateValidator = Depends(),
@@ -95,10 +79,6 @@ class VoteDataUpdateDependency:
         """Validates data on vote update operation.
 
         Args:
-            thread_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
-            identifier of requested thread.
-            comment_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
-            identifier of requested comment.
             vote_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
             identifier of requested vote.
             vote_data (VoteData): Vote data.
@@ -110,8 +90,6 @@ class VoteDataUpdateDependency:
         """
 
         await vote_update_validator.validate(
-            thread_id=thread_id,
-            comment_id=comment_id,
             vote_id=vote_id,
             value=vote_data.value,
         )
