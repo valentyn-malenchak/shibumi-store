@@ -99,11 +99,11 @@ class ThreadService(BaseService):
         Returns:
             Thread: Created thread.
 
-        Raises:
-            NotImplementedError: This method is not implemented.
-
         """
-        raise NotImplementedError
+
+        id_ = await self.repository.create(data=data)
+
+        return await self.get_by_id(id_=id_)
 
     async def update(self, item: Any, data: Any) -> Any:
         """Updates a thread object.

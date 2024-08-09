@@ -2,13 +2,18 @@
 
 from fastapi import APIRouter, Depends, Security, status
 
-from app.api.v1.auth.auth import OptionalAuthorization
+from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
-from app.api.v1.dependencies.thread import ThreadByIdDependency
+from app.api.v1.dependencies.thread import (
+    ThreadByIdDependency,
+    ThreadDataCreateDependency,
+)
 from app.api.v1.models.thread import (
     Thread,
+    ThreadCreateData,
 )
 from app.api.v1.models.user import CurrentUser
+from app.api.v1.services.thread import ThreadService
 
 router = APIRouter(prefix="/threads", tags=["threads"])
 
@@ -35,3 +40,29 @@ async def get_thread(
 
     """
     return thread
+
+
+@router.post(
+    "/",
+    response_model=Thread,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_comment(
+    _: CurrentUser = Security(
+        StrictAuthorization(), scopes=[ScopesEnum.THREADS_CREATE_THREAD.name]
+    ),
+    thread_data: ThreadCreateData = Depends(ThreadDataCreateDependency()),
+    thread_service: ThreadService = Depends(),
+) -> Thread:
+    """API which creates thread.
+
+    Args:
+        _ (CurrentUser): Current user object.
+        thread_data (ThreadCreateData): Thread create data.
+        thread_service (ThreadService): Thread service.
+
+    Returns:
+        Thread: Thread object.
+
+    """
+    return await thread_service.create(data=thread_data)
