@@ -1,6 +1,6 @@
 """Module that contains MongoDB constants."""
 
-from enum import StrEnum, auto
+from enum import IntEnum, StrEnum, auto
 
 
 class MongoCollectionsEnum(StrEnum):
@@ -16,3 +16,24 @@ class MongoCollectionsEnum(StrEnum):
     THREADS = auto()
     COMMENTS = auto()
     VOTES = auto()
+
+
+class SortingTypesEnum(StrEnum):
+    """Sorting types enumerate."""
+
+    ASC = auto()
+    DESC = auto()
+
+
+class SortingValuesEnum(IntEnum):
+    """Sorting values enumerate."""
+
+    ASC = 1
+    DESC = -1
+
+
+class ProjectionValuesEnum(IntEnum):
+    """Projection values enumerate."""
+
+    INCLUDE = 1
+    EXCLUDE = 0

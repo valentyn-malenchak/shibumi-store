@@ -1,21 +1,21 @@
 """Module that provides custom application exceptions."""
 
 
-class AppExceptionError(Exception):
+class ApplicationError(Exception):
     """Custom application exception."""
 
 
-class ExpiredTokenError(AppExceptionError):
+class ExpiredTokenError(ApplicationError):
     """Expired JWT exception."""
 
 
-class InvalidTokenError(AppExceptionError):
+class InvalidTokenError(ApplicationError):
     """Invalid JWT exception."""
 
 
-class EntityIsNotFoundError(AppExceptionError):
+class EntityIsNotFoundError(ApplicationError):
     """Entity is not found error."""
 
 
-class EntityDuplicateKeyError(AppExceptionError):
+class EntityDuplicateKeyError(ApplicationError):
     """Entity duplicate key error."""

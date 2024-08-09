@@ -8,6 +8,8 @@ class AppConfig(ImmutableModel):
     """Configuration model for application settings."""
 
     APP_NAME: str = "shibumi-store"
+    APP_HOST: str = "0.0.0.0"
+    APP_PORT: int = 8000
     APP_WORKERS: int = 1
     APP_DEBUG: bool = False
     APP_OPENAPI_URL: str | None = None

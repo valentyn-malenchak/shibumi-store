@@ -83,7 +83,7 @@ class EmailSubjectsEnum(StrEnum):
 
 
 class EmailTextEnum(StrEnum):
-    """Email text enum."""
+    """Email text enumerate."""
 
     EMAIL_VERIFICATION = "Email verification token: {token}"
     RESET_PASSWORD = "Reset password verification token: {token}"

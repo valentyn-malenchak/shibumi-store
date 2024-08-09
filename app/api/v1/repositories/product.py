@@ -5,7 +5,6 @@ from typing import Any
 
 import arrow
 from bson import ObjectId
-from injector import inject
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
 from app.api.v1.models import Pagination, Search, Sorting
@@ -16,11 +15,13 @@ from app.api.v1.models.product import (
     ProductFilter,
 )
 from app.api.v1.repositories import BaseRepository
-from app.constants import ProjectionValuesEnum, SortingValuesEnum
-from app.services.mongo.constants import MongoCollectionsEnum
+from app.services.mongo.constants import (
+    MongoCollectionsEnum,
+    ProjectionValuesEnum,
+    SortingValuesEnum,
+)
 
 
-@inject
 class ProductRepository(BaseRepository):
     """Product repository for handling data access operations."""
 
