@@ -207,3 +207,122 @@ class TestThread(BaseAPITest):
             ("missing", ["body", "name"], "Field required"),
             ("missing", ["body", "body"], "Field required"),
         ]
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.THREADS)],
+        indirect=True,
+    )
+    @freeze_time(FROZEN_DATETIME)
+    async def test_update_thread(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update thread."""
+
+        response = await test_client.patch(
+            f"{AppConstants.API_V1_PREFIX}/threads/66b729b027dcb71d3b8f0fe8/",
+            json={
+                "name": "New thread name",
+                "body": "New thread body!",
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "id": "66b729b027dcb71d3b8f0fe8",
+            "name": "New thread name",
+            "body": "New thread body!",
+            "created_at": "2024-08-10T09:45:00",
+            "updated_at": FROZEN_DATETIME,
+        }
+
+    @pytest.mark.asyncio
+    async def test_update_thread_no_token(self, test_client: AsyncClient) -> None:
+        """Test update thread in case there is no token."""
+
+        response = await test_client.patch(
+            f"{AppConstants.API_V1_PREFIX}/threads/66b729b027dcb71d3b8f0fe8/",
+            json={
+                "name": "New thread name",
+                "body": "New thread body!",
+            },
+        )
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED}
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
+    async def test_update_thread_no_scope(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update thread in case user does not have appropriate scope."""
+
+        response = await test_client.patch(
+            f"{AppConstants.API_V1_PREFIX}/threads/66b729b027dcb71d3b8f0fe8/",
+            json={
+                "name": "New thread name",
+                "body": "New thread body!",
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.THREADS)],
+        indirect=True,
+    )
+    async def test_update_thread_validate_data(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update thread in case request data is invalid."""
+
+        response = await test_client.patch(
+            f"{AppConstants.API_V1_PREFIX}/threads/66b729b027dcb71d3b8f0fe8/",
+            json={},
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert [
+            (error["type"], error["loc"], error["msg"])
+            for error in response.json()["detail"]
+        ] == [
+            ("missing", ["body", "name"], "Field required"),
+            ("missing", ["body", "body"], "Field required"),
+        ]
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
+    async def test_update_thread_thread_is_not_found(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update thread in case thread is not found."""
+
+        response = await test_client.patch(
+            f"{AppConstants.API_V1_PREFIX}/threads/66b729b027dcb71d3b8f0fe8/",
+            json={
+                "name": "New thread name",
+                "body": "New thread body!",
+            },
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Thread")
+        }

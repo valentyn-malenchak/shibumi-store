@@ -218,5 +218,16 @@
       "$date": "2024-03-05T09:45:00.000Z"
     },
     "updated_at": null
+  },
+  {
+    "_id": {
+      "$oid": "66b729b027dcb71d3b8f0fe8"
+    },
+    "name": "Custom thread",
+    "body": "Custom discussion body",
+    "created_at": {
+      "$date": "2024-08-10T09:45:00.000Z"
+    },
+    "updated_at": null
   }
 ]

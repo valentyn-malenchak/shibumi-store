@@ -8,7 +8,7 @@ from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
 from app.api.v1.models import Pagination, Search, Sorting
-from app.api.v1.models.thread import Thread, ThreadCreateData
+from app.api.v1.models.thread import Thread, ThreadData
 from app.api.v1.repositories import BaseRepository
 from app.services.mongo.constants import MongoCollectionsEnum
 
@@ -136,39 +136,50 @@ class ThreadRepository(BaseRepository):
     async def get_and_update_by_id(
         self,
         id_: ObjectId,
-        data: Any,
+        data: ThreadData,
         *,
         session: AsyncIOMotorClientSession | None = None,
-    ) -> Any:
+    ) -> Thread:
         """
         Updates and retrieves a single thread from the repository by its
         unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the thread.
-            data (Any): Data to update thread.
+            data (ThreadData): Data to update thread.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
         Returns:
-            Any: The retrieved thread object.
-
-        Raises:
-            NotImplementedError: This method is not implemented.
+            Thread: The retrieved thread object.
 
         """
-        raise NotImplementedError
+
+        thread = await self._mongo_service.find_one_and_update(
+            collection=self._collection_name,
+            filter_={"_id": id_},
+            update={
+                "$set": {
+                    "name": data.name,
+                    "body": data.body,
+                    "updated_at": arrow.utcnow().datetime,
+                }
+            },
+            session=session,
+        )
+
+        return Thread(**thread)
 
     async def create(
         self,
-        data: ThreadCreateData,
+        data: ThreadData,
         *,
         session: AsyncIOMotorClientSession | None = None,
     ) -> Any:
         """Creates a new thread in repository.
 
         Args:
-            data (ThreadCreateData): The data for the new thread.
+            data (ThreadData): The data for the new thread.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
 
