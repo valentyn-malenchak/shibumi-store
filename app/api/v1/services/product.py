@@ -13,7 +13,7 @@ from app.api.v1.models.product import (
     ProductData,
     ProductFilter,
 )
-from app.api.v1.models.thread import ThreadCreateData
+from app.api.v1.models.thread import ThreadData
 from app.api.v1.repositories.category import CategoryRepository
 from app.api.v1.repositories.category_parameters import CategoryParametersRepository
 from app.api.v1.repositories.product import ProductRepository
@@ -135,7 +135,7 @@ class ProductService(BaseService):
 
         # Initialize product thread
         thread_id = await self.thread_repository.create(
-            data=ThreadCreateData(name=data.name, body=data.synopsis)
+            data=ThreadData(name=data.name, body=data.synopsis)
         )
 
         id_ = await self.repository.create(

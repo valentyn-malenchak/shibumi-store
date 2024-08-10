@@ -5,7 +5,7 @@ from typing import Annotated
 from bson import ObjectId
 from fastapi import Depends
 
-from app.api.v1.models.thread import Thread, ThreadCreateData
+from app.api.v1.models.thread import Thread, ThreadData
 from app.api.v1.validators.thread import ThreadByIdValidator
 from app.utils.pydantic import ObjectIdAnnotation
 
@@ -34,20 +34,17 @@ class ThreadByIdDependency:
         return await thread_by_id_validator.validate(thread_id=thread_id)
 
 
-class ThreadDataCreateDependency:
-    """Thread data create dependency."""
+class ThreadDataDependency:
+    """Thread data dependency."""
 
-    async def __call__(
-        self,
-        thread_data: ThreadCreateData,
-    ) -> ThreadCreateData:
-        """Validates data on thread create operation.
+    async def __call__(self, thread_data: ThreadData) -> ThreadData:
+        """Validates data on thread operations.
 
         Args:
-            thread_data (ThreadCreateData): Thread create data.
+            thread_data (ThreadData): Thread data.
 
         Returns:
-            ThreadCreateData: Thread create data.
+            ThreadData: Thread data.
 
         """
 

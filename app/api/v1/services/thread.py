@@ -6,7 +6,7 @@ from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
 
 from app.api.v1.models import Pagination, Search, Sorting
-from app.api.v1.models.thread import Thread, ThreadCreateData
+from app.api.v1.models.thread import Thread, ThreadData
 from app.api.v1.repositories.thread import ThreadRepository
 from app.api.v1.services import BaseService
 from app.services.mongo.transaction_manager import TransactionManager
@@ -90,11 +90,11 @@ class ThreadService(BaseService):
 
         return await self.repository.get_by_id(id_=id_)
 
-    async def create(self, data: ThreadCreateData) -> Thread:
+    async def create(self, data: ThreadData) -> Thread:
         """Creates a new thread.
 
         Args:
-            data (ThreadCreateData): The data for the new thread.
+            data (ThreadData): The data for the new thread.
 
         Returns:
             Thread: Created thread.
@@ -121,21 +121,21 @@ class ThreadService(BaseService):
         """
         raise NotImplementedError
 
-    async def update_by_id(self, id_: ObjectId, data: Any) -> Any:
+    async def update_by_id(self, id_: ObjectId, data: ThreadData) -> Thread:
         """Updates a thread by its unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the thread.
-            data (Any): Data to update thread.
+            data (ThreadData): Data to update thread.
 
         Returns:
-            Any: The updated thread.
-
-        Raises:
-            NotImplementedError: This method is not implemented.
+            Thread: The updated thread.
 
         """
-        raise NotImplementedError
+        return await self.repository.get_and_update_by_id(
+            id_=id_,
+            data=data,
+        )
 
     async def delete_by_id(self, id_: ObjectId) -> None:
         """Deletes a thread by its unique identifier.

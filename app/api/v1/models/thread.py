@@ -16,8 +16,8 @@ class Thread(BSONObjectId):
     updated_at: datetime | None
 
 
-class ThreadCreateData(BaseModel):
-    """Thread create data model."""
+class ThreadData(BaseModel):
+    """Thread data model."""
 
     name: str
     body: str
