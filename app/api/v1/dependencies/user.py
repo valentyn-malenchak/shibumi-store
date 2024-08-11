@@ -14,11 +14,11 @@ from app.api.v1.models.user import (
 from app.api.v1.validators.user import (
     UserByIdValidator,
     UserByUsernameStatusValidator,
-    UserDeleteValidator,
+    UserDeleteAccessValidator,
     UserEmailVerifiedValidator,
     UserPasswordUpdateValidator,
     UserRolesValidator,
-    UserUpdateValidator,
+    UserUpdateAccessValidator,
 )
 from app.utils.pydantic import ObjectIdAnnotation
 
@@ -31,7 +31,7 @@ class UserByIdDependency:
         user_id: Annotated[ObjectId, ObjectIdAnnotation],
         user_by_id_validator: UserByIdValidator = Depends(),
     ) -> User:
-        """Checks user from request by identifier.
+        """Validates user from request by identifier.
 
         Args:
             user_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
@@ -54,7 +54,7 @@ class UserByUsernameStatusDependency:
         username: str,
         user_by_username_status_validator: UserByUsernameStatusValidator = Depends(),
     ) -> User:
-        """Checks user and its status from request by username.
+        """Validates user and its status from request by username.
 
         Args:
             username (str): Username of requested user.
@@ -69,27 +69,28 @@ class UserByUsernameStatusDependency:
         return await user_by_username_status_validator.validate(username=username)
 
 
-class UserUpdateDependency:
-    """User update dependency."""
+class UserUpdateAccessDependency:
+    """User update access dependency."""
 
     async def __call__(
         self,
         user_id: Annotated[ObjectId, ObjectIdAnnotation],
-        user_update_validator: UserUpdateValidator = Depends(),
+        user_update_access_validator: UserUpdateAccessValidator = Depends(),
     ) -> User:
-        """Checks if the current user can update user from request.
+        """Validates if the current user can update user from request.
 
         Args:
             user_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
             identifier of requested user.
-            user_update_validator (UserUpdateValidator): User update validator.
+            user_update_access_validator (UserUpdateAccessValidator): User update access
+            validator.
 
         Returns:
             User: User object.
 
         """
 
-        return await user_update_validator.validate(user_id=user_id)
+        return await user_update_access_validator.validate(user_id=user_id)
 
 
 class UserPasswordUpdateDependency:
@@ -101,7 +102,7 @@ class UserPasswordUpdateDependency:
         password: UserPasswordUpdateData,
         user_password_update_validator: UserPasswordUpdateValidator = Depends(),
     ) -> UserPasswordUpdateData:
-        """Checks if the current user can update own password.
+        """Validates if the current user can update own password.
 
         Args:
             user_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
@@ -122,27 +123,28 @@ class UserPasswordUpdateDependency:
         return password
 
 
-class UserDeleteDependency:
-    """User delete dependency."""
+class UserDeleteAccessDependency:
+    """User delete access dependency."""
 
     async def __call__(
         self,
         user_id: Annotated[ObjectId, ObjectIdAnnotation],
-        user_delete_validator: UserDeleteValidator = Depends(),
+        user_delete_access_validator: UserDeleteAccessValidator = Depends(),
     ) -> User:
-        """Checks if the current user can delete requested user.
+        """Validates if the current user can delete requested user.
 
         Args:
             user_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
             identifier of requested user.
-            user_delete_validator (UserDeleteValidator): User delete validator.
+            user_delete_access_validator (UserDeleteAccessValidator): User delete access
+            validator.
 
         Returns:
             User: User object.
 
         """
 
-        return await user_delete_validator.validate(user_id=user_id)
+        return await user_delete_access_validator.validate(user_id=user_id)
 
 
 class UserDataCreateDependency:
@@ -156,11 +158,11 @@ class UserDataCreateDependency:
         """Validates data on user create operation.
 
         Args:
-            user_data (BaseUserCreateData): Requested user's data.
+            user_data (BaseUserCreateData): Base user create data.
             user_roles_validator (UserRolesValidator): Roles validator.
 
         Returns:
-            BaseUserCreateData: Requested user's data.
+            BaseUserCreateData: Base user create data.
 
         """
 
@@ -180,11 +182,11 @@ class UserDataUpdateDependency:
         """Validates data on user update operation.
 
         Args:
-            user_data (BaseUserUpdateData): Requested user's data.
+            user_data (BaseUserUpdateData): Base user update data.
             user_roles_validator (UserRolesValidator): Roles validator.
 
         Returns:
-            BaseUserUpdateData: Requested user's data.
+            BaseUserUpdateData: Base user update data.
 
         """
 
@@ -201,7 +203,7 @@ class UserEmailVerifiedDependency:
         username: str,
         user_email_verified_validator: UserEmailVerifiedValidator = Depends(),
     ) -> User:
-        """Checks user from request.
+        """Validates user from request.
 
         Args:
             username (str): Username of requested user.

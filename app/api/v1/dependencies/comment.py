@@ -9,12 +9,11 @@ from app.api.v1.models.comment import (
     BaseCommentCreateData,
     Comment,
     CommentCreateData,
-    CommentUpdateData,
 )
 from app.api.v1.validators.comment import (
+    CommentAccessValidator,
     CommentByIdValidator,
     CommentCreateValidator,
-    CommentUserValidator,
 )
 from app.utils.pydantic import ObjectIdAnnotation
 
@@ -27,7 +26,7 @@ class CommentByIdDependency:
         comment_id: Annotated[ObjectId, ObjectIdAnnotation],
         comment_by_id_validator: CommentByIdValidator = Depends(),
     ) -> Comment:
-        """Checks comment from request by identifier.
+        """Validates comment from request by identifier.
 
         Args:
             comment_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
@@ -43,27 +42,27 @@ class CommentByIdDependency:
         return await comment_by_id_validator.validate(comment_id=comment_id)
 
 
-class CommentUserDependency:
-    """Comment user dependency."""
+class CommentAccessDependency:
+    """Comment access dependency."""
 
     async def __call__(
         self,
         comment_id: Annotated[ObjectId, ObjectIdAnnotation],
-        comment_user_validator: CommentUserValidator = Depends(),
+        comment_access_validator: CommentAccessValidator = Depends(),
     ) -> Comment:
-        """Validates comment user.
+        """Validates user access to comment.
 
         Args:
             comment_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
             identifier of requested comment.
-            comment_user_validator (CommentUserValidator): Comment user validator.
+            comment_access_validator (CommentAccessValidator): Comment access validator.
 
         Returns:
             Comment: Comment object.
 
         """
 
-        return await comment_user_validator.validate(comment_id=comment_id)
+        return await comment_access_validator.validate(comment_id=comment_id)
 
 
 class CommentDataCreateDependency:
@@ -90,20 +89,3 @@ class CommentDataCreateDependency:
             parent_id=comment_data.parent_comment_id,
             body=comment_data.body,
         )
-
-
-class CommentDataUpdateDependency:
-    """Comment data update dependency."""
-
-    async def __call__(self, comment_data: CommentUpdateData) -> CommentUpdateData:
-        """Validates data on comment update operation.
-
-        Args:
-            comment_data (CommentUpdateData): Comment update data.
-
-        Returns:
-            CommentUpdateData: Comment update data.
-
-        """
-
-        return comment_data

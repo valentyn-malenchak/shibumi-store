@@ -11,10 +11,10 @@ from app.api.v1.dependencies.user import (
     UserByUsernameStatusDependency,
     UserDataCreateDependency,
     UserDataUpdateDependency,
-    UserDeleteDependency,
+    UserDeleteAccessDependency,
     UserEmailVerifiedDependency,
     UserPasswordUpdateDependency,
-    UserUpdateDependency,
+    UserUpdateAccessDependency,
 )
 from app.api.v1.models import Pagination, Search, Sorting
 from app.api.v1.models.user import (
@@ -165,7 +165,7 @@ async def update_user(
     _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.USERS_UPDATE_USER.name]
     ),
-    user: User = Depends(UserUpdateDependency()),
+    user: User = Depends(UserUpdateAccessDependency()),
     user_data: BaseUserUpdateData = Depends(UserDataUpdateDependency()),
     user_service: UserService = Depends(),
 ) -> User:
@@ -212,7 +212,7 @@ async def delete_user(
     _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.USERS_DELETE_USER.name]
     ),
-    user: User = Depends(UserDeleteDependency()),
+    user: User = Depends(UserDeleteAccessDependency()),
     user_service: UserService = Depends(),
 ) -> None:
     """API which softly deletes a user object.

@@ -27,7 +27,7 @@ class ProductDataDependency:
         product_data: ProductData,
         product_parameters_validator: ProductParametersValidator = Depends(),
     ) -> ProductData:
-        """Checks if the product can be created/updated.
+        """Validates if the product can be created/updated.
 
         Args:
             product_data (ProductData): New product data.
@@ -55,7 +55,7 @@ class ProductByIdStatusDependency:
         product_id: Annotated[ObjectId, ObjectIdAnnotation],
         product_by_id_status_validator: ProductByIdStatusValidator = Depends(),
     ) -> Product:
-        """Checks if user can get a product from request.
+        """Validates if user can get a product from request.
 
         Args:
             product_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object

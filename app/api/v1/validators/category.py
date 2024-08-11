@@ -45,7 +45,7 @@ class CategoryByIdValidator(BaseCategoryValidator):
     """Category by identifier validator."""
 
     async def validate(self, category_id: ObjectId) -> Category:
-        """Validates requested category by id.
+        """Validates requested category by identifier.
 
         Args:
             category_id (ObjectId): BSON object identifier of requested category.
@@ -96,7 +96,7 @@ class CategoryLeafValidator(BaseCategoryValidator):
         self.category_by_id_validator = category_by_id_validator
 
     async def validate(self, category_id: ObjectId) -> Category:
-        """Validates requested category by id.
+        """Validates if category is a leaf of the tree.
 
         Args:
             category_id (ObjectId): BSON object identifier of requested category.

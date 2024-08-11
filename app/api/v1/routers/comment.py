@@ -5,10 +5,9 @@ from fastapi import APIRouter, Depends, Security, status
 from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
 from app.api.v1.dependencies.comment import (
+    CommentAccessDependency,
     CommentByIdDependency,
     CommentDataCreateDependency,
-    CommentDataUpdateDependency,
-    CommentUserDependency,
 )
 from app.api.v1.models.comment import (
     Comment,
@@ -77,18 +76,18 @@ async def create_comment(
     status_code=status.HTTP_200_OK,
 )
 async def update_comment(
+    comment_data: CommentUpdateData,
     _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.COMMENTS_UPDATE_COMMENT.name]
     ),
-    comment_data: CommentUpdateData = Depends(CommentDataUpdateDependency()),
-    comment: Comment = Depends(CommentUserDependency()),
+    comment: Comment = Depends(CommentAccessDependency()),
     comment_service: CommentService = Depends(),
 ) -> Comment:
     """API which updates comment.
 
     Args:
-        _ (CurrentUser): Current user object.
         comment_data (CommentUpdateData): Comment update data.
+        _ (CurrentUser): Current user object.
         comment (CommentCreateData): Comment object.
         comment_service (CommentService): Comment service.
 

@@ -145,7 +145,7 @@ class ProductByIdValidator(BaseProductValidator):
     """Product by identifier validator."""
 
     async def validate(self, product_id: ObjectId) -> Product:
-        """Validates requested product by id.
+        """Validates requested product by identifier.
 
         Args:
             product_id (ObjectId): BSON object identifier of requested product.
@@ -196,7 +196,7 @@ class ProductByIdStatusValidator(BaseProductValidator):
         self.product_by_id_validator = product_by_id_validator
 
     async def validate(self, product_id: ObjectId) -> Product:
-        """Checks product and user's access to it.
+        """Validates product and user's access to it.
 
         Args:
             product_id (ObjectId): BSON object identifier of requested product.
@@ -228,7 +228,7 @@ class ProductAvailableFilterValidator(BaseProductValidator):
     """Product available filter validator."""
 
     async def validate(self, available: bool | None) -> None:
-        """Checks if the current user has access to not available products.
+        """Validates if the current user has access to not available products.
 
         Args:
             available (available: bool | None): Product availability filter.
@@ -360,7 +360,7 @@ class ProductQuantityValidator(BaseProductValidator):
         self.product_by_id_status_validator = product_by_id_status_validator
 
     async def validate(self, product_id: ObjectId, quantity: PositiveInt) -> Product:
-        """Validates product.
+        """Validates product quantity.
 
         Args:
             product_id (ObjectId): BSON object identifier of requested product.

@@ -50,7 +50,7 @@ class CartByIdValidator(BaseCartValidator):
     """Cart by identifier validator."""
 
     async def validate(self, cart_id: ObjectId) -> Cart:
-        """Validates requested cart by id and user.
+        """Validates requested cart by identifier and user.
 
         Args:
             cart_id (ObjectId): BSON object identifier of requested cart.
@@ -194,7 +194,7 @@ class CartProductUpdateValidator(BaseCartValidator):
 
         """
 
-        await self.product_quantity_validator.validate(
+        product = await self.product_quantity_validator.validate(
             product_id=product_id, quantity=quantity
         )
 
@@ -205,6 +205,9 @@ class CartProductUpdateValidator(BaseCartValidator):
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=HTTPErrorMessagesEnum.PRODUCT_IS_NOT_ADDED_TO_THE_CART,
             )
+
+        # Save product object in request
+        self.request.state.product = product
 
 
 class CartProductDeleteValidator(BaseCartValidator):

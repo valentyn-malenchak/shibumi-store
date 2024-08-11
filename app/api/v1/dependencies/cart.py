@@ -28,7 +28,7 @@ class CartByIdDependency:
         cart_id: Annotated[ObjectId, ObjectIdAnnotation],
         cart_by_id_validator: CartByIdValidator = Depends(),
     ) -> Cart:
-        """Checks cart from request by identifier.
+        """Validates cart from request by identifier.
 
         Args:
             cart_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
@@ -50,7 +50,7 @@ class CartByUserDependency:
         self,
         cart_by_user_validator: CartByUserValidator = Depends(),
     ) -> Cart:
-        """Checks cart by requested user.
+        """Validates cart by requested user.
 
         Args:
             cart_by_user_validator (CartByUserValidator): Cart by user validator.
@@ -71,7 +71,7 @@ class CartProductAddDependency:
         cart_product: CartProduct,
         cart_product_add_validator: CartProductAddValidator = Depends(),
     ) -> CartProduct:
-        """Checks if cart product is valid on adding.
+        """Validates if cart product is valid on adding.
 
         Args:
             cart_product (CartProduct): Cart product request data.
@@ -99,7 +99,7 @@ class CartProductUpdateDependency:
         cart_product_quantity: CartProductQuantity,
         cart_product_update_validator: CartProductUpdateValidator = Depends(),
     ) -> CartProductQuantity:
-        """Checks if cart product is valid on update.
+        """Validates if cart product is valid on update.
 
         Args:
             product_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
@@ -129,7 +129,7 @@ class CartProductDeleteDependency:
         product_id: Annotated[ObjectId, ObjectIdAnnotation],
         cart_product_delete_validator: CartProductDeleteValidator = Depends(),
     ) -> ObjectId:
-        """Checks if cart product is valid on delete.
+        """Validates if cart product is valid on delete.
 
         Args:
             product_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object

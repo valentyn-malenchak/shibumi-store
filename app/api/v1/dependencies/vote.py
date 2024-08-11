@@ -12,34 +12,34 @@ from app.api.v1.models.vote import (
     VoteData,
 )
 from app.api.v1.validators.vote import (
+    VoteAccessValidator,
     VoteCreateValidator,
-    VoteUpdateValidator,
-    VoteUserValidator,
+    VoteValueUpdateValidator,
 )
 from app.utils.pydantic import ObjectIdAnnotation
 
 
-class VoteUserDependency:
-    """Vote user dependency."""
+class VoteAccessDependency:
+    """Vote access dependency."""
 
     async def __call__(
         self,
         vote_id: Annotated[ObjectId, ObjectIdAnnotation],
-        vote_user_validator: VoteUserValidator = Depends(),
+        vote_access_validator: VoteAccessValidator = Depends(),
     ) -> Vote:
-        """Validates vote user.
+        """Validates vote access.
 
         Args:
             vote_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
             identifier of requested vote.
-            vote_user_validator (VoteUserValidator): Vote user validator.
+            vote_access_validator (VoteAccessValidator): Vote access validator.
 
         Returns:
             Vote: Vote object.
 
         """
 
-        return await vote_user_validator.validate(vote_id=vote_id)
+        return await vote_access_validator.validate(vote_id=vote_id)
 
 
 class VoteDataCreateDependency:
@@ -72,26 +72,21 @@ class VoteDataUpdateDependency:
 
     async def __call__(
         self,
-        vote_id: Annotated[ObjectId, ObjectIdAnnotation],
         vote_data: VoteData,
-        vote_update_validator: VoteUpdateValidator = Depends(),
+        vote_value_update_validator: VoteValueUpdateValidator = Depends(),
     ) -> VoteData:
         """Validates data on vote update operation.
 
         Args:
-            vote_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
-            identifier of requested vote.
             vote_data (VoteData): Vote data.
-            vote_update_validator (VoteUpdateValidator): Vote update validator.
+            vote_value_update_validator (VoteValueUpdateValidator): Vote value update
+            validator.
 
         Returns:
             VoteData: Vote data.
 
         """
 
-        await vote_update_validator.validate(
-            vote_id=vote_id,
-            value=vote_data.value,
-        )
+        await vote_value_update_validator.validate(value=vote_data.value)
 
         return vote_data
