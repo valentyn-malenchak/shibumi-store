@@ -486,7 +486,9 @@ class TestVote(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.VOTES)],
+        indirect=True,
     )
     async def test_update_vote_validate_data(
         self, test_client: AsyncClient, arrange_db: None

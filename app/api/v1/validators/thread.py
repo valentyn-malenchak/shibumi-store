@@ -45,7 +45,7 @@ class ThreadByIdValidator(BaseThreadValidator):
     """Thread by identifier validator."""
 
     async def validate(self, thread_id: ObjectId) -> Thread:
-        """Validates requested thread by id.
+        """Validates requested thread by identifier.
 
         Args:
             thread_id (ObjectId): BSON object identifier of requested thread.

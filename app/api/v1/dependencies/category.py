@@ -18,7 +18,7 @@ class CategoryByIdDependency:
         category_id: Annotated[ObjectId, ObjectIdAnnotation],
         category_by_id_validator: CategoryByIdValidator = Depends(),
     ) -> Category:
-        """Checks category from request by identifier.
+        """Validates category from request by identifier.
 
         Args:
             category_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object

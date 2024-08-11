@@ -47,7 +47,7 @@ class UserByIdValidator(BaseUserValidator):
     """User by identifier validator."""
 
     async def validate(self, user_id: ObjectId) -> User:
-        """Validates requested user by id.
+        """Validates requested user by identifier.
 
         Args:
             user_id (ObjectId): BSON object identifier of requested user.
@@ -154,7 +154,7 @@ class UserByIdStatusValidator(BaseUserValidator):
         self.user_status_validator = user_status_validator
 
     async def validate(self, user_id: ObjectId) -> User:
-        """Validates requested user by id and its status.
+        """Validates requested user by identifier and its status.
 
         Args:
             user_id (ObjectId): BSON object identifier of requested user.
@@ -216,7 +216,7 @@ class UserAccessValidator(BaseUserValidator):
     """User access validator."""
 
     async def validate(self, user_id: ObjectId) -> None:
-        """Checks if the current user is the same as requested.
+        """Validates if the current user is the same as requested.
 
         Args:
             user_id (ObjectId): BSON object identifier of requested user.
@@ -235,8 +235,8 @@ class UserAccessValidator(BaseUserValidator):
             )
 
 
-class UserUpdateValidator(BaseUserValidator):
-    """User update validator."""
+class UserUpdateAccessValidator(BaseUserValidator):
+    """User update access validator."""
 
     def __init__(
         self,
@@ -245,13 +245,13 @@ class UserUpdateValidator(BaseUserValidator):
         user_by_id_status_validator: UserByIdStatusValidator = Depends(),
         user_access_validator: UserAccessValidator = Depends(),
     ) -> None:
-        """Initializes user update validator.
+        """Initializes user update access validator.
 
         Args:
             request (Request): Current request object.
             user_service (UserService): User service.
-            user_by_id_status_validator (UserByIdStatusValidator): User by id status
-            validator.
+            user_by_id_status_validator (UserByIdStatusValidator): User by
+            identifier status validator.
             user_access_validator (UserAccessValidator): User access validator.
 
         """
@@ -263,7 +263,7 @@ class UserUpdateValidator(BaseUserValidator):
         self.user_access_validator = user_access_validator
 
     async def validate(self, user_id: ObjectId) -> User:
-        """Checks if the current user can update user from request.
+        """Validates if the current user can update user from request.
 
         Args:
             user_id (ObjectId): BSON object identifier of requested user.
@@ -316,7 +316,7 @@ class UserPasswordUpdateValidator(BaseUserValidator):
         self.user_access_validator = user_access_validator
 
     async def validate(self, user_id: ObjectId, old_password: str) -> None:
-        """Checks if the current user can update own password.
+        """Validates if the current user can update own password.
 
         Args:
             user_id (ObjectId): BSON object identifier of requested user.
@@ -342,8 +342,8 @@ class UserPasswordUpdateValidator(BaseUserValidator):
             )
 
 
-class UserDeleteValidator(BaseUserValidator):
-    """User delete validator."""
+class UserDeleteAccessValidator(BaseUserValidator):
+    """User delete access validator."""
 
     def __init__(
         self,
@@ -352,13 +352,13 @@ class UserDeleteValidator(BaseUserValidator):
         user_by_id_status_validator: UserByIdStatusValidator = Depends(),
         user_access_validator: UserAccessValidator = Depends(),
     ) -> None:
-        """Initializes user delete validator.
+        """Initializes user delete access validator.
 
         Args:
             request (Request): Current request object.
             user_service (UserService): User service.
-            user_by_id_status_validator (UserByIdStatusValidator): User by id status
-            validator.
+            user_by_id_status_validator (UserByIdStatusValidator): User by
+            identifier status validator.
             user_access_validator (UserAccessValidator): User access validator.
 
         """
@@ -370,7 +370,7 @@ class UserDeleteValidator(BaseUserValidator):
         self.user_access_validator = user_access_validator
 
     async def validate(self, user_id: ObjectId) -> User:
-        """Checks if the current user can delete requested user.
+        """Validates if the current user can delete requested user.
 
         Args:
             user_id (ObjectId): BSON object identifier of requested user.

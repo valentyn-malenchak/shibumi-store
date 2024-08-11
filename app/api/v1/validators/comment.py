@@ -46,7 +46,7 @@ class CommentByIdValidator(BaseCommentValidator):
     """Comment by identifier validator."""
 
     async def validate(self, comment_id: ObjectId) -> Comment:
-        """Validates requested comment by id.
+        """Validates requested comment by identifier.
 
         Args:
             comment_id (ObjectId): BSON object identifier of requested comment.
@@ -73,8 +73,8 @@ class CommentByIdValidator(BaseCommentValidator):
         return comment
 
 
-class CommentUserValidator(BaseCommentValidator):
-    """Comment user validator."""
+class CommentAccessValidator(BaseCommentValidator):
+    """Comment access validator."""
 
     def __init__(
         self,
@@ -82,12 +82,13 @@ class CommentUserValidator(BaseCommentValidator):
         comment_service: CommentService = Depends(),
         comment_by_id_validator: CommentByIdValidator = Depends(),
     ) -> None:
-        """Initializes comment user validator.
+        """Initializes comment access validator.
 
         Args:
             request (Request): Current request object.
             comment_service (CommentService): Comment service.
-            comment_by_id_validator (CommentByIdValidator): Comment by id validator.
+            comment_by_id_validator (CommentByIdValidator): Comment by identifier
+            validator.
 
         """
 
@@ -96,7 +97,7 @@ class CommentUserValidator(BaseCommentValidator):
         self.comment_by_id_validator = comment_by_id_validator
 
     async def validate(self, comment_id: ObjectId) -> Comment:
-        """Validates requested comment user.
+        """Validates if user has access to comment.
 
         Args:
             comment_id (ObjectId): BSON object identifier of requested comment.
@@ -137,8 +138,10 @@ class CommentCreateValidator(BaseCommentValidator):
         Args:
             request (Request): Current request object.
             comment_service (CommentService): Comment service.
-            thread_by_id_validator (ThreadByIdValidator): Thread by id validator.
-            comment_by_id_validator (CommentByIdValidator): Comment by id validator.
+            thread_by_id_validator (ThreadByIdValidator): Thread by identifier
+            validator.
+            comment_by_id_validator (CommentByIdValidator): Comment by identifier
+            validator.
 
         """
 
@@ -151,7 +154,7 @@ class CommentCreateValidator(BaseCommentValidator):
     async def validate(
         self, thread_id: ObjectId, parent_id: ObjectId | None, body: str
     ) -> CommentCreateData:
-        """Checks if comment can be created.
+        """Validates if comment can be created.
 
         Args:
             thread_id (ObjectId): BSON object identifier of requested thread.

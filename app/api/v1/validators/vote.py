@@ -46,7 +46,7 @@ class VoteByIdValidator(BaseVoteValidator):
     """Vote by identifier validator."""
 
     async def validate(self, vote_id: ObjectId) -> Vote:
-        """Validates requested vote by id.
+        """Validates requested vote by identifier.
 
         Args:
             vote_id (ObjectId): BSON object identifier of requested vote.
@@ -71,8 +71,8 @@ class VoteByIdValidator(BaseVoteValidator):
         return vote
 
 
-class VoteUserValidator(BaseVoteValidator):
-    """Vote user validator."""
+class VoteAccessValidator(BaseVoteValidator):
+    """Vote access validator."""
 
     def __init__(
         self,
@@ -80,12 +80,12 @@ class VoteUserValidator(BaseVoteValidator):
         vote_service: VoteService = Depends(),
         vote_by_id_validator: VoteByIdValidator = Depends(),
     ) -> None:
-        """Initializes vote user validator.
+        """Initializes vote access validator.
 
         Args:
             request (Request): Current request object.
             vote_service (VoteService): Vote service.
-            vote_by_id_validator (VoteByIdValidator): Vote by id validator.
+            vote_by_id_validator (VoteByIdValidator): Vote by identifier validator.
 
         """
 
@@ -94,7 +94,7 @@ class VoteUserValidator(BaseVoteValidator):
         self.vote_by_id_validator = vote_by_id_validator
 
     async def validate(self, vote_id: ObjectId) -> Vote:
-        """Validates requested vote user.
+        """Validates if user has access to vote.
 
         Args:
             vote_id (ObjectId): BSON object identifier of requested vote.
@@ -117,6 +117,9 @@ class VoteUserValidator(BaseVoteValidator):
                 detail=HTTPErrorMessagesEnum.VOTE_ACCESS_DENIED,
             )
 
+        # Save vote object in request
+        self.request.state.vote = vote
+
         return vote
 
 
@@ -134,7 +137,8 @@ class VoteCreateValidator(BaseVoteValidator):
         Args:
             request (Request): Current request object.
             vote_service (VoteService): Vote service.
-            comment_by_id_validator (CommentByIdValidator): Comment by id validator.
+            comment_by_id_validator (CommentByIdValidator): Comment by
+            identifier validator.
 
         """
 
@@ -143,7 +147,7 @@ class VoteCreateValidator(BaseVoteValidator):
         self.comment_by_id_validator = comment_by_id_validator
 
     async def validate(self, comment_id: ObjectId, value: bool) -> VoteCreateData:
-        """Checks if vote can be created.
+        """Validates if vote can be created.
 
         Args:
             comment_id (ObjectId): BSON object identifier of requested comment.
@@ -163,46 +167,21 @@ class VoteCreateValidator(BaseVoteValidator):
         )
 
 
-class VoteUpdateValidator(BaseVoteValidator):
-    """Vote update validator."""
+class VoteValueUpdateValidator(BaseVoteValidator):
+    """Vote value update validator."""
 
-    def __init__(
-        self,
-        request: Request,
-        vote_service: VoteService = Depends(),
-        vote_author_validator: VoteUserValidator = Depends(),
-    ) -> None:
-        """Initializes vote update validator.
+    async def validate(self, value: bool) -> None:
+        """Validates if vote with requested value can be updated.
 
         Args:
-            request (Request): Current request object.
-            vote_service (VoteService): Vote service.
-            vote_author_validator (VoteUserValidator): Vote user validator.
-
-        """
-
-        super().__init__(request=request, vote_service=vote_service)
-
-        self.vote_author_validator = vote_author_validator
-
-    async def validate(self, vote_id: ObjectId, value: bool) -> Vote:
-        """Checks if vote can be updated.
-
-        Args:
-            vote_id (ObjectId): BSON object identifier of requested vote.
             value (bool): Vote value.
 
-        Returns:
-            Vote: Vote object.
-
         """
 
-        vote = await self.vote_author_validator.validate(vote_id=vote_id)
+        vote = self.request.state.vote
 
         if vote.value == value:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail=HTTPErrorMessagesEnum.INVALID_VOTE_VALUE,
             )
-
-        return vote

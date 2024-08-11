@@ -1,9 +1,7 @@
 """Module that contains cart domain routers."""
 
-from typing import Annotated
-
 from bson import ObjectId
-from fastapi import APIRouter, Depends, Security, status
+from fastapi import APIRouter, Depends, Request, Security, status
 
 from app.api.v1.auth.auth import StrictAuthorization
 from app.api.v1.constants import ScopesEnum
@@ -21,7 +19,6 @@ from app.api.v1.models.cart import (
 )
 from app.api.v1.models.user import CurrentUser
 from app.api.v1.services.cart import CartService
-from app.utils.pydantic import ObjectIdAnnotation
 
 router = APIRouter(prefix="/carts", tags=["carts"])
 
@@ -78,7 +75,7 @@ async def add_product_to_the_cart(
     status_code=status.HTTP_200_OK,
 )
 async def update_product_in_the_cart(
-    product_id: Annotated[ObjectId, ObjectIdAnnotation],
+    request: Request,
     _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.CARTS_UPDATE_PRODUCT.name]
     ),
@@ -89,8 +86,7 @@ async def update_product_in_the_cart(
     """API which updates product in the cart.
 
     Args:
-        product_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
-        identifier of requested product.
+        request (Request): Current request object.
         _ (CurrentUser): Current user object.
         cart (Cart): Cart object.
         cart_product_quantity (CartProductQuantity): Cart product quantity data.
@@ -102,7 +98,7 @@ async def update_product_in_the_cart(
     """
     return await cart_service.update_product(
         id_=cart.id,
-        product_id=product_id,
+        product_id=request.state.product.id,
         data=cart_product_quantity,
     )
 
