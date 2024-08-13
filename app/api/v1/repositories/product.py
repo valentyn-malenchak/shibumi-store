@@ -50,7 +50,6 @@ class ProductRepository(BaseRepository):
             list[Mapping[str, Any]]: The retrieved list of products.
 
         """
-
         return await self._get(
             filter_=await self._get_list_query_filter(filter_=filter_, search=search),
             search=search,
@@ -102,7 +101,6 @@ class ProductRepository(BaseRepository):
             Mapping[str, Any] | None: List query projection or None.
 
         """
-
         return {
             "description": ProjectionValuesEnum.EXCLUDE,
             "html_body": ProjectionValuesEnum.EXCLUDE,
@@ -138,7 +136,6 @@ class ProductRepository(BaseRepository):
             int: Count of products.
 
         """
-
         return await self._count(
             filter_=await self._get_list_query_filter(filter_=filter_, search=search),
             session=session,
@@ -224,7 +221,6 @@ class ProductRepository(BaseRepository):
             Any: The ID of created product.
 
         """
-
         return await self._mongo_service.insert_one(
             collection=self._collection_name,
             document={

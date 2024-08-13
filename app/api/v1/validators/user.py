@@ -127,91 +127,6 @@ class UserStatusValidator(BaseUserValidator):
         return user
 
 
-class UserByIdStatusValidator(BaseUserValidator):
-    """User by identifier status validator."""
-
-    def __init__(
-        self,
-        request: Request,
-        user_service: UserService = Depends(),
-        user_by_id_validator: UserByIdValidator = Depends(),
-        user_status_validator: UserStatusValidator = Depends(),
-    ) -> None:
-        """Initializes user by identifier status validator.
-
-        Args:
-            request (Request): Current request object.
-            user_service (UserService): User service.
-            user_by_id_validator (UserByIdValidator): User by identifier validator.
-            user_status_validator (UserStatusValidator): User status validator.
-
-        """
-
-        super().__init__(request=request, user_service=user_service)
-
-        self.user_by_id_validator = user_by_id_validator
-
-        self.user_status_validator = user_status_validator
-
-    async def validate(self, user_id: ObjectId) -> User:
-        """Validates requested user by identifier and its status.
-
-        Args:
-            user_id (ObjectId): BSON object identifier of requested user.
-
-        Returns:
-            User: User object.
-
-        """
-
-        user = await self.user_by_id_validator.validate(user_id=user_id)
-
-        return await self.user_status_validator.validate(user=user)
-
-
-class UserByUsernameStatusValidator(BaseUserValidator):
-    """User by username status validator."""
-
-    def __init__(
-        self,
-        request: Request,
-        user_service: UserService = Depends(),
-        user_by_username_validator: UserByUsernameValidator = Depends(),
-        user_status_validator: UserStatusValidator = Depends(),
-    ) -> None:
-        """Initializes user by username status validator.
-
-        Args:
-            request (Request): Current request object.
-            user_service (UserService): User service.
-            user_by_username_validator (UserByUsernameValidator): User by username
-            validator.
-            user_status_validator (UserStatusValidator): User status validator.
-
-        """
-
-        super().__init__(request=request, user_service=user_service)
-
-        self.user_by_username_validator = user_by_username_validator
-
-        self.user_status_validator = user_status_validator
-
-    async def validate(self, username: str) -> User:
-        """Validates requested user by username and its status.
-
-        Args:
-            username (str): Username of requested user.
-
-        Returns:
-            User: User object.
-
-        """
-
-        user = await self.user_by_username_validator.validate(username=username)
-
-        return await self.user_status_validator.validate(user=user)
-
-
 class UserAccessValidator(BaseUserValidator):
     """User access validator."""
 
@@ -242,7 +157,6 @@ class UserUpdateAccessValidator(BaseUserValidator):
         self,
         request: Request,
         user_service: UserService = Depends(),
-        user_by_id_status_validator: UserByIdStatusValidator = Depends(),
         user_access_validator: UserAccessValidator = Depends(),
     ) -> None:
         """Initializes user update access validator.
@@ -250,34 +164,27 @@ class UserUpdateAccessValidator(BaseUserValidator):
         Args:
             request (Request): Current request object.
             user_service (UserService): User service.
-            user_by_id_status_validator (UserByIdStatusValidator): User by
-            identifier status validator.
             user_access_validator (UserAccessValidator): User access validator.
 
         """
 
         super().__init__(request=request, user_service=user_service)
 
-        self.user_by_id_status_validator = user_by_id_status_validator
-
         self.user_access_validator = user_access_validator
 
-    async def validate(self, user_id: ObjectId) -> User:
+    async def validate(self, user: User) -> User:
         """Validates if the current user can update user from request.
 
         Args:
-            user_id (ObjectId): BSON object identifier of requested user.
+            user (User): User object.
 
         Returns:
             User: User object.
 
         Raises:
-            HTTPException: If current user can't update requested one
-            or user identifier is invalid.
+            HTTPException: If current user can't update requested one.
 
         """
-
-        user = await self.user_by_id_status_validator.validate(user_id=user_id)
 
         current_user = self.request.state.current_user
 
@@ -293,44 +200,21 @@ class UserUpdateAccessValidator(BaseUserValidator):
         return user
 
 
-class UserPasswordUpdateValidator(BaseUserValidator):
-    """User password update validator."""
+class UserPasswordValidator(BaseUserValidator):
+    """User password validator."""
 
-    def __init__(
-        self,
-        request: Request,
-        user_service: UserService = Depends(),
-        user_access_validator: UserAccessValidator = Depends(),
-    ) -> None:
-        """Initializes user password update validator.
+    async def validate(self, old_password: str) -> None:
+        """Validates old user password on update.
 
         Args:
-            request (Request): Current request object.
-            user_service (UserService): User service.
-            user_access_validator (UserAccessValidator): User access validator.
-
-        """
-
-        super().__init__(request=request, user_service=user_service)
-
-        self.user_access_validator = user_access_validator
-
-    async def validate(self, user_id: ObjectId, old_password: str) -> None:
-        """Validates if the current user can update own password.
-
-        Args:
-            user_id (ObjectId): BSON object identifier of requested user.
             old_password (str): Old password.
 
         Raises:
-            HTTPException: If request and stored passwords doesn't match.
+            HTTPException: If requested and stored passwords doesn't match.
 
         """
 
         current_user = self.request.state.current_user
-
-        # User can update only own password
-        await self.user_access_validator.validate(user_id=user_id)
 
         if not Password.verify_password(
             plain_password=old_password,
@@ -349,7 +233,6 @@ class UserDeleteAccessValidator(BaseUserValidator):
         self,
         request: Request,
         user_service: UserService = Depends(),
-        user_by_id_status_validator: UserByIdStatusValidator = Depends(),
         user_access_validator: UserAccessValidator = Depends(),
     ) -> None:
         """Initializes user delete access validator.
@@ -357,34 +240,24 @@ class UserDeleteAccessValidator(BaseUserValidator):
         Args:
             request (Request): Current request object.
             user_service (UserService): User service.
-            user_by_id_status_validator (UserByIdStatusValidator): User by
-            identifier status validator.
             user_access_validator (UserAccessValidator): User access validator.
 
         """
 
         super().__init__(request=request, user_service=user_service)
 
-        self.user_by_id_status_validator = user_by_id_status_validator
-
         self.user_access_validator = user_access_validator
 
-    async def validate(self, user_id: ObjectId) -> User:
+    async def validate(self, user: User) -> User:
         """Validates if the current user can delete requested user.
 
         Args:
-            user_id (ObjectId): BSON object identifier of requested user.
+            user (User): User object.
 
         Returns:
             User: User object.
 
-        Raises:
-            HTTPException: If current user can't delete requested one
-            or user identifier is invalid.
-
         """
-
-        user = await self.user_by_id_status_validator.validate(user_id=user_id)
 
         current_user = self.request.state.current_user
 
@@ -424,31 +297,11 @@ class UserRolesValidator(BaseUserValidator):
 class UserEmailVerifiedValidator(BaseUserValidator):
     """User email verified validator."""
 
-    def __init__(
-        self,
-        request: Request,
-        user_service: UserService = Depends(),
-        user_by_username_status_validator: UserByUsernameStatusValidator = Depends(),
-    ) -> None:
-        """Initializes user email verified validator.
-
-        Args:
-            request (Request): Current request object.
-            user_service (UserService): User service.
-            user_by_username_status_validator (UserByUsernameStatusValidator): User by
-            username status validator.
-
-        """
-
-        super().__init__(request=request, user_service=user_service)
-
-        self.user_by_username_status_validator = user_by_username_status_validator
-
-    async def validate(self, username: str) -> User:
+    async def validate(self, user: User) -> User:
         """Validates if user email is already verified.
 
         Args:
-            username (str): Username of requested user.
+            user (User): User object.
 
         Returns:
             User: User object.
@@ -457,8 +310,6 @@ class UserEmailVerifiedValidator(BaseUserValidator):
             HTTPException: If requested user email is verified.
 
         """
-
-        user = await self.user_by_username_status_validator.validate(username=username)
 
         if user.email_verified is True:
             raise HTTPException(

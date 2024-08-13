@@ -56,7 +56,6 @@ class BaseRepository(abc.ABC):
             list[Mapping[str, Any]]: The retrieved list of documents.
 
         """
-
         return await self._mongo_service.find(
             collection=self._collection_name,
             filter_=filter_,
@@ -230,7 +229,6 @@ class BaseRepository(abc.ABC):
             int: Count of documents.
 
         """
-
         return await self._mongo_service.count_documents(
             collection=self._collection_name,
             filter_=filter_,
@@ -378,7 +376,6 @@ class BaseRepository(abc.ABC):
             list[Any]: The IDs of created documents.
 
         """
-
         return await self._mongo_service.insert_many(
             collection=self._collection_name,
             documents=documents,

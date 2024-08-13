@@ -7,9 +7,9 @@ from fastapi import APIRouter, Depends, Security, status
 from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
 from app.api.v1.dependencies.product import (
-    ProductByIdStatusDependency,
+    ProductByIdGetAccessDependency,
     ProductDataDependency,
-    ProductFilterDependency,
+    ProductsFilterDependency,
 )
 from app.api.v1.models import Pagination, Search, Sorting
 from app.api.v1.models.product import (
@@ -55,7 +55,7 @@ async def get_products(
     _: CurrentUser | None = Security(
         OptionalAuthorization(), scopes=[ScopesEnum.PRODUCTS_GET_PRODUCTS.name]
     ),
-    filter_: ProductFilter = Depends(ProductFilterDependency()),
+    filter_: ProductFilter = Depends(ProductsFilterDependency()),
     search: Search = Depends(),
     sorting: Sorting = Depends(),
     pagination: Pagination = Depends(),
@@ -75,7 +75,6 @@ async def get_products(
         ProductList: List of products object.
 
     """
-
     return dict(
         data=await product_service.get(
             filter_=filter_, search=search, sorting=sorting, pagination=pagination
@@ -93,7 +92,7 @@ async def get_product(
     _: CurrentUser | None = Security(
         OptionalAuthorization(), scopes=[ScopesEnum.PRODUCTS_GET_PRODUCT.name]
     ),
-    product: Product = Depends(ProductByIdStatusDependency()),
+    product: Product = Depends(ProductByIdGetAccessDependency()),
     product_service: ProductService = Depends(),
 ) -> Product:
     """API which returns a specific product.
@@ -122,16 +121,16 @@ async def update_product(
     _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.PRODUCTS_UPDATE_PRODUCT.name]
     ),
-    product: Product = Depends(ProductByIdStatusDependency()),
     product_data: ProductData = Depends(ProductDataDependency()),
+    product: Product = Depends(ProductByIdGetAccessDependency()),
     product_service: ProductService = Depends(),
 ) -> Product:
     """API which updates a product.
 
     Args:
         _ (CurrentUser): Current user object.
-        product (Product): Product object.
         product_data (ProductData): Product data to update.
+        product (Product): Product object.
         product_service (ProductService): Product service.
 
     Returns:

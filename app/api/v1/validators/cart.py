@@ -8,13 +8,8 @@ from fastapi import Depends, HTTPException, Request, status
 from app.api.v1.models.cart import Cart
 from app.api.v1.services.cart import CartService
 from app.api.v1.validators import BaseValidator
-from app.api.v1.validators.product import (
-    ProductByIdStatusValidator,
-    ProductQuantityValidator,
-)
 from app.constants import HTTPErrorMessagesEnum
 from app.exceptions import EntityIsNotFoundError
-from app.utils.pydantic import PositiveInt
 
 
 class BaseCartValidator(BaseValidator):
@@ -50,7 +45,7 @@ class CartByIdValidator(BaseCartValidator):
     """Cart by identifier validator."""
 
     async def validate(self, cart_id: ObjectId) -> Cart:
-        """Validates requested cart by identifier and user.
+        """Validates requested cart by identifier.
 
         Args:
             cart_id (ObjectId): BSON object identifier of requested cart.
@@ -59,8 +54,7 @@ class CartByIdValidator(BaseCartValidator):
             Cart: Cart object.
 
         Raises:
-            HTTPException: If requested cart is not found or user requests
-            cart of another user.
+            HTTPException: If requested cart is not found.
 
         """
 
@@ -73,6 +67,26 @@ class CartByIdValidator(BaseCartValidator):
                 detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Cart"),
             )
 
+        return cart
+
+
+class CartAccessValidator(BaseCartValidator):
+    """Cart access validator."""
+
+    async def validate(self, cart: Cart) -> Cart:
+        """Validates access to cart.
+
+        Args:
+            cart (Cart): Cart object.
+
+        Returns:
+            Cart: Cart object.
+
+        Raises:
+            HTTPException: If user requests cart of another user.
+
+        """
+
         current_user = self.request.state.current_user
 
         if cart.user_id != current_user.object.id:
@@ -80,9 +94,6 @@ class CartByIdValidator(BaseCartValidator):
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=HTTPErrorMessagesEnum.CART_ACCESS_DENIED,
             )
-
-        # Save cart object in request
-        self.request.state.cart = cart
 
         return cart
 
@@ -117,136 +128,35 @@ class CartByUserValidator(BaseCartValidator):
         return cart
 
 
-class CartProductAddValidator(BaseCartValidator):
-    """Cart product add validator."""
+class CartProductValidator(BaseCartValidator):
+    """Cart product validator."""
 
-    def __init__(
-        self,
-        request: Request,
-        cart_service: CartService = Depends(),
-        product_quantity_validator: ProductQuantityValidator = Depends(),
-    ):
-        """Initializes cart product add validator.
-
-        Args:
-            request (Request): Current request object.
-            cart_service (CartService): Cart service.
-            product_quantity_validator (ProductQuantityValidator): Product quantity
-            validator.
-
-        """
-
-        super().__init__(request=request, cart_service=cart_service)
-
-        self.product_quantity_validator = product_quantity_validator
-
-    async def validate(self, product_id: ObjectId, quantity: PositiveInt) -> None:
-        """Validates product on adding it to the cart.
+    async def validate(
+        self, product_id: ObjectId, cart: Cart, negative: bool = False
+    ) -> None:
+        """Validates if product is added to cart or opposite.
 
         Args:
             product_id (ObjectId): BSON object identifier of requested product.
-            quantity (PositiveInt): Product quantity.
+            cart (Cart): Cart object.
+            negative (bool): If True, validates the product shouldn't be in cart,
+            otherwise, validates the product should be present in the cart.
+            Defaults to False.
 
         """
 
-        await self.product_quantity_validator.validate(
-            product_id=product_id, quantity=quantity
-        )
+        cart_products = {cart_product.id for cart_product in cart.products}
 
-        cart = self.request.state.cart
+        # in case product should be in cart, but it is not
+        if negative is False and product_id not in cart_products:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=HTTPErrorMessagesEnum.PRODUCT_IS_NOT_ADDED_TO_THE_CART,
+            )
 
-        if product_id in {cart_product.id for cart_product in cart.products}:
+        # in case product shouldn't be in cart, but it is
+        elif negative is True and product_id in cart_products:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail=HTTPErrorMessagesEnum.PRODUCT_IS_ALREADY_ADDED_TO_THE_CART,
-            )
-
-
-class CartProductUpdateValidator(BaseCartValidator):
-    """Cart product update validator."""
-
-    def __init__(
-        self,
-        request: Request,
-        cart_service: CartService = Depends(),
-        product_quantity_validator: ProductQuantityValidator = Depends(),
-    ):
-        """Initializes cart product update validator.
-
-        Args:
-            request (Request): Current request object.
-            cart_service (CartService): Cart service.
-            product_quantity_validator (ProductQuantityValidator): Product quantity
-            validator.
-
-        """
-
-        super().__init__(request=request, cart_service=cart_service)
-
-        self.product_quantity_validator = product_quantity_validator
-
-    async def validate(self, product_id: ObjectId, quantity: PositiveInt) -> None:
-        """Validates product on update it in the cart.
-
-        Args:
-            product_id (ObjectId): BSON object identifier of requested product.
-            quantity (PositiveInt): Product quantity.
-
-        """
-
-        product = await self.product_quantity_validator.validate(
-            product_id=product_id, quantity=quantity
-        )
-
-        cart = self.request.state.cart
-
-        if product_id not in {cart_product.id for cart_product in cart.products}:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=HTTPErrorMessagesEnum.PRODUCT_IS_NOT_ADDED_TO_THE_CART,
-            )
-
-        # Save product object in request
-        self.request.state.product = product
-
-
-class CartProductDeleteValidator(BaseCartValidator):
-    """Cart product delete validator."""
-
-    def __init__(
-        self,
-        request: Request,
-        cart_service: CartService = Depends(),
-        product_by_id_status_validator: ProductByIdStatusValidator = Depends(),
-    ):
-        """Initializes cart product delete validator.
-
-        Args:
-            request (Request): Current request object.
-            cart_service (CartService): Cart service.
-            product_by_id_status_validator (ProductByIdStatusValidator): Product
-            by identifier status validator.
-
-        """
-
-        super().__init__(request=request, cart_service=cart_service)
-
-        self.product_by_id_status_validator = product_by_id_status_validator
-
-    async def validate(self, product_id: ObjectId) -> None:
-        """Validates product on deleting it from the cart.
-
-        Args:
-            product_id (ObjectId): BSON object identifier of requested product.
-
-        """
-
-        await self.product_by_id_status_validator.validate(product_id=product_id)
-
-        cart = self.request.state.cart
-
-        if product_id not in {cart_product.id for cart_product in cart.products}:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=HTTPErrorMessagesEnum.PRODUCT_IS_NOT_ADDED_TO_THE_CART,
             )

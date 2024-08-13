@@ -95,7 +95,6 @@ class VoteService(BaseService):
             Vote: The retrieved vote.
 
         """
-
         return await self.repository.get_by_id(id_=id_)
 
     async def create(self, data: VoteCreateData) -> Vote:

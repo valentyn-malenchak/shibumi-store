@@ -89,7 +89,6 @@ class UserService(BaseService):
             list[Mapping[str, Any]]: The retrieved list of users.
 
         """
-
         return await self.repository.get(
             filter_=filter_,
             search=search,
@@ -108,7 +107,6 @@ class UserService(BaseService):
             int: Count of users.
 
         """
-
         return await self.repository.count(
             filter_=filter_,
             search=search,
@@ -124,7 +122,6 @@ class UserService(BaseService):
             User: User object.
 
         """
-
         return await self.repository.get_by_id(id_=id_)
 
     async def create(self, data: BaseUserCreateData) -> User:
@@ -249,7 +246,6 @@ class UserService(BaseService):
             User: User object.
 
         """
-
         return await self.repository.get_by_username(username=username)
 
     async def request_reset_password(self, item: User) -> None:

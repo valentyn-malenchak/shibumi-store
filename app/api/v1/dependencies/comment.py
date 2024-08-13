@@ -3,7 +3,7 @@
 from typing import Annotated
 
 from bson import ObjectId
-from fastapi import Depends
+from fastapi import Depends, Request
 
 from app.api.v1.models.comment import (
     BaseCommentCreateData,
@@ -13,20 +13,21 @@ from app.api.v1.models.comment import (
 from app.api.v1.validators.comment import (
     CommentAccessValidator,
     CommentByIdValidator,
-    CommentCreateValidator,
+    ParentCommentValidator,
 )
+from app.utils.metas import SingletonMeta
 from app.utils.pydantic import ObjectIdAnnotation
 
 
-class CommentByIdDependency:
-    """Comment by identifier dependency."""
+class CommentByIdGetDependency(metaclass=SingletonMeta):
+    """Comment by identifier get dependency."""
 
     async def __call__(
         self,
         comment_id: Annotated[ObjectId, ObjectIdAnnotation],
         comment_by_id_validator: CommentByIdValidator = Depends(),
     ) -> Comment:
-        """Validates comment from request by identifier.
+        """Validates comment by its unique identifier.
 
         Args:
             comment_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
@@ -38,54 +39,59 @@ class CommentByIdDependency:
             Comment: Comment object.
 
         """
-
         return await comment_by_id_validator.validate(comment_id=comment_id)
 
 
-class CommentAccessDependency:
-    """Comment access dependency."""
+class CommentByIdGetAccessDependency(metaclass=SingletonMeta):
+    """Comment by identifier get access dependency."""
 
     async def __call__(
         self,
-        comment_id: Annotated[ObjectId, ObjectIdAnnotation],
+        comment: Comment = Depends(CommentByIdGetDependency()),
         comment_access_validator: CommentAccessValidator = Depends(),
     ) -> Comment:
-        """Validates user access to comment.
+        """Validates access to specific comment.
 
         Args:
-            comment_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
-            identifier of requested comment.
+            comment (Comment): Comment object.
             comment_access_validator (CommentAccessValidator): Comment access validator.
 
         Returns:
             Comment: Comment object.
 
         """
+        return await comment_access_validator.validate(comment=comment)
 
-        return await comment_access_validator.validate(comment_id=comment_id)
 
-
-class CommentDataCreateDependency:
+class CommentDataCreateDependency(metaclass=SingletonMeta):
     """Comment data create dependency."""
 
     async def __call__(
         self,
+        request: Request,
         comment_data: BaseCommentCreateData,
-        comment_create_validator: CommentCreateValidator = Depends(),
+        parent_comment_validator: ParentCommentValidator = Depends(),
     ) -> CommentCreateData:
         """Validates data on comment create operation.
 
         Args:
+            request (Request): Current request object.
             comment_data (BaseCommentCreateData): Base comment create data.
-            comment_create_validator (CommentCreateValidator): Comment create validator.
+            parent_comment_validator (ParentCommentValidator): Parent comment validator.
 
         Returns:
             CommentCreateData: Comment create data.
 
         """
 
-        return await comment_create_validator.validate(
+        parent_comment = await parent_comment_validator.validate(
             thread_id=comment_data.thread_id,
-            parent_id=comment_data.parent_comment_id,
+            parent_comment_id=comment_data.parent_comment_id,
+        )
+
+        return CommentCreateData(
             body=comment_data.body,
+            user_id=request.state.current_user.object.id,
+            thread_id=comment_data.thread_id,
+            parent_comment=parent_comment,
         )

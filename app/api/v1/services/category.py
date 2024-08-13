@@ -87,7 +87,6 @@ class CategoryService(BaseService):
             Category: The retrieved category.
 
         """
-
         return await self.repository.get_by_id(id_=id_)
 
     async def create(self, data: Any) -> Any:

@@ -91,7 +91,6 @@ class CartService(BaseService):
             Cart: The retrieved cart.
 
         """
-
         return await self.repository.get_by_id(id_=id_)
 
     async def get_by_user_id(self, user_id: ObjectId) -> Cart:
@@ -104,7 +103,6 @@ class CartService(BaseService):
             Cart: The retrieved cart.
 
         """
-
         return await self.repository.get_by_user_id(user_id=user_id)
 
     async def create(self, data: Any) -> Any:

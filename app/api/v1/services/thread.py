@@ -87,7 +87,6 @@ class ThreadService(BaseService):
             Thread: The retrieved thread.
 
         """
-
         return await self.repository.get_by_id(id_=id_)
 
     async def create(self, data: ThreadData) -> Thread:

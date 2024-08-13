@@ -7,13 +7,14 @@ from fastapi import APIRouter, Depends, Security, status
 from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
 from app.api.v1.dependencies.user import (
-    UserByIdDependency,
-    UserByUsernameStatusDependency,
+    UserByIdGetAccessDependency,
+    UserByIdGetDependency,
+    UserByUsernameStatusGetDependency,
     UserDataCreateDependency,
     UserDataUpdateDependency,
     UserDeleteAccessDependency,
     UserEmailVerifiedDependency,
-    UserPasswordUpdateDependency,
+    UserPasswordDataUpdateDependency,
     UserUpdateAccessDependency,
 )
 from app.api.v1.models import Pagination, Search, Sorting
@@ -77,7 +78,6 @@ async def get_users(
         UserList: List of users object.
 
     """
-
     return dict(
         data=await user_service.get(
             filter_=filter_, search=search, sorting=sorting, pagination=pagination
@@ -91,7 +91,7 @@ async def get_user(
     _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.USERS_GET_USER.name]
     ),
-    user: User = Depends(UserByIdDependency()),
+    user: User = Depends(UserByIdGetDependency()),
 ) -> User:
     """API which returns a specific user.
 
@@ -189,8 +189,8 @@ async def update_user_password(
     _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.USERS_UPDATE_USER_PASSWORD.name]
     ),
-    user: User = Depends(UserByIdDependency()),
-    password: UserPasswordUpdateData = Depends(UserPasswordUpdateDependency()),
+    user: User = Depends(UserByIdGetAccessDependency()),
+    password: UserPasswordUpdateData = Depends(UserPasswordDataUpdateDependency()),
     user_service: UserService = Depends(),
 ) -> None:
     """API which updates a user password.
@@ -228,7 +228,7 @@ async def delete_user(
 
 @router.post("/{username}/reset-password/", status_code=status.HTTP_204_NO_CONTENT)
 async def request_reset_user_password(
-    user: User = Depends(UserByUsernameStatusDependency()),
+    user: User = Depends(UserByUsernameStatusGetDependency()),
     user_service: UserService = Depends(),
 ) -> None:
     """API which requests reset password.
@@ -244,7 +244,7 @@ async def request_reset_user_password(
 @router.patch("/{username}/reset-password/", status_code=status.HTTP_204_NO_CONTENT)
 async def reset_user_password(
     reset_password: UserPasswordResetData,
-    user: User = Depends(UserByUsernameStatusDependency()),
+    user: User = Depends(UserByUsernameStatusGetDependency()),
     user_service: UserService = Depends(),
 ) -> None:
     """API which resets password.

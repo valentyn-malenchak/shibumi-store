@@ -177,7 +177,6 @@ class CartRepository(BaseRepository):
             Any: The ID of created cart.
 
         """
-
         return await self._mongo_service.insert_one(
             collection=self._collection_name,
             document={
@@ -253,7 +252,6 @@ class CartRepository(BaseRepository):
             Mapping[str, Any]: The retrieved cart.
 
         """
-
         return await self._mongo_service.find_one_and_update(
             collection=self._collection_name,
             filter_={"_id": id_},
@@ -285,7 +283,6 @@ class CartRepository(BaseRepository):
             Mapping[str, Any]: The retrieved cart.
 
         """
-
         return await self._mongo_service.find_one_and_update(
             collection=self._collection_name,
             filter_={"_id": id_, "products.id": product_id},
@@ -317,7 +314,6 @@ class CartRepository(BaseRepository):
             Mapping[str, Any]: The retrieved cart.
 
         """
-
         return await self._mongo_service.find_one_and_update(
             collection=self._collection_name,
             filter_={"_id": id_},

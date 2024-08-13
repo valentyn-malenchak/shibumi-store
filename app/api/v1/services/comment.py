@@ -87,7 +87,6 @@ class CommentService(BaseService):
             Comment: The retrieved comment.
 
         """
-
         return await self.repository.get_by_id(id_=id_)
 
     async def create(self, data: CommentCreateData) -> Comment:
@@ -132,7 +131,6 @@ class CommentService(BaseService):
             Comment: The updated comment.
 
         """
-
         return await self.repository.get_and_update_by_id(
             id_=id_,
             data=data,

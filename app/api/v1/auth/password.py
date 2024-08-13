@@ -43,7 +43,7 @@ class Password:
             return False
 
     @staticmethod
-    def check_needs_rehash(hashed_password: str) -> bool:
+    def verify_needs_rehash(hashed_password: str) -> bool:
         """Verifies if parameters of hashed password are outdated.
 
         Args:
