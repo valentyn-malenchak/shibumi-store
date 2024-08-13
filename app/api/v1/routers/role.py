@@ -30,7 +30,6 @@ async def get_roles(
         dict[str, Any]: List of roles.
 
     """
-
     return dict(
         data=await role_service.get(),
         total=await role_service.count(),

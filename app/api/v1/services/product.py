@@ -84,7 +84,6 @@ class ProductService(BaseService):
             list[Mapping[str, Any]]: The retrieved list of products.
 
         """
-
         return await self.repository.get(
             filter_=filter_,
             search=search,
@@ -103,7 +102,6 @@ class ProductService(BaseService):
             int: Count of products.
 
         """
-
         return await self.repository.count(
             filter_=filter_,
             search=search,
@@ -119,7 +117,6 @@ class ProductService(BaseService):
             Product: The retrieved product.
 
         """
-
         return await self.repository.get_by_id(id_=id_)
 
     async def create(self, data: ProductData) -> Product:

@@ -5,10 +5,9 @@ from typing import Any
 from bson import ObjectId
 from fastapi import Depends, HTTPException, Request, status
 
-from app.api.v1.models.vote import Vote, VoteCreateData
+from app.api.v1.models.vote import Vote
 from app.api.v1.services.vote import VoteService
 from app.api.v1.validators import BaseValidator
-from app.api.v1.validators.comment import CommentByIdValidator
 from app.constants import HTTPErrorMessagesEnum
 from app.exceptions import EntityIsNotFoundError
 
@@ -74,30 +73,11 @@ class VoteByIdValidator(BaseVoteValidator):
 class VoteAccessValidator(BaseVoteValidator):
     """Vote access validator."""
 
-    def __init__(
-        self,
-        request: Request,
-        vote_service: VoteService = Depends(),
-        vote_by_id_validator: VoteByIdValidator = Depends(),
-    ) -> None:
-        """Initializes vote access validator.
+    async def validate(self, vote: Vote) -> Vote:
+        """Validates if current user has access to requested vote.
 
         Args:
-            request (Request): Current request object.
-            vote_service (VoteService): Vote service.
-            vote_by_id_validator (VoteByIdValidator): Vote by identifier validator.
-
-        """
-
-        super().__init__(request=request, vote_service=vote_service)
-
-        self.vote_by_id_validator = vote_by_id_validator
-
-    async def validate(self, vote_id: ObjectId) -> Vote:
-        """Validates if user has access to vote.
-
-        Args:
-            vote_id (ObjectId): BSON object identifier of requested vote.
+            vote (Vote): Vote object.
 
         Returns:
             Vote: Vote object.
@@ -107,8 +87,6 @@ class VoteAccessValidator(BaseVoteValidator):
 
         """
 
-        vote = await self.vote_by_id_validator.validate(vote_id=vote_id)
-
         current_user = self.request.state.current_user
 
         if vote.user_id != current_user.object.id:
@@ -117,68 +95,20 @@ class VoteAccessValidator(BaseVoteValidator):
                 detail=HTTPErrorMessagesEnum.VOTE_ACCESS_DENIED,
             )
 
-        # Save vote object in request
-        self.request.state.vote = vote
-
         return vote
-
-
-class VoteCreateValidator(BaseVoteValidator):
-    """Vote create validator."""
-
-    def __init__(
-        self,
-        request: Request,
-        vote_service: VoteService = Depends(),
-        comment_by_id_validator: CommentByIdValidator = Depends(),
-    ) -> None:
-        """Initializes vote create validator.
-
-        Args:
-            request (Request): Current request object.
-            vote_service (VoteService): Vote service.
-            comment_by_id_validator (CommentByIdValidator): Comment by
-            identifier validator.
-
-        """
-
-        super().__init__(request=request, vote_service=vote_service)
-
-        self.comment_by_id_validator = comment_by_id_validator
-
-    async def validate(self, comment_id: ObjectId, value: bool) -> VoteCreateData:
-        """Validates if vote can be created.
-
-        Args:
-            comment_id (ObjectId): BSON object identifier of requested comment.
-            value (bool): Vote value.
-
-        Returns:
-            VoteCreateData: Vote create data.
-
-        """
-
-        await self.comment_by_id_validator.validate(comment_id=comment_id)
-
-        return VoteCreateData(
-            value=value,
-            user_id=self.request.state.current_user.object.id,
-            comment_id=comment_id,
-        )
 
 
 class VoteValueUpdateValidator(BaseVoteValidator):
     """Vote value update validator."""
 
-    async def validate(self, value: bool) -> None:
+    async def validate(self, vote: Vote, value: bool) -> None:
         """Validates if vote with requested value can be updated.
 
         Args:
+            vote (Vote): Vote object.
             value (bool): Vote value.
 
         """
-
-        vote = self.request.state.vote
 
         if vote.value == value:
             raise HTTPException(

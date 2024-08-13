@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Security, status
 
 from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
-from app.api.v1.dependencies.thread import ThreadByIdDependency
+from app.api.v1.dependencies.thread import ThreadByIdGetDependency
 from app.api.v1.models.thread import (
     Thread,
     ThreadData,
@@ -24,7 +24,7 @@ async def get_thread(
     _: CurrentUser | None = Security(
         OptionalAuthorization(), scopes=[ScopesEnum.THREADS_GET_THREAD.name]
     ),
-    thread: Thread = Depends(ThreadByIdDependency()),
+    thread: Thread = Depends(ThreadByIdGetDependency()),
 ) -> Thread:
     """API which returns a specific thread.
 
@@ -75,7 +75,7 @@ async def update_thread(
     _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.THREADS_UPDATE_THREAD.name]
     ),
-    thread: Thread = Depends(ThreadByIdDependency()),
+    thread: Thread = Depends(ThreadByIdGetDependency()),
     thread_service: ThreadService = Depends(),
 ) -> Thread:
     """API which updates thread.

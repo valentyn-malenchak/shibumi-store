@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Security, status
 from app.api.v1.auth.auth import StrictAuthorization
 from app.api.v1.constants import ScopesEnum
 from app.api.v1.dependencies.vote import (
-    VoteAccessDependency,
+    VoteByIdGetAccessDependency,
     VoteDataCreateDependency,
     VoteDataUpdateDependency,
 )
@@ -29,7 +29,7 @@ async def get_vote(
     _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.VOTES_GET_VOTE.name]
     ),
-    vote: Vote = Depends(VoteAccessDependency()),
+    vote: Vote = Depends(VoteByIdGetAccessDependency()),
 ) -> Vote:
     """API which returns vote.
 
@@ -79,16 +79,16 @@ async def update_vote(
     _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.VOTES_UPDATE_VOTE.name]
     ),
-    vote: Vote = Depends(VoteAccessDependency()),
     vote_data: VoteData = Depends(VoteDataUpdateDependency()),
+    vote: Vote = Depends(VoteByIdGetAccessDependency()),
     vote_service: VoteService = Depends(),
 ) -> Vote:
     """API which updates vote.
 
     Args:
         _ (CurrentUser): Current user object.
-        vote (Vote): Vote object.
         vote_data (VoteData): Vote update data.
+        vote (Vote): Vote object.
         vote_service (VoteService): Vote service.
 
     Returns:
@@ -106,7 +106,7 @@ async def delete_vote(
     _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.VOTES_DELETE_VOTE.name]
     ),
-    vote: Vote = Depends(VoteAccessDependency()),
+    vote: Vote = Depends(VoteByIdGetAccessDependency()),
     vote_service: VoteService = Depends(),
 ) -> None:
     """API which deletes vote.

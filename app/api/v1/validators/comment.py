@@ -5,7 +5,7 @@ from typing import Any
 from bson import ObjectId
 from fastapi import Depends, HTTPException, Request, status
 
-from app.api.v1.models.comment import Comment, CommentCreateData
+from app.api.v1.models.comment import Comment
 from app.api.v1.services.comment import CommentService
 from app.api.v1.validators import BaseValidator
 from app.api.v1.validators.thread import ThreadByIdValidator
@@ -76,31 +76,11 @@ class CommentByIdValidator(BaseCommentValidator):
 class CommentAccessValidator(BaseCommentValidator):
     """Comment access validator."""
 
-    def __init__(
-        self,
-        request: Request,
-        comment_service: CommentService = Depends(),
-        comment_by_id_validator: CommentByIdValidator = Depends(),
-    ) -> None:
-        """Initializes comment access validator.
-
-        Args:
-            request (Request): Current request object.
-            comment_service (CommentService): Comment service.
-            comment_by_id_validator (CommentByIdValidator): Comment by identifier
-            validator.
-
-        """
-
-        super().__init__(request=request, comment_service=comment_service)
-
-        self.comment_by_id_validator = comment_by_id_validator
-
-    async def validate(self, comment_id: ObjectId) -> Comment:
+    async def validate(self, comment: Comment) -> Comment:
         """Validates if user has access to comment.
 
         Args:
-            comment_id (ObjectId): BSON object identifier of requested comment.
+            comment (Comment): Comment object.
 
         Returns:
             Comment: Comment object.
@@ -109,8 +89,6 @@ class CommentAccessValidator(BaseCommentValidator):
             HTTPException: If current user is not related to comment.
 
         """
-
-        comment = await self.comment_by_id_validator.validate(comment_id=comment_id)
 
         current_user = self.request.state.current_user
 
@@ -123,8 +101,8 @@ class CommentAccessValidator(BaseCommentValidator):
         return comment
 
 
-class CommentCreateValidator(BaseCommentValidator):
-    """Comment create validator."""
+class ParentCommentValidator(BaseCommentValidator):
+    """Parent comment validator."""
 
     def __init__(
         self,
@@ -133,7 +111,7 @@ class CommentCreateValidator(BaseCommentValidator):
         thread_by_id_validator: ThreadByIdValidator = Depends(),
         comment_by_id_validator: CommentByIdValidator = Depends(),
     ) -> None:
-        """Initializes comment create validator.
+        """Initializes parent comment validator.
 
         Args:
             request (Request): Current request object.
@@ -152,28 +130,27 @@ class CommentCreateValidator(BaseCommentValidator):
         self.comment_by_id_validator = comment_by_id_validator
 
     async def validate(
-        self, thread_id: ObjectId, parent_id: ObjectId | None, body: str
-    ) -> CommentCreateData:
-        """Validates if comment can be created.
+        self, thread_id: ObjectId, parent_comment_id: ObjectId | None
+    ) -> Comment | None:
+        """Validates parent comment.
 
         Args:
             thread_id (ObjectId): BSON object identifier of requested thread.
-            parent_id (ObjectId | None): BSON object identifier of requested
+            parent_comment_id (ObjectId | None): BSON object identifier of requested
             parent comment or None.
-            body (str): Comment body.
 
         Returns:
-            CommentCreateData: Comment create data.
+            Comment | None: Parent comment object or None.
 
         """
 
         # Validates thread
         thread = await self.thread_by_id_validator.validate(thread_id=thread_id)
 
-        if parent_id is not None:
+        if parent_comment_id is not None:
             # Validates parent comment if it is set
             parent_comment = await self.comment_by_id_validator.validate(
-                comment_id=parent_id
+                comment_id=parent_comment_id
             )
 
             # Check if parent comment belongs to thread
@@ -188,9 +165,4 @@ class CommentCreateValidator(BaseCommentValidator):
         else:
             parent_comment = None
 
-        return CommentCreateData(
-            body=body,
-            user_id=self.request.state.current_user.object.id,
-            thread_id=thread_id,
-            parent_comment=parent_comment,
-        )
+        return parent_comment

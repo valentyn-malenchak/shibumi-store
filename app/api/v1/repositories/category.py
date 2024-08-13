@@ -46,7 +46,6 @@ class CategoryRepository(BaseRepository):
             list[Mapping[str, Any]]: The retrieved list of categories.
 
         """
-
         return await self._get(
             filter_=await self._get_list_query_filter(filter_=filter_, search=search),
             search=search,
@@ -122,7 +121,6 @@ class CategoryRepository(BaseRepository):
             int: Count of categories.
 
         """
-
         return await self._count(
             filter_=await self._get_list_query_filter(filter_=filter_, search=search),
             session=session,

@@ -7,10 +7,7 @@ from fastapi import Depends, HTTPException, Request, status
 from pydantic import BaseModel, ValidationError, create_model
 
 from app.api.v1.constants import ProductParameterTypesEnum
-from app.api.v1.models.product import (
-    Product,
-    ProductFilter,
-)
+from app.api.v1.models.product import Product
 from app.api.v1.services.parameter import ParameterService
 from app.api.v1.services.product import ProductService
 from app.api.v1.validators import BaseValidator
@@ -47,6 +44,67 @@ class BaseProductValidator(BaseValidator):
 
         """
         raise NotImplementedError
+
+
+class ProductByIdValidator(BaseProductValidator):
+    """Product by identifier validator."""
+
+    async def validate(self, product_id: ObjectId) -> Product:
+        """Validates requested product by identifier.
+
+        Args:
+            product_id (ObjectId): BSON object identifier of requested product.
+
+        Returns:
+            Product: Product object.
+
+        Raises:
+            HTTPException: If requested product is not found.
+
+        """
+
+        try:
+            product = await self.product_service.get_by_id(id_=product_id)
+
+        except EntityIsNotFoundError:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(
+                    entity="Product"
+                ),
+            )
+
+        return product
+
+
+class ProductAccessValidator(BaseProductValidator):
+    """Product access validator."""
+
+    async def validate(self, product: Product) -> Product:
+        """Validates requested user has access to product.
+
+        Args:
+            product: Product object.
+
+        Returns:
+            Product: Product object.
+
+        Raises:
+            HTTPException: If current user don't have access to product.
+
+        """
+
+        current_user = getattr(self.request.state, "current_user", None)
+
+        if (
+            current_user is None or current_user.object.is_client
+        ) and product.available is False:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=HTTPErrorMessagesEnum.PRODUCT_ACCESS_DENIED,
+            )
+
+        return product
 
 
 class ProductParametersValidator(BaseProductValidator):
@@ -141,89 +199,6 @@ class ProductParametersValidator(BaseProductValidator):
             )
 
 
-class ProductByIdValidator(BaseProductValidator):
-    """Product by identifier validator."""
-
-    async def validate(self, product_id: ObjectId) -> Product:
-        """Validates requested product by identifier.
-
-        Args:
-            product_id (ObjectId): BSON object identifier of requested product.
-
-        Returns:
-            Product: Product object.
-
-        Raises:
-            HTTPException: If requested product is not found.
-
-        """
-
-        try:
-            product = await self.product_service.get_by_id(id_=product_id)
-
-        except EntityIsNotFoundError:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(
-                    entity="Product"
-                ),
-            )
-
-        return product
-
-
-class ProductByIdStatusValidator(BaseProductValidator):
-    """Product by identifier status validator."""
-
-    def __init__(
-        self,
-        request: Request,
-        product_service: ProductService = Depends(),
-        product_by_id_validator: ProductByIdValidator = Depends(),
-    ):
-        """Initializes product by identifier status validator.
-
-        Args:
-            request (Request): Current request object.
-            product_service (ProductService): Product service.
-            product_by_id_validator (ProductByIdValidator): Product by identifier
-            validator.
-
-        """
-
-        super().__init__(request=request, product_service=product_service)
-
-        self.product_by_id_validator = product_by_id_validator
-
-    async def validate(self, product_id: ObjectId) -> Product:
-        """Validates product and user's access to it.
-
-        Args:
-            product_id (ObjectId): BSON object identifier of requested product.
-
-        Returns:
-            Product: Product object.
-
-        Raises:
-            HTTPException: If current user don't have access to product.
-
-        """
-
-        product = await self.product_by_id_validator.validate(product_id=product_id)
-
-        current_user = getattr(self.request.state, "current_user", None)
-
-        if (
-            current_user is None or current_user.object.is_client
-        ) and product.available is False:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=HTTPErrorMessagesEnum.PRODUCT_ACCESS_DENIED,
-            )
-
-        return product
-
-
 class ProductAvailableFilterValidator(BaseProductValidator):
     """Product available filter validator."""
 
@@ -250,24 +225,21 @@ class ProductAvailableFilterValidator(BaseProductValidator):
             )
 
 
-class ProductFilterValidator(BaseProductValidator):
-    """Product filter validator."""
+class ProductParametersFilterValidator(BaseProductValidator):
+    """Product parameters filter validator."""
 
     def __init__(
         self,
         request: Request,
         product_service: ProductService = Depends(),
         parameter_service: ParameterService = Depends(),
-        product_available_filter_validator: ProductAvailableFilterValidator = Depends(),
     ):
-        """Initializes product filter validator.
+        """Initializes product parameters filter validator.
 
         Args:
             request (Request): Current request object.
             product_service (ProductService): Product service.
             parameter_service (ParameterService): Parameter service.
-            product_available_filter_validator (ProductAvailableFilterValidator):
-            Product available filter validator.
 
         """
 
@@ -275,30 +247,16 @@ class ProductFilterValidator(BaseProductValidator):
 
         self.parameter_service = parameter_service
 
-        self.product_available_filter_validator = product_available_filter_validator
-
-    async def validate(
-        self,
-        category_id: ObjectId | None,
-        available: bool | None,
-        ids: list[ObjectId] | None,
-    ) -> ProductFilter:
-        """Validates and formats products list filter.
-
-        Args:
-            category_id (ObjectId | None): Category identifier filter.
-            available (bool | None): Product availability filter.
-            ids (list[ObjectId] | None): Filter by list of product identifiers.
+    async def validate(self) -> dict[str, Any]:
+        """Validates product parameters filter.
 
         Returns:
-            ProductFilter: Products filter object.
+            dict[str, Any]: Product parameter filter.
 
         Raises:
-            HTTPException: If product parameters filter is invalid.
+            HTTPException: If product parameter filter is invalid.
 
         """
-
-        await self.product_available_filter_validator.validate(available=available)
 
         fields: dict[str, Any] = {
             parameter["machine_name"]: (
@@ -311,7 +269,7 @@ class ProductFilterValidator(BaseProductValidator):
         }
 
         parameters_model = create_model(
-            "ProductsParameters", **fields, __base__=BaseModel
+            "ProductParameterFilter", **fields, __base__=BaseModel
         )
 
         try:
@@ -328,42 +286,17 @@ class ProductFilterValidator(BaseProductValidator):
                 detail=error.errors(),
             )
 
-        return ProductFilter(
-            category_id=category_id,
-            available=available,
-            ids=ids,
-            parameters=query_params,
-        )
+        return query_params
 
 
 class ProductQuantityValidator(BaseProductValidator):
     """Product quantity validator."""
 
-    def __init__(
-        self,
-        request: Request,
-        product_service: ProductService = Depends(),
-        product_by_id_status_validator: ProductByIdStatusValidator = Depends(),
-    ):
-        """Initializes product quantity validator.
-
-        Args:
-            request (Request): Current request object.
-            product_service (ProductService): Product service.
-            product_by_id_status_validator (ProductByIdStatusValidator): Product by
-            identifier status validator.
-
-        """
-
-        super().__init__(request=request, product_service=product_service)
-
-        self.product_by_id_status_validator = product_by_id_status_validator
-
-    async def validate(self, product_id: ObjectId, quantity: PositiveInt) -> Product:
+    async def validate(self, product: Product, quantity: PositiveInt) -> Product:
         """Validates product quantity.
 
         Args:
-            product_id (ObjectId): BSON object identifier of requested product.
+            product (Product): Product object.
             quantity (PositiveInt): Requested product quantity.
 
         Returns:
@@ -374,10 +307,6 @@ class ProductQuantityValidator(BaseProductValidator):
             available.
 
         """
-
-        product = await self.product_by_id_status_validator.validate(
-            product_id=product_id
-        )
 
         if product.quantity < quantity:
             raise HTTPException(

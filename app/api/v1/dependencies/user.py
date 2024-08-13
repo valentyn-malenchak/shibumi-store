@@ -12,26 +12,29 @@ from app.api.v1.models.user import (
     UserPasswordUpdateData,
 )
 from app.api.v1.validators.user import (
+    UserAccessValidator,
     UserByIdValidator,
-    UserByUsernameStatusValidator,
+    UserByUsernameValidator,
     UserDeleteAccessValidator,
     UserEmailVerifiedValidator,
-    UserPasswordUpdateValidator,
+    UserPasswordValidator,
     UserRolesValidator,
+    UserStatusValidator,
     UserUpdateAccessValidator,
 )
+from app.utils.metas import SingletonMeta
 from app.utils.pydantic import ObjectIdAnnotation
 
 
-class UserByIdDependency:
-    """User by identifier dependency."""
+class UserByIdGetDependency(metaclass=SingletonMeta):
+    """User by identifier get dependency."""
 
     async def __call__(
         self,
         user_id: Annotated[ObjectId, ObjectIdAnnotation],
         user_by_id_validator: UserByIdValidator = Depends(),
     ) -> User:
-        """Validates user from request by identifier.
+        """Validates user by its unique identifier.
 
         Args:
             user_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
@@ -42,112 +45,98 @@ class UserByIdDependency:
             User: User object.
 
         """
-
         return await user_by_id_validator.validate(user_id=user_id)
 
 
-class UserByUsernameStatusDependency:
-    """User by username status dependency."""
+class UserByIdGetAccessDependency(metaclass=SingletonMeta):
+    """User by identifier get access dependency."""
+
+    async def __call__(
+        self,
+        user: User = Depends(UserByIdGetDependency()),
+        user_access_validator: UserAccessValidator = Depends(),
+    ) -> User:
+        """Validates access to a specific user.
+
+        Args:
+            user (User): User object.
+            user_access_validator (UserAccessValidator): User access validator.
+
+        Returns:
+            User: User object.
+
+        """
+
+        await user_access_validator.validate(user_id=user.id)
+
+        return user
+
+
+class UserByUsernameGetDependency(metaclass=SingletonMeta):
+    """User by username get dependency."""
 
     async def __call__(
         self,
         username: str,
-        user_by_username_status_validator: UserByUsernameStatusValidator = Depends(),
+        user_by_username_validator: UserByUsernameValidator = Depends(),
     ) -> User:
-        """Validates user and its status from request by username.
+        """Validates user by its username.
 
         Args:
             username (str): Username of requested user.
-            user_by_username_status_validator (UserByUsernameStatusValidator): User
-            by username status validator.
-
-        Returns:
-            User: User object.
-
-        """
-
-        return await user_by_username_status_validator.validate(username=username)
-
-
-class UserUpdateAccessDependency:
-    """User update access dependency."""
-
-    async def __call__(
-        self,
-        user_id: Annotated[ObjectId, ObjectIdAnnotation],
-        user_update_access_validator: UserUpdateAccessValidator = Depends(),
-    ) -> User:
-        """Validates if the current user can update user from request.
-
-        Args:
-            user_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
-            identifier of requested user.
-            user_update_access_validator (UserUpdateAccessValidator): User update access
+            user_by_username_validator (UserByUsernameValidator): User by username
             validator.
 
         Returns:
             User: User object.
 
         """
-
-        return await user_update_access_validator.validate(user_id=user_id)
-
-
-class UserPasswordUpdateDependency:
-    """User password update dependency."""
-
-    async def __call__(
-        self,
-        user_id: Annotated[ObjectId, ObjectIdAnnotation],
-        password: UserPasswordUpdateData,
-        user_password_update_validator: UserPasswordUpdateValidator = Depends(),
-    ) -> UserPasswordUpdateData:
-        """Validates if the current user can update own password.
-
-        Args:
-            user_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
-            identifier of requested user.
-            password (UserPasswordUpdateData): Old and new passwords.
-            user_password_update_validator (UserPasswordUpdateValidator): User password
-            update validator.
-
-        Returns:
-            UserPasswordUpdateData: Old and new passwords.
-
-        """
-
-        await user_password_update_validator.validate(
-            user_id=user_id, old_password=password.old_password
-        )
-
-        return password
+        return await user_by_username_validator.validate(username=username)
 
 
-class UserDeleteAccessDependency:
-    """User delete access dependency."""
+class UserByIdStatusGetDependency(metaclass=SingletonMeta):
+    """User by identifier status get dependency."""
 
     async def __call__(
         self,
-        user_id: Annotated[ObjectId, ObjectIdAnnotation],
-        user_delete_access_validator: UserDeleteAccessValidator = Depends(),
+        user: User = Depends(UserByIdGetDependency()),
+        user_status_validator: UserStatusValidator = Depends(),
     ) -> User:
-        """Validates if the current user can delete requested user.
+        """Validates user status from request by identifier.
 
         Args:
-            user_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
-            identifier of requested user.
-            user_delete_access_validator (UserDeleteAccessValidator): User delete access
-            validator.
+            user (User): User object.
+            user_status_validator (UserStatusValidator): User status validator.
 
         Returns:
             User: User object.
 
         """
+        return await user_status_validator.validate(user=user)
 
-        return await user_delete_access_validator.validate(user_id=user_id)
+
+class UserByUsernameStatusGetDependency(metaclass=SingletonMeta):
+    """User by username status get dependency."""
+
+    async def __call__(
+        self,
+        user: User = Depends(UserByUsernameGetDependency()),
+        user_status_validator: UserStatusValidator = Depends(),
+    ) -> User:
+        """Validates user status from request by username.
+
+        Args:
+            user (User): User object.
+            user_status_validator (UserStatusValidator): User status validator.
+
+        Returns:
+            User: User object.
+
+        """
+        return await user_status_validator.validate(user=user)
 
 
-class UserDataCreateDependency:
+class UserDataCreateDependency(metaclass=SingletonMeta):
     """User data create dependency."""
 
     async def __call__(
@@ -171,7 +160,29 @@ class UserDataCreateDependency:
         return user_data
 
 
-class UserDataUpdateDependency:
+class UserUpdateAccessDependency(metaclass=SingletonMeta):
+    """User update access dependency."""
+
+    async def __call__(
+        self,
+        user: User = Depends(UserByIdStatusGetDependency()),
+        user_update_access_validator: UserUpdateAccessValidator = Depends(),
+    ) -> User:
+        """Validates if the current user can update user from request.
+
+        Args:
+            user (User): User object.
+            user_update_access_validator (UserUpdateAccessValidator): User update access
+            validator.
+
+        Returns:
+            User: User object.
+
+        """
+        return await user_update_access_validator.validate(user=user)
+
+
+class UserDataUpdateDependency(metaclass=SingletonMeta):
     """User data update dependency."""
 
     async def __call__(
@@ -195,18 +206,66 @@ class UserDataUpdateDependency:
         return user_data
 
 
-class UserEmailVerifiedDependency:
+class UserPasswordDataUpdateDependency(metaclass=SingletonMeta):
+    """User password data update dependency."""
+
+    async def __call__(
+        self,
+        password: UserPasswordUpdateData,
+        user: User = Depends(UserByIdGetAccessDependency()),
+        user_password_validator: UserPasswordValidator = Depends(),
+    ) -> UserPasswordUpdateData:
+        """Validates passwords on update operation.
+
+        Args:
+            password (UserPasswordUpdateData): Old and new passwords.
+            user (User): User object.
+            user_password_validator (UserPasswordValidator): User password validator.
+
+        Returns:
+            UserPasswordUpdateData: Old and new passwords.
+
+        """
+
+        await user_password_validator.validate(old_password=password.old_password)
+
+        return password
+
+
+class UserDeleteAccessDependency(metaclass=SingletonMeta):
+    """User delete access dependency."""
+
+    async def __call__(
+        self,
+        user: User = Depends(UserByIdStatusGetDependency()),
+        user_delete_access_validator: UserDeleteAccessValidator = Depends(),
+    ) -> User:
+        """Validates if the current user can delete requested user.
+
+        Args:
+            user (User): User object.
+            user_delete_access_validator (UserDeleteAccessValidator): User delete access
+            validator.
+
+        Returns:
+            User: User object.
+
+        """
+        return await user_delete_access_validator.validate(user=user)
+
+
+class UserEmailVerifiedDependency(metaclass=SingletonMeta):
     """User email verified dependency."""
 
     async def __call__(
         self,
-        username: str,
+        user: User = Depends(UserByUsernameStatusGetDependency()),
         user_email_verified_validator: UserEmailVerifiedValidator = Depends(),
     ) -> User:
-        """Validates user from request.
+        """Verifies user from request.
 
         Args:
-            username (str): Username of requested user.
+            user (User): User object.
             user_email_verified_validator (UserEmailVerifiedValidator): User email
             verified validator.
 
@@ -214,5 +273,4 @@ class UserEmailVerifiedDependency:
             User: User object.
 
         """
-
-        return await user_email_verified_validator.validate(username=username)
+        return await user_email_verified_validator.validate(user=user)

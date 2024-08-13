@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, Security, status
 
 from app.api.v1.auth.auth import OptionalAuthorization
 from app.api.v1.constants import ScopesEnum
-from app.api.v1.dependencies.category import CategoryByIdDependency
+from app.api.v1.dependencies.category import CategoryByIdGetDependency
 from app.api.v1.models.category import (
     Category,
     CategoryFilter,
@@ -38,7 +38,6 @@ async def get_categories(
         dict[str, Any]: List of categories.
 
     """
-
     return dict(
         data=await category_service.get(filter_=filter_),
         total=await category_service.count(filter_=filter_),
@@ -54,7 +53,7 @@ async def get_category(
     _: CurrentUser | None = Security(
         OptionalAuthorization(), scopes=[ScopesEnum.CATEGORIES_GET_CATEGORY.name]
     ),
-    category: Category = Depends(CategoryByIdDependency()),
+    category: Category = Depends(CategoryByIdGetDependency()),
 ) -> Category:
     """API which returns a specific category.
 
@@ -79,7 +78,7 @@ async def get_category_parameters(
         OptionalAuthorization(),
         scopes=[ScopesEnum.CATEGORIES_GET_CATEGORY_PARAMETERS.name],
     ),
-    category: Category = Depends(CategoryByIdDependency()),
+    category: Category = Depends(CategoryByIdGetDependency()),
     category_service: CategoryService = Depends(),
 ) -> CategoryParameters | None:
     """API which returns category parameters by its identifier.

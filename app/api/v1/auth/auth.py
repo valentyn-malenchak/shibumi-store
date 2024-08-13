@@ -67,7 +67,7 @@ class Authentication:
             )
 
         # update password hash parameters in database in case it is outdated
-        if Password.check_needs_rehash(user.hashed_password) is True:
+        if Password.verify_needs_rehash(user.hashed_password) is True:
             await user_service.update_password(id_=user.id, password=form_data.password)
 
         permitted_scopes = await role_service.get_scopes_by_roles(roles=user.roles)

@@ -5,8 +5,8 @@ from fastapi import APIRouter, Depends, Security, status
 from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
 from app.api.v1.dependencies.comment import (
-    CommentAccessDependency,
-    CommentByIdDependency,
+    CommentByIdGetAccessDependency,
+    CommentByIdGetDependency,
     CommentDataCreateDependency,
 )
 from app.api.v1.models.comment import (
@@ -29,7 +29,7 @@ async def get_comment(
     _: CurrentUser | None = Security(
         OptionalAuthorization(), scopes=[ScopesEnum.COMMENTS_GET_COMMENT.name]
     ),
-    comment: Comment = Depends(CommentByIdDependency()),
+    comment: Comment = Depends(CommentByIdGetDependency()),
 ) -> Comment:
     """API which returns comment.
 
@@ -80,7 +80,7 @@ async def update_comment(
     _: CurrentUser = Security(
         StrictAuthorization(), scopes=[ScopesEnum.COMMENTS_UPDATE_COMMENT.name]
     ),
-    comment: Comment = Depends(CommentAccessDependency()),
+    comment: Comment = Depends(CommentByIdGetAccessDependency()),
     comment_service: CommentService = Depends(),
 ) -> Comment:
     """API which updates comment.

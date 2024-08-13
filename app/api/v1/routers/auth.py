@@ -30,7 +30,6 @@ async def create_tokens(
         dict[str, str]: Access and Refresh JWTs.
 
     """
-
     return JWT.encode_tokens(
         data=JWTUser(id=str(current_user.object.id), scopes=current_user.scopes)
     )
@@ -58,7 +57,6 @@ async def refresh_access_token(
         dict[str, str]: New access token.
 
     """
-
     return JWT.encode_tokens(
         data=JWTUser(
             id=str(current_user.object.id),
