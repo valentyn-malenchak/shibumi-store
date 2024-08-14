@@ -23,7 +23,6 @@ Shibumi (渋み) (noun) or Shibui (渋い) (adjective) are Japanese words which 
 - **MongoDB with Motor**: Efficient and asynchronous data storage.
 - **Authentication and Security**: Secure user authentication with pyjwt and password hashing using Argon2.
 - **Data Validation and Serialization**: Robust data validation and serialization using Pydantic.
-- **Dependency Injection**: Improved code organization and maintainability with the Injector library.
 - **Date and Time Handling**: Efficient date and time handling using the Arrow library.
 - **Testing**: Comprehensive testing suite with Pytest and Pytest-asyncio for reliable code testing.
 - **Database Migrations**: Smooth management of database schema changes using MongoDB Migrations.
@@ -40,24 +39,24 @@ The project is organized with the following directory structure:
 ├── .github/                                   # GitHub-related configurations
 │   └── workflows/                             # GitHub Actions workflows
 │       └── ci.yml                             # Continuous Integration workflow
-├── app/                                       # Main Application code
+├── app/                                       # Main application code
 │   ├── api/
 │   │   ├── v1/                                # API version 1
-│   │   │   ├── auth                           # Authentication and Authorization interactions used in services
+│   │   │   ├── auth                           # Authentication and Authorization interactions
 │   │   │   │   ├── __init__.py
 │   │   │   │   ├── auth.py                    # Authentication and Authorization handlers
 │   │   │   │   ├── jwt.py                     # JWT handler
 │   │   │   │   └── password.py                # Password handler
-│   │   │   ├── dependencies                   # Domain dependencies for determination and validation (using validators) request entities
+│   │   │   ├── dependencies                   # Domain dependencies for determination and validation (using validators) HTTP request data
 │   │   │   │   ├── __init__.py
 │   │   │   │   ├── user.py
 │   │   │   │   └── ...
-│   │   │   ├── models                         # Pydantic models for API and entities
+│   │   │   ├── models                         # Pydantic models
 │   │   │   │   ├── __init__.py
 │   │   │   │   ├── auth.py
 │   │   │   │   ├── user.py
 │   │   │   │   └── ...
-│   │   │   ├── repositories                   # Database entities interactions used in services
+│   │   │   ├── repositories                   # Database entities interactions
 │   │   │   │   ├── __init__.py
 │   │   │   │   ├── user.py
 │   │   │   │   └── ...
@@ -67,11 +66,11 @@ The project is organized with the following directory structure:
 │   │   │   │   ├── health.py
 │   │   │   │   ├── user.py
 │   │   │   │   └── ...
-│   │   │   ├── validators                     # Validators for request data
+│   │   │   ├── validators                     # Validators for HTTP request data
 │   │   │   │   ├── __init__.py
 │   │   │   │   ├── user.py
 │   │   │   │   └── ...
-│   │   │   ├── services                       # API business logic which uses interactions from repositories and auth   
+│   │   │   ├── services                       # API for interactions with entities 
 │   │   │   │   ├── __init__.py
 │   │   │   │   ├── user.py
 │   │   │   │   └── ...
@@ -88,7 +87,7 @@ The project is organized with the following directory structure:
 │   │   │   ├── service.py                     # MongoDB service (facade used in entity repositories)
 │   │   │   └── transaction_manager.py         # MongoDB transaction manager
 │   │   ├── ...
-│   │   ├── __init__.py                        # Collects all services
+│   │   ├── __init__.py                        # Collects all external services
 │   │   └── base.py                            # Base service abstract class
 │   ├── tests/                                 # Unit tests and fixtures
 │   │   ├── api
@@ -99,7 +98,7 @@ The project is organized with the following directory structure:
 │   │   │   │   ├── test_user.py
 │   │   │   │   └── ...
 │   │   │   └── __init__.py
-│   │   ├── fixtures                           # Handler JSON file fixtures
+│   │   ├── fixtures                           # JSON file fixtures handler
 │   │   │   ├── json                           # JSON files with entities data
 │   │   │   │   ├── users.json
 │   │   │   │   └── ...
@@ -109,7 +108,8 @@ The project is organized with the following directory structure:
 │   │   └── constants.py                       # Constants for unit tests
 │   ├── utils/                                 # Utility modules
 │   │   ├── __init__.py
-│   │   ├── json.py                            # Custom JSON decoder
+│   │   ├── metas.py                           # Custom metaclasses
+│   │   ├── pydantic.py                        # Custom pydantic utilities
 │   │   └── token.py                           # Verification token component
 │   ├── __init__.py
 │   ├── app.py                                 # Configures and runs FastAPI application
@@ -121,6 +121,8 @@ The project is organized with the following directory structure:
 │   └── ...
 ├── .coveragerc                                # Configuration file for coverage reports
 ├── .gitignore                                 # Gitignore file to specify ignored files and directories
+├── docker-compose.yml                         # docker-compose file for application
+├── Dockerfile                                 # Application Dockerfile
 ├── LICENSE                                    # License information for the project
 ├── mypy.ini                                   # Configuration file for MyPy static type checker
 ├── poetry.lock                                # Poetry lock file specifying exact package versions
