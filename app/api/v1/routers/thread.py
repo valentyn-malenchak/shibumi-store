@@ -9,7 +9,6 @@ from app.api.v1.models.thread import (
     Thread,
     ThreadData,
 )
-from app.api.v1.models.user import CurrentUser
 from app.api.v1.services.thread import ThreadService
 
 router = APIRouter(prefix="/threads", tags=["threads"])
@@ -19,17 +18,14 @@ router = APIRouter(prefix="/threads", tags=["threads"])
     "/{thread_id}/",
     response_model=Thread,
     status_code=status.HTTP_200_OK,
+    dependencies=[
+        Security(OptionalAuthorization(), scopes=[ScopesEnum.THREADS_GET_THREAD.name])
+    ],
 )
-async def get_thread(
-    _: CurrentUser | None = Security(
-        OptionalAuthorization(), scopes=[ScopesEnum.THREADS_GET_THREAD.name]
-    ),
-    thread: Thread = Depends(ThreadByIdGetDependency()),
-) -> Thread:
+async def get_thread(thread: Thread = Depends(ThreadByIdGetDependency())) -> Thread:
     """API which returns a specific thread.
 
     Args:
-        _ (CurrentUser | None): Current user object or None.
         thread (Thread): Thread object.
 
     Returns:
@@ -43,19 +39,18 @@ async def get_thread(
     "/",
     response_model=Thread,
     status_code=status.HTTP_201_CREATED,
+    dependencies=[
+        Security(StrictAuthorization(), scopes=[ScopesEnum.THREADS_CREATE_THREAD.name])
+    ],
 )
 async def create_comment(
     thread_data: ThreadData,
-    _: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.THREADS_CREATE_THREAD.name]
-    ),
     thread_service: ThreadService = Depends(),
 ) -> Thread:
     """API which creates thread.
 
     Args:
         thread_data (ThreadData): Thread data.
-        _ (CurrentUser): Current user object.
         thread_service (ThreadService): Thread service.
 
     Returns:
@@ -69,12 +64,12 @@ async def create_comment(
     "/{thread_id}/",
     response_model=Thread,
     status_code=status.HTTP_200_OK,
+    dependencies=[
+        Security(StrictAuthorization(), scopes=[ScopesEnum.THREADS_UPDATE_THREAD.name])
+    ],
 )
 async def update_thread(
     thread_data: ThreadData,
-    _: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.THREADS_UPDATE_THREAD.name]
-    ),
     thread: Thread = Depends(ThreadByIdGetDependency()),
     thread_service: ThreadService = Depends(),
 ) -> Thread:
@@ -82,7 +77,6 @@ async def update_thread(
 
     Args:
         thread_data (ThreadData): Thread data.
-        _ (CurrentUser): Current user object.
         thread (Thread): Thread object.
         thread_service (ThreadService): Thread service.
 

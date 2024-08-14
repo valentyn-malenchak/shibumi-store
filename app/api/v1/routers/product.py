@@ -18,7 +18,6 @@ from app.api.v1.models.product import (
     ProductFilter,
     ProductList,
 )
-from app.api.v1.models.user import CurrentUser
 from app.api.v1.services.product import ProductService
 
 router = APIRouter(prefix="/products", tags=["products"])
@@ -28,18 +27,19 @@ router = APIRouter(prefix="/products", tags=["products"])
     "/",
     response_model=Product,
     status_code=status.HTTP_201_CREATED,
+    dependencies=[
+        Security(
+            StrictAuthorization(), scopes=[ScopesEnum.PRODUCTS_CREATE_PRODUCT.name]
+        )
+    ],
 )
 async def create_product(
-    _: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.PRODUCTS_CREATE_PRODUCT.name]
-    ),
     product_data: ProductData = Depends(ProductDataDependency()),
     product_service: ProductService = Depends(),
 ) -> Product:
     """API which creates a new product.
 
     Args:
-        _ (CurrentUser): Current user object.
         product_data (ProductData): New product data.
         product_service (ProductService): Product service.
 
@@ -50,11 +50,17 @@ async def create_product(
     return await product_service.create(data=product_data)
 
 
-@router.get("/", response_model=ProductList, status_code=status.HTTP_200_OK)
+@router.get(
+    "/",
+    response_model=ProductList,
+    status_code=status.HTTP_200_OK,
+    dependencies=[
+        Security(
+            OptionalAuthorization(), scopes=[ScopesEnum.PRODUCTS_GET_PRODUCTS.name]
+        )
+    ],
+)
 async def get_products(
-    _: CurrentUser | None = Security(
-        OptionalAuthorization(), scopes=[ScopesEnum.PRODUCTS_GET_PRODUCTS.name]
-    ),
     filter_: ProductFilter = Depends(ProductsFilterDependency()),
     search: Search = Depends(),
     sorting: Sorting = Depends(),
@@ -64,7 +70,6 @@ async def get_products(
     """API which returns products list.
 
     Args:
-        _ (CurrentUser | None): Current user object.
         filter_ (ProductFilter): Parameters for list filtering.
         search (Search): Parameters for list searching.
         sorting (Sorting): Parameters for sorting.
@@ -87,18 +92,17 @@ async def get_products(
     "/{product_id}/",
     response_model=Product,
     status_code=status.HTTP_200_OK,
+    dependencies=[
+        Security(OptionalAuthorization(), scopes=[ScopesEnum.PRODUCTS_GET_PRODUCT.name])
+    ],
 )
 async def get_product(
-    _: CurrentUser | None = Security(
-        OptionalAuthorization(), scopes=[ScopesEnum.PRODUCTS_GET_PRODUCT.name]
-    ),
     product: Product = Depends(ProductByIdGetAccessDependency()),
     product_service: ProductService = Depends(),
 ) -> Product:
     """API which returns a specific product.
 
     Args:
-        _ (CurrentUser | None): Current user object or None.
         product (Product): Product object.
         product_service (ProductService): Product service.
 
@@ -116,11 +120,13 @@ async def get_product(
     "/{product_id}/",
     response_model=Product,
     status_code=status.HTTP_200_OK,
+    dependencies=[
+        Security(
+            StrictAuthorization(), scopes=[ScopesEnum.PRODUCTS_UPDATE_PRODUCT.name]
+        )
+    ],
 )
 async def update_product(
-    _: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.PRODUCTS_UPDATE_PRODUCT.name]
-    ),
     product_data: ProductData = Depends(ProductDataDependency()),
     product: Product = Depends(ProductByIdGetAccessDependency()),
     product_service: ProductService = Depends(),
@@ -128,7 +134,6 @@ async def update_product(
     """API which updates a product.
 
     Args:
-        _ (CurrentUser): Current user object.
         product_data (ProductData): Product data to update.
         product (Product): Product object.
         product_service (ProductService): Product service.

@@ -13,24 +13,28 @@ from app.api.v1.models.category import (
     CategoryList,
     CategoryParameters,
 )
-from app.api.v1.models.user import CurrentUser
 from app.api.v1.services.category import CategoryService
 
 router = APIRouter(prefix="/categories", tags=["categories"])
 
 
-@router.get("/", response_model=CategoryList, status_code=status.HTTP_200_OK)
+@router.get(
+    "/",
+    response_model=CategoryList,
+    status_code=status.HTTP_200_OK,
+    dependencies=[
+        Security(
+            OptionalAuthorization(), scopes=[ScopesEnum.CATEGORIES_GET_CATEGORIES.name]
+        )
+    ],
+)
 async def get_categories(
-    _: CurrentUser | None = Security(
-        OptionalAuthorization(), scopes=[ScopesEnum.CATEGORIES_GET_CATEGORIES.name]
-    ),
     filter_: CategoryFilter = Depends(),
     category_service: CategoryService = Depends(),
 ) -> dict[str, Any]:
     """API which returns categories list.
 
     Args:
-        _ (CurrentUser | None): Current user object or None.
         filter_ (CategoryFilter): Parameters for list filtering.
         category_service (CategoryService): Category service.
 
@@ -48,17 +52,18 @@ async def get_categories(
     "/{category_id}/",
     response_model=Category,
     status_code=status.HTTP_200_OK,
+    dependencies=[
+        Security(
+            OptionalAuthorization(), scopes=[ScopesEnum.CATEGORIES_GET_CATEGORY.name]
+        )
+    ],
 )
 async def get_category(
-    _: CurrentUser | None = Security(
-        OptionalAuthorization(), scopes=[ScopesEnum.CATEGORIES_GET_CATEGORY.name]
-    ),
     category: Category = Depends(CategoryByIdGetDependency()),
 ) -> Category:
     """API which returns a specific category.
 
     Args:
-        _ (CurrentUser | None): Current user object or None.
         category (Category): Category object.
 
     Returns:
@@ -72,19 +77,20 @@ async def get_category(
     "/{category_id}/parameters/",
     response_model=CategoryParameters | None,
     status_code=status.HTTP_200_OK,
+    dependencies=[
+        Security(
+            OptionalAuthorization(),
+            scopes=[ScopesEnum.CATEGORIES_GET_CATEGORY_PARAMETERS.name],
+        )
+    ],
 )
 async def get_category_parameters(
-    _: CurrentUser | None = Security(
-        OptionalAuthorization(),
-        scopes=[ScopesEnum.CATEGORIES_GET_CATEGORY_PARAMETERS.name],
-    ),
     category: Category = Depends(CategoryByIdGetDependency()),
     category_service: CategoryService = Depends(),
 ) -> CategoryParameters | None:
     """API which returns category parameters by its identifier.
 
     Args:
-        _ (CurrentUser | None): Current user object or None.
         category (Category): Category object.
         category_service (CategoryService): Category service.
 
