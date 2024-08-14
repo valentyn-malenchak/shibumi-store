@@ -63,6 +63,9 @@ async def create_vote(
     Returns:
         Vote: Vote object.
 
+    Raises:
+        HTTPException: in case vote is already exists for chosen comment.
+
     """
     try:
         return await vote_service.create(data=vote_data)
