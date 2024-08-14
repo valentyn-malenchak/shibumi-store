@@ -1,6 +1,6 @@
 """Module that contains vote domain routers."""
 
-from fastapi import APIRouter, Depends, Security, status
+from fastapi import APIRouter, Depends, HTTPException, Security, status
 
 from app.api.v1.auth.auth import StrictAuthorization
 from app.api.v1.constants import ScopesEnum
@@ -16,6 +16,8 @@ from app.api.v1.models.vote import (
     VoteData,
 )
 from app.api.v1.services.vote import VoteService
+from app.constants import HTTPErrorMessagesEnum
+from app.exceptions import EntityDuplicateKeyError
 
 router = APIRouter(prefix="/votes", tags=["votes"])
 
@@ -67,7 +69,16 @@ async def create_vote(
         Vote: Vote object.
 
     """
-    return await vote_service.create(data=vote_data)
+    try:
+        return await vote_service.create(data=vote_data)
+
+    except EntityDuplicateKeyError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=HTTPErrorMessagesEnum.ENTITY_FIELD_UNIQUENESS.format(
+                entity="Vote", field="comment_id"
+            ),
+        )
 
 
 @router.patch(
