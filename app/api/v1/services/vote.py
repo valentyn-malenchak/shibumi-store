@@ -3,15 +3,13 @@
 from typing import Any
 
 from bson import ObjectId
-from fastapi import BackgroundTasks, Depends, HTTPException, status
+from fastapi import BackgroundTasks, Depends
 
 from app.api.v1.models import Pagination, Search, Sorting
 from app.api.v1.models.vote import Vote, VoteCreateData, VoteData
 from app.api.v1.repositories.comment import CommentRepository
 from app.api.v1.repositories.vote import VoteRepository
 from app.api.v1.services import BaseService
-from app.constants import HTTPErrorMessagesEnum
-from app.exceptions import EntityDuplicateKeyError
 from app.services.mongo.transaction_manager import TransactionManager
 from app.services.redis.service import RedisService
 
@@ -109,16 +107,7 @@ class VoteService(BaseService):
         """
 
         async with self.transaction_manager as session:
-            try:
-                id_ = await self.repository.create(data=data, session=session)
-
-            except EntityDuplicateKeyError:
-                raise HTTPException(
-                    status_code=status.HTTP_409_CONFLICT,
-                    detail=HTTPErrorMessagesEnum.ENTITY_FIELD_UNIQUENESS.format(
-                        entity="Vote", field="comment_id"
-                    ),
-                )
+            id_ = await self.repository.create(data=data, session=session)
 
             # increments upvote/downvote counter by one
             await self.comment_repository.add_vote(

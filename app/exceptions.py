@@ -19,3 +19,7 @@ class EntityIsNotFoundError(ApplicationError):
 
 class EntityDuplicateKeyError(ApplicationError):
     """Entity duplicate key error."""
+
+
+class InvalidVerificationTokenError(ApplicationError):
+    """Invalid verification token error."""

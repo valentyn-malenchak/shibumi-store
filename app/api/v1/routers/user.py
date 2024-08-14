@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from fastapi import APIRouter, Depends, Security, status
+from fastapi import APIRouter, Depends, HTTPException, Security, status
 
 from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
@@ -31,6 +31,8 @@ from app.api.v1.models.user import (
     VerificationToken,
 )
 from app.api.v1.services.user import UserService
+from app.constants import HTTPErrorMessagesEnum
+from app.exceptions import EntityDuplicateKeyError, InvalidVerificationTokenError
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -124,8 +126,20 @@ async def create_user(
     Returns:
         User: Created user object.
 
+    Raises:
+        HTTPException: in case user with such username is already exists.
+
     """
-    return await user_service.create(data=user_data)
+    try:
+        return await user_service.create(data=user_data)
+
+    except EntityDuplicateKeyError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=HTTPErrorMessagesEnum.ENTITY_FIELD_UNIQUENESS.format(
+                entity="User", field="username"
+            ),
+        )
 
 
 @router.post("/{username}/verify-email/", status_code=status.HTTP_204_NO_CONTENT)
@@ -157,7 +171,14 @@ async def verify_user_email(
         user_service (UserService): User service.
 
     """
-    return await user_service.verify_email(id_=user.id, token=verify_email.token)
+    try:
+        return await user_service.verify_email(id_=user.id, token=verify_email.token)
+
+    except InvalidVerificationTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=HTTPErrorMessagesEnum.INVALID_EMAIL_VERIFICATION_TOKEN,
+        )
 
 
 @router.patch("/{user_id}/", response_model=ShortUser, status_code=status.HTTP_200_OK)
@@ -255,6 +276,15 @@ async def reset_user_password(
         user_service (UserService): User service.
 
     """
-    return await user_service.reset_password(
-        id_=user.id, token=reset_password.token, password=reset_password.new_password
-    )
+    try:
+        return await user_service.reset_password(
+            id_=user.id,
+            token=reset_password.token,
+            password=reset_password.new_password,
+        )
+
+    except InvalidVerificationTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=HTTPErrorMessagesEnum.INVALID_RESET_PASSWORD_TOKEN,
+        )

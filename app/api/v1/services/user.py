@@ -4,7 +4,7 @@ from collections.abc import Mapping
 from typing import Any
 
 from bson import ObjectId
-from fastapi import BackgroundTasks, Depends, HTTPException, status
+from fastapi import BackgroundTasks, Depends
 
 from app.api.v1.auth.password import Password
 from app.api.v1.constants import (
@@ -26,8 +26,7 @@ from app.api.v1.models.user import (
 from app.api.v1.repositories.cart import CartRepository
 from app.api.v1.repositories.user import UserRepository
 from app.api.v1.services import BaseService
-from app.constants import HTTPErrorMessagesEnum
-from app.exceptions import EntityDuplicateKeyError
+from app.exceptions import InvalidVerificationTokenError
 from app.services.mongo.transaction_manager import TransactionManager
 from app.services.redis.service import RedisService
 from app.services.send_grid.service import SendGridService
@@ -137,18 +136,9 @@ class UserService(BaseService):
 
         password = Password.get_password_hash(password=data.password)
 
-        try:
-            id_ = await self.repository.create(
-                data=UserCreateData(**data.model_dump(), hashed_password=password)
-            )
-
-        except EntityDuplicateKeyError:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail=HTTPErrorMessagesEnum.ENTITY_FIELD_UNIQUENESS.format(
-                    entity="User", field="username"
-                ),
-            )
+        id_ = await self.repository.create(
+            data=UserCreateData(**data.model_dump(), hashed_password=password)
+        )
 
         # Initialize user's cart
         await self.cart_repository.create(data=CartCreateData(user_id=id_))
@@ -279,6 +269,9 @@ class UserService(BaseService):
             token (str): Verification token.
             password (str): Password to update.
 
+        Raises:
+            InvalidVerificationTokenError: in case verification token is invalid.
+
         """
 
         hashed_token = VerificationToken(token).hash()
@@ -288,10 +281,7 @@ class UserService(BaseService):
         )
 
         if cached_token is None or cached_token != hashed_token:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=HTTPErrorMessagesEnum.INVALID_RESET_PASSWORD_TOKEN,
-            )
+            raise InvalidVerificationTokenError
 
         await self.update_password(id_=id_, password=password)
 
@@ -331,6 +321,9 @@ class UserService(BaseService):
             id_ (ObjectId): The unique identifier of the user.
             token (str): Verification token.
 
+        Raises:
+            InvalidVerificationTokenError: in case verification token is invalid.
+
         """
 
         hashed_token = VerificationToken(token).hash()
@@ -340,10 +333,7 @@ class UserService(BaseService):
         )
 
         if cached_token is None or cached_token != hashed_token:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=HTTPErrorMessagesEnum.INVALID_EMAIL_VERIFICATION_TOKEN,
-            )
+            raise InvalidVerificationTokenError
 
         await self.repository.verify_email(id_=id_)
 
