@@ -9,7 +9,6 @@ from app.api.v1.dependencies.vote import (
     VoteDataCreateDependency,
     VoteDataUpdateDependency,
 )
-from app.api.v1.models.user import CurrentUser
 from app.api.v1.models.vote import (
     Vote,
     VoteCreateData,
@@ -26,17 +25,14 @@ router = APIRouter(prefix="/votes", tags=["votes"])
     "/{vote_id}/",
     response_model=Vote,
     status_code=status.HTTP_200_OK,
+    dependencies=[
+        Security(StrictAuthorization(), scopes=[ScopesEnum.VOTES_GET_VOTE.name])
+    ],
 )
-async def get_vote(
-    _: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.VOTES_GET_VOTE.name]
-    ),
-    vote: Vote = Depends(VoteByIdGetAccessDependency()),
-) -> Vote:
+async def get_vote(vote: Vote = Depends(VoteByIdGetAccessDependency())) -> Vote:
     """API which returns vote.
 
     Args:
-        _ (CurrentUser): Current user object.
         vote (Vote): Vote object.
 
     Returns:
@@ -50,18 +46,17 @@ async def get_vote(
     "/",
     response_model=Vote,
     status_code=status.HTTP_201_CREATED,
+    dependencies=[
+        Security(StrictAuthorization(), scopes=[ScopesEnum.VOTES_CREATE_VOTE.name])
+    ],
 )
 async def create_vote(
-    _: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.VOTES_CREATE_VOTE.name]
-    ),
     vote_data: VoteCreateData = Depends(VoteDataCreateDependency()),
     vote_service: VoteService = Depends(),
 ) -> Vote:
     """API which creates vote.
 
     Args:
-        _ (CurrentUser): Current user object.
         vote_data (VoteCreateData): Vote create data.
         vote_service (VoteService): Vote service.
 
@@ -85,11 +80,11 @@ async def create_vote(
     "/{vote_id}/",
     response_model=Vote,
     status_code=status.HTTP_200_OK,
+    dependencies=[
+        Security(StrictAuthorization(), scopes=[ScopesEnum.VOTES_UPDATE_VOTE.name])
+    ],
 )
 async def update_vote(
-    _: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.VOTES_UPDATE_VOTE.name]
-    ),
     vote_data: VoteData = Depends(VoteDataUpdateDependency()),
     vote: Vote = Depends(VoteByIdGetAccessDependency()),
     vote_service: VoteService = Depends(),
@@ -97,7 +92,6 @@ async def update_vote(
     """API which updates vote.
 
     Args:
-        _ (CurrentUser): Current user object.
         vote_data (VoteData): Vote update data.
         vote (Vote): Vote object.
         vote_service (VoteService): Vote service.
@@ -112,18 +106,17 @@ async def update_vote(
 @router.delete(
     "/{vote_id}/",
     status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[
+        Security(StrictAuthorization(), scopes=[ScopesEnum.VOTES_DELETE_VOTE.name])
+    ],
 )
 async def delete_vote(
-    _: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.VOTES_DELETE_VOTE.name]
-    ),
     vote: Vote = Depends(VoteByIdGetAccessDependency()),
     vote_service: VoteService = Depends(),
 ) -> None:
     """API which deletes vote.
 
     Args:
-        _ (CurrentUser): Current user object.
         vote (Vote): Vote object.
         vote_service (VoteService): Vote service.
 

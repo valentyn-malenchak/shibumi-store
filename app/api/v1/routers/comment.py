@@ -14,7 +14,6 @@ from app.api.v1.models.comment import (
     CommentCreateData,
     CommentUpdateData,
 )
-from app.api.v1.models.user import CurrentUser
 from app.api.v1.services.comment import CommentService
 
 router = APIRouter(prefix="/comments", tags=["comments"])
@@ -24,17 +23,16 @@ router = APIRouter(prefix="/comments", tags=["comments"])
     "/{comment_id}/",
     response_model=Comment,
     status_code=status.HTTP_200_OK,
+    dependencies=[
+        Security(OptionalAuthorization(), scopes=[ScopesEnum.COMMENTS_GET_COMMENT.name])
+    ],
 )
 async def get_comment(
-    _: CurrentUser | None = Security(
-        OptionalAuthorization(), scopes=[ScopesEnum.COMMENTS_GET_COMMENT.name]
-    ),
     comment: Comment = Depends(CommentByIdGetDependency()),
 ) -> Comment:
     """API which returns comment.
 
     Args:
-        _ (CurrentUser | None): Current user object or None.
         comment (Comment): Comment object.
 
     Returns:
@@ -48,18 +46,19 @@ async def get_comment(
     "/",
     response_model=Comment,
     status_code=status.HTTP_201_CREATED,
+    dependencies=[
+        Security(
+            StrictAuthorization(), scopes=[ScopesEnum.COMMENTS_CREATE_COMMENT.name]
+        ),
+    ],
 )
 async def create_comment(
-    _: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.COMMENTS_CREATE_COMMENT.name]
-    ),
     comment_data: CommentCreateData = Depends(CommentDataCreateDependency()),
     comment_service: CommentService = Depends(),
 ) -> Comment:
     """API which creates comment.
 
     Args:
-        _ (CurrentUser): Current user object.
         comment_data (CommentCreateData): Comment create data.
         comment_service (CommentService): Comment service.
 
@@ -74,12 +73,14 @@ async def create_comment(
     "/{comment_id}/",
     response_model=Comment,
     status_code=status.HTTP_200_OK,
+    dependencies=[
+        Security(
+            StrictAuthorization(), scopes=[ScopesEnum.COMMENTS_UPDATE_COMMENT.name]
+        )
+    ],
 )
 async def update_comment(
     comment_data: CommentUpdateData,
-    _: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.COMMENTS_UPDATE_COMMENT.name]
-    ),
     comment: Comment = Depends(CommentByIdGetAccessDependency()),
     comment_service: CommentService = Depends(),
 ) -> Comment:
@@ -87,7 +88,6 @@ async def update_comment(
 
     Args:
         comment_data (CommentUpdateData): Comment update data.
-        _ (CurrentUser): Current user object.
         comment (CommentCreateData): Comment object.
         comment_service (CommentService): Comment service.
 

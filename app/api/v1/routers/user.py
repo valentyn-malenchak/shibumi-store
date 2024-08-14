@@ -55,11 +55,15 @@ async def get_user_me(
     return current_user.object
 
 
-@router.get("/", response_model=UserList, status_code=status.HTTP_200_OK)
+@router.get(
+    "/",
+    response_model=UserList,
+    status_code=status.HTTP_200_OK,
+    dependencies=[
+        Security(StrictAuthorization(), scopes=[ScopesEnum.USERS_GET_USERS.name])
+    ],
+)
 async def get_users(
-    _: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.USERS_GET_USERS.name]
-    ),
     filter_: UserFilter = Depends(),
     search: Search = Depends(),
     sorting: Sorting = Depends(),
@@ -69,7 +73,6 @@ async def get_users(
     """API which returns users list.
 
     Args:
-        _ (CurrentUser): Current user object.
         filter_ (UserFilter): Parameters for list filtering.
         search (Search): Parameters for list searching.
         sorting (Sorting): Parameters for sorting.
@@ -88,17 +91,18 @@ async def get_users(
     )
 
 
-@router.get("/{user_id}/", response_model=ShortUser, status_code=status.HTTP_200_OK)
-async def get_user(
-    _: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.USERS_GET_USER.name]
-    ),
-    user: User = Depends(UserByIdGetDependency()),
-) -> User:
+@router.get(
+    "/{user_id}/",
+    response_model=ShortUser,
+    status_code=status.HTTP_200_OK,
+    dependencies=[
+        Security(StrictAuthorization(), scopes=[ScopesEnum.USERS_GET_USER.name])
+    ],
+)
+async def get_user(user: User = Depends(UserByIdGetDependency())) -> User:
     """API which returns a specific user.
 
     Args:
-        _ (CurrentUser): Current user object.
         user (User): User object.
 
     Returns:
@@ -108,18 +112,21 @@ async def get_user(
     return user
 
 
-@router.post("/", response_model=ShortUser, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/",
+    response_model=ShortUser,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[
+        Security(OptionalAuthorization(), scopes=[ScopesEnum.USERS_CREATE_USER.name])
+    ],
+)
 async def create_user(
-    _: CurrentUser | None = Security(
-        OptionalAuthorization(), scopes=[ScopesEnum.USERS_CREATE_USER.name]
-    ),
     user_data: BaseUserCreateData = Depends(UserDataCreateDependency()),
     user_service: UserService = Depends(),
 ) -> User:
     """API which creates a new user.
 
     Args:
-        _ (CurrentUser | None): Current user object or None.
         user_data (BaseUserCreateData): User registration data.
         user_service (UserService): User service.
 
@@ -181,11 +188,15 @@ async def verify_user_email(
         )
 
 
-@router.patch("/{user_id}/", response_model=ShortUser, status_code=status.HTTP_200_OK)
+@router.patch(
+    "/{user_id}/",
+    response_model=ShortUser,
+    status_code=status.HTTP_200_OK,
+    dependencies=[
+        Security(StrictAuthorization(), scopes=[ScopesEnum.USERS_UPDATE_USER.name])
+    ],
+)
 async def update_user(
-    _: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.USERS_UPDATE_USER.name]
-    ),
     user: User = Depends(UserUpdateAccessDependency()),
     user_data: BaseUserUpdateData = Depends(UserDataUpdateDependency()),
     user_service: UserService = Depends(),
@@ -193,7 +204,6 @@ async def update_user(
     """API which updates a user object.
 
     Args:
-        _ (CurrentUser): Current user object.
         user (User): User object.
         user_data (BaseUserUpdateData): User data to update.
         user_service (UserService): User service.
@@ -205,11 +215,16 @@ async def update_user(
     return await user_service.update(item=user, data=user_data)
 
 
-@router.patch("/{user_id}/password/", status_code=status.HTTP_204_NO_CONTENT)
+@router.patch(
+    "/{user_id}/password/",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[
+        Security(
+            StrictAuthorization(), scopes=[ScopesEnum.USERS_UPDATE_USER_PASSWORD.name]
+        )
+    ],
+)
 async def update_user_password(
-    _: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.USERS_UPDATE_USER_PASSWORD.name]
-    ),
     user: User = Depends(UserByIdGetAccessDependency()),
     password: UserPasswordUpdateData = Depends(UserPasswordDataUpdateDependency()),
     user_service: UserService = Depends(),
@@ -217,7 +232,6 @@ async def update_user_password(
     """API which updates a user password.
 
     Args:
-        _ (CurrentUser): Current user object.
         user (User): User object.
         password (UserPasswordUpdateData): Old and new passwords.
         user_service (UserService): User service.
@@ -228,18 +242,20 @@ async def update_user_password(
     )
 
 
-@router.delete("/{user_id}/", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{user_id}/",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[
+        Security(StrictAuthorization(), scopes=[ScopesEnum.USERS_DELETE_USER.name])
+    ],
+)
 async def delete_user(
-    _: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.USERS_DELETE_USER.name]
-    ),
     user: User = Depends(UserDeleteAccessDependency()),
     user_service: UserService = Depends(),
 ) -> None:
     """API which softly deletes a user object.
 
     Args:
-        _ (CurrentUser): Current user object.
         user (User): User object.
         user_service (UserService): User service.
 
