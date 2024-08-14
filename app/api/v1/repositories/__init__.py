@@ -1,4 +1,13 @@
-"""Module that contains base repository abstract class."""
+"""Module that contains base repository abstract class.
+
+Repository rules:
+
+- Defines all possible database operations for each entity.
+- Are independent and can't use other repositories.
+- Each database query should support transactions.
+- Are not aware of HTTP requests.
+
+"""
 
 import abc
 from collections.abc import Mapping

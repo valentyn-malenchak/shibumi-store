@@ -1,4 +1,11 @@
-"""Module that contains common domain models."""
+"""Module that contains common domain models.
+
+Model rules:
+
+- Recommended name formats: "{Entity}" or "{RelatedEntity}{Operation}{Entity}".
+- To ensure better understanding, minimize the use of inheritance.
+
+"""
 
 from typing import Annotated, Any
 

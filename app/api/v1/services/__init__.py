@@ -1,4 +1,15 @@
-"""Module that contains base service abstract class."""
+"""Module that contains base service abstract class.
+
+Service rules:
+
+- Defines API interactions for each entity.
+- In most cases should use own repository, but repositories of other entities are
+also allowed. It ensures flexible transaction support.
+- Services are the only layer that can use repositories.
+- Can't use other entity services or MongoService.
+- Are not aware of HTTP requests.
+
+"""
 
 import abc
 from typing import Any

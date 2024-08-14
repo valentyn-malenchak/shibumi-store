@@ -1,4 +1,14 @@
-"""Contains common domain validator classes."""
+"""Contains common domain validator classes.
+
+Validator rules:
+
+- Validates concrete chunk of HTTP request data.
+- Recommended name format: {Entity}{Operation}Validator.
+- Should use entity services or other validators.
+- In general it is not recommended to make "chain" validators, if possible it is
+better to implement this on dependencies level.
+
+"""
 
 import abc
 from typing import Any
