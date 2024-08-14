@@ -270,7 +270,7 @@ class UserService(BaseService):
             password (str): Password to update.
 
         Raises:
-            InvalidVerificationTokenError: in case verification token is invalid.
+            InvalidVerificationTokenError: in case reset password token is invalid.
 
         """
 
@@ -322,7 +322,7 @@ class UserService(BaseService):
             token (str): Verification token.
 
         Raises:
-            InvalidVerificationTokenError: in case verification token is invalid.
+            InvalidVerificationTokenError: in case email verification token is invalid.
 
         """
 

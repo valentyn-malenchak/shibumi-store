@@ -177,6 +177,9 @@ async def verify_user_email(
         user (User): User object.
         user_service (UserService): User service.
 
+    Raises:
+        HTTPException: in case email verification token is invalid.
+
     """
     try:
         return await user_service.verify_email(id_=user.id, token=verify_email.token)
@@ -290,6 +293,9 @@ async def reset_user_password(
         reset_password (UserPasswordResetData): Reset token with new password.
         user (User): User object.
         user_service (UserService): User service.
+
+    Raises:
+        HTTPException: in case reset password token is invalid.
 
     """
     try:
