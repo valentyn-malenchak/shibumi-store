@@ -8,10 +8,10 @@ from freezegun import freeze_time
 from httpx import AsyncClient
 
 from app.constants import (
-    AppConstants,
     HTTPErrorMessagesEnum,
 )
 from app.services.mongo.constants import MongoCollectionsEnum
+from app.settings import SETTINGS
 from app.tests.api.v1 import BaseAPITest
 from app.tests.constants import (
     CUSTOMER_USER,
@@ -43,7 +43,7 @@ class TestComment(BaseAPITest):
         """Test get comment."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -79,7 +79,7 @@ class TestComment(BaseAPITest):
         """Test get comment in case there is no token."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -107,7 +107,7 @@ class TestComment(BaseAPITest):
         """Test get comment in case user does not have appropriate scope."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -127,7 +127,7 @@ class TestComment(BaseAPITest):
         """Test get comment in case comment is not found."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -155,7 +155,7 @@ class TestComment(BaseAPITest):
         """Test create comment in case of root comment."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/comments/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/",
             json={
                 "thread_id": "6669b5634cef83e11dbc7abf",
                 "body": "some product question 1",
@@ -197,7 +197,7 @@ class TestComment(BaseAPITest):
         """Test create comment in case comment has parent."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/comments/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/",
             json={
                 "thread_id": "6669b5634cef83e11dbc7abf",
                 "body": "some product question 2",
@@ -227,7 +227,7 @@ class TestComment(BaseAPITest):
         """Test create comment in case there is no token."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/comments/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/",
             json={
                 "thread_id": "6669b5634cef83e11dbc7abf",
                 "body": "some product question 1",
@@ -249,7 +249,7 @@ class TestComment(BaseAPITest):
         """Test create comment in case user does not have appropriate scope."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/comments/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/",
             json={
                 "thread_id": "6669b5634cef83e11dbc7abf",
                 "body": "some product question 1",
@@ -272,7 +272,7 @@ class TestComment(BaseAPITest):
         """Test create comment in case request data is invalid."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/comments/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/",
             json={"parent_comment_id": 123},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -298,7 +298,7 @@ class TestComment(BaseAPITest):
         """Test create comment in case thread is not found."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/comments/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/",
             json={
                 "thread_id": "6669b5634cef83e11dbc7abf",
                 "body": "some product question 1",
@@ -325,7 +325,7 @@ class TestComment(BaseAPITest):
         """Test create comment in case parent comment is not found."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/comments/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/",
             json={
                 "thread_id": "6669b5634cef83e11dbc7abf",
                 "body": "some product question 2",
@@ -360,7 +360,7 @@ class TestComment(BaseAPITest):
         """
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/comments/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/",
             json={
                 "thread_id": "6669b5de4cef83e11dbc7ac2",
                 "body": "some product question 1",
@@ -396,7 +396,7 @@ class TestComment(BaseAPITest):
         """Test update comment."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
             json={"body": "edited seventh product message"},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -422,7 +422,7 @@ class TestComment(BaseAPITest):
         """Test update comment in case there is no token."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
             json={"body": "edited seventh product message"},
         )
 
@@ -440,7 +440,7 @@ class TestComment(BaseAPITest):
         """Test update comment in case user does not have appropriate scope."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
             json={"body": "edited seventh product message"},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -467,7 +467,7 @@ class TestComment(BaseAPITest):
         """Test update comment in case request data is invalid."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
             json={},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -493,7 +493,7 @@ class TestComment(BaseAPITest):
         """Test update comment in case comment is not found."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
             json={},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -524,7 +524,7 @@ class TestComment(BaseAPITest):
         """
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/comments/666af91a6aba47cfb60efb36/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af91a6aba47cfb60efb36/",
             json={},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )

@@ -8,10 +8,10 @@ from freezegun import freeze_time
 from httpx import AsyncClient
 
 from app.constants import (
-    AppConstants,
     HTTPErrorMessagesEnum,
 )
 from app.services.mongo.constants import MongoCollectionsEnum
+from app.settings import SETTINGS
 from app.tests.api.v1 import BaseAPITest
 from app.tests.constants import (
     CUSTOMER_USER,
@@ -42,7 +42,7 @@ class TestVote(BaseAPITest):
         """Test get vote."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -61,7 +61,7 @@ class TestVote(BaseAPITest):
         """Test get vote in case there is no token."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
         )
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -78,7 +78,7 @@ class TestVote(BaseAPITest):
         """Test get vote in case user does not have appropriate scope."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -104,7 +104,7 @@ class TestVote(BaseAPITest):
         """Test get vote in case vote is not found."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -133,7 +133,7 @@ class TestVote(BaseAPITest):
         """Test get vote in case user tries to get vote of another user."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/votes/66a7f2196da2a20f1db87a29/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/66a7f2196da2a20f1db87a29/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -160,7 +160,7 @@ class TestVote(BaseAPITest):
         """Test create vote in case of upvote."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/votes/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/",
             json={"comment_id": "666af8c16aba47cfb60efb32", "value": True},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -176,7 +176,7 @@ class TestVote(BaseAPITest):
 
         # Checks if upvote counter changes
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/comments/666af8c16aba47cfb60efb32/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af8c16aba47cfb60efb32/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -213,7 +213,7 @@ class TestVote(BaseAPITest):
         """Test create vote in case of downvote."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/votes/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/",
             json={"comment_id": "666af8c16aba47cfb60efb32", "value": False},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -229,7 +229,7 @@ class TestVote(BaseAPITest):
 
         # Checks if downvote counter changes
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/comments/666af8c16aba47cfb60efb32/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af8c16aba47cfb60efb32/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -253,7 +253,7 @@ class TestVote(BaseAPITest):
         """Test create vote in case there is no token."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/votes/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/",
             json={"comment_id": "666af8c16aba47cfb60efb32", "value": True},
         )
 
@@ -271,7 +271,7 @@ class TestVote(BaseAPITest):
         """Test create vote in case user does not have appropriate scope."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/votes/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/",
             json={"comment_id": "666af8c16aba47cfb60efb32", "value": True},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -290,7 +290,7 @@ class TestVote(BaseAPITest):
         """Test create vote in case request data is invalid."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/votes/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/",
             json={},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -317,7 +317,7 @@ class TestVote(BaseAPITest):
         """Test create vote in case comment is not found."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/votes/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/",
             json={"comment_id": "666af8c16aba47cfb60efb32", "value": True},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -347,7 +347,7 @@ class TestVote(BaseAPITest):
         """Test create vote in case user vote for comment is already created."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/votes/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/",
             json={"comment_id": "666af8ae6aba47cfb60efb31", "value": True},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -382,7 +382,7 @@ class TestVote(BaseAPITest):
 
         # Change to downvote
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             json={"value": False},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -399,7 +399,7 @@ class TestVote(BaseAPITest):
 
         # Check if count of upvotes/downvotes changed
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/comments/666af8ae6aba47cfb60efb31/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af8ae6aba47cfb60efb31/",
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -418,7 +418,7 @@ class TestVote(BaseAPITest):
 
         # Change to upvote
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             json={"value": True},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -435,7 +435,7 @@ class TestVote(BaseAPITest):
 
         # Check if count of upvotes/downvotes changed
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/comments/666af8ae6aba47cfb60efb31/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af8ae6aba47cfb60efb31/",
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -457,7 +457,7 @@ class TestVote(BaseAPITest):
         """Test update vote in case there is no token."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             json={"value": False},
         )
 
@@ -475,7 +475,7 @@ class TestVote(BaseAPITest):
         """Test update vote in case user does not have appropriate scope."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             json={"value": False},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -496,7 +496,7 @@ class TestVote(BaseAPITest):
         """Test update vote in case request data is invalid."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             json={},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -528,7 +528,7 @@ class TestVote(BaseAPITest):
         """Test update vote in case vote is not found."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             json={"value": False},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -558,7 +558,7 @@ class TestVote(BaseAPITest):
         """Test update vote in case user tries to update vote of another user."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/votes/66a7f2196da2a20f1db87a29/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/66a7f2196da2a20f1db87a29/",
             json={"value": False},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -586,7 +586,7 @@ class TestVote(BaseAPITest):
         """Test update vote in case user tries to set the same value."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             json={"value": True},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -614,7 +614,7 @@ class TestVote(BaseAPITest):
         """Test delete vote."""
 
         response = await test_client.delete(
-            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -622,7 +622,7 @@ class TestVote(BaseAPITest):
 
         # Check if count of upvotes/downvotes changed
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/comments/666af8ae6aba47cfb60efb31/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af8ae6aba47cfb60efb31/",
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -644,7 +644,7 @@ class TestVote(BaseAPITest):
         """Test delete vote in case there is no token."""
 
         response = await test_client.delete(
-            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
         )
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -661,7 +661,7 @@ class TestVote(BaseAPITest):
         """Test delete vote in case user does not have appropriate scope."""
 
         response = await test_client.delete(
-            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -687,7 +687,7 @@ class TestVote(BaseAPITest):
         """Test delete vote in case vote is not found."""
 
         response = await test_client.delete(
-            f"{AppConstants.API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/6692aa64c8c252998d87ad2b/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -716,7 +716,7 @@ class TestVote(BaseAPITest):
         """Test delete vote in case user tries to delete vote of another user."""
 
         response = await test_client.delete(
-            f"{AppConstants.API_V1_PREFIX}/votes/66a7f2196da2a20f1db87a29/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/votes/66a7f2196da2a20f1db87a29/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 

@@ -6,8 +6,8 @@ import pytest
 from fastapi import status
 from httpx import AsyncClient
 
-from app.constants import AppConstants
 from app.services.mongo.constants import MongoCollectionsEnum
+from app.settings import SETTINGS
 from app.tests.api.v1 import BaseAPITest
 from app.tests.constants import (
     CUSTOMER_USER,
@@ -27,7 +27,7 @@ class TestRole(BaseAPITest):
     ) -> None:
         """Test get roles list in case there is no token."""
 
-        response = await test_client.get(f"{AppConstants.API_V1_PREFIX}/roles/")
+        response = await test_client.get(f"{SETTINGS.APP_API_V1_PREFIX}/roles/")
 
         assert redis_get_mock.call_count == 2  # noqa: PLR2004
         assert redis_setex_mock.call_count == 1
@@ -86,7 +86,7 @@ class TestRole(BaseAPITest):
         """Test get roles list in case user is authorized."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/roles/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/roles/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -149,7 +149,7 @@ class TestRole(BaseAPITest):
     ) -> None:
         """Test get roles list in roles are cached."""
 
-        response = await test_client.get(f"{AppConstants.API_V1_PREFIX}/roles/")
+        response = await test_client.get(f"{SETTINGS.APP_API_V1_PREFIX}/roles/")
 
         assert redis_get_mock.call_count == 2  # noqa: PLR2004
 

@@ -8,10 +8,10 @@ from freezegun import freeze_time
 from httpx import AsyncClient
 
 from app.constants import (
-    AppConstants,
     HTTPErrorMessagesEnum,
 )
 from app.services.mongo.constants import MongoCollectionsEnum
+from app.settings import SETTINGS
 from app.tests.api.v1 import BaseAPITest
 from app.tests.constants import (
     CUSTOMER_USER,
@@ -41,7 +41,7 @@ class TestThread(BaseAPITest):
         """Test get thread."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -66,7 +66,7 @@ class TestThread(BaseAPITest):
         """Test get thread in case there is no token."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/"
+            f"{SETTINGS.APP_API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/"
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -89,7 +89,7 @@ class TestThread(BaseAPITest):
         """Test get thread in case user does not have appropriate scope."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -107,7 +107,7 @@ class TestThread(BaseAPITest):
         """Test get thread in case thread is not found."""
 
         response = await test_client.get(
-            f"{AppConstants.API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/threads/6669b5634cef83e11dbc7abf/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -130,7 +130,7 @@ class TestThread(BaseAPITest):
         """Test create thread."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/threads/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/threads/",
             json={
                 "name": "Thread name",
                 "body": "Thread body!",
@@ -151,7 +151,7 @@ class TestThread(BaseAPITest):
         """Test create thread in case there is no token."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/threads/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/threads/",
             json={
                 "name": "Thread name",
                 "body": "Thread body!",
@@ -172,7 +172,7 @@ class TestThread(BaseAPITest):
         """Test create thread in case user does not have appropriate scope."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/threads/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/threads/",
             json={
                 "name": "Thread name",
                 "body": "Thread body!",
@@ -194,7 +194,7 @@ class TestThread(BaseAPITest):
         """Test create thread in case request data is invalid."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/threads/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/threads/",
             json={},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -222,7 +222,7 @@ class TestThread(BaseAPITest):
         """Test update thread."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/threads/66b729b027dcb71d3b8f0fe8/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/threads/66b729b027dcb71d3b8f0fe8/",
             json={
                 "name": "New thread name",
                 "body": "New thread body!",
@@ -244,7 +244,7 @@ class TestThread(BaseAPITest):
         """Test update thread in case there is no token."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/threads/66b729b027dcb71d3b8f0fe8/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/threads/66b729b027dcb71d3b8f0fe8/",
             json={
                 "name": "New thread name",
                 "body": "New thread body!",
@@ -265,7 +265,7 @@ class TestThread(BaseAPITest):
         """Test update thread in case user does not have appropriate scope."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/threads/66b729b027dcb71d3b8f0fe8/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/threads/66b729b027dcb71d3b8f0fe8/",
             json={
                 "name": "New thread name",
                 "body": "New thread body!",
@@ -289,7 +289,7 @@ class TestThread(BaseAPITest):
         """Test update thread in case request data is invalid."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/threads/66b729b027dcb71d3b8f0fe8/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/threads/66b729b027dcb71d3b8f0fe8/",
             json={},
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
@@ -314,7 +314,7 @@ class TestThread(BaseAPITest):
         """Test update thread in case thread is not found."""
 
         response = await test_client.patch(
-            f"{AppConstants.API_V1_PREFIX}/threads/66b729b027dcb71d3b8f0fe8/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/threads/66b729b027dcb71d3b8f0fe8/",
             json={
                 "name": "New thread name",
                 "body": "New thread body!",

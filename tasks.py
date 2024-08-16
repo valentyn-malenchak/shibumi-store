@@ -6,10 +6,8 @@ Python code into CLI-invokable tasks.
 import asyncio
 
 from invoke import Context, task
-from mongodb_migrations.cli import MigrationManager
-from mongodb_migrations.config import Configuration, Execution
 
-from app.settings import SETTINGS
+from app.services import MongoDBService
 from app.tests.fixtures.manager import FileFixtureManager
 
 
@@ -70,7 +68,7 @@ def upgrade_migrations(_: Context, to_datetime: str | None = None) -> None:
 
     Args:
         _ (invoke.Context): The context object representing the current invocation.
-        to_datetime (str): Defines a prefix of migration upgrade/downgrade
+        to_datetime (str | None): Defines a prefix of migration upgrade/downgrade
         operations will reach.
 
     Example:
@@ -82,23 +80,7 @@ def upgrade_migrations(_: Context, to_datetime: str | None = None) -> None:
 
     """
 
-    config = Configuration(
-        {
-            "mongo_url": (
-                f"mongodb://{SETTINGS.MONGODB_HOST}:{SETTINGS.MONGODB_PORT}/"
-                f"{SETTINGS.MONGODB_NAME}?authSource={SETTINGS.MONGO_AUTH_SOURCE}",
-            ),
-            "mongo_database": SETTINGS.MONGODB_NAME,
-            "mongo_username": SETTINGS.MONGODB_USER,
-            "mongo_password": SETTINGS.MONGODB_PASSWORD,
-            "execution": Execution.MIGRATE,
-            "to_datetime": to_datetime,
-        }
-    )
-
-    manager = MigrationManager(config)
-
-    manager.run()
+    MongoDBService.run_migrations(upgrade=True, to_datetime=to_datetime)
 
 
 @task
@@ -107,7 +89,7 @@ def downgrade_migrations(_: Context, to_datetime: str | None = None) -> None:
 
     Args:
         _ (invoke.Context): The context object representing the current invocation.
-        to_datetime (str): Defines a prefix of migration upgrade/downgrade
+        to_datetime (str | None): Defines a prefix of migration upgrade/downgrade
         operations will reach.
 
     Example:
@@ -120,26 +102,10 @@ def downgrade_migrations(_: Context, to_datetime: str | None = None) -> None:
 
     """
 
-    config = Configuration(
-        {
-            "mongo_url": (
-                f"mongodb://{SETTINGS.MONGODB_HOST}:{SETTINGS.MONGODB_PORT}/"
-                f"{SETTINGS.MONGODB_NAME}?authSource={SETTINGS.MONGO_AUTH_SOURCE}",
-            ),
-            "mongo_database": SETTINGS.MONGODB_NAME,
-            "mongo_username": SETTINGS.MONGODB_USER,
-            "mongo_password": SETTINGS.MONGODB_PASSWORD,
-            "execution": Execution.DOWNGRADE,
-            "to_datetime": to_datetime,
-        }
-    )
-
-    manager = MigrationManager(config)
-
-    manager.run()
+    MongoDBService.run_migrations(upgrade=False, to_datetime=to_datetime)
 
 
-@task(default=True, pre=[upgrade_migrations])
+@task(default=True)
 def run(ctx: Context) -> None:
     """Runs a FastAPI application.
 
@@ -151,7 +117,7 @@ def run(ctx: Context) -> None:
 
     """
 
-    ctx.run("python -m app.app")
+    ctx.run("fastapi run")
 
 
 @task(pre=[upgrade_migrations])

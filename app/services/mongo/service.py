@@ -5,6 +5,8 @@ from typing import Any
 
 from fastapi import Depends
 from injector import inject
+from mongodb_migrations.cli import MigrationManager
+from mongodb_migrations.config import Configuration, Execution
 from motor.motor_asyncio import (
     AsyncIOMotorClientSession,
     AsyncIOMotorCollection,
@@ -32,6 +34,38 @@ class MongoDBService(BaseService):
         """
 
         self._db: AsyncIOMotorDatabase = mongo_client.client[SETTINGS.MONGODB_NAME]
+
+    @staticmethod
+    def run_migrations(upgrade: bool = True, to_datetime: str | None = None) -> None:
+        """Runs MongoDB migrations.
+
+        Args:
+            upgrade (bool): Defines type of migration (upgrade or downgrade).
+            Default to True.
+            to_datetime (str | None): Defines a prefix of migration upgrade/downgrade
+            operations will reach.
+
+        """
+
+        config = Configuration(
+            {
+                "mongo_url": (
+                    f"mongodb://{SETTINGS.MONGODB_HOST}:{SETTINGS.MONGODB_PORT}/"
+                    f"{SETTINGS.MONGODB_NAME}?authSource={SETTINGS.MONGO_AUTH_SOURCE}",
+                ),
+                "mongo_database": SETTINGS.MONGODB_NAME,
+                "mongo_username": SETTINGS.MONGODB_USER,
+                "mongo_password": SETTINGS.MONGODB_PASSWORD,
+                "execution": Execution.MIGRATE
+                if upgrade is True
+                else Execution.DOWNGRADE,
+                "to_datetime": to_datetime,
+            }
+        )
+
+        manager = MigrationManager(config)
+
+        manager.run()
 
     def _get_collection_by_name(self, collection: str) -> AsyncIOMotorCollection:
         """Fetches collection by name.
