@@ -16,6 +16,7 @@ from app.tests.api.v1 import BaseAPITest
 from app.tests.constants import (
     CUSTOMER_USER,
     FROZEN_DATETIME,
+    SHOP_SIDE_USER,
     TEST_JWT,
     USER_NO_SCOPES,
 )
@@ -31,7 +32,6 @@ class TestComment(BaseAPITest):
         [
             (
                 MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
                 MongoCollectionsEnum.COMMENTS,
             )
         ],
@@ -57,6 +57,7 @@ class TestComment(BaseAPITest):
             "path": "/666af91a6aba47cfb60efb36/666af9246aba47cfb60efb37",
             "upvotes": 0,
             "downvotes": 0,
+            "deleted": False,
             "created_at": "2024-06-13T13:50:28.453000",
             "updated_at": None,
         }
@@ -67,7 +68,6 @@ class TestComment(BaseAPITest):
         [
             (
                 MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
                 MongoCollectionsEnum.COMMENTS,
             )
         ],
@@ -92,6 +92,7 @@ class TestComment(BaseAPITest):
             "path": "/666af91a6aba47cfb60efb36/666af9246aba47cfb60efb37",
             "upvotes": 0,
             "downvotes": 0,
+            "deleted": False,
             "created_at": "2024-06-13T13:50:28.453000",
             "updated_at": None,
         }
@@ -118,7 +119,7 @@ class TestComment(BaseAPITest):
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
-        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.THREADS)],
+        [(MongoCollectionsEnum.USERS,)],
         indirect=True,
     )
     async def test_get_comment_comment_is_not_found(
@@ -173,6 +174,7 @@ class TestComment(BaseAPITest):
             "path": f"/{response.json()["id"]}",
             "upvotes": 0,
             "downvotes": 0,
+            "deleted": False,
             "created_at": FROZEN_DATETIME,
             "updated_at": None,
         }
@@ -216,6 +218,7 @@ class TestComment(BaseAPITest):
             f"{response.json()["id"]}",
             "upvotes": 0,
             "downvotes": 0,
+            "deleted": False,
             "created_at": FROZEN_DATETIME,
             "updated_at": None,
         }
@@ -383,7 +386,6 @@ class TestComment(BaseAPITest):
         [
             (
                 MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
                 MongoCollectionsEnum.COMMENTS,
             )
         ],
@@ -411,6 +413,7 @@ class TestComment(BaseAPITest):
             "path": "/666af91a6aba47cfb60efb36/666af9246aba47cfb60efb37",
             "upvotes": 0,
             "downvotes": 0,
+            "deleted": False,
             "created_at": "2024-06-13T13:50:28.453000",
             "updated_at": FROZEN_DATETIME,
         }
@@ -455,7 +458,6 @@ class TestComment(BaseAPITest):
         [
             (
                 MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
                 MongoCollectionsEnum.COMMENTS,
             )
         ],
@@ -484,7 +486,7 @@ class TestComment(BaseAPITest):
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
-        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.THREADS)],
+        [(MongoCollectionsEnum.USERS,)],
         indirect=True,
     )
     async def test_update_comment_comment_is_not_found(
@@ -507,10 +509,32 @@ class TestComment(BaseAPITest):
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.COMMENTS)],
+        indirect=True,
+    )
+    async def test_update_comment_deleted_comment(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test update comment in case comment is deleted."""
+
+        response = await test_client.patch(
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af90e6aba47cfb60efb34/",
+            json={"body": "edited seventh product message"},
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Comment")
+        }
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
         [
             (
                 MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
                 MongoCollectionsEnum.COMMENTS,
             )
         ],
@@ -532,4 +556,238 @@ class TestComment(BaseAPITest):
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
             "detail": HTTPErrorMessagesEnum.COMMENT_ACCESS_DENIED
+        }
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [
+            (
+                MongoCollectionsEnum.USERS,
+                MongoCollectionsEnum.COMMENTS,
+            )
+        ],
+        indirect=True,
+    )
+    @freeze_time(FROZEN_DATETIME)
+    async def test_delete_comment_client_user_deletes_own_comment(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test delete comment in case client user deletes own comment."""
+
+        response = await test_client.delete(
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [
+            (
+                MongoCollectionsEnum.USERS,
+                MongoCollectionsEnum.COMMENTS,
+            )
+        ],
+        indirect=True,
+    )
+    @freeze_time(FROZEN_DATETIME)
+    async def test_delete_comment_shop_side_user_deletes_own_comment(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test delete comment in case shop side user deletes own comment."""
+
+        response = await test_client.delete(
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af9786aba47cfb60efb39/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [
+            (
+                MongoCollectionsEnum.USERS,
+                MongoCollectionsEnum.COMMENTS,
+            )
+        ],
+        indirect=True,
+    )
+    @freeze_time(FROZEN_DATETIME)
+    async def test_delete_comment_client_user_deletes_another_clients_comment(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test delete comment in case client user deletes another client's comment."""
+
+        response = await test_client.delete(
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af9696aba47cfb60efb38/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.COMMENT_ACCESS_DENIED
+        }
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [
+            (
+                MongoCollectionsEnum.USERS,
+                MongoCollectionsEnum.COMMENTS,
+            )
+        ],
+        indirect=True,
+    )
+    @freeze_time(FROZEN_DATETIME)
+    async def test_delete_comment_shop_side_user_deletes_clients_comment(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test delete comment in case shop side user deletes client's comment."""
+
+        response = await test_client.delete(
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [
+            (
+                MongoCollectionsEnum.USERS,
+                MongoCollectionsEnum.COMMENTS,
+            )
+        ],
+        indirect=True,
+    )
+    @freeze_time(FROZEN_DATETIME)
+    async def test_delete_comment_client_user_deletes_shop_side_users_comment(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test delete comment in case client user deletes shop side user's comment."""
+
+        response = await test_client.delete(
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af9786aba47cfb60efb39/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.COMMENT_ACCESS_DENIED
+        }
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [
+            (
+                MongoCollectionsEnum.USERS,
+                MongoCollectionsEnum.COMMENTS,
+            )
+        ],
+        indirect=True,
+    )
+    @freeze_time(FROZEN_DATETIME)
+    async def test_delete_comment_shop_side_user_deletes_another_shop_side_user_comment(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """
+        Test delete comment in case shop side user deletes another shop side
+        user's comment.
+        """
+
+        response = await test_client.delete(
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666afa3f6aba47cfb60efb3b/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    @pytest.mark.asyncio
+    async def test_delete_comment_no_token(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test delete comment in case there is no token."""
+
+        response = await test_client.delete(
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
+        )
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED}
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
+    async def test_delete_comment_no_scope(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test delete comment in case user does not have appropriate scope."""
+
+        response = await test_client.delete(
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS,)],
+        indirect=True,
+    )
+    async def test_delete_comment_comment_is_not_found(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test delete comment in case comment is not found."""
+
+        response = await test_client.delete(
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Comment")
+        }
+
+    @pytest.mark.asyncio
+    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
+    @pytest.mark.parametrize(
+        "arrange_db",
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.COMMENTS)],
+        indirect=True,
+    )
+    async def test_delete_comment_deleted_comment(
+        self, test_client: AsyncClient, arrange_db: None
+    ) -> None:
+        """Test delete comment in case comment is deleted."""
+
+        response = await test_client.delete(
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af90e6aba47cfb60efb34/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(entity="Comment")
         }

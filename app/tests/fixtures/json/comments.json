@@ -14,6 +14,7 @@
     "path": "/666af8ae6aba47cfb60efb31",
     "upvotes": 2,
     "downvotes": 1,
+    "deleted": false,
     "created_at": {
       "$date": "2024-06-13T13:48:30.209Z"
     },
@@ -34,6 +35,7 @@
     "path": "/666af8c16aba47cfb60efb32",
     "upvotes": 0,
     "downvotes": 0,
+    "deleted": false,
     "created_at": {
       "$date": "2024-06-13T13:48:49.788Z"
     },
@@ -56,6 +58,7 @@
     "path": "/666af8ae6aba47cfb60efb31/666af8cb6aba47cfb60efb33",
     "upvotes": 0,
     "downvotes": 0,
+    "deleted": false,
     "created_at": {
       "$date": "2024-06-13T13:48:59.113Z"
     },
@@ -78,6 +81,7 @@
     "path": "/666af8ae6aba47cfb60efb31/666af90e6aba47cfb60efb34",
     "upvotes": 0,
     "downvotes": 0,
+    "deleted": true,
     "created_at": {
       "$date": "2024-06-13T13:50:06.714Z"
     },
@@ -98,6 +102,7 @@
     "path": "/666af9176aba47cfb60efb35",
     "upvotes": 0,
     "downvotes": 0,
+    "deleted": false,
     "created_at": {
       "$date": "2024-06-13T13:50:15.472Z"
     },
@@ -118,6 +123,7 @@
     "path": "/666af91a6aba47cfb60efb36",
     "upvotes": 0,
     "downvotes": 0,
+    "deleted": false,
     "created_at": {
       "$date": "2024-06-13T13:50:18.890Z"
     },
@@ -140,6 +146,7 @@
     "path": "/666af91a6aba47cfb60efb36/666af9246aba47cfb60efb37",
     "upvotes": 0,
     "downvotes": 0,
+    "deleted": false,
     "created_at": {
       "$date": "2024-06-13T13:50:28.453Z"
     },
@@ -154,7 +161,7 @@
       "$oid": "6669b5634cef83e11dbc7abf"
     },
     "user_id": {
-      "$oid": "65844f12b6de26578d98c2c8"
+      "$oid": "6598495fdf97a8e0d7e612ae"
     },
     "parent_comment_id": {
       "$oid": "666af8cb6aba47cfb60efb33"
@@ -162,6 +169,7 @@
     "path": "/666af8ae6aba47cfb60efb31/666af8cb6aba47cfb60efb33/666af9696aba47cfb60efb38",
     "upvotes": 0,
     "downvotes": 0,
+    "deleted": false,
     "created_at": {
       "$date": "2024-06-13T13:51:37.754Z"
     },
@@ -176,7 +184,7 @@
       "$oid": "6669b5634cef83e11dbc7abf"
     },
     "user_id": {
-      "$oid": "6597f14332e631f7fed1a114"
+      "$oid": "659bf67868d14b47475ec11c"
     },
     "parent_comment_id": {
       "$oid": "666af90e6aba47cfb60efb34"
@@ -184,6 +192,7 @@
     "path": "/666af8ae6aba47cfb60efb31/666af90e6aba47cfb60efb34/666af9786aba47cfb60efb39",
     "upvotes": 0,
     "downvotes": 0,
+    "deleted": false,
     "created_at": {
       "$date": "2024-06-13T13:51:52.102Z"
     },
@@ -206,6 +215,7 @@
     "path": "/666af91a6aba47cfb60efb36/666af9cf6aba47cfb60efb3a",
     "upvotes": 0,
     "downvotes": 0,
+    "deleted": false,
     "created_at": {
       "$date": "2024-06-13T13:53:19.053Z"
     },
@@ -228,6 +238,7 @@
     "path": "/666af91a6aba47cfb60efb36/666af9246aba47cfb60efb37/666afa3f6aba47cfb60efb3b",
     "upvotes": 0,
     "downvotes": 0,
+    "deleted": false,
     "created_at": {
       "$date": "2024-06-13T13:55:11.658Z"
     },

@@ -72,6 +72,7 @@ class TestAuth(BaseAPITest):
             ScopesEnum.COMMENTS_GET_COMMENT.name,
             ScopesEnum.COMMENTS_CREATE_COMMENT.name,
             ScopesEnum.COMMENTS_UPDATE_COMMENT.name,
+            ScopesEnum.COMMENTS_DELETE_COMMENT.name,
             ScopesEnum.VOTES_GET_VOTE.name,
             ScopesEnum.VOTES_CREATE_VOTE.name,
             ScopesEnum.VOTES_UPDATE_VOTE.name,

@@ -12,11 +12,11 @@ from app.api.v1.models.user import (
     UserPasswordUpdateData,
 )
 from app.api.v1.validators.user import (
-    UserAccessValidator,
     UserByIdValidator,
     UserByUsernameValidator,
     UserDeleteAccessValidator,
     UserEmailVerifiedValidator,
+    UserGetAccessValidator,
     UserPasswordValidator,
     UserRolesValidator,
     UserStatusValidator,
@@ -48,26 +48,27 @@ class UserByIdGetDependency(metaclass=SingletonMeta):
         return await user_by_id_validator.validate(user_id=user_id)
 
 
-class UserByIdGetAccessDependency(metaclass=SingletonMeta):
-    """User by identifier get access dependency."""
+class UserGetAccessDependency(metaclass=SingletonMeta):
+    """User get access dependency."""
 
     async def __call__(
         self,
         user: User = Depends(UserByIdGetDependency()),
-        user_access_validator: UserAccessValidator = Depends(),
+        user_get_access_validator: UserGetAccessValidator = Depends(),
     ) -> User:
-        """Validates access to a specific user.
+        """Validates access to a specific user on get operation.
 
         Args:
             user (User): User object.
-            user_access_validator (UserAccessValidator): User access validator.
+            user_get_access_validator (UserGetAccessValidator): User get access
+            validator.
 
         Returns:
             User: User object.
 
         """
 
-        await user_access_validator.validate(user_id=user.id)
+        await user_get_access_validator.validate(user_id=user.id)
 
         return user
 
@@ -212,7 +213,7 @@ class UserPasswordDataUpdateDependency(metaclass=SingletonMeta):
     async def __call__(
         self,
         password: UserPasswordUpdateData,
-        user: User = Depends(UserByIdGetAccessDependency()),
+        user: User = Depends(UserGetAccessDependency()),
         user_password_validator: UserPasswordValidator = Depends(),
     ) -> UserPasswordUpdateData:
         """Validates passwords on update operation.

@@ -127,8 +127,8 @@ class UserStatusValidator(BaseUserValidator):
         return user
 
 
-class UserAccessValidator(BaseUserValidator):
-    """User access validator."""
+class UserGetAccessValidator(BaseUserValidator):
+    """User get access validator."""
 
     async def validate(self, user_id: ObjectId) -> None:
         """Validates if the current user is the same as requested.
@@ -157,20 +157,21 @@ class UserUpdateAccessValidator(BaseUserValidator):
         self,
         request: Request,
         user_service: UserService = Depends(),
-        user_access_validator: UserAccessValidator = Depends(),
+        user_get_access_validator: UserGetAccessValidator = Depends(),
     ) -> None:
         """Initializes user update access validator.
 
         Args:
             request (Request): Current request object.
             user_service (UserService): User service.
-            user_access_validator (UserAccessValidator): User access validator.
+            user_get_access_validator (UserGetAccessValidator): User get access
+            validator.
 
         """
 
         super().__init__(request=request, user_service=user_service)
 
-        self.user_access_validator = user_access_validator
+        self.user_get_access_validator = user_get_access_validator
 
     async def validate(self, user: User) -> User:
         """Validates if the current user can update user from request.
@@ -189,7 +190,7 @@ class UserUpdateAccessValidator(BaseUserValidator):
         current_user = self.request.state.current_user
 
         if current_user.object.is_client is True:
-            await self.user_access_validator.validate(user_id=user.id)
+            await self.user_get_access_validator.validate(user_id=user.id)
 
         elif user and user.is_client is True:
             raise HTTPException(
@@ -233,20 +234,21 @@ class UserDeleteAccessValidator(BaseUserValidator):
         self,
         request: Request,
         user_service: UserService = Depends(),
-        user_access_validator: UserAccessValidator = Depends(),
+        user_get_access_validator: UserGetAccessValidator = Depends(),
     ) -> None:
         """Initializes user delete access validator.
 
         Args:
             request (Request): Current request object.
             user_service (UserService): User service.
-            user_access_validator (UserAccessValidator): User access validator.
+            user_get_access_validator (UserGetAccessValidator): User get access
+            validator.
 
         """
 
         super().__init__(request=request, user_service=user_service)
 
-        self.user_access_validator = user_access_validator
+        self.user_get_access_validator = user_get_access_validator
 
     async def validate(self, user: User) -> User:
         """Validates if the current user can delete requested user.
@@ -262,7 +264,7 @@ class UserDeleteAccessValidator(BaseUserValidator):
         current_user = self.request.state.current_user
 
         if current_user.object.is_client is True:
-            await self.user_access_validator.validate(user_id=user.id)
+            await self.user_get_access_validator.validate(user_id=user.id)
 
         return user
 

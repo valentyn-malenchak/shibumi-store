@@ -43,8 +43,8 @@ class VoteByIdGetDependency(metaclass=SingletonMeta):
         return await vote_by_id_validator.validate(vote_id=vote_id)
 
 
-class VoteByIdGetAccessDependency(metaclass=SingletonMeta):
-    """Vote by identifier get access dependency."""
+class VoteAccessDependency(metaclass=SingletonMeta):
+    """Vote access dependency."""
 
     async def __call__(
         self,
@@ -101,7 +101,7 @@ class VoteDataUpdateDependency(metaclass=SingletonMeta):
     async def __call__(
         self,
         vote_data: VoteData,
-        vote: Vote = Depends(VoteByIdGetAccessDependency()),
+        vote: Vote = Depends(VoteAccessDependency()),
         vote_value_update_validator: VoteValueUpdateValidator = Depends(),
     ) -> VoteData:
         """Validates data on vote update operation.

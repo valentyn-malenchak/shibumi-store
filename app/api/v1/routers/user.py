@@ -7,13 +7,13 @@ from fastapi import APIRouter, Depends, HTTPException, Security, status
 from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
 from app.api.v1.dependencies.user import (
-    UserByIdGetAccessDependency,
     UserByIdGetDependency,
     UserByUsernameStatusGetDependency,
     UserDataCreateDependency,
     UserDataUpdateDependency,
     UserDeleteAccessDependency,
     UserEmailVerifiedDependency,
+    UserGetAccessDependency,
     UserPasswordDataUpdateDependency,
     UserUpdateAccessDependency,
 )
@@ -228,7 +228,7 @@ async def update_user(
     ],
 )
 async def update_user_password(
-    user: User = Depends(UserByIdGetAccessDependency()),
+    user: User = Depends(UserGetAccessDependency()),
     password: UserPasswordUpdateData = Depends(UserPasswordDataUpdateDependency()),
     user_service: UserService = Depends(),
 ) -> None:

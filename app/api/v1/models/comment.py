@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Annotated
 
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 
 from app.api.v1.models import BSONObjectId, ObjectId
 from app.utils.pydantic import ObjectIdAnnotation
@@ -19,8 +19,16 @@ class Comment(BSONObjectId):
     path: str
     upvotes: int
     downvotes: int
+    deleted: bool
     created_at: datetime
     updated_at: datetime | None
+
+    @model_validator(mode="after")
+    def handle_deleted(self):
+        """Hides body for deleted comments."""
+        if self.deleted:
+            self.body = "[Deleted]"
+        return self
 
 
 class BaseCommentCreateData(BaseModel):

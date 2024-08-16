@@ -6,11 +6,11 @@ from fastapi import APIRouter, Depends, Security, status
 from app.api.v1.auth.auth import StrictAuthorization
 from app.api.v1.constants import ScopesEnum
 from app.api.v1.dependencies.cart import (
-    CartByIdGetAccessDependency,
+    CartAccessDependency,
     CartByUserGetDependency,
-    CartProductAddDataDependency,
-    CartProductDeleteDataDependency,
-    CartProductUpdateDataDependency,
+    CartProductDataCreateDependency,
+    CartProductDataDeleteDependency,
+    CartProductDataUpdateDependency,
 )
 from app.api.v1.dependencies.product import ProductByIdGetDependency
 from app.api.v1.models.cart import (
@@ -54,8 +54,8 @@ async def get_cart(cart: Cart = Depends(CartByUserGetDependency())) -> Cart:
     ],
 )
 async def add_product_to_the_cart(
-    cart_product: CartProduct = Depends(CartProductAddDataDependency()),
-    cart: Cart = Depends(CartByIdGetAccessDependency()),
+    cart_product: CartProduct = Depends(CartProductDataCreateDependency()),
+    cart: Cart = Depends(CartAccessDependency()),
     cart_service: CartService = Depends(),
 ) -> Cart:
     """API which adds product to the cart.
@@ -82,9 +82,9 @@ async def add_product_to_the_cart(
 )
 async def update_product_in_the_cart(
     cart_product_quantity: CartProductQuantity = Depends(
-        CartProductUpdateDataDependency()
+        CartProductDataUpdateDependency()
     ),
-    cart: Cart = Depends(CartByIdGetAccessDependency()),
+    cart: Cart = Depends(CartAccessDependency()),
     product: Product = Depends(ProductByIdGetDependency()),
     cart_service: CartService = Depends(),
 ) -> Cart:
@@ -116,8 +116,8 @@ async def update_product_in_the_cart(
     ],
 )
 async def delete_product_from_the_cart(
-    product_id: ObjectId = Depends(CartProductDeleteDataDependency()),
-    cart: Cart = Depends(CartByIdGetAccessDependency()),
+    product_id: ObjectId = Depends(CartProductDataDeleteDependency()),
+    cart: Cart = Depends(CartAccessDependency()),
     cart_service: CartService = Depends(),
 ) -> Cart:
     """API which deletes product from the cart.

@@ -5,9 +5,10 @@ from fastapi import APIRouter, Depends, Security, status
 from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
 from app.api.v1.dependencies.comment import (
-    CommentByIdGetAccessDependency,
     CommentByIdGetDependency,
     CommentDataCreateDependency,
+    CommentDeleteAccessDependency,
+    CommentUpdateAccessDependency,
 )
 from app.api.v1.models.comment import (
     Comment,
@@ -81,7 +82,7 @@ async def create_comment(
 )
 async def update_comment(
     comment_data: CommentUpdateData,
-    comment: Comment = Depends(CommentByIdGetAccessDependency()),
+    comment: Comment = Depends(CommentUpdateAccessDependency()),
     comment_service: CommentService = Depends(),
 ) -> Comment:
     """API which updates comment.
@@ -96,3 +97,26 @@ async def update_comment(
 
     """
     return await comment_service.update_by_id(id_=comment.id, data=comment_data)
+
+
+@router.delete(
+    "/{comment_id}/",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[
+        Security(
+            StrictAuthorization(), scopes=[ScopesEnum.COMMENTS_DELETE_COMMENT.name]
+        )
+    ],
+)
+async def delete_comment(
+    comment: Comment = Depends(CommentDeleteAccessDependency()),
+    comment_service: CommentService = Depends(),
+) -> None:
+    """API which softly deletes comment.
+
+    Args:
+        comment (CommentCreateData): Comment object.
+        comment_service (CommentService): Comment service.
+
+    """
+    return await comment_service.delete_by_id(id_=comment.id)

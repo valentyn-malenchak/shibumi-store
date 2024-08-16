@@ -5,7 +5,7 @@ from typing import Annotated
 from bson import ObjectId
 from fastapi import Depends
 
-from app.api.v1.dependencies.product import ProductByIdGetAccessDependency
+from app.api.v1.dependencies.product import ProductAccessDependency
 from app.api.v1.models.cart import (
     Cart,
     CartProduct,
@@ -49,8 +49,8 @@ class CartByIdGetDependency(metaclass=SingletonMeta):
         return await cart_by_id_validator.validate(cart_id=cart_id)
 
 
-class CartByIdGetAccessDependency(metaclass=SingletonMeta):
-    """Cart by identifier get access dependency."""
+class CartAccessDependency(metaclass=SingletonMeta):
+    """Cart access dependency."""
 
     async def __call__(
         self,
@@ -89,25 +89,29 @@ class CartByUserGetDependency(metaclass=SingletonMeta):
         return await cart_by_user_validator.validate()
 
 
-class CartProductAddQuantityDependency(metaclass=SingletonMeta):
-    """Cart product add quantity dependency."""
+class CartProductDataCreateDependency(metaclass=SingletonMeta):
+    """Cart product data create dependency."""
 
-    async def __call__(
+    async def __call__(  # noqa: PLR0913
         self,
         cart_product: CartProduct,
+        cart: Cart = Depends(CartAccessDependency()),
         product_by_id_validator: ProductByIdValidator = Depends(),
         product_access_validator: ProductAccessValidator = Depends(),
         product_quantity_validator: ProductQuantityValidator = Depends(),
+        cart_product_validator: CartProductValidator = Depends(),
     ) -> CartProduct:
-        """Validates product quantity available on add to cart operation.
+        """Validates if cart product data is valid on create.
 
         Args:
             cart_product (CartProduct): Cart product.
+            cart (Cart): Cart object.
             product_by_id_validator (ProductByIdValidator): Product by identifier
             validator.
             product_access_validator (ProductAccessValidator): Product access validator.
             product_quantity_validator (ProductQuantityValidator): Product quantity
             validator.
+            cart_product_validator (CartProductValidator): Cart product validator.
 
         Returns:
             CartProduct: Cart product.
@@ -122,25 +126,33 @@ class CartProductAddQuantityDependency(metaclass=SingletonMeta):
             product=product, quantity=cart_product.quantity
         )
 
+        await cart_product_validator.validate(
+            product_id=cart_product.id, cart=cart, negative=True
+        )
+
         return cart_product
 
 
-class CartProductUpdateQuantityDependency(metaclass=SingletonMeta):
-    """Cart product update quantity dependency."""
+class CartProductDataUpdateDependency(metaclass=SingletonMeta):
+    """Cart product data update dependency."""
 
     async def __call__(
         self,
         cart_product_quantity: CartProductQuantity,
-        product: Product = Depends(ProductByIdGetAccessDependency()),
+        product: Product = Depends(ProductAccessDependency()),
+        cart: Cart = Depends(CartAccessDependency()),
         product_quantity_validator: ProductQuantityValidator = Depends(),
+        cart_product_validator: CartProductValidator = Depends(),
     ) -> CartProductQuantity:
-        """Validates product quantity available on update in cart operation.
+        """Validates if cart product data is valid on update.
 
         Args:
             cart_product_quantity (CartProductQuantity): Cart product quantity.
             product (Product): Product object.
+            cart (Cart): Cart object.
             product_quantity_validator (ProductQuantityValidator): Product quantity
             validator.
+            cart_product_validator (CartProductValidator): Cart product validator.
 
         Returns:
             CartProductQuantity: Cart product quantity.
@@ -151,74 +163,18 @@ class CartProductUpdateQuantityDependency(metaclass=SingletonMeta):
             product=product, quantity=cart_product_quantity.quantity
         )
 
-        return cart_product_quantity
-
-
-class CartProductAddDataDependency(metaclass=SingletonMeta):
-    """Cart product add data dependency."""
-
-    async def __call__(
-        self,
-        cart_product: CartProduct = Depends(CartProductAddQuantityDependency()),
-        cart: Cart = Depends(CartByIdGetAccessDependency()),
-        cart_product_validator: CartProductValidator = Depends(),
-    ) -> CartProduct:
-        """Validates if cart product data is valid on adding.
-
-        Args:
-            cart_product (CartProduct): Cart product.
-            cart (Cart): Cart object.
-            cart_product_validator (CartProductValidator): Cart product validator.
-
-        Returns:
-            CartProduct: Cart product.
-
-        """
-
-        await cart_product_validator.validate(
-            product_id=cart_product.id, cart=cart, negative=True
-        )
-
-        return cart_product
-
-
-class CartProductUpdateDataDependency(metaclass=SingletonMeta):
-    """Cart product update data dependency."""
-
-    async def __call__(
-        self,
-        cart_product_quantity: CartProductQuantity = Depends(
-            CartProductUpdateQuantityDependency()
-        ),
-        cart: Cart = Depends(CartByIdGetAccessDependency()),
-        product: Product = Depends(ProductByIdGetAccessDependency()),
-        cart_product_validator: CartProductValidator = Depends(),
-    ) -> CartProductQuantity:
-        """Validates if cart product data is valid on update.
-
-        Args:
-            cart_product_quantity (CartProductQuantity): Cart product quantity.
-            cart (Cart): Cart object.
-            product (Product): Product object.
-            cart_product_validator (CartProductValidator): Cart product validator.
-
-        Returns:
-            CartProductQuantity: Cart product quantity.
-
-        """
-
         await cart_product_validator.validate(product_id=product.id, cart=cart)
 
         return cart_product_quantity
 
 
-class CartProductDeleteDataDependency(metaclass=SingletonMeta):
-    """Cart product delete data dependency."""
+class CartProductDataDeleteDependency(metaclass=SingletonMeta):
+    """Cart product data delete dependency."""
 
     async def __call__(
         self,
-        product: Product = Depends(ProductByIdGetAccessDependency()),
-        cart: Cart = Depends(CartByIdGetAccessDependency()),
+        product: Product = Depends(ProductAccessDependency()),
+        cart: Cart = Depends(CartAccessDependency()),
         cart_product_validator: CartProductValidator = Depends(),
     ) -> ObjectId:
         """Validates if cart product data is valid on delete.
