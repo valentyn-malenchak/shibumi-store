@@ -5,6 +5,7 @@ from typing import Annotated
 
 from pydantic import BaseModel, model_validator
 
+from app.api.v1.constants import PlaceholderEnum
 from app.api.v1.models import BSONObjectId, ObjectId
 from app.utils.pydantic import ObjectIdAnnotation
 
@@ -24,10 +25,10 @@ class Comment(BSONObjectId):
     updated_at: datetime | None
 
     @model_validator(mode="after")
-    def handle_deleted(self):
+    def handle_deleted(self) -> "Comment":
         """Hides body for deleted comments."""
         if self.deleted:
-            self.body = "[Deleted]"
+            self.body = PlaceholderEnum.DELETED_COMMENT
         return self
 
 

@@ -677,7 +677,7 @@ class TestProduct(BaseAPITest):
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.PRODUCT_ACCESS_DENIED
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="product")
         }
 
     @pytest.mark.asyncio
@@ -770,7 +770,7 @@ class TestProduct(BaseAPITest):
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.PRODUCT_ACCESS_DENIED
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="product")
         }
 
     @pytest.mark.asyncio
@@ -1385,7 +1385,9 @@ class TestProduct(BaseAPITest):
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.PRODUCTS_NOT_AVAILABLE_ACCESS_DENIED
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(
+                destination="not available product"
+            )
         }
 
     @pytest.mark.asyncio
@@ -1409,7 +1411,9 @@ class TestProduct(BaseAPITest):
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.PRODUCTS_NOT_AVAILABLE_ACCESS_DENIED
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(
+                destination="not available product"
+            )
         }
 
     @pytest.mark.asyncio
