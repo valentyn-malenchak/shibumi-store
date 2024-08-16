@@ -45,8 +45,8 @@ class ProductByIdGetDependency(metaclass=SingletonMeta):
         return await product_by_id_validator.validate(product_id=product_id)
 
 
-class ProductByIdGetAccessDependency(metaclass=SingletonMeta):
-    """Product by identifier get access dependency."""
+class ProductAccessDependency(metaclass=SingletonMeta):
+    """Product access dependency."""
 
     async def __call__(
         self,

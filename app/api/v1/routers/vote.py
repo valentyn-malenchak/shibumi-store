@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Security, status
 from app.api.v1.auth.auth import StrictAuthorization
 from app.api.v1.constants import ScopesEnum
 from app.api.v1.dependencies.vote import (
-    VoteByIdGetAccessDependency,
+    VoteAccessDependency,
     VoteDataCreateDependency,
     VoteDataUpdateDependency,
 )
@@ -29,7 +29,7 @@ router = APIRouter(prefix="/votes", tags=["votes"])
         Security(StrictAuthorization(), scopes=[ScopesEnum.VOTES_GET_VOTE.name])
     ],
 )
-async def get_vote(vote: Vote = Depends(VoteByIdGetAccessDependency())) -> Vote:
+async def get_vote(vote: Vote = Depends(VoteAccessDependency())) -> Vote:
     """API which returns vote.
 
     Args:
@@ -89,7 +89,7 @@ async def create_vote(
 )
 async def update_vote(
     vote_data: VoteData = Depends(VoteDataUpdateDependency()),
-    vote: Vote = Depends(VoteByIdGetAccessDependency()),
+    vote: Vote = Depends(VoteAccessDependency()),
     vote_service: VoteService = Depends(),
 ) -> Vote:
     """API which updates vote.
@@ -114,7 +114,7 @@ async def update_vote(
     ],
 )
 async def delete_vote(
-    vote: Vote = Depends(VoteByIdGetAccessDependency()),
+    vote: Vote = Depends(VoteAccessDependency()),
     vote_service: VoteService = Depends(),
 ) -> None:
     """API which deletes vote.

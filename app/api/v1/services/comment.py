@@ -137,16 +137,13 @@ class CommentService(BaseService):
         )
 
     async def delete_by_id(self, id_: ObjectId) -> None:
-        """Deletes a comment by its unique identifier.
+        """Softly deletes a comment by its unique identifier.
 
         Args:
             id_ (ObjectId): The unique identifier of the comment.
 
-        Raises:
-            NotImplementedError: This method is not implemented.
-
         """
-        raise NotImplementedError
+        await self.repository.delete_by_id(id_=id_)
 
     async def delete(self, item: Any) -> None:
         """Deletes a comment.

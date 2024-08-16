@@ -199,6 +199,7 @@ class CommentRepository(BaseRepository):
                 else f"/{comment_id}",
                 "upvotes": 0,
                 "downvotes": 0,
+                "deleted": "False",
                 "created_at": arrow.utcnow().datetime,
                 "updated_at": None,
             },
@@ -225,6 +226,33 @@ class CommentRepository(BaseRepository):
 
         """
         raise NotImplementedError
+
+    async def delete_by_id(
+        self,
+        id_: ObjectId,
+        *,
+        session: AsyncIOMotorClientSession | None = None,
+    ) -> None:
+        """Softly deletes a comment in repository.
+
+        Args:
+            id_ (ObjectId): The unique identifier of the comment.
+            session (AsyncIOMotorClientSession | None): Defines a client session
+            if operation is transactional. Defaults to None.
+
+        """
+
+        await self._mongo_service.update_one(
+            collection=self._collection_name,
+            filter_={"_id": id_},
+            update={
+                "$set": {
+                    "deleted": "True",
+                    "updated_at": arrow.utcnow().datetime,
+                }
+            },
+            session=session,
+        )
 
     async def add_vote(
         self,

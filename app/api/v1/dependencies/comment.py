@@ -11,8 +11,10 @@ from app.api.v1.models.comment import (
     CommentCreateData,
 )
 from app.api.v1.validators.comment import (
-    CommentAccessValidator,
     CommentByIdValidator,
+    CommentDeleteAccessValidator,
+    CommentStatusValidator,
+    CommentUpdateAccessValidator,
     ParentCommentValidator,
 )
 from app.utils.metas import SingletonMeta
@@ -42,25 +44,25 @@ class CommentByIdGetDependency(metaclass=SingletonMeta):
         return await comment_by_id_validator.validate(comment_id=comment_id)
 
 
-class CommentByIdGetAccessDependency(metaclass=SingletonMeta):
-    """Comment by identifier get access dependency."""
+class CommentByIdStatusGetDependency(metaclass=SingletonMeta):
+    """Comment by identifier status get dependency."""
 
     async def __call__(
         self,
         comment: Comment = Depends(CommentByIdGetDependency()),
-        comment_access_validator: CommentAccessValidator = Depends(),
+        comment_status_validator: CommentStatusValidator = Depends(),
     ) -> Comment:
-        """Validates access to specific comment.
+        """Validates comment status from request by identifier.
 
         Args:
             comment (Comment): Comment object.
-            comment_access_validator (CommentAccessValidator): Comment access validator.
+            comment_status_validator (CommentStatusValidator): Comment status validator.
 
         Returns:
             Comment: Comment object.
 
         """
-        return await comment_access_validator.validate(comment=comment)
+        return await comment_status_validator.validate(comment=comment)
 
 
 class CommentDataCreateDependency(metaclass=SingletonMeta):
@@ -95,3 +97,47 @@ class CommentDataCreateDependency(metaclass=SingletonMeta):
             thread_id=comment_data.thread_id,
             parent_comment=parent_comment,
         )
+
+
+class CommentUpdateAccessDependency(metaclass=SingletonMeta):
+    """Comment update access dependency."""
+
+    async def __call__(
+        self,
+        comment: Comment = Depends(CommentByIdStatusGetDependency()),
+        comment_update_access_validator: CommentUpdateAccessValidator = Depends(),
+    ) -> Comment:
+        """Validates access to specific comment on update operation.
+
+        Args:
+            comment (Comment): Comment object.
+            comment_update_access_validator (CommentUpdateAccessValidator): Comment
+            update access validator.
+
+        Returns:
+            Comment: Comment object.
+
+        """
+        return await comment_update_access_validator.validate(comment=comment)
+
+
+class CommentDeleteAccessDependency(metaclass=SingletonMeta):
+    """Comment delete access dependency."""
+
+    async def __call__(
+        self,
+        comment: Comment = Depends(CommentByIdStatusGetDependency()),
+        comment_delete_access_validator: CommentDeleteAccessValidator = Depends(),
+    ) -> Comment:
+        """Validates access to specific comment on delete operation.
+
+        Args:
+            comment (Comment): Comment object.
+            comment_delete_access_validator (CommentDeleteAccessValidator): Comment
+            delete access validator.
+
+        Returns:
+            Comment: Comment object.
+
+        """
+        return await comment_delete_access_validator.validate(comment=comment)

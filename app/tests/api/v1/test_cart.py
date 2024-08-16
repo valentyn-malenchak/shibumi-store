@@ -198,7 +198,7 @@ class TestCart(BaseAPITest):
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
-        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
+        [(MongoCollectionsEnum.USERS,)],
         indirect=True,
     )
     async def test_add_product_to_the_cart_cart_is_not_found(
@@ -289,7 +289,7 @@ class TestCart(BaseAPITest):
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
-        [(MongoCollectionsEnum.USERS,)],
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.CARTS)],
         indirect=True,
     )
     async def test_add_product_to_the_cart_product_does_not_exist(
@@ -319,6 +319,7 @@ class TestCart(BaseAPITest):
             (
                 MongoCollectionsEnum.USERS,
                 MongoCollectionsEnum.PRODUCTS,
+                MongoCollectionsEnum.CARTS,
             )
         ],
         indirect=True,

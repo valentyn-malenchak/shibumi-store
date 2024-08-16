@@ -73,11 +73,11 @@ class CommentByIdValidator(BaseCommentValidator):
         return comment
 
 
-class CommentAccessValidator(BaseCommentValidator):
-    """Comment access validator."""
+class CommentStatusValidator(BaseCommentValidator):
+    """Comment status validator."""
 
     async def validate(self, comment: Comment) -> Comment:
-        """Validates if user has access to comment.
+        """Validates if requested comment is deleted.
 
         Args:
             comment (Comment): Comment object.
@@ -86,16 +86,16 @@ class CommentAccessValidator(BaseCommentValidator):
             Comment: Comment object.
 
         Raises:
-            HTTPException: If current user is not related to comment.
+            HTTPException: If requested comment is deleted.
 
         """
 
-        current_user = self.request.state.current_user
-
-        if comment.user_id != current_user.object.id:
+        if comment.deleted is True:
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=HTTPErrorMessagesEnum.COMMENT_ACCESS_DENIED,
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=HTTPErrorMessagesEnum.ENTITY_IS_NOT_FOUND.format(
+                    entity="Comment"
+                ),
             )
 
         return comment
@@ -166,3 +166,76 @@ class ParentCommentValidator(BaseCommentValidator):
             parent_comment = None
 
         return parent_comment
+
+
+class CommentUpdateAccessValidator(BaseCommentValidator):
+    """Comment update access validator."""
+
+    async def validate(self, comment: Comment) -> Comment:
+        """Validates if user has access to update comment.
+
+        Args:
+            comment (Comment): Comment object.
+
+        Returns:
+            Comment: Comment object.
+
+        Raises:
+            HTTPException: If current user is not related to comment.
+
+        """
+
+        current_user = self.request.state.current_user
+
+        if comment.user_id != current_user.object.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=HTTPErrorMessagesEnum.COMMENT_ACCESS_DENIED,
+            )
+
+        return comment
+
+
+class CommentDeleteAccessValidator(BaseCommentValidator):
+    """Comment delete access validator."""
+
+    def __init__(
+        self,
+        request: Request,
+        comment_service: CommentService = Depends(),
+        comment_update_access_validator: CommentUpdateAccessValidator = Depends(),
+    ) -> None:
+        """Initializes comment delete access validator.
+
+        Args:
+            request (Request): Current request object.
+            comment_service (CommentService): Comment service.
+            comment_update_access_validator (CommentUpdateAccessValidator): Comment
+            update access validator.
+
+        """
+
+        super().__init__(request=request, comment_service=comment_service)
+
+        self.comment_update_access_validator = comment_update_access_validator
+
+    async def validate(self, comment: Comment) -> Comment:
+        """Validates if user has access to delete comment.
+
+        Args:
+            comment (Comment): Comment object.
+
+        Returns:
+            Comment: Comment object.
+
+        Raises:
+            HTTPException: If current user does not have access to delete comment.
+
+        """
+
+        current_user = self.request.state.current_user
+
+        if current_user.object.is_client is True:
+            await self.comment_update_access_validator.validate(comment=comment)
+
+        return comment

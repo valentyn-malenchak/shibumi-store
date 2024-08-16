@@ -23,10 +23,10 @@ class ScopesEnum(Enum):
 
     AUTH_REFRESH_TOKEN = "Allows to refresh Access token using Refresh token."
 
-    USERS_GET_ME = "Allows to get current user object."
+    USERS_GET_ME = "Allows to get current user."
     USERS_GET_USERS = "Allows to get users list."
     USERS_GET_USER = "Allow to get user."
-    USERS_CREATE_USER = "Allows to create a new user."
+    USERS_CREATE_USER = "Allows to create new user."
     USERS_UPDATE_USER = "Allows to update user."
     USERS_UPDATE_USER_PASSWORD = "Allows to update user's password."
     USERS_DELETE_USER = "Allows to delete user."
@@ -39,7 +39,7 @@ class ScopesEnum(Enum):
 
     PRODUCTS_GET_PRODUCTS = "Allows to get products list."
     PRODUCTS_GET_PRODUCT = "Allows to get product."
-    PRODUCTS_CREATE_PRODUCT = "Allows to create a new product."
+    PRODUCTS_CREATE_PRODUCT = "Allows to create new product."
     PRODUCTS_UPDATE_PRODUCT = "Allows to update product."
 
     CARTS_GET_CART = "Allows to get user's cart."
@@ -48,16 +48,17 @@ class ScopesEnum(Enum):
     CARTS_DELETE_PRODUCT = "Allows to delete product from the cart."
 
     THREADS_GET_THREAD = "Allows to get thread."
-    THREADS_CREATE_THREAD = "Allows to create a thread."
-    THREADS_UPDATE_THREAD = "Allows to update a thread."
+    THREADS_CREATE_THREAD = "Allows to create thread."
+    THREADS_UPDATE_THREAD = "Allows to update thread."
 
     COMMENTS_GET_COMMENT = "Allows to get comment."
-    COMMENTS_CREATE_COMMENT = "Allows to create a comment."
-    COMMENTS_UPDATE_COMMENT = "Allows to update a comment."
+    COMMENTS_CREATE_COMMENT = "Allows to create comment."
+    COMMENTS_UPDATE_COMMENT = "Allows to update comment."
+    COMMENTS_DELETE_COMMENT = "Allows to delete comment."
 
     VOTES_GET_VOTE = "Allows to get vote."
-    VOTES_CREATE_VOTE = "Allows to create a vote."
-    VOTES_UPDATE_VOTE = "Allows to update a vote."
+    VOTES_CREATE_VOTE = "Allows to create vote."
+    VOTES_UPDATE_VOTE = "Allows to update vote."
     VOTES_DELETE_VOTE = "Allows to delete vote."
 
 

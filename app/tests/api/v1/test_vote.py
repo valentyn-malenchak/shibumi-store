@@ -28,14 +28,7 @@ class TestVote(BaseAPITest):
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
-        [
-            (
-                MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
-                MongoCollectionsEnum.COMMENTS,
-                MongoCollectionsEnum.VOTES,
-            )
-        ],
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.VOTES)],
         indirect=True,
     )
     async def test_get_vote(self, test_client: AsyncClient, arrange_db: None) -> None:
@@ -89,13 +82,7 @@ class TestVote(BaseAPITest):
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
-        [
-            (
-                MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
-                MongoCollectionsEnum.COMMENTS,
-            )
-        ],
+        [(MongoCollectionsEnum.USERS,)],
         indirect=True,
     )
     async def test_get_vote_vote_is_not_found(
@@ -117,14 +104,7 @@ class TestVote(BaseAPITest):
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
-        [
-            (
-                MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
-                MongoCollectionsEnum.COMMENTS,
-                MongoCollectionsEnum.VOTES,
-            )
-        ],
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.VOTES)],
         indirect=True,
     )
     async def test_get_vote_user_gets_vote_of_another_user(
@@ -144,13 +124,7 @@ class TestVote(BaseAPITest):
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
-        [
-            (
-                MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
-                MongoCollectionsEnum.COMMENTS,
-            )
-        ],
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.COMMENTS)],
         indirect=True,
     )
     @freeze_time(FROZEN_DATETIME)
@@ -189,6 +163,7 @@ class TestVote(BaseAPITest):
             "path": "/666af8c16aba47cfb60efb32",
             "upvotes": 1,
             "downvotes": 0,
+            "deleted": False,
             "created_at": "2024-06-13T13:48:49.788000",
             "updated_at": None,
         }
@@ -197,13 +172,7 @@ class TestVote(BaseAPITest):
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
-        [
-            (
-                MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
-                MongoCollectionsEnum.COMMENTS,
-            )
-        ],
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.COMMENTS)],
         indirect=True,
     )
     @freeze_time(FROZEN_DATETIME)
@@ -242,6 +211,7 @@ class TestVote(BaseAPITest):
             "path": "/666af8c16aba47cfb60efb32",
             "upvotes": 0,
             "downvotes": 1,
+            "deleted": False,
             "created_at": "2024-06-13T13:48:49.788000",
             "updated_at": None,
         }
@@ -308,7 +278,7 @@ class TestVote(BaseAPITest):
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
-        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.THREADS)],
+        [(MongoCollectionsEnum.USERS,)],
         indirect=True,
     )
     async def test_create_vote_comment_is_not_found(
@@ -334,7 +304,6 @@ class TestVote(BaseAPITest):
         [
             (
                 MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
                 MongoCollectionsEnum.COMMENTS,
                 MongoCollectionsEnum.VOTES,
             )
@@ -367,7 +336,6 @@ class TestVote(BaseAPITest):
         [
             (
                 MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
                 MongoCollectionsEnum.COMMENTS,
                 MongoCollectionsEnum.VOTES,
             )
@@ -412,6 +380,7 @@ class TestVote(BaseAPITest):
             "path": "/666af8ae6aba47cfb60efb31",
             "upvotes": 1,
             "downvotes": 2,
+            "deleted": False,
             "created_at": "2024-06-13T13:48:30.209000",
             "updated_at": None,
         }
@@ -448,6 +417,7 @@ class TestVote(BaseAPITest):
             "path": "/666af8ae6aba47cfb60efb31",
             "upvotes": 2,
             "downvotes": 1,
+            "deleted": False,
             "created_at": "2024-06-13T13:48:30.209000",
             "updated_at": None,
         }
@@ -513,13 +483,7 @@ class TestVote(BaseAPITest):
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
-        [
-            (
-                MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
-                MongoCollectionsEnum.COMMENTS,
-            )
-        ],
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.COMMENTS)],
         indirect=True,
     )
     async def test_update_vote_vote_is_not_found(
@@ -542,14 +506,7 @@ class TestVote(BaseAPITest):
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
-        [
-            (
-                MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
-                MongoCollectionsEnum.COMMENTS,
-                MongoCollectionsEnum.VOTES,
-            )
-        ],
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.VOTES)],
         indirect=True,
     )
     async def test_update_vote_user_updates_vote_of_another_user(
@@ -570,14 +527,7 @@ class TestVote(BaseAPITest):
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
-        [
-            (
-                MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
-                MongoCollectionsEnum.COMMENTS,
-                MongoCollectionsEnum.VOTES,
-            )
-        ],
+        [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.VOTES)],
         indirect=True,
     )
     async def test_update_vote_same_value(
@@ -601,7 +551,6 @@ class TestVote(BaseAPITest):
         [
             (
                 MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
                 MongoCollectionsEnum.COMMENTS,
                 MongoCollectionsEnum.VOTES,
             )
@@ -635,6 +584,7 @@ class TestVote(BaseAPITest):
             "path": "/666af8ae6aba47cfb60efb31",
             "upvotes": 1,
             "downvotes": 1,
+            "deleted": False,
             "created_at": "2024-06-13T13:48:30.209000",
             "updated_at": None,
         }
@@ -672,13 +622,7 @@ class TestVote(BaseAPITest):
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
         "arrange_db",
-        [
-            (
-                MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
-                MongoCollectionsEnum.COMMENTS,
-            )
-        ],
+        [(MongoCollectionsEnum.USERS,)],
         indirect=True,
     )
     async def test_delete_vote_vote_is_not_found(
@@ -703,8 +647,6 @@ class TestVote(BaseAPITest):
         [
             (
                 MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.THREADS,
-                MongoCollectionsEnum.COMMENTS,
                 MongoCollectionsEnum.VOTES,
             )
         ],
