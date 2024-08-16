@@ -118,7 +118,9 @@ class TestVote(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.json() == {"detail": HTTPErrorMessagesEnum.VOTE_ACCESS_DENIED}
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="vote")
+        }
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
@@ -521,7 +523,9 @@ class TestVote(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.json() == {"detail": HTTPErrorMessagesEnum.VOTE_ACCESS_DENIED}
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="vote")
+        }
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
@@ -663,4 +667,6 @@ class TestVote(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.json() == {"detail": HTTPErrorMessagesEnum.VOTE_ACCESS_DENIED}
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="vote")
+        }

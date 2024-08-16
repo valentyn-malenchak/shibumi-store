@@ -146,7 +146,7 @@ class UserGetAccessValidator(BaseUserValidator):
         if current_user.object.id != user_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=HTTPErrorMessagesEnum.USER_ACCESS_DENIED,
+                detail=HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="user"),
             )
 
 
@@ -195,7 +195,9 @@ class UserUpdateAccessValidator(BaseUserValidator):
         elif user and user.is_client is True:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=HTTPErrorMessagesEnum.CLIENT_USER_ACCESS_DENIED,
+                detail=HTTPErrorMessagesEnum.ACCESS_DENIED.format(
+                    destination="client user"
+                ),
             )
 
         return user
@@ -292,7 +294,7 @@ class UserRolesValidator(BaseUserValidator):
         ]:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=HTTPErrorMessagesEnum.ROLE_ACCESS_DENIED,
+                detail=HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="role"),
             )
 
 

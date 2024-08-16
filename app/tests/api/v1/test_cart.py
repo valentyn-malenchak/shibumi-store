@@ -248,7 +248,9 @@ class TestCart(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.json() == {"detail": HTTPErrorMessagesEnum.CART_ACCESS_DENIED}
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="cart")
+        }
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
@@ -340,7 +342,7 @@ class TestCart(BaseAPITest):
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.PRODUCT_ACCESS_DENIED
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="product")
         }
 
     @pytest.mark.asyncio
@@ -541,7 +543,9 @@ class TestCart(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.json() == {"detail": HTTPErrorMessagesEnum.CART_ACCESS_DENIED}
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="cart")
+        }
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
@@ -629,7 +633,7 @@ class TestCart(BaseAPITest):
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.PRODUCT_ACCESS_DENIED
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="product")
         }
 
     @pytest.mark.asyncio
@@ -809,7 +813,9 @@ class TestCart(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.json() == {"detail": HTTPErrorMessagesEnum.CART_ACCESS_DENIED}
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="cart")
+        }
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
@@ -857,7 +863,7 @@ class TestCart(BaseAPITest):
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.PRODUCT_ACCESS_DENIED
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="product")
         }
 
     @pytest.mark.asyncio

@@ -555,7 +555,7 @@ class TestComment(BaseAPITest):
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.COMMENT_ACCESS_DENIED
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="comment")
         }
 
     @pytest.mark.asyncio
@@ -583,6 +583,27 @@ class TestComment(BaseAPITest):
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
+        # Verify if comment body and status were changed
+        response = await test_client.get(
+            f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
+            headers={"Authorization": f"Bearer {TEST_JWT}"},
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == {
+            "id": "666af9246aba47cfb60efb37",
+            "body": "[Deleted]",
+            "thread_id": "6669b5634cef83e11dbc7abf",
+            "user_id": "65844f12b6de26578d98c2c8",
+            "parent_comment_id": "666af91a6aba47cfb60efb36",
+            "path": "/666af91a6aba47cfb60efb36/666af9246aba47cfb60efb37",
+            "upvotes": 0,
+            "downvotes": 0,
+            "deleted": True,
+            "created_at": "2024-06-13T13:50:28.453000",
+            "updated_at": FROZEN_DATETIME,
+        }
+
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
@@ -595,7 +616,6 @@ class TestComment(BaseAPITest):
         ],
         indirect=True,
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_delete_comment_shop_side_user_deletes_own_comment(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -620,7 +640,6 @@ class TestComment(BaseAPITest):
         ],
         indirect=True,
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_delete_comment_client_user_deletes_another_clients_comment(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -633,7 +652,7 @@ class TestComment(BaseAPITest):
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.COMMENT_ACCESS_DENIED
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="comment")
         }
 
     @pytest.mark.asyncio
@@ -648,7 +667,6 @@ class TestComment(BaseAPITest):
         ],
         indirect=True,
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_delete_comment_shop_side_user_deletes_clients_comment(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -673,7 +691,6 @@ class TestComment(BaseAPITest):
         ],
         indirect=True,
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_delete_comment_client_user_deletes_shop_side_users_comment(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:
@@ -686,7 +703,7 @@ class TestComment(BaseAPITest):
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.COMMENT_ACCESS_DENIED
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="comment")
         }
 
     @pytest.mark.asyncio
@@ -701,7 +718,6 @@ class TestComment(BaseAPITest):
         ],
         indirect=True,
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_delete_comment_shop_side_user_deletes_another_shop_side_user_comment(
         self, test_client: AsyncClient, arrange_db: None
     ) -> None:

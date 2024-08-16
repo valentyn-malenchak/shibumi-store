@@ -92,7 +92,7 @@ class VoteAccessValidator(BaseVoteValidator):
         if vote.user_id != current_user.object.id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=HTTPErrorMessagesEnum.VOTE_ACCESS_DENIED,
+                detail=HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="vote"),
             )
 
         return vote

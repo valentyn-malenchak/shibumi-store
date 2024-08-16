@@ -20,13 +20,10 @@ class HTTPErrorMessagesEnum(StrEnum):
     EXPIRED_TOKEN = "Token is expired."
     INVALID_CREDENTIALS = "Invalid credentials."
     PERMISSION_DENIED = "Permission denied."
+    ACCESS_DENIED = "Access denied to {destination}."
+
     EMAIL_IS_NOT_VERIFIED = "Email is not verified."
     EMAIL_IS_ALREADY_VERIFIED = "Email is already verified."
-
-    USER_ACCESS_DENIED = "Access denied to another user."
-    ROLE_ACCESS_DENIED = "Access denied to use role."
-    CLIENT_USER_ACCESS_DENIED = "Access denied to client user."
-    CART_ACCESS_DENIED = "Access denied to another user's cart."
 
     ENTITY_IS_NOT_FOUND = "{entity} is not found."
     ENTITY_FIELD_UNIQUENESS = "{entity} with such '{field}' is already created."
@@ -40,8 +37,6 @@ class HTTPErrorMessagesEnum(StrEnum):
     LEAF_PRODUCT_CATEGORY_REQUIRED = (
         "Invalid category. Operation is allowed only for 'leaf' categories."
     )
-    PRODUCT_ACCESS_DENIED = "Access denied to product."
-    PRODUCTS_NOT_AVAILABLE_ACCESS_DENIED = "Access denied to not available products."
 
     MAXIMUM_PRODUCT_QUANTITY_AVAILABLE = (
         "Maximum available quantity for product is exceeded."
@@ -49,8 +44,6 @@ class HTTPErrorMessagesEnum(StrEnum):
     PRODUCT_IS_ALREADY_ADDED_TO_THE_CART = "Product is already added to the cart."
     PRODUCT_IS_NOT_ADDED_TO_THE_CART = "Product is not added to the cart."
 
-    COMMENT_ACCESS_DENIED = "Access denied to comment."
-    VOTE_ACCESS_DENIED = "Access denied to vote."
     INVALID_VOTE_VALUE = "Vote is already upvoted/downvoted."
 
 

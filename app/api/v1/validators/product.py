@@ -101,7 +101,9 @@ class ProductAccessValidator(BaseProductValidator):
         ) and product.available is False:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=HTTPErrorMessagesEnum.PRODUCT_ACCESS_DENIED,
+                detail=HTTPErrorMessagesEnum.ACCESS_DENIED.format(
+                    destination="product"
+                ),
             )
 
         return product
@@ -221,7 +223,9 @@ class ProductAvailableFilterValidator(BaseProductValidator):
         ) and available is not True:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=HTTPErrorMessagesEnum.PRODUCTS_NOT_AVAILABLE_ACCESS_DENIED,
+                detail=HTTPErrorMessagesEnum.ACCESS_DENIED.format(
+                    destination="not available product"
+                ),
             )
 
 

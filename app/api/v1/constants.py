@@ -101,3 +101,9 @@ class ProductParameterTypesEnum(Enum):
     INT = int
     BOOL = bool
     LIST = list
+
+
+class PlaceholderEnum(StrEnum):
+    """Placeholder enumerate."""
+
+    DELETED_COMMENT = "[Deleted]"

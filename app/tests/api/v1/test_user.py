@@ -217,7 +217,9 @@ class TestUser(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.json() == {"detail": HTTPErrorMessagesEnum.ROLE_ACCESS_DENIED}
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="role")
+        }
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
@@ -725,7 +727,9 @@ class TestUser(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.json() == {"detail": HTTPErrorMessagesEnum.ROLE_ACCESS_DENIED}
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="role")
+        }
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
@@ -948,7 +952,9 @@ class TestUser(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.json() == {"detail": HTTPErrorMessagesEnum.USER_ACCESS_DENIED}
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="user")
+        }
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
@@ -974,7 +980,9 @@ class TestUser(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.json() == {"detail": HTTPErrorMessagesEnum.USER_ACCESS_DENIED}
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="user")
+        }
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
@@ -1001,7 +1009,9 @@ class TestUser(BaseAPITest):
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json() == {
-            "detail": HTTPErrorMessagesEnum.CLIENT_USER_ACCESS_DENIED
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(
+                destination="client user"
+            )
         }
 
     @pytest.mark.asyncio
@@ -1153,7 +1163,9 @@ class TestUser(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.json() == {"detail": HTTPErrorMessagesEnum.USER_ACCESS_DENIED}
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="user")
+        }
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
@@ -1171,7 +1183,9 @@ class TestUser(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.json() == {"detail": HTTPErrorMessagesEnum.USER_ACCESS_DENIED}
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="user")
+        }
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
@@ -1763,7 +1777,9 @@ class TestUser(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.json() == {"detail": HTTPErrorMessagesEnum.USER_ACCESS_DENIED}
+        assert response.json() == {
+            "detail": HTTPErrorMessagesEnum.ACCESS_DENIED.format(destination="user")
+        }
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
