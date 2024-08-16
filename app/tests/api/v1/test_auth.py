@@ -9,8 +9,9 @@ from httpx import AsyncClient
 
 from app.api.v1.auth.jwt import JWT
 from app.api.v1.constants import ScopesEnum
-from app.constants import AppConstants, HTTPErrorMessagesEnum
+from app.constants import HTTPErrorMessagesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
+from app.settings import SETTINGS
 from app.tests.api.v1 import BaseAPITest
 from app.tests.constants import (
     CUSTOMER_USER,
@@ -35,7 +36,7 @@ class TestAuth(BaseAPITest):
         """Test create auth token."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/auth/tokens/",
             data={
                 "username": "john.smith",
                 "password": "?%J4Tvhb",
@@ -87,7 +88,7 @@ class TestAuth(BaseAPITest):
         """Test create auth token with scopes request."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/auth/tokens/",
             data={
                 "username": "john.smith",
                 "password": "?%J4Tvhb",
@@ -131,7 +132,7 @@ class TestAuth(BaseAPITest):
         """Test create auth token in case password should be rehashed."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/auth/tokens/",
             data={
                 "username": "john.smith",
                 "password": "?%J4Tvhb",
@@ -149,7 +150,7 @@ class TestAuth(BaseAPITest):
         """Test create auth token in case username/password is missed."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/auth/tokens/",
             data={"username": "john.smith"},
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
@@ -170,7 +171,7 @@ class TestAuth(BaseAPITest):
         """Test create auth token in case user with such username does not exist."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/auth/tokens/",
             data={
                 "username": "joe.smith",
                 "password": "john1234",
@@ -191,7 +192,7 @@ class TestAuth(BaseAPITest):
         """Test create auth token in case user with such username does not exist."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/auth/tokens/",
             data={
                 "username": "john.smith",
                 "password": "john1234smith",
@@ -215,7 +216,7 @@ class TestAuth(BaseAPITest):
         """Test create auth token in case user is deleted."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/auth/tokens/",
             data={
                 "username": "sheila.fahey",
                 "password": "?%J4Tvhb",
@@ -239,7 +240,7 @@ class TestAuth(BaseAPITest):
         """Test create auth token in case user email is not verified."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/auth/tokens/",
             data={
                 "username": "lila.legro",
                 "password": "?%J4Tvhb",
@@ -260,7 +261,7 @@ class TestAuth(BaseAPITest):
         """Test create auth token in case user request not permitted scopes."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/auth/tokens/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/auth/tokens/",
             data={
                 "username": "john.smith",
                 "password": "?%J4Tvhb",
@@ -289,7 +290,7 @@ class TestAuth(BaseAPITest):
         """Test refreshing access token."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/auth/access-token/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/auth/access-token/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -303,7 +304,7 @@ class TestAuth(BaseAPITest):
         """Test refreshing access token in case refresh token is invalid."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/auth/access-token/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/auth/access-token/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -318,7 +319,7 @@ class TestAuth(BaseAPITest):
         """Test refreshing access token in case refresh token is expired."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/auth/access-token/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/auth/access-token/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -335,7 +336,7 @@ class TestAuth(BaseAPITest):
         """
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/auth/access-token/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/auth/access-token/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -353,7 +354,7 @@ class TestAuth(BaseAPITest):
         """Test refreshing access token in case user is deleted."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/auth/access-token/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/auth/access-token/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -371,7 +372,7 @@ class TestAuth(BaseAPITest):
         """Test refreshing access token in case user email is not verified."""
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/auth/access-token/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/auth/access-token/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
@@ -393,7 +394,7 @@ class TestAuth(BaseAPITest):
         """
 
         response = await test_client.post(
-            f"{AppConstants.API_V1_PREFIX}/auth/access-token/",
+            f"{SETTINGS.APP_API_V1_PREFIX}/auth/access-token/",
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 

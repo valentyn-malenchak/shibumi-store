@@ -13,6 +13,7 @@ class AppConfig(ImmutableModel):
     APP_WORKERS: int = 1
     APP_DEBUG: bool = False
     APP_OPENAPI_URL: str | None = None
+    APP_API_V1_PREFIX: str = "/api/v1"
 
     AUTH_SECRET_KEY: str
     AUTH_REFRESH_SECRET_KEY: str

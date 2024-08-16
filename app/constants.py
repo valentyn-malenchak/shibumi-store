@@ -1,12 +1,10 @@
 """Module that provides application level constants."""
 
-from enum import StrEnum
+from enum import IntEnum, StrEnum
 
 
-class AppConstants:
+class AppConstants(IntEnum):
     """Application level constants enumerate."""
-
-    API_V1_PREFIX = "/api/v1"
 
     PAGINATION_MAX_PAGE_SIZE = 100
 
@@ -88,4 +86,5 @@ class ValidationErrorMessagesEnum(StrEnum):
 class AppEventsEnum(StrEnum):
     """Application events enumerate."""
 
+    STARTUP = "startup"
     SHUTDOWN = "shutdown"

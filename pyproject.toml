@@ -8,7 +8,7 @@ packages = [{include = "shibumi_store"}]
 
 [tool.poetry.dependencies]
 python = "^3.12"
-fastapi = "0.112.0"
+fastapi = {extras = ["standard"], version = "0.112.1"}
 uvicorn = {extras = ["standard"], version = "0.30.6"}
 pytest = "8.3.2"
 invoke = "2.2.0"
