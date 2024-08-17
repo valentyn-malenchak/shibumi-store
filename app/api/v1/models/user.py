@@ -64,7 +64,7 @@ class ShortUser(BSONObjectId):
 class UserFilter(BaseModel):
     """User filter model."""
 
-    roles: list[RolesEnum] = Field(Query([]))
+    roles: list[RolesEnum] = Field(Query(default_factory=list))
     deleted: bool | None = None
 
 
