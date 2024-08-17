@@ -67,7 +67,9 @@ class BaseProductFilter(BaseModel):
 
     category_id: Annotated[ObjectId, ObjectIdAnnotation] | None = None
     available: bool | None = None
-    ids: list[Annotated[ObjectId, ObjectIdAnnotation]] | None = Field(Query([]))
+    ids: list[Annotated[ObjectId, ObjectIdAnnotation]] | None = Field(
+        Query(default_factory=list)
+    )
 
 
 class ProductFilter(BaseProductFilter):

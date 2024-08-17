@@ -13,7 +13,7 @@ from bson import ObjectId
 from pydantic import AliasChoices, BaseModel, Field
 
 from app.constants import (
-    AppConstants,
+    AppConstantsEnum,
 )
 from app.services.mongo.constants import SortingTypesEnum
 from app.utils.pydantic import ObjectIdAnnotation
@@ -37,7 +37,7 @@ class Pagination(BaseModel):
     """Pagination model for lists."""
 
     page: int
-    page_size: int = Field(le=AppConstants.PAGINATION_MAX_PAGE_SIZE)
+    page_size: int = Field(le=AppConstantsEnum.PAGINATION_MAX_PAGE_SIZE)
 
 
 class Sorting(BaseModel):

@@ -103,7 +103,7 @@ class ProductParameterTypesEnum(Enum):
     LIST = list
 
 
-class PlaceholderEnum(StrEnum):
-    """Placeholder enumerate."""
+class PlaceholdersEnum(StrEnum):
+    """Placeholders enumerate."""
 
     DELETED_COMMENT = "[Deleted]"

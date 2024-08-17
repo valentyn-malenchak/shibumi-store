@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, Security, status
 
-from app.api.v1.auth.auth import Authentication, StrictRefreshTokenAuthorization
+from app.api.v1.auth.auth import Authentication, RefreshTokenAuthorization
 from app.api.v1.auth.jwt import JWT
 from app.api.v1.constants import ScopesEnum
 from app.api.v1.models.auth import (
@@ -42,7 +42,7 @@ async def create_tokens(
 )
 async def refresh_access_token(
     current_user: CurrentUser = Security(
-        StrictRefreshTokenAuthorization(),
+        RefreshTokenAuthorization(),
         scopes=[ScopesEnum.AUTH_REFRESH_TOKEN.name],
     ),
     role_service: RoleService = Depends(),

@@ -187,10 +187,13 @@ class TestAuth(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    async def test_create_tokens_invalid_password(
-        self, test_client: AsyncClient
+    @pytest.mark.parametrize(
+        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
+    )
+    async def test_create_tokens_incorrect_password(
+        self, test_client: AsyncClient, arrange_db: None
     ) -> None:
-        """Test create auth token in case user with such username does not exist."""
+        """Test create auth token in case user's password is incorrect."""
 
         response = await test_client.post(
             f"{SETTINGS.APP_API_V1_PREFIX}/auth/tokens/",

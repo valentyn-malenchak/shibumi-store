@@ -3,7 +3,7 @@
 from enum import IntEnum, StrEnum
 
 
-class AppConstants(IntEnum):
+class AppConstantsEnum(IntEnum):
     """Application level constants enumerate."""
 
     PAGINATION_MAX_PAGE_SIZE = 100
