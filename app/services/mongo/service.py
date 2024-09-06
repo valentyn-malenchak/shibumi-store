@@ -363,7 +363,7 @@ class MongoDBService(BaseService):
     async def delete_many(
         self, collection: str, *, session: AsyncIOMotorClientSession | None = None
     ) -> None:
-        """Deletes all documents from the chosen collection.
+        """Deletes multiple documents from the chosen collection.
 
         Args:
             collection (str): Collection name.
