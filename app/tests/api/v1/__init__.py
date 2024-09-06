@@ -21,12 +21,11 @@ class BaseAPITest(BaseTest):
     _client = None
     _APP_BASE_URL = "http://test"
 
-    @pytest_asyncio.fixture
+    @pytest_asyncio.fixture(loop_scope="session")
     async def test_client(self) -> AsyncGenerator[AsyncClient, None]:
         """Opens the TestClient generator for the FastAPI application."""
         async with AsyncClient(
-            transport=ASGITransport(app),  # type: ignore
-            base_url=self._APP_BASE_URL,
+            transport=ASGITransport(app), base_url=self._APP_BASE_URL
         ) as client:
             yield client
 
