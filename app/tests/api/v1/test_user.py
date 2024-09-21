@@ -5,7 +5,6 @@ from unittest.mock import MagicMock, Mock, patch
 import jwt
 import pytest
 from fastapi import status
-from freezegun import freeze_time
 from httpx import AsyncClient
 from sendgrid import SendGridException  # type: ignore
 from tenacity import RetryError, wait_none
@@ -152,12 +151,12 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @freeze_time(FROZEN_DATETIME)
     async def test_create_user_unauthenticated_user_creates_customer_user(
         self,
         test_client: AsyncClient,
         redis_setex_mock: MagicMock,
         send_grid_send_mock: MagicMock,
+        datetime_now_mock: MagicMock,
     ) -> None:
         """Test create user in case unauthenticated user creates customer."""
 
@@ -226,13 +225,13 @@ class TestUser(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_create_user_shop_side_user_creates_multi_role_user(
         self,
         test_client: AsyncClient,
         arrange_db: None,
         redis_setex_mock: MagicMock,
         send_grid_send_mock: MagicMock,
+        datetime_now_mock: MagicMock,
     ) -> None:
         """Test create user in case shop side user creates multi-role user."""
 
@@ -665,9 +664,8 @@ class TestUser(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_update_user_customer_user_updates_self(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test update user in case customer user updates self with no role changes."""
 
@@ -736,9 +734,8 @@ class TestUser(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_update_user_shop_side_user_updates_self(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test update user in case shop side user updates self."""
 
@@ -786,13 +783,13 @@ class TestUser(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_update_user_email_change(
         self,
         test_client: AsyncClient,
         arrange_db: None,
         redis_setex_mock: MagicMock,
         send_grid_send_mock: MagicMock,
+        datetime_now_mock: MagicMock,
     ) -> None:
         """Test update user in case email is changed."""
 
@@ -1019,9 +1016,8 @@ class TestUser(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_update_user_shop_side_user_updates_another_shop_side_user(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test update user in case shop side user updates another shop side user."""
 

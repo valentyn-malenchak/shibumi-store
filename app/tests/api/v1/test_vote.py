@@ -1,10 +1,9 @@
 """Module that contains tests for votes routes."""
 
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 from fastapi import status
-from freezegun import freeze_time
 from httpx import AsyncClient
 
 from app.constants import (
@@ -129,9 +128,8 @@ class TestVote(BaseAPITest):
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.COMMENTS)],
         indirect=True,
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_create_vote_positive(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test create vote in case of upvote."""
 
@@ -177,9 +175,8 @@ class TestVote(BaseAPITest):
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.COMMENTS)],
         indirect=True,
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_create_vote_negative(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test create vote in case of downvote."""
 
@@ -344,9 +341,8 @@ class TestVote(BaseAPITest):
         ],
         indirect=True,
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_update_vote(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test update vote."""
 

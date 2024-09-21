@@ -1,10 +1,9 @@
 """Module that contains tests for cart routes."""
 
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 from fastapi import status
-from freezegun import freeze_time
 from httpx import AsyncClient
 
 from app.constants import (
@@ -120,9 +119,8 @@ class TestCart(BaseAPITest):
         ],
         indirect=True,
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_add_product_to_the_cart(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test add product to the cart."""
 
@@ -422,9 +420,8 @@ class TestCart(BaseAPITest):
         ],
         indirect=True,
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_update_product_in_the_cart(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test update product in the cart."""
 
@@ -711,9 +708,8 @@ class TestCart(BaseAPITest):
         ],
         indirect=True,
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_delete_product_from_the_cart(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test delete product from the cart."""
 
