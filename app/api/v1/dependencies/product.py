@@ -3,7 +3,7 @@
 from typing import Annotated
 
 from bson import ObjectId
-from fastapi import Depends
+from fastapi import Depends, Query
 
 from app.api.v1.models.product import (
     BaseProductFilter,
@@ -71,7 +71,7 @@ class ProductsFilterDependency(metaclass=SingletonMeta):
 
     async def __call__(
         self,
-        filter_: BaseProductFilter = Depends(),
+        filter_: Annotated[BaseProductFilter, Query()],
         available_filter_validator: ProductAvailableFilterValidator = Depends(),
         parameters_filter_validator: ProductParametersFilterValidator = Depends(),
     ) -> ProductFilter:

@@ -2,7 +2,6 @@
 
 from datetime import date, datetime
 
-from fastapi import Query
 from pydantic import BaseModel, EmailStr, Field
 
 from app.api.v1.constants import RolesEnum
@@ -64,7 +63,7 @@ class ShortUser(BSONObjectId):
 class UserFilter(BaseModel):
     """User filter model."""
 
-    roles: list[RolesEnum] = Field(Query(default_factory=list))
+    roles: list[RolesEnum] = Field(default_factory=list)
     deleted: bool | None = None
 
 

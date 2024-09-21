@@ -1588,15 +1588,15 @@ class TestUser(BaseAPITest):
             (error["type"], error["loc"], error["msg"])
             for error in response.json()["detail"]
         ] == [
+            ("enum", ["query", "sort_order"], "Input should be 'asc' or 'desc'"),
+            ("missing", ["query", "page"], "Field required"),
+            ("missing", ["query", "page_size"], "Field required"),
             (
                 "enum",
                 ["query", "roles", 0],
                 "Input should be 'customer', 'support', 'warehouse_stuff', "
                 "'content_manager', 'marketing_manager' or 'admin'",
             ),
-            ("enum", ["query", "sort_order"], "Input should be 'asc' or 'desc'"),
-            ("missing", ["query", "page"], "Field required"),
-            ("missing", ["query", "page_size"], "Field required"),
         ]
 
     @pytest.mark.asyncio

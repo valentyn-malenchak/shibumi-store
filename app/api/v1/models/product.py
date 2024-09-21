@@ -4,7 +4,6 @@ from datetime import datetime
 from typing import Annotated, Any
 
 from bson import ObjectId
-from fastapi import Query
 from pydantic import BaseModel, Field
 
 from app.api.v1.models import BSONObjectId, List, ObjectIdAnnotation
@@ -68,7 +67,7 @@ class BaseProductFilter(BaseModel):
     category_id: Annotated[ObjectId, ObjectIdAnnotation] | None = None
     available: bool | None = None
     ids: list[Annotated[ObjectId, ObjectIdAnnotation]] | None = Field(
-        Query(default_factory=list)
+        default_factory=list
     )
 
 
