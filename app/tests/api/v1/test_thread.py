@@ -1,10 +1,9 @@
 """Module that contains tests for thread routes."""
 
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 from fastapi import status
-from freezegun import freeze_time
 from httpx import AsyncClient
 
 from app.constants import (
@@ -123,9 +122,8 @@ class TestThread(BaseAPITest):
         [(MongoCollectionsEnum.USERS,)],
         indirect=True,
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_create_thread(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test create thread."""
 
@@ -215,9 +213,8 @@ class TestThread(BaseAPITest):
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.THREADS)],
         indirect=True,
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_update_thread(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test update thread."""
 

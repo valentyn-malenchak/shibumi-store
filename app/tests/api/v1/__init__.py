@@ -4,6 +4,7 @@ import asyncio
 from collections.abc import AsyncGenerator, Generator
 from unittest.mock import MagicMock, patch
 
+import arrow
 import pytest
 import pytest_asyncio
 from _pytest.fixtures import SubRequest
@@ -12,6 +13,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from app.app import app
 from app.tests import BaseTest
+from app.tests.constants import FROZEN_DATETIME
 from app.tests.fixtures.manager import FileFixtureManager
 
 
@@ -37,6 +39,15 @@ class BaseAPITest(BaseTest):
             AsyncIOMotorClient, "get_io_loop", new=asyncio.get_running_loop
         ):
             yield
+
+    @pytest.fixture
+    def datetime_now_mock(self) -> Generator[MagicMock, None, None]:
+        """Arrow datetime now mock."""
+
+        with patch("arrow.utcnow") as mock:
+            mock.return_value = arrow.get(FROZEN_DATETIME)
+
+            yield mock
 
     @pytest.fixture
     def send_grid_send_mock(

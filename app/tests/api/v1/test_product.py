@@ -4,7 +4,6 @@ from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
 from fastapi import status
-from freezegun import freeze_time
 from httpx import AsyncClient
 
 from app.constants import (
@@ -31,9 +30,8 @@ class TestProduct(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_create_product(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test create product."""
 
@@ -497,7 +495,6 @@ class TestProduct(BaseAPITest):
     @pytest.mark.parametrize(
         "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
     )
-    @freeze_time(FROZEN_DATETIME)
     @patch(
         "app.api.v1.repositories.category.CategoryRepository.calculate_category_parameters",
         Mock(side_effect=ValueError()),
@@ -511,6 +508,7 @@ class TestProduct(BaseAPITest):
         mongo_transaction_abort_mock: MagicMock,
         test_client: AsyncClient,
         arrange_db: None,
+        datetime_now_mock: MagicMock,
     ) -> None:
         """
         Test create product in case category parameters calculation failed.
@@ -1423,9 +1421,8 @@ class TestProduct(BaseAPITest):
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
         indirect=True,
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_update_product(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test update product."""
 
@@ -1501,9 +1498,8 @@ class TestProduct(BaseAPITest):
         ],
         indirect=True,
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_update_product_update_category(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test update product in case category field is updated."""
 

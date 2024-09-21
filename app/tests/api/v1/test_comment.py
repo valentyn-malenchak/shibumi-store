@@ -1,10 +1,9 @@
 """Module that contains tests for comments routes."""
 
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 from fastapi import status
-from freezegun import freeze_time
 from httpx import AsyncClient
 
 from app.constants import (
@@ -149,9 +148,8 @@ class TestComment(BaseAPITest):
         ],
         indirect=True,
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_create_comment_root_comment(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test create comment in case of root comment."""
 
@@ -192,9 +190,8 @@ class TestComment(BaseAPITest):
         ],
         indirect=True,
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_create_comment_with_parent(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test create comment in case comment has parent."""
 
@@ -391,9 +388,8 @@ class TestComment(BaseAPITest):
         ],
         indirect=True,
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_update_comment(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test update comment."""
 
@@ -570,9 +566,8 @@ class TestComment(BaseAPITest):
         ],
         indirect=True,
     )
-    @freeze_time(FROZEN_DATETIME)
     async def test_delete_comment_client_user_deletes_own_comment(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test delete comment in case client user deletes own comment."""
 
