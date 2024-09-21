@@ -1,8 +1,8 @@
 """Module that contains user domain routers."""
 
-from typing import Any
+from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, HTTPException, Security, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Security, status
 
 from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
@@ -64,7 +64,7 @@ async def get_user_me(
     ],
 )
 async def get_users(
-    filter_: UserFilter = Depends(),
+    filter_: Annotated[UserFilter, Query()],
     search: Search = Depends(),
     sorting: Sorting = Depends(),
     pagination: Pagination = Depends(),

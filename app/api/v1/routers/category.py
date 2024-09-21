@@ -1,8 +1,8 @@
 """Module that contains category domain routers."""
 
-from typing import Any
+from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, Security, status
+from fastapi import APIRouter, Depends, Query, Security, status
 
 from app.api.v1.auth.auth import OptionalAuthorization
 from app.api.v1.constants import ScopesEnum
@@ -29,7 +29,7 @@ router = APIRouter(prefix="/categories", tags=["categories"])
     ],
 )
 async def get_categories(
-    filter_: CategoryFilter = Depends(),
+    filter_: Annotated[CategoryFilter, Query()],
     category_service: CategoryService = Depends(),
 ) -> dict[str, Any]:
     """API which returns categories list.
