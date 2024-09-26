@@ -19,7 +19,7 @@ from app.api.v1.validators.user import (
     UserAuthorizationValidator,
     UserPasswordValidator,
 )
-from app.utils.metas import SingletonMeta
+from app.utils.metas import AbstractSingletonMeta, SingletonMeta
 
 
 class AuthenticationDependency(metaclass=SingletonMeta):
@@ -59,7 +59,7 @@ class AuthenticationDependency(metaclass=SingletonMeta):
         )
 
 
-class BaseAuthorizationDependency(abc.ABC):
+class BaseAuthorizationDependency(abc.ABC, metaclass=AbstractSingletonMeta):
     """Base authorization dependency class."""
 
     _oauth2 = OAuth2PasswordBearer(
@@ -94,7 +94,7 @@ class BaseAuthorizationDependency(abc.ABC):
         token_data: JWTPayload,
         user_authorization_validator: UserAuthorizationValidator,
     ) -> CurrentUser:
-        """
+        """Validates user by JWT.
 
         Args:
             request (Request): Current request object.
@@ -103,8 +103,7 @@ class BaseAuthorizationDependency(abc.ABC):
             authorization validator.
 
         Returns:
-            CurrentUser: Current user object if token is valid and permitted
-            scopes list.
+            CurrentUser: Current user object.
 
         """
 
@@ -132,8 +131,7 @@ class BaseAuthorizationDependency(abc.ABC):
             token (str | None): The JWT for authentication.
 
         Returns:
-            CurrentUser | None: Current user object if token is valid and
-            permitted scopes list.
+            CurrentUser | None: Current user object or None.
 
         Raises:
             NotImplementedError: This method must be implemented by subclasses.
@@ -164,8 +162,7 @@ class StrictAuthorizationDependency(BaseAuthorizationDependency):
             authorization validator.
 
         Returns:
-            CurrentUser: Current user object if token is valid and permitted
-            scopes list.
+            CurrentUser: Current user object.
 
         """
 
@@ -227,8 +224,7 @@ class OptionalAuthorizationDependency(BaseAuthorizationDependency):
             authorization validator.
 
         Returns:
-            CurrentUser | None: Current user object if token is valid and
-            permitted scopes list.
+            CurrentUser | None: Current user object or None.
 
         """
 

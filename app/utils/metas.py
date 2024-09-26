@@ -1,5 +1,6 @@
 """Contains custom meta classes."""
 
+import abc
 from threading import Lock
 from typing import Any, ClassVar
 
@@ -31,3 +32,7 @@ class SingletonMeta(type):
                 cls._instances[cls] = instance
 
         return cls._instances[cls]
+
+
+class AbstractSingletonMeta(abc.ABCMeta, SingletonMeta):
+    """Abstract singleton meta."""

@@ -81,7 +81,7 @@ class ScopesByUserValidator(BaseAuthValidator):
         self.scopes_required_validator = scopes_required_validator
 
     async def validate(self, user: User, scopes: list[str] | None) -> list[str]:
-        """Defines permitted scopes on authentication.
+        """Validates requested scopes on authentication.
 
         Args:
             user (User): User object.

@@ -8,6 +8,7 @@ Dependency rules:
 - Should use validators and other dependencies.
 - Can't use entity services.
 - Should be reusable as much as possible.
-- Should use 'SingletonMeta' metaclass to make FastAPI Depends() cache works.
+- Should use 'SingletonMeta' or 'AbstractSingletonMeta' metaclasses to make FastAPI
+Depends() cache works.
 
 """
