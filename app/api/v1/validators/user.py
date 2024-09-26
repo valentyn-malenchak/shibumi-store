@@ -5,13 +5,13 @@ from typing import Any
 from bson import ObjectId
 from fastapi import Depends, HTTPException, Request, status
 
-from app.api.v1.auth.password import Password
 from app.api.v1.constants import RolesEnum
 from app.api.v1.models.user import CurrentUser, User
 from app.api.v1.services.user import UserService
 from app.api.v1.validators import BaseValidator
 from app.constants import HTTPErrorMessagesEnum
 from app.exceptions import EntityIsNotFoundError
+from app.utils.password import Password
 
 
 class BaseUserValidator(BaseValidator):
@@ -41,6 +41,83 @@ class BaseUserValidator(BaseValidator):
 
         """
         raise NotImplementedError
+
+
+class UserAuthenticationValidator(BaseUserValidator):
+    """User authentication validator."""
+
+    async def validate(self, username: str) -> User:
+        """Validates user on authentication.
+
+        Args:
+            username (str): Username of requested user.
+
+        Returns:
+            User: User object.
+
+        Raises:
+            HTTPException: If requested user is not found or deleted.
+
+        """
+
+        try:
+            user = await self.user_service.get_by_username(username=username)
+
+        except EntityIsNotFoundError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=HTTPErrorMessagesEnum.INCORRECT_CREDENTIALS,
+            )
+
+        if user.deleted is True:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=HTTPErrorMessagesEnum.INCORRECT_CREDENTIALS,
+            )
+
+        return user
+
+
+class UserAuthorizationValidator(BaseUserValidator):
+    """User authorization validator."""
+
+    async def validate(self, user_id: ObjectId) -> User:
+        """Validates user on authorization.
+
+        Args:
+            user_id (ObjectId): BSON object identifier of requested user.
+
+        Returns:
+            User: User object.
+
+        Raises:
+            HTTPException: If requested user is not found or deleted or
+            user's email is not verified.
+
+        """
+
+        try:
+            user = await self.user_service.get_by_id(id_=user_id)
+
+        except EntityIsNotFoundError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=HTTPErrorMessagesEnum.NOT_AUTHORIZED,
+            )
+
+        if user.deleted is True:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=HTTPErrorMessagesEnum.NOT_AUTHORIZED,
+            )
+
+        if user.email_verified is False:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=HTTPErrorMessagesEnum.EMAIL_IS_NOT_VERIFIED,
+            )
+
+        return user
 
 
 class UserByIdValidator(BaseUserValidator):
@@ -205,6 +282,32 @@ class UserUpdateAccessValidator(BaseUserValidator):
 
 class UserPasswordValidator(BaseUserValidator):
     """User password validator."""
+
+    async def validate(self, user: User, password: str) -> None:
+        """Verifies user password on authentication.
+
+        Args:
+            user (User): User object.
+            password (str): Requested user password.
+
+        Raises:
+            HTTPException: In case requested password is incorrect.
+
+        """
+
+        if not Password.verify_password(password, user.hashed_password):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=HTTPErrorMessagesEnum.INCORRECT_CREDENTIALS,
+            )
+
+        # update password hash parameters in database in case it is outdated
+        if Password.verify_needs_rehash(user.hashed_password) is True:
+            await self.user_service.update_password(id_=user.id, password=password)
+
+
+class UserPasswordUpdateValidator(BaseUserValidator):
+    """User password update validator."""
 
     async def validate(self, old_password: str) -> None:
         """Validates old user password on update.

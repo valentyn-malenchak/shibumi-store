@@ -2,8 +2,8 @@
 
 from fastapi import APIRouter, Depends, HTTPException, Security, status
 
-from app.api.v1.auth.auth import StrictAuthorization
 from app.api.v1.constants import ScopesEnum
+from app.api.v1.dependencies.auth import StrictAuthorizationDependency
 from app.api.v1.dependencies.vote import (
     VoteAccessDependency,
     VoteDataCreateDependency,
@@ -26,7 +26,9 @@ router = APIRouter(prefix="/votes", tags=["votes"])
     response_model=Vote,
     status_code=status.HTTP_200_OK,
     dependencies=[
-        Security(StrictAuthorization(), scopes=[ScopesEnum.VOTES_GET_VOTE.name])
+        Security(
+            StrictAuthorizationDependency(), scopes=[ScopesEnum.VOTES_GET_VOTE.name]
+        )
     ],
 )
 async def get_vote(vote: Vote = Depends(VoteAccessDependency())) -> Vote:
@@ -47,7 +49,9 @@ async def get_vote(vote: Vote = Depends(VoteAccessDependency())) -> Vote:
     response_model=Vote,
     status_code=status.HTTP_201_CREATED,
     dependencies=[
-        Security(StrictAuthorization(), scopes=[ScopesEnum.VOTES_CREATE_VOTE.name])
+        Security(
+            StrictAuthorizationDependency(), scopes=[ScopesEnum.VOTES_CREATE_VOTE.name]
+        )
     ],
 )
 async def create_vote(
@@ -84,7 +88,9 @@ async def create_vote(
     response_model=Vote,
     status_code=status.HTTP_200_OK,
     dependencies=[
-        Security(StrictAuthorization(), scopes=[ScopesEnum.VOTES_UPDATE_VOTE.name])
+        Security(
+            StrictAuthorizationDependency(), scopes=[ScopesEnum.VOTES_UPDATE_VOTE.name]
+        )
     ],
 )
 async def update_vote(
@@ -110,7 +116,9 @@ async def update_vote(
     "/{vote_id}/",
     status_code=status.HTTP_204_NO_CONTENT,
     dependencies=[
-        Security(StrictAuthorization(), scopes=[ScopesEnum.VOTES_DELETE_VOTE.name])
+        Security(
+            StrictAuthorizationDependency(), scopes=[ScopesEnum.VOTES_DELETE_VOTE.name]
+        )
     ],
 )
 async def delete_vote(

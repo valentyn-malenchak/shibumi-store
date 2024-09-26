@@ -2,8 +2,11 @@
 
 from fastapi import APIRouter, Depends, Security, status
 
-from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
+from app.api.v1.dependencies.auth import (
+    OptionalAuthorizationDependency,
+    StrictAuthorizationDependency,
+)
 from app.api.v1.dependencies.comment import (
     CommentByIdGetDependency,
     CommentDataCreateDependency,
@@ -25,7 +28,10 @@ router = APIRouter(prefix="/comments", tags=["comments"])
     response_model=Comment,
     status_code=status.HTTP_200_OK,
     dependencies=[
-        Security(OptionalAuthorization(), scopes=[ScopesEnum.COMMENTS_GET_COMMENT.name])
+        Security(
+            OptionalAuthorizationDependency(),
+            scopes=[ScopesEnum.COMMENTS_GET_COMMENT.name],
+        )
     ],
 )
 async def get_comment(
@@ -49,7 +55,8 @@ async def get_comment(
     status_code=status.HTTP_201_CREATED,
     dependencies=[
         Security(
-            StrictAuthorization(), scopes=[ScopesEnum.COMMENTS_CREATE_COMMENT.name]
+            StrictAuthorizationDependency(),
+            scopes=[ScopesEnum.COMMENTS_CREATE_COMMENT.name],
         ),
     ],
 )
@@ -76,7 +83,8 @@ async def create_comment(
     status_code=status.HTTP_200_OK,
     dependencies=[
         Security(
-            StrictAuthorization(), scopes=[ScopesEnum.COMMENTS_UPDATE_COMMENT.name]
+            StrictAuthorizationDependency(),
+            scopes=[ScopesEnum.COMMENTS_UPDATE_COMMENT.name],
         )
     ],
 )
@@ -104,7 +112,8 @@ async def update_comment(
     status_code=status.HTTP_204_NO_CONTENT,
     dependencies=[
         Security(
-            StrictAuthorization(), scopes=[ScopesEnum.COMMENTS_DELETE_COMMENT.name]
+            StrictAuthorizationDependency(),
+            scopes=[ScopesEnum.COMMENTS_DELETE_COMMENT.name],
         )
     ],
 )

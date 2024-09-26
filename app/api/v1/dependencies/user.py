@@ -17,7 +17,7 @@ from app.api.v1.validators.user import (
     UserDeleteAccessValidator,
     UserEmailVerifiedValidator,
     UserGetAccessValidator,
-    UserPasswordValidator,
+    UserPasswordUpdateValidator,
     UserRolesValidator,
     UserStatusValidator,
     UserUpdateAccessValidator,
@@ -214,21 +214,24 @@ class UserPasswordDataUpdateDependency(metaclass=SingletonMeta):
         self,
         password: UserPasswordUpdateData,
         user: User = Depends(UserGetAccessDependency()),
-        user_password_validator: UserPasswordValidator = Depends(),
+        user_password_update_validator: UserPasswordUpdateValidator = Depends(),
     ) -> UserPasswordUpdateData:
         """Validates passwords on update operation.
 
         Args:
             password (UserPasswordUpdateData): Old and new passwords.
             user (User): User object.
-            user_password_validator (UserPasswordValidator): User password validator.
+            user_password_update_validator (UserPasswordUpdateValidator): User password
+            update validator.
 
         Returns:
             UserPasswordUpdateData: Old and new passwords.
 
         """
 
-        await user_password_validator.validate(old_password=password.old_password)
+        await user_password_update_validator.validate(
+            old_password=password.old_password
+        )
 
         return password
 

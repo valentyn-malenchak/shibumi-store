@@ -7,7 +7,6 @@ import pytest
 from fastapi import status
 from httpx import AsyncClient
 
-from app.api.v1.auth.jwt import JWT
 from app.api.v1.constants import ScopesEnum
 from app.constants import HTTPErrorMessagesEnum
 from app.services.mongo.constants import MongoCollectionsEnum
@@ -21,6 +20,7 @@ from app.tests.constants import (
     TEST_JWT,
     USER_NO_SCOPES,
 )
+from app.utils.jwt import JWT
 
 
 class TestAuth(BaseAPITest):

@@ -2,9 +2,11 @@
 
 from fastapi import APIRouter, Depends, Security, status
 
-from app.api.v1.auth.auth import Authentication, RefreshTokenAuthorization
-from app.api.v1.auth.jwt import JWT
 from app.api.v1.constants import ScopesEnum
+from app.api.v1.dependencies.auth import (
+    AuthenticationDependency,
+    RefreshTokenAuthorizationDependency,
+)
 from app.api.v1.models.auth import (
     JWTAccessToken,
     JWTTokens,
@@ -12,13 +14,14 @@ from app.api.v1.models.auth import (
 )
 from app.api.v1.models.user import CurrentUser
 from app.api.v1.services.role import RoleService
+from app.utils.jwt import JWT
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/tokens/", response_model=JWTTokens, status_code=status.HTTP_201_CREATED)
 async def create_tokens(
-    current_user: CurrentUser = Depends(Authentication()),
+    current_user: CurrentUser = Depends(AuthenticationDependency()),
 ) -> dict[str, str]:
     """API which creates Access and Refresh tokens for user.
 
@@ -42,7 +45,7 @@ async def create_tokens(
 )
 async def refresh_access_token(
     current_user: CurrentUser = Security(
-        RefreshTokenAuthorization(),
+        RefreshTokenAuthorizationDependency(),
         scopes=[ScopesEnum.AUTH_REFRESH_TOKEN.name],
     ),
     role_service: RoleService = Depends(),

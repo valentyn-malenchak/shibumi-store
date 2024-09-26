@@ -4,8 +4,8 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, Query, Security, status
 
-from app.api.v1.auth.auth import OptionalAuthorization
 from app.api.v1.constants import ScopesEnum
+from app.api.v1.dependencies.auth import OptionalAuthorizationDependency
 from app.api.v1.dependencies.category import CategoryByIdGetDependency
 from app.api.v1.models.category import (
     Category,
@@ -24,7 +24,8 @@ router = APIRouter(prefix="/categories", tags=["categories"])
     status_code=status.HTTP_200_OK,
     dependencies=[
         Security(
-            OptionalAuthorization(), scopes=[ScopesEnum.CATEGORIES_GET_CATEGORIES.name]
+            OptionalAuthorizationDependency(),
+            scopes=[ScopesEnum.CATEGORIES_GET_CATEGORIES.name],
         )
     ],
 )
@@ -54,7 +55,8 @@ async def get_categories(
     status_code=status.HTTP_200_OK,
     dependencies=[
         Security(
-            OptionalAuthorization(), scopes=[ScopesEnum.CATEGORIES_GET_CATEGORY.name]
+            OptionalAuthorizationDependency(),
+            scopes=[ScopesEnum.CATEGORIES_GET_CATEGORY.name],
         )
     ],
 )
@@ -79,7 +81,7 @@ async def get_category(
     status_code=status.HTTP_200_OK,
     dependencies=[
         Security(
-            OptionalAuthorization(),
+            OptionalAuthorizationDependency(),
             scopes=[ScopesEnum.CATEGORIES_GET_CATEGORY_PARAMETERS.name],
         )
     ],
