@@ -1,7 +1,7 @@
 # Shibumi Store
 
 [![Python Version](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-312/)
-[![FastAPI Version](https://img.shields.io/badge/fastapi-0.112.4-green.svg)](https://fastapi.tiangolo.com/)
+[![FastAPI Version](https://img.shields.io/badge/fastapi-0.115.0-green.svg)](https://fastapi.tiangolo.com/)
 [![MongoDB Version](https://img.shields.io/badge/mongodb-7.0-green.svg)](https://www.mongodb.com/)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=valentyn-malenchak_shibumi-store&metric=coverage)](https://sonarcloud.io/summary/new_code?id=valentyn-malenchak_shibumi-store)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=valentyn-malenchak_shibumi-store&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=valentyn-malenchak_shibumi-store)
@@ -42,13 +42,9 @@ The project is organized with the following directory structure:
 ├── app/                                       # Main application code
 │   ├── api/
 │   │   ├── v1/                                # API version 1
-│   │   │   ├── auth                           # Authentication and Authorization interactions
-│   │   │   │   ├── __init__.py
-│   │   │   │   ├── auth.py                    # Authentication and Authorization handlers
-│   │   │   │   ├── jwt.py                     # JWT handler
-│   │   │   │   └── password.py                # Password handler
 │   │   │   ├── dependencies                   # Domain dependencies for determination and validation (using validators) HTTP request data
 │   │   │   │   ├── __init__.py
+│   │   │   │   ├── auth.py
 │   │   │   │   ├── user.py
 │   │   │   │   └── ...
 │   │   │   ├── models                         # Pydantic models
@@ -68,6 +64,7 @@ The project is organized with the following directory structure:
 │   │   │   │   └── ...
 │   │   │   ├── validators                     # Validators for HTTP request data
 │   │   │   │   ├── __init__.py
+│   │   │   │   ├── auth.py
 │   │   │   │   ├── user.py
 │   │   │   │   └── ...
 │   │   │   ├── services                       # API for interactions with entities 
@@ -108,7 +105,9 @@ The project is organized with the following directory structure:
 │   │   └── constants.py                       # Constants for unit tests
 │   ├── utils/                                 # Utility modules
 │   │   ├── __init__.py
+│   │   ├── jwt.py                             # JWT handler
 │   │   ├── metas.py                           # Custom metaclasses
+│   │   ├── password.py                        # Password handler
 │   │   ├── pydantic.py                        # Custom pydantic utilities
 │   │   └── token.py                           # Verification token component
 │   ├── __init__.py

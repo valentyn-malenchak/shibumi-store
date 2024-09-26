@@ -113,7 +113,7 @@ class JWT:
 
         Args:
             token (str): The JWT to decode.
-            is_refresh (bool): Defines if token is refresh. Default to False.
+            is_refresh (bool): Defines if token is refresh or access. Default to False.
 
         Returns:
             JWTPayload: The decoded token payload.

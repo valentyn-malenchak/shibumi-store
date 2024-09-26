@@ -4,8 +4,11 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Security, status
 
-from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
+from app.api.v1.dependencies.auth import (
+    OptionalAuthorizationDependency,
+    StrictAuthorizationDependency,
+)
 from app.api.v1.dependencies.user import (
     UserByIdGetDependency,
     UserByUsernameStatusGetDependency,
@@ -40,7 +43,7 @@ router = APIRouter(prefix="/users", tags=["users"])
 @router.get("/me/", response_model=ShortUser, status_code=status.HTTP_200_OK)
 async def get_user_me(
     current_user: CurrentUser = Security(
-        StrictAuthorization(), scopes=[ScopesEnum.USERS_GET_ME.name]
+        StrictAuthorizationDependency(), scopes=[ScopesEnum.USERS_GET_ME.name]
     ),
 ) -> User:
     """API which returns current user object.
@@ -60,7 +63,9 @@ async def get_user_me(
     response_model=UserList,
     status_code=status.HTTP_200_OK,
     dependencies=[
-        Security(StrictAuthorization(), scopes=[ScopesEnum.USERS_GET_USERS.name])
+        Security(
+            StrictAuthorizationDependency(), scopes=[ScopesEnum.USERS_GET_USERS.name]
+        )
     ],
 )
 async def get_users(
@@ -96,7 +101,9 @@ async def get_users(
     response_model=ShortUser,
     status_code=status.HTTP_200_OK,
     dependencies=[
-        Security(StrictAuthorization(), scopes=[ScopesEnum.USERS_GET_USER.name])
+        Security(
+            StrictAuthorizationDependency(), scopes=[ScopesEnum.USERS_GET_USER.name]
+        )
     ],
 )
 async def get_user(user: User = Depends(UserByIdGetDependency())) -> User:
@@ -117,7 +124,10 @@ async def get_user(user: User = Depends(UserByIdGetDependency())) -> User:
     response_model=ShortUser,
     status_code=status.HTTP_201_CREATED,
     dependencies=[
-        Security(OptionalAuthorization(), scopes=[ScopesEnum.USERS_CREATE_USER.name])
+        Security(
+            OptionalAuthorizationDependency(),
+            scopes=[ScopesEnum.USERS_CREATE_USER.name],
+        )
     ],
 )
 async def create_user(
@@ -196,7 +206,9 @@ async def verify_user_email(
     response_model=ShortUser,
     status_code=status.HTTP_200_OK,
     dependencies=[
-        Security(StrictAuthorization(), scopes=[ScopesEnum.USERS_UPDATE_USER.name])
+        Security(
+            StrictAuthorizationDependency(), scopes=[ScopesEnum.USERS_UPDATE_USER.name]
+        )
     ],
 )
 async def update_user(
@@ -223,7 +235,8 @@ async def update_user(
     status_code=status.HTTP_204_NO_CONTENT,
     dependencies=[
         Security(
-            StrictAuthorization(), scopes=[ScopesEnum.USERS_UPDATE_USER_PASSWORD.name]
+            StrictAuthorizationDependency(),
+            scopes=[ScopesEnum.USERS_UPDATE_USER_PASSWORD.name],
         )
     ],
 )
@@ -249,7 +262,9 @@ async def update_user_password(
     "/{user_id}/",
     status_code=status.HTTP_204_NO_CONTENT,
     dependencies=[
-        Security(StrictAuthorization(), scopes=[ScopesEnum.USERS_DELETE_USER.name])
+        Security(
+            StrictAuthorizationDependency(), scopes=[ScopesEnum.USERS_DELETE_USER.name]
+        )
     ],
 )
 async def delete_user(

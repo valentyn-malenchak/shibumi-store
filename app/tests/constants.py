@@ -55,7 +55,7 @@ NOT_VERIFIED_EMAIL_USER = dict(
 
 FAKE_USER = dict(
     id="6597f36b349450bbd8e83a52",
-    scopes=[],
+    scopes=[ScopesEnum.AUTH_REFRESH_TOKEN.name, ScopesEnum.USERS_GET_ME.name],
     exp=1703203990,
 )
 

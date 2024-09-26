@@ -2,8 +2,11 @@
 
 from fastapi import APIRouter, Depends, Security, status
 
-from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
+from app.api.v1.dependencies.auth import (
+    OptionalAuthorizationDependency,
+    StrictAuthorizationDependency,
+)
 from app.api.v1.dependencies.thread import ThreadByIdGetDependency
 from app.api.v1.models.thread import (
     Thread,
@@ -19,7 +22,10 @@ router = APIRouter(prefix="/threads", tags=["threads"])
     response_model=Thread,
     status_code=status.HTTP_200_OK,
     dependencies=[
-        Security(OptionalAuthorization(), scopes=[ScopesEnum.THREADS_GET_THREAD.name])
+        Security(
+            OptionalAuthorizationDependency(),
+            scopes=[ScopesEnum.THREADS_GET_THREAD.name],
+        )
     ],
 )
 async def get_thread(thread: Thread = Depends(ThreadByIdGetDependency())) -> Thread:
@@ -40,7 +46,10 @@ async def get_thread(thread: Thread = Depends(ThreadByIdGetDependency())) -> Thr
     response_model=Thread,
     status_code=status.HTTP_201_CREATED,
     dependencies=[
-        Security(StrictAuthorization(), scopes=[ScopesEnum.THREADS_CREATE_THREAD.name])
+        Security(
+            StrictAuthorizationDependency(),
+            scopes=[ScopesEnum.THREADS_CREATE_THREAD.name],
+        )
     ],
 )
 async def create_comment(
@@ -65,7 +74,10 @@ async def create_comment(
     response_model=Thread,
     status_code=status.HTTP_200_OK,
     dependencies=[
-        Security(StrictAuthorization(), scopes=[ScopesEnum.THREADS_UPDATE_THREAD.name])
+        Security(
+            StrictAuthorizationDependency(),
+            scopes=[ScopesEnum.THREADS_UPDATE_THREAD.name],
+        )
     ],
 )
 async def update_thread(

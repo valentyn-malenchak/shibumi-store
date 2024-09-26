@@ -4,8 +4,11 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, Security, status
 
-from app.api.v1.auth.auth import OptionalAuthorization, StrictAuthorization
 from app.api.v1.constants import ScopesEnum
+from app.api.v1.dependencies.auth import (
+    OptionalAuthorizationDependency,
+    StrictAuthorizationDependency,
+)
 from app.api.v1.dependencies.product import (
     ProductAccessDependency,
     ProductDataDependency,
@@ -29,7 +32,8 @@ router = APIRouter(prefix="/products", tags=["products"])
     status_code=status.HTTP_201_CREATED,
     dependencies=[
         Security(
-            StrictAuthorization(), scopes=[ScopesEnum.PRODUCTS_CREATE_PRODUCT.name]
+            StrictAuthorizationDependency(),
+            scopes=[ScopesEnum.PRODUCTS_CREATE_PRODUCT.name],
         )
     ],
 )
@@ -56,7 +60,8 @@ async def create_product(
     status_code=status.HTTP_200_OK,
     dependencies=[
         Security(
-            OptionalAuthorization(), scopes=[ScopesEnum.PRODUCTS_GET_PRODUCTS.name]
+            OptionalAuthorizationDependency(),
+            scopes=[ScopesEnum.PRODUCTS_GET_PRODUCTS.name],
         )
     ],
 )
@@ -93,7 +98,10 @@ async def get_products(
     response_model=Product,
     status_code=status.HTTP_200_OK,
     dependencies=[
-        Security(OptionalAuthorization(), scopes=[ScopesEnum.PRODUCTS_GET_PRODUCT.name])
+        Security(
+            OptionalAuthorizationDependency(),
+            scopes=[ScopesEnum.PRODUCTS_GET_PRODUCT.name],
+        )
     ],
 )
 async def get_product(
@@ -122,7 +130,8 @@ async def get_product(
     status_code=status.HTTP_200_OK,
     dependencies=[
         Security(
-            StrictAuthorization(), scopes=[ScopesEnum.PRODUCTS_UPDATE_PRODUCT.name]
+            StrictAuthorizationDependency(),
+            scopes=[ScopesEnum.PRODUCTS_UPDATE_PRODUCT.name],
         )
     ],
 )

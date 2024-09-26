@@ -6,7 +6,6 @@ from typing import Any
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
 
-from app.api.v1.auth.password import Password
 from app.api.v1.constants import (
     EmailSubjectsEnum,
     EmailTextEnum,
@@ -30,6 +29,7 @@ from app.exceptions import InvalidVerificationTokenError
 from app.services.mongo.transaction_manager import TransactionManager
 from app.services.redis.service import RedisService
 from app.services.send_grid.service import SendGridService
+from app.utils.password import Password
 from app.utils.token import VerificationToken
 
 

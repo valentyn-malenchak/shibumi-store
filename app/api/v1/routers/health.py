@@ -2,8 +2,8 @@
 
 from fastapi import APIRouter, Security, status
 
-from app.api.v1.auth.auth import StrictAuthorization
 from app.api.v1.constants import ScopesEnum
+from app.api.v1.dependencies.auth import StrictAuthorizationDependency
 
 router = APIRouter(prefix="/health", tags=["health"])
 
@@ -13,7 +13,9 @@ router = APIRouter(prefix="/health", tags=["health"])
     response_model=dict[str, str],
     status_code=status.HTTP_200_OK,
     dependencies=[
-        Security(StrictAuthorization(), scopes=[ScopesEnum.HEALTH_GET_HEALTH.name])
+        Security(
+            StrictAuthorizationDependency(), scopes=[ScopesEnum.HEALTH_GET_HEALTH.name]
+        )
     ],
 )
 async def get_health() -> dict[str, str]:

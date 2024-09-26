@@ -3,8 +3,8 @@
 from bson import ObjectId
 from fastapi import APIRouter, Depends, Security, status
 
-from app.api.v1.auth.auth import StrictAuthorization
 from app.api.v1.constants import ScopesEnum
+from app.api.v1.dependencies.auth import StrictAuthorizationDependency
 from app.api.v1.dependencies.cart import (
     CartAccessDependency,
     CartByUserGetDependency,
@@ -29,7 +29,9 @@ router = APIRouter(prefix="/carts", tags=["carts"])
     response_model=Cart,
     status_code=status.HTTP_200_OK,
     dependencies=[
-        Security(StrictAuthorization(), scopes=[ScopesEnum.CARTS_GET_CART.name])
+        Security(
+            StrictAuthorizationDependency(), scopes=[ScopesEnum.CARTS_GET_CART.name]
+        )
     ],
 )
 async def get_cart(cart: Cart = Depends(CartByUserGetDependency())) -> Cart:
@@ -50,7 +52,9 @@ async def get_cart(cart: Cart = Depends(CartByUserGetDependency())) -> Cart:
     response_model=Cart,
     status_code=status.HTTP_201_CREATED,
     dependencies=[
-        Security(StrictAuthorization(), scopes=[ScopesEnum.CARTS_ADD_PRODUCT.name])
+        Security(
+            StrictAuthorizationDependency(), scopes=[ScopesEnum.CARTS_ADD_PRODUCT.name]
+        )
     ],
 )
 async def add_product_to_the_cart(
@@ -77,7 +81,10 @@ async def add_product_to_the_cart(
     response_model=Cart,
     status_code=status.HTTP_200_OK,
     dependencies=[
-        Security(StrictAuthorization(), scopes=[ScopesEnum.CARTS_UPDATE_PRODUCT.name])
+        Security(
+            StrictAuthorizationDependency(),
+            scopes=[ScopesEnum.CARTS_UPDATE_PRODUCT.name],
+        )
     ],
 )
 async def update_product_in_the_cart(
@@ -112,7 +119,10 @@ async def update_product_in_the_cart(
     response_model=Cart,
     status_code=status.HTTP_200_OK,
     dependencies=[
-        Security(StrictAuthorization(), scopes=[ScopesEnum.CARTS_DELETE_PRODUCT.name])
+        Security(
+            StrictAuthorizationDependency(),
+            scopes=[ScopesEnum.CARTS_DELETE_PRODUCT.name],
+        )
     ],
 )
 async def delete_product_from_the_cart(
