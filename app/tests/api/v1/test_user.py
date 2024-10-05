@@ -1,6 +1,6 @@
 """Module that contains tests for user routes."""
 
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import jwt
 import pytest
@@ -154,7 +154,7 @@ class TestUser(BaseAPITest):
     async def test_create_user_unauthenticated_user_creates_customer_user(
         self,
         test_client: AsyncClient,
-        redis_setex_mock: MagicMock,
+        redis_setex_mock: AsyncMock,
         send_grid_send_mock: MagicMock,
         datetime_now_mock: MagicMock,
     ) -> None:
@@ -229,7 +229,7 @@ class TestUser(BaseAPITest):
         self,
         test_client: AsyncClient,
         arrange_db: None,
-        redis_setex_mock: MagicMock,
+        redis_setex_mock: AsyncMock,
         send_grid_send_mock: MagicMock,
         datetime_now_mock: MagicMock,
     ) -> None:
@@ -787,7 +787,7 @@ class TestUser(BaseAPITest):
         self,
         test_client: AsyncClient,
         arrange_db: None,
-        redis_setex_mock: MagicMock,
+        redis_setex_mock: AsyncMock,
         send_grid_send_mock: MagicMock,
         datetime_now_mock: MagicMock,
     ) -> None:
@@ -1809,7 +1809,7 @@ class TestUser(BaseAPITest):
         self,
         test_client: AsyncClient,
         arrange_db: None,
-        redis_setex_mock: MagicMock,
+        redis_setex_mock: AsyncMock,
         send_grid_send_mock: MagicMock,
     ) -> None:
         """Test request reset user password."""
@@ -1868,7 +1868,7 @@ class TestUser(BaseAPITest):
         monkeypatch: pytest.MonkeyPatch,
         test_client: AsyncClient,
         arrange_db: None,
-        redis_setex_mock: MagicMock,
+        redis_setex_mock: AsyncMock,
         send_grid_send_mock: MagicMock,
     ) -> None:
         """Test request reset user password in case some error in SendGrid."""
@@ -1897,8 +1897,8 @@ class TestUser(BaseAPITest):
         self,
         test_client: AsyncClient,
         arrange_db: None,
-        redis_get_mock: MagicMock,
-        redis_delete_mock: MagicMock,
+        redis_get_mock: AsyncMock,
+        redis_delete_mock: AsyncMock,
     ) -> None:
         """Test reset user password."""
 
@@ -2044,7 +2044,7 @@ class TestUser(BaseAPITest):
         self,
         test_client: AsyncClient,
         arrange_db: None,
-        redis_setex_mock: MagicMock,
+        redis_setex_mock: AsyncMock,
         send_grid_send_mock: MagicMock,
     ) -> None:
         """Test request verify user email."""
@@ -2119,7 +2119,7 @@ class TestUser(BaseAPITest):
         monkeypatch: pytest.MonkeyPatch,
         test_client: AsyncClient,
         arrange_db: None,
-        redis_setex_mock: MagicMock,
+        redis_setex_mock: AsyncMock,
         send_grid_send_mock: MagicMock,
     ) -> None:
         """Test request verify user email in case some error in SendGrid."""
@@ -2148,8 +2148,8 @@ class TestUser(BaseAPITest):
         self,
         test_client: AsyncClient,
         arrange_db: None,
-        redis_get_mock: MagicMock,
-        redis_delete_mock: MagicMock,
+        redis_get_mock: AsyncMock,
+        redis_delete_mock: AsyncMock,
     ) -> None:
         """Test verify user email."""
 

@@ -248,7 +248,7 @@ class UserService(BaseService):
 
         token = VerificationToken.generate()
 
-        self.redis_service.set(
+        await self.redis_service.set(
             name=RedisNamesEnum.RESET_PASSWORD.format(user_id=item.id),
             value=token.hash(),
             ttl=RedisNamesTTLEnum.RESET_PASSWORD.value,
@@ -276,7 +276,7 @@ class UserService(BaseService):
 
         hashed_token = VerificationToken(token).hash()
 
-        cached_token = self.redis_service.get(
+        cached_token = await self.redis_service.get(
             name=RedisNamesEnum.RESET_PASSWORD.format(user_id=id_)
         )
 
@@ -285,7 +285,7 @@ class UserService(BaseService):
 
         await self.update_password(id_=id_, password=password)
 
-        self.redis_service.delete(
+        await self.redis_service.delete(
             name=RedisNamesEnum.RESET_PASSWORD.format(user_id=id_)
         )
 
@@ -299,7 +299,7 @@ class UserService(BaseService):
 
         token = VerificationToken.generate()
 
-        self.redis_service.set(
+        await self.redis_service.set(
             name=RedisNamesEnum.EMAIL_VERIFICATION.format(user_id=item.id),
             value=token.hash(),
             ttl=RedisNamesTTLEnum.EMAIL_VERIFICATION.value,
@@ -328,7 +328,7 @@ class UserService(BaseService):
 
         hashed_token = VerificationToken(token).hash()
 
-        cached_token = self.redis_service.get(
+        cached_token = await self.redis_service.get(
             name=RedisNamesEnum.EMAIL_VERIFICATION.format(user_id=id_)
         )
 
@@ -337,6 +337,6 @@ class UserService(BaseService):
 
         await self.repository.verify_email(id_=id_)
 
-        self.redis_service.delete(
+        await self.redis_service.delete(
             name=RedisNamesEnum.EMAIL_VERIFICATION.format(user_id=id_)
         )

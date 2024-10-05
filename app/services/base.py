@@ -17,7 +17,7 @@ class BaseClient(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def close(cls) -> None:
+    async def close(cls) -> None:
         """Closes client."""
         raise NotImplementedError
 

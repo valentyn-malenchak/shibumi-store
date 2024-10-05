@@ -53,7 +53,7 @@ class ParameterService(BaseService):
 
         """
 
-        cached_parameters = self.redis_service.get(
+        cached_parameters = await self.redis_service.get(
             name=RedisNamesEnum.PRODUCT_PARAMETERS_LIST
         )
 
@@ -62,7 +62,7 @@ class ParameterService(BaseService):
 
         parameters = await self.repository.get(filter_=None)
 
-        self.redis_service.set(
+        await self.redis_service.set(
             name=RedisNamesEnum.PRODUCT_PARAMETERS_LIST,
             value=json_util.dumps(parameters),
             ttl=RedisNamesTTLEnum.PRODUCT_PARAMETERS_LIST.value,

@@ -2,7 +2,7 @@
 
 import asyncio
 from collections.abc import AsyncGenerator, Generator
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import arrow
 import pytest
@@ -66,26 +66,26 @@ class BaseAPITest(BaseTest):
             yield mock
 
     @pytest.fixture
-    def redis_setex_mock(self) -> Generator[MagicMock, None, None]:
+    def redis_setex_mock(self) -> Generator[AsyncMock, None, None]:
         """Redis setex operation mock."""
 
-        with patch("redis.Redis.setex") as mock:
+        with patch("redis.asyncio.Redis.setex", new=AsyncMock()) as mock:
             yield mock
 
     @pytest.fixture
-    def redis_get_mock(self, request: SubRequest) -> Generator[MagicMock, None, None]:
+    def redis_get_mock(self, request: SubRequest) -> Generator[AsyncMock, None, None]:
         """Redis get operation mock."""
 
-        with patch("redis.Redis.get") as mock:
+        with patch("redis.asyncio.Redis.get", new=AsyncMock()) as mock:
             mock.return_value = getattr(request, "param", None)
 
             yield mock
 
     @pytest.fixture
-    def redis_delete_mock(self) -> Generator[MagicMock, None, None]:
+    def redis_delete_mock(self) -> Generator[AsyncMock, None, None]:
         """Redis delete operation mock."""
 
-        with patch("redis.Redis.delete") as mock:
+        with patch("redis.asyncio.Redis.delete", new=AsyncMock()) as mock:
             yield mock
 
     @pytest_asyncio.fixture

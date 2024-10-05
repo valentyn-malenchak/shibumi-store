@@ -52,14 +52,14 @@ class RoleService(BaseService):
 
         """
 
-        cached_roles = self.redis_service.get(name=RedisNamesEnum.ROLES_LIST)
+        cached_roles = await self.redis_service.get(name=RedisNamesEnum.ROLES_LIST)
 
         if cached_roles is not None:
             return json_util.loads(cached_roles)  # type: ignore
 
         roles = await self.repository.get(filter_=None)
 
-        self.redis_service.set(
+        await self.redis_service.set(
             name=RedisNamesEnum.ROLES_LIST,
             value=json_util.dumps(roles),
             ttl=RedisNamesTTLEnum.ROLES_LIST.value,
@@ -78,7 +78,7 @@ class RoleService(BaseService):
 
         """
 
-        cached_roles = self.redis_service.get(name=RedisNamesEnum.ROLES_LIST)
+        cached_roles = await self.redis_service.get(name=RedisNamesEnum.ROLES_LIST)
 
         if cached_roles is not None:
             return len(json_util.loads(cached_roles))

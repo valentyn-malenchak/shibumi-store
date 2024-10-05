@@ -29,7 +29,7 @@ class AppConfig(ImmutableModel):
     MONGO_AUTH_SOURCE: str
 
     REDIS_HOST: str
-    REDIS_PORT: str
+    REDIS_PORT: int
     REDIS_PASSWORD: str
 
     SEND_GRID_API_KEY: str

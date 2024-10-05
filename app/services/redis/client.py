@@ -1,6 +1,6 @@
 """Contains Redis client."""
 
-from redis import StrictRedis
+from redis.asyncio import StrictRedis
 
 from app.services.base import BaseClient
 from app.settings import SETTINGS
@@ -22,6 +22,6 @@ class RedisClient(BaseClient):
         return self._client
 
     @classmethod
-    def close(cls) -> None:
+    async def close(cls) -> None:
         """Closes Redis client."""
-        cls._client.close()  # type: ignore
+        await cls._client.aclose()
