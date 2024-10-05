@@ -117,7 +117,7 @@ def run(ctx: Context) -> None:
 
     """
 
-    ctx.run("fastapi run")
+    ctx.run("python -m app.app")
 
 
 @task(pre=[upgrade_migrations])

@@ -1,6 +1,6 @@
 """App level unit tests."""
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from fastapi import status
 from fastapi.testclient import TestClient
@@ -23,10 +23,10 @@ class TestApp(BaseTest):
 
     @patch("mongodb_migrations.cli.MigrationManager.run")
     @patch("motor.motor_asyncio.AsyncIOMotorClient.close")
-    @patch("redis.StrictRedis.close")
+    @patch("redis.asyncio.client.Redis.aclose")
     def test_application_events(
         self,
-        redis_client_close_mock: MagicMock,
+        redis_client_aclose_mock: AsyncMock,
         mongo_client_close_mock: MagicMock,
         mongo_migrations_run_mock: MagicMock,
     ) -> None:
@@ -42,4 +42,4 @@ class TestApp(BaseTest):
 
         # Clients close on shutdown
         assert mongo_client_close_mock.call_count == 1
-        assert redis_client_close_mock.call_count == 1
+        assert redis_client_aclose_mock.call_count == 1

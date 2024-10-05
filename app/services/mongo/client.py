@@ -21,6 +21,6 @@ class MongoDBClient(BaseClient):
         return self._client
 
     @classmethod
-    def close(cls) -> None:
+    async def close(cls) -> None:
         """Closes MongoDB client."""
         cls._client.close()

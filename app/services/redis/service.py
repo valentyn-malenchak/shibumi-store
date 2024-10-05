@@ -23,7 +23,7 @@ class RedisService(BaseService):
 
         self._client = redis_client.client
 
-    def get(self, name: str) -> Any:
+    async def get(self, name: str) -> Any:
         """Returns value by name.
 
         Args:
@@ -33,9 +33,9 @@ class RedisService(BaseService):
             Any: Value.
 
         """
-        return self._client.get(name)
+        return await self._client.get(name)
 
-    def set(self, name: str, value: str, ttl: int) -> None:
+    async def set(self, name: str, value: str, ttl: int) -> None:
         """Sets name-value pair with TTL into Redis.
 
         Args:
@@ -44,13 +44,13 @@ class RedisService(BaseService):
             ttl (int): Number of seconds the record will exist.
 
         """
-        self._client.setex(name=name, time=ttl, value=value)
+        await self._client.setex(name=name, time=ttl, value=value)
 
-    def delete(self, name: str) -> None:
+    async def delete(self, name: str) -> None:
         """Deletes name-value pair by name.
 
         Args:
             name: Name to delete
 
         """
-        self._client.delete(name)
+        await self._client.delete(name)

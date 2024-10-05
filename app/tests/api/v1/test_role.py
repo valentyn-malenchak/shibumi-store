@@ -1,6 +1,6 @@
 """Module that contains tests for role routes."""
 
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 from fastapi import status
@@ -22,8 +22,8 @@ class TestRole(BaseAPITest):
     async def test_get_roles_list_no_token(
         self,
         test_client: AsyncClient,
-        redis_get_mock: MagicMock,
-        redis_setex_mock: MagicMock,
+        redis_get_mock: AsyncMock,
+        redis_setex_mock: AsyncMock,
     ) -> None:
         """Test get roles list in case there is no token."""
 
@@ -80,8 +80,8 @@ class TestRole(BaseAPITest):
         self,
         test_client: AsyncClient,
         arrange_db: None,
-        redis_get_mock: MagicMock,
-        redis_setex_mock: MagicMock,
+        redis_get_mock: AsyncMock,
+        redis_setex_mock: AsyncMock,
     ) -> None:
         """Test get roles list in case user is authorized."""
 
@@ -145,7 +145,7 @@ class TestRole(BaseAPITest):
     async def test_get_roles_from_cache(
         self,
         test_client: AsyncClient,
-        redis_get_mock: MagicMock,
+        redis_get_mock: AsyncMock,
     ) -> None:
         """Test get roles list in roles are cached."""
 

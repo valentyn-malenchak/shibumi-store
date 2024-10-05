@@ -17,5 +17,5 @@ class SendGridClient(BaseClient):
         return self._client
 
     @classmethod
-    def close(cls) -> None:
+    async def close(cls) -> None:
         """Closes client."""

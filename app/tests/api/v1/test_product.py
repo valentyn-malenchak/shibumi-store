@@ -876,8 +876,8 @@ class TestProduct(BaseAPITest):
         self,
         test_client: AsyncClient,
         arrange_db: None,
-        redis_get_mock: MagicMock,
-        redis_setex_mock: MagicMock,
+        redis_get_mock: AsyncMock,
+        redis_setex_mock: AsyncMock,
     ) -> None:
         """Test get products list in case there is no token."""
 
@@ -936,8 +936,8 @@ class TestProduct(BaseAPITest):
         self,
         test_client: AsyncClient,
         arrange_db: None,
-        redis_get_mock: MagicMock,
-        redis_setex_mock: MagicMock,
+        redis_get_mock: AsyncMock,
+        redis_setex_mock: AsyncMock,
     ) -> None:
         """Test get products list in case user is customer."""
 
@@ -983,8 +983,8 @@ class TestProduct(BaseAPITest):
         self,
         test_client: AsyncClient,
         arrange_db: None,
-        redis_get_mock: MagicMock,
-        redis_setex_mock: MagicMock,
+        redis_get_mock: AsyncMock,
+        redis_setex_mock: AsyncMock,
     ) -> None:
         """Test get products list in case user is from shop side."""
 
@@ -1039,8 +1039,8 @@ class TestProduct(BaseAPITest):
         self,
         test_client: AsyncClient,
         arrange_db: None,
-        redis_get_mock: MagicMock,
-        redis_setex_mock: MagicMock,
+        redis_get_mock: AsyncMock,
+        redis_setex_mock: AsyncMock,
     ) -> None:
         """Test get products list with filters."""
 
@@ -1092,8 +1092,8 @@ class TestProduct(BaseAPITest):
         self,
         test_client: AsyncClient,
         arrange_db: None,
-        redis_get_mock: MagicMock,
-        redis_setex_mock: MagicMock,
+        redis_get_mock: AsyncMock,
+        redis_setex_mock: AsyncMock,
     ) -> None:
         """Test get products list with filter by identifiers."""
 
@@ -1150,8 +1150,8 @@ class TestProduct(BaseAPITest):
         self,
         test_client: AsyncClient,
         arrange_db: None,
-        redis_get_mock: MagicMock,
-        redis_setex_mock: MagicMock,
+        redis_get_mock: AsyncMock,
+        redis_setex_mock: AsyncMock,
     ) -> None:
         """Test get products list with search."""
 
@@ -1219,8 +1219,8 @@ class TestProduct(BaseAPITest):
         self,
         test_client: AsyncClient,
         arrange_db: None,
-        redis_get_mock: MagicMock,
-        redis_setex_mock: MagicMock,
+        redis_get_mock: AsyncMock,
+        redis_setex_mock: AsyncMock,
     ) -> None:
         """Test get products list with sorting."""
 

@@ -60,7 +60,7 @@ class App(FastAPI):
         """Executes on application shutdown."""
         # close clients of external services
         for client in SERVICE_CLIENTS:
-            client.close()
+            await client.close()
 
     @staticmethod
     def run() -> None:
