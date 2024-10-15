@@ -3,9 +3,10 @@
 from datetime import datetime
 from typing import Annotated
 
+from bson import ObjectId
 from pydantic import BaseModel
 
-from app.api.v1.models import BSONObjectId, ObjectId
+from app.api.v1.models import BSONObjectId
 from app.utils.pydantic import ObjectIdAnnotation
 
 

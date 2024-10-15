@@ -38,3 +38,91 @@ ruff = "0.6.9"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+
+# Ruff configuration
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+# Same as Black.
+line-length = 88
+# Assume Python 3.12.
+target-version = "py312"
+
+[tool.ruff.lint]
+# Enable the pycodestyle (`E`), Pyflakes (`F`), pycodestyle warnings (`W`),
+# isort (`I`), pep8-naming (`N`), Pylint (`PL`), McCabe complexity (`C901`),.
+# pyupgrade (`UP`) and Ruff-specific rules (`RUF`).
+select = ["E", "F", "W", "I", "N", "PL", "C90", "UP", "RUF"]
+# Allow autofix for isort and F401 imported but unused.
+fixable = ["I", "F401"]
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+
+# Mypy configuration
+[tool.mypy]
+python_version = 3.12
+strict = true
+
+[[tool.mypy.overrides]]
+module = "mongodb_migrations.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["invoke"]
+implicit_reexport = true
+
+
+# Pytest configuration
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"
+
+
+# Coverage configuration
+[tool.coverage.run]
+relative_files = true
+omit = ["*/tests/*"]
+
+[tool.coverage.report]
+fail_under = 90
+exclude_lines = [
+  # Skip abstract methods
+  "@abstractmethod",
+  "@abc.abstractmethod",
+  # Skip not implemented methods
+  "raise NotImplementedError",
+  # Skip module execution blocks
+  "if __name__ == \"__main__\":",
+]

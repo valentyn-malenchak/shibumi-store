@@ -6,7 +6,8 @@ from typing import Annotated, Any
 from bson import ObjectId
 from pydantic import BaseModel, Field
 
-from app.api.v1.models import BSONObjectId, List, ObjectIdAnnotation
+from app.api.v1.models import BSONObjectId, List
+from app.utils.pydantic import ObjectIdAnnotation
 
 
 class ProductData(BaseModel):

@@ -6,8 +6,9 @@ from typing import Annotated
 from bson import ObjectId
 from pydantic import BaseModel, ConfigDict
 
-from app.api.v1.models import BSONObjectId, List, ObjectIdAnnotation
+from app.api.v1.models import BSONObjectId, List
 from app.api.v1.models.parameter import Parameter
+from app.utils.pydantic import ObjectIdAnnotation
 
 
 class Category(BSONObjectId):

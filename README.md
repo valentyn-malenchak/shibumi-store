@@ -118,16 +118,13 @@ The project is organized with the following directory structure:
 ├── migrations/                                # MongoDB migration scripts
 │   ├── 20231231132337_create_users_username_index.py
 │   └── ...
-├── .coveragerc                                # Configuration file for coverage reports
 ├── .gitignore                                 # Gitignore file to specify ignored files and directories
 ├── docker-compose.yml                         # docker-compose file for application
 ├── Dockerfile                                 # Application Dockerfile
 ├── LICENSE                                    # License information for the project
-├── mypy.ini                                   # Configuration file for MyPy static type checker
 ├── poetry.lock                                # Poetry lock file specifying exact package versions
-├── pyproject.toml                             # Poetry configuration file
+├── pyproject.toml                             # Project configuration file
 ├── README.md                                  # Project README file
-├── ruff.toml                                  # Configuration file for Ruff code formatter and linter
 ├── sonar-project.properties                   # Configuration file for SonarQube code quality analysis
 └── tasks.py                                   # Application cli
 ```
