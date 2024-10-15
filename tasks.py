@@ -7,7 +7,7 @@ import asyncio
 
 from invoke import Context, task
 
-from app.services import MongoDBService
+from app.services.mongo.service import MongoDBService
 from app.tests.fixtures.manager import FileFixtureManager
 
 

@@ -8,7 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1 import ROUTERS
 from app.constants import AppEventsEnum
-from app.services import SERVICE_CLIENTS, MongoDBService
+from app.services import SERVICE_CLIENTS
+from app.services.mongo.service import MongoDBService
 from app.settings import SETTINGS
 
 
