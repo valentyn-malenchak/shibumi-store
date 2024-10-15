@@ -40,7 +40,7 @@ services:
       - .:/src
 
   mongo:
-    image: bitnami/mongodb:7.0.5-debian-11-r22
+    image: bitnami/mongodb:8.0
     container_name: mongodb
     restart: always
     ports:
