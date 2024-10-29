@@ -1,6 +1,6 @@
 """Module that provides API v1 level constants."""
 
-from enum import Enum, IntEnum, StrEnum, auto
+from enum import Enum, StrEnum, auto
 
 
 class RolesEnum(StrEnum):
@@ -60,38 +60,6 @@ class ScopesEnum(Enum):
     VOTES_CREATE_VOTE = "Allows to create vote."
     VOTES_UPDATE_VOTE = "Allows to update vote."
     VOTES_DELETE_VOTE = "Allows to delete vote."
-
-
-class RedisNamesEnum(StrEnum):
-    """Redis names format enumerate."""
-
-    EMAIL_VERIFICATION = "email_verification_{user_id}"
-    RESET_PASSWORD = "reset_password_{user_id}"
-    PRODUCT_PARAMETERS_LIST = "product_parameters"
-    ROLES_LIST = "roles"
-
-
-class RedisNamesTTLEnum(IntEnum):
-    """Redis names TTL enumerate."""
-
-    EMAIL_VERIFICATION = 3600  # 1 hour
-    RESET_PASSWORD = 3600  # 1 hour
-    PRODUCT_PARAMETERS_LIST = 3600  # 1 hour
-    ROLES_LIST = 3600  # 1 hour
-
-
-class EmailSubjectsEnum(StrEnum):
-    """Email subjects enumerate."""
-
-    EMAIL_VERIFICATION = "Shibumi Store - Email verification"
-    RESET_PASSWORD = "Shibumi Store - Reset password"
-
-
-class EmailTextEnum(StrEnum):
-    """Email text enumerate."""
-
-    EMAIL_VERIFICATION = "Email verification token: {token}"
-    RESET_PASSWORD = "Reset password verification token: {token}"
 
 
 class ProductParameterTypesEnum(Enum):

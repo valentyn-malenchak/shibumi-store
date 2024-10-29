@@ -51,11 +51,9 @@ class TestCategory(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_get_categories_list_authorized_user(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get categories list in case user is authorized."""
 
@@ -154,11 +152,9 @@ class TestCategory(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_get_category_authorized_user(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get category in case user is authorized."""
 
@@ -204,11 +200,9 @@ class TestCategory(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_get_category_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get category in case user does not have a scope."""
 
@@ -261,10 +255,10 @@ class TestCategory(BaseAPITest):
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.CATEGORY_PARAMETERS,)], indirect=True
+        "db", [(MongoCollectionsEnum.CATEGORY_PARAMETERS,)], indirect=True
     )
     async def test_get_category_parameters_no_token(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get category parameters in case there is no token."""
 
@@ -403,12 +397,12 @@ class TestCategory(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.CATEGORY_PARAMETERS)],
         indirect=True,
     )
     async def test_get_category_parameters_authorized_user(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get category parameters in case is authorized."""
 
@@ -428,11 +422,9 @@ class TestCategory(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_get_category_parameters_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get category parameters in case user does not have a scope."""
 

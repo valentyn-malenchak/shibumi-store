@@ -3,15 +3,15 @@
 from pydantic import BaseModel
 
 
-class JWTAccessToken(BaseModel):
-    """JWT access token model."""
+class AccessJWT(BaseModel):
+    """Access JWT model."""
 
     access_token: str
     token_type: str
 
 
-class JWTTokens(JWTAccessToken):
-    """JWT access and refresh tokens model."""
+class JWTs(AccessJWT):
+    """Access and refresh JWTs model."""
 
     refresh_token: str
 

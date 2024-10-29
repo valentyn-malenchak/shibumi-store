@@ -6,11 +6,11 @@ from typing import Any
 from bson import ObjectId, json_util
 from fastapi import BackgroundTasks, Depends
 
-from app.api.v1.constants import RedisNamesEnum, RedisNamesTTLEnum
 from app.api.v1.models import Search
 from app.api.v1.repositories.parameter import ParameterRepository
 from app.api.v1.services import BaseService
 from app.services.mongo.transaction_manager import TransactionManager
+from app.services.redis.constants import RedisNamesEnum, RedisNamesTTLEnum
 from app.services.redis.service import RedisService
 
 

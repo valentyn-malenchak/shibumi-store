@@ -32,7 +32,7 @@ class BaseAPITest(BaseTest):
             yield client
 
     @pytest.fixture(scope="session", autouse=True)
-    def set_event_loop(self) -> Generator[None, None, None]:
+    def event_loop_mock(self) -> Generator[None, None, None]:
         """Fixture that sets MongoDB client event loop."""
 
         with patch.object(
@@ -89,14 +89,14 @@ class BaseAPITest(BaseTest):
             yield mock
 
     @pytest_asyncio.fixture
-    async def arrange_db(
-        self, request: SubRequest, set_event_loop: None
+    async def db(
+        self, request: SubRequest, event_loop_mock: None
     ) -> AsyncGenerator[None, None]:
         """Loads and clears data in DB before and after acting unit test.
 
         Args:
             request (SubRequest): Fixture request.
-            set_event_loop (None.): Event loop fixture.
+            event_loop_mock (None): Event loop fixture.
 
         """
 

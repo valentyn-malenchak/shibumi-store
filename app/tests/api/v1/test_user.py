@@ -35,10 +35,8 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
-    async def test_get_me(self, test_client: AsyncClient, arrange_db: None) -> None:
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
+    async def test_get_me(self, test_client: AsyncClient, db: None) -> None:
         """Test get me."""
 
         response = await test_client.get(
@@ -114,11 +112,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_get_me_user_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get me in case user does not have appropriate scope."""
 
@@ -131,12 +127,10 @@ class TestUser(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     @patch("jwt.decode", Mock(return_value=NOT_VERIFIED_EMAIL_USER))
     async def test_get_me_user_email_is_not_verified(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get me in case user email is not verified."""
 
@@ -222,13 +216,11 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_create_user_shop_side_user_creates_multi_role_user(
         self,
         test_client: AsyncClient,
-        arrange_db: None,
+        db: None,
         redis_setex_mock: AsyncMock,
         send_grid_send_mock: MagicMock,
         datetime_now_mock: MagicMock,
@@ -598,11 +590,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_create_user_with_authorization_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """
         Test create user in case user has authorization and does not
@@ -629,11 +619,9 @@ class TestUser(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_create_user_username_duplication(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test create user in case user with such username is already exist."""
 
@@ -661,11 +649,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_user_customer_user_updates_self(
-        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
+        self, test_client: AsyncClient, db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test update user in case customer user updates self with no role changes."""
 
@@ -702,11 +688,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_user_customer_user_update_self_with_shop_side_roles(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update user in case customer user requests shop side roles."""
 
@@ -731,11 +715,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_user_shop_side_user_updates_self(
-        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
+        self, test_client: AsyncClient, db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test update user in case shop side user updates self."""
 
@@ -780,13 +762,11 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_user_email_change(
         self,
         test_client: AsyncClient,
-        arrange_db: None,
+        db: None,
         redis_setex_mock: AsyncMock,
         send_grid_send_mock: MagicMock,
         datetime_now_mock: MagicMock,
@@ -829,11 +809,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_user_validate_json_data(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update user in case request json data is invalid."""
 
@@ -900,11 +878,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_user_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update user in case user does not have appropriate scope."""
 
@@ -927,11 +903,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_user_client_user_updates_another_client_user(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update user in case client user updates another client user."""
 
@@ -955,11 +929,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_user_client_user_updates_shop_side_user(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update user in case client user updates shop side user."""
 
@@ -983,11 +955,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_user_shop_side_user_updates_client_user(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update user in case shop side user updates client user."""
 
@@ -1013,11 +983,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_user_shop_side_user_updates_another_shop_side_user(
-        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
+        self, test_client: AsyncClient, db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test update user in case shop side user updates another shop side user."""
 
@@ -1054,11 +1022,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_user_deleted_user(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update user in case user is deleted."""
 
@@ -1082,11 +1048,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_delete_user_client_user_deletes_self(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test delete user if case client user deletes self."""
 
@@ -1099,11 +1063,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_delete_user_shop_side_user_deletes_self(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test delete user in case shop side user deletes self."""
 
@@ -1127,11 +1089,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_delete_user_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test delete user in case user does not have appropriate scope."""
 
@@ -1145,11 +1105,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_delete_user_client_user_deletes_another_client_user(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test delete user in case client user deletes another client user."""
 
@@ -1165,11 +1123,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_delete_user_client_user_deletes_shop_side_user(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test delete user in case client user deletes shop side user."""
 
@@ -1185,11 +1141,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_delete_user_shop_side_user_deletes_client_user(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test delete user in case shop side user deletes client user."""
 
@@ -1202,11 +1156,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_delete_user_shop_side_user_deletes_another_shop_side_user(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test delete user in case shop side user deletes another shop side user."""
 
@@ -1219,11 +1171,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_delete_user_deleted_user(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test delete user in case user is deleted."""
 
@@ -1239,11 +1189,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_delete_user_invalid_identifier(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test delete user in case of invalid identifier."""
 
@@ -1266,10 +1214,8 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
-    async def test_get_user(self, test_client: AsyncClient, arrange_db: None) -> None:
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
+    async def test_get_user(self, test_client: AsyncClient, db: None) -> None:
         """Test get user."""
 
         response = await test_client.get(
@@ -1307,12 +1253,8 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
-    async def test_get_user_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
+    async def test_get_user_no_scope(self, test_client: AsyncClient, db: None) -> None:
         """Test get user in case user does not have a scope."""
 
         response = await test_client.get(
@@ -1325,11 +1267,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_get_user_invalid_identifier(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get user in case of invalid identifier."""
 
@@ -1352,12 +1292,8 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
-    async def test_get_user_not_found(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
+    async def test_get_user_not_found(self, test_client: AsyncClient, db: None) -> None:
         """Test get user in case of identifier is valid, but there is no such user."""
 
         response = await test_client.get(
@@ -1372,12 +1308,8 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
-    async def test_get_users_list(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
+    async def test_get_users_list(self, test_client: AsyncClient, db: None) -> None:
         """Test get users list."""
 
         response = await test_client.get(
@@ -1440,11 +1372,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_get_users_list_with_filters(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get users list with filters."""
 
@@ -1483,11 +1413,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_get_users_list_with_search(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get users list with search."""
 
@@ -1521,11 +1449,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_get_users_list_with_sorting(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get users list with sorting."""
 
@@ -1564,11 +1490,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_get_users_list_validate_query_params(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get users list in case query parameters are invalid."""
 
@@ -1613,11 +1537,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_get_users_list_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get users list in case user does not have a scope."""
 
@@ -1631,11 +1553,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_user_password(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update user password."""
 
@@ -1669,11 +1589,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_user_password_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update user password in case user does not have a scope."""
 
@@ -1687,11 +1605,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_user_password_validate_data(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update user password in case request data is invalid."""
 
@@ -1728,11 +1644,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_user_password_user_not_found(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """
         Test update user password in case of identifier is valid,
@@ -1755,11 +1669,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_user_password_for_another_user(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update user password in case user updates for another user."""
 
@@ -1779,11 +1691,9 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_user_password_invalid_old_password(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update user password in case old password is invalid."""
 
@@ -1802,13 +1712,11 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_request_reset_user_password(
         self,
         test_client: AsyncClient,
-        arrange_db: None,
+        db: None,
         redis_setex_mock: AsyncMock,
         send_grid_send_mock: MagicMock,
     ) -> None:
@@ -1839,11 +1747,9 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_request_reset_user_password_user_is_deleted(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test request reset user password in case user is deleted."""
 
@@ -1857,9 +1763,7 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     @pytest.mark.parametrize(
         "send_grid_send_mock", [SendGridException()], indirect=True
     )
@@ -1867,7 +1771,7 @@ class TestUser(BaseAPITest):
         self,
         monkeypatch: pytest.MonkeyPatch,
         test_client: AsyncClient,
-        arrange_db: None,
+        db: None,
         redis_setex_mock: AsyncMock,
         send_grid_send_mock: MagicMock,
     ) -> None:
@@ -1885,9 +1789,7 @@ class TestUser(BaseAPITest):
         assert send_grid_send_mock.call_count == 3  # noqa: PLR2004
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     @pytest.mark.parametrize(
         "redis_get_mock",
         [REDIS_VERIFICATION_TOKEN],
@@ -1896,7 +1798,7 @@ class TestUser(BaseAPITest):
     async def test_reset_user_password(
         self,
         test_client: AsyncClient,
-        arrange_db: None,
+        db: None,
         redis_get_mock: AsyncMock,
         redis_delete_mock: AsyncMock,
     ) -> None:
@@ -1935,11 +1837,9 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_reset_user_password_user_is_deleted(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test reset user password in case user is deleted."""
 
@@ -1957,11 +1857,9 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_reset_user_password_validate_json_data(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test reset user password in case request json data is invalid."""
 
@@ -1984,11 +1882,9 @@ class TestUser(BaseAPITest):
         ]
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_reset_user_password_token_is_expired(
-        self, test_client: AsyncClient, arrange_db: None, redis_get_mock: MagicMock
+        self, test_client: AsyncClient, db: None, redis_get_mock: MagicMock
     ) -> None:
         """Test reset user password in case token is expired."""
 
@@ -2008,16 +1904,14 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     @pytest.mark.parametrize(
         "redis_get_mock",
         [REDIS_VERIFICATION_TOKEN],
         indirect=True,
     )
     async def test_reset_user_password_token_is_invalid(
-        self, test_client: AsyncClient, arrange_db: None, redis_get_mock: MagicMock
+        self, test_client: AsyncClient, db: None, redis_get_mock: MagicMock
     ) -> None:
         """Test reset user password in case token is invalid."""
 
@@ -2037,13 +1931,11 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_request_verify_user_email(
         self,
         test_client: AsyncClient,
-        arrange_db: None,
+        db: None,
         redis_setex_mock: AsyncMock,
         send_grid_send_mock: MagicMock,
     ) -> None:
@@ -2073,11 +1965,9 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_request_verify_user_email_user_is_deleted(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test request verify user email in case user is deleted."""
 
@@ -2090,11 +1980,9 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_request_verify_user_email_user_email_is_verified(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test request verify user email in case user email is already verified."""
 
@@ -2108,9 +1996,7 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     @pytest.mark.parametrize(
         "send_grid_send_mock", [SendGridException()], indirect=True
     )
@@ -2118,7 +2004,7 @@ class TestUser(BaseAPITest):
         self,
         monkeypatch: pytest.MonkeyPatch,
         test_client: AsyncClient,
-        arrange_db: None,
+        db: None,
         redis_setex_mock: AsyncMock,
         send_grid_send_mock: MagicMock,
     ) -> None:
@@ -2136,9 +2022,7 @@ class TestUser(BaseAPITest):
         assert send_grid_send_mock.call_count == 3  # noqa: PLR2004
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     @pytest.mark.parametrize(
         "redis_get_mock",
         [REDIS_VERIFICATION_TOKEN],
@@ -2147,7 +2031,7 @@ class TestUser(BaseAPITest):
     async def test_verify_user_email(
         self,
         test_client: AsyncClient,
-        arrange_db: None,
+        db: None,
         redis_get_mock: AsyncMock,
         redis_delete_mock: AsyncMock,
     ) -> None:
@@ -2184,11 +2068,9 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_verify_user_email_user_is_deleted(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test verify user email in case user is deleted."""
 
@@ -2205,11 +2087,9 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_verify_user_email_user_email_is_verified(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test verify user email in case user email is already verified."""
 
@@ -2226,11 +2106,9 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_verify_user_email_validate_json_data(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test verify user email in case request json data is invalid."""
 
@@ -2248,11 +2126,9 @@ class TestUser(BaseAPITest):
         ]
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_verify_user_email_token_is_expired(
-        self, test_client: AsyncClient, arrange_db: None, redis_get_mock: MagicMock
+        self, test_client: AsyncClient, db: None, redis_get_mock: MagicMock
     ) -> None:
         """Test verify user email in case token is expired."""
 
@@ -2271,16 +2147,14 @@ class TestUser(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     @pytest.mark.parametrize(
         "redis_get_mock",
         [REDIS_VERIFICATION_TOKEN],
         indirect=True,
     )
     async def test_verify_user_email_token_is_invalid(
-        self, test_client: AsyncClient, arrange_db: None, redis_get_mock: MagicMock
+        self, test_client: AsyncClient, db: None, redis_get_mock: MagicMock
     ) -> None:
         """Test verify user email in case token is invalid."""
 

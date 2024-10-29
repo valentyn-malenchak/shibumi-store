@@ -8,8 +8,8 @@ from app.api.v1.dependencies.auth import (
     RefreshTokenAuthorizationDependency,
 )
 from app.api.v1.models.auth import (
-    JWTAccessToken,
-    JWTTokens,
+    AccessJWT,
+    JWTs,
     JWTUser,
 )
 from app.api.v1.models.user import CurrentUser
@@ -19,7 +19,7 @@ from app.utils.jwt import JWT
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.post("/tokens/", response_model=JWTTokens, status_code=status.HTTP_201_CREATED)
+@router.post("/tokens/", response_model=JWTs, status_code=status.HTTP_201_CREATED)
 async def create_tokens(
     current_user: CurrentUser = Depends(AuthenticationDependency()),
 ) -> dict[str, str]:
@@ -40,7 +40,7 @@ async def create_tokens(
 
 @router.post(
     "/access-token/",
-    response_model=JWTAccessToken,
+    response_model=AccessJWT,
     status_code=status.HTTP_201_CREATED,
 )
 async def refresh_access_token(

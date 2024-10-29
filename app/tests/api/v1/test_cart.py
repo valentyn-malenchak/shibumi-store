@@ -26,7 +26,7 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -35,7 +35,7 @@ class TestCart(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_get_cart(self, test_client: AsyncClient, arrange_db: None) -> None:
+    async def test_get_cart(self, test_client: AsyncClient, db: None) -> None:
         """Test get cart."""
 
         response = await test_client.get(
@@ -70,11 +70,9 @@ class TestCart(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_get_cart_user_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get cart in case user does not have appropriate scope."""
 
@@ -88,11 +86,9 @@ class TestCart(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_get_cart_user_cart_is_not_found(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get cart in case cart is not found."""
 
@@ -109,7 +105,7 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -120,7 +116,7 @@ class TestCart(BaseAPITest):
         indirect=True,
     )
     async def test_add_product_to_the_cart(
-        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
+        self, test_client: AsyncClient, db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test add product to the cart."""
 
@@ -172,11 +168,9 @@ class TestCart(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_add_product_to_the_cart_user_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test add product to the cart in case user does not have appropriate scope."""
 
@@ -195,12 +189,12 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS,)],
         indirect=True,
     )
     async def test_add_product_to_the_cart_cart_is_not_found(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test add product to the cart in case cart is not found."""
 
@@ -221,7 +215,7 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -232,7 +226,7 @@ class TestCart(BaseAPITest):
         indirect=True,
     )
     async def test_add_product_to_the_cart_another_user_cart(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test add product to the cart in case cart belongs to another user."""
 
@@ -253,7 +247,7 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -264,7 +258,7 @@ class TestCart(BaseAPITest):
         indirect=True,
     )
     async def test_add_product_to_the_cart_validate_data(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test add product to the cart in case request data is invalid."""
 
@@ -288,12 +282,12 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.CARTS)],
         indirect=True,
     )
     async def test_add_product_to_the_cart_product_does_not_exist(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test add product to the cart in case product does not exist."""
 
@@ -314,7 +308,7 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -325,7 +319,7 @@ class TestCart(BaseAPITest):
         indirect=True,
     )
     async def test_add_product_to_the_cart_product_is_not_available(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test add product to the cart in case product is not available."""
 
@@ -346,7 +340,7 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -357,7 +351,7 @@ class TestCart(BaseAPITest):
         indirect=True,
     )
     async def test_add_product_to_the_cart_product_is_added(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test add product to the cart in case product is already added."""
 
@@ -378,7 +372,7 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -389,7 +383,7 @@ class TestCart(BaseAPITest):
         indirect=True,
     )
     async def test_add_product_to_the_cart_validate_quantity(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test add product to the cart in case maximum quantity is exceeded."""
 
@@ -410,7 +404,7 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -421,7 +415,7 @@ class TestCart(BaseAPITest):
         indirect=True,
     )
     async def test_update_product_in_the_cart(
-        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
+        self, test_client: AsyncClient, db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test update product in the cart."""
 
@@ -467,11 +461,9 @@ class TestCart(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_product_in_the_cart_user_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """
         Test update product in the cart in case user does not have appropriate scope.
@@ -491,12 +483,12 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
         indirect=True,
     )
     async def test_update_product_in_the_cart_cart_is_not_found(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update product in the cart in case cart is not found."""
 
@@ -516,7 +508,7 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -527,7 +519,7 @@ class TestCart(BaseAPITest):
         indirect=True,
     )
     async def test_update_product_in_the_cart_another_user_cart(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update product in the cart in case cart belongs to another user."""
 
@@ -547,7 +539,7 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -558,7 +550,7 @@ class TestCart(BaseAPITest):
         indirect=True,
     )
     async def test_update_product_in_the_cart_validate_data(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update product in the cart in case request data is invalid."""
 
@@ -581,12 +573,12 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS,)],
         indirect=True,
     )
     async def test_update_product_in_the_cart_product_does_not_exist(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update product in the cart in case product does not exist."""
 
@@ -606,7 +598,7 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -616,7 +608,7 @@ class TestCart(BaseAPITest):
         indirect=True,
     )
     async def test_update_product_in_the_cart_product_is_not_available(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update product in the cart in case product is not available."""
 
@@ -636,7 +628,7 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -647,7 +639,7 @@ class TestCart(BaseAPITest):
         indirect=True,
     )
     async def test_update_product_in_the_cart_product_is_not_added(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update product in the cart in case product is not added."""
 
@@ -667,7 +659,7 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -678,7 +670,7 @@ class TestCart(BaseAPITest):
         indirect=True,
     )
     async def test_update_product_in_the_cart_validate_quantity(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update product in the cart in case maximum quantity is exceeded."""
 
@@ -698,7 +690,7 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -709,7 +701,7 @@ class TestCart(BaseAPITest):
         indirect=True,
     )
     async def test_delete_product_from_the_cart(
-        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
+        self, test_client: AsyncClient, db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test delete product from the cart."""
 
@@ -745,11 +737,9 @@ class TestCart(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_delete_product_from_the_cart_user_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """
         Test delete product from the cart in case user does not have appropriate scope.
@@ -766,12 +756,12 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
         indirect=True,
     )
     async def test_delete_product_from_the_cart_cart_is_not_found(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test delete product from the cart in case cart is not found."""
 
@@ -788,7 +778,7 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -799,7 +789,7 @@ class TestCart(BaseAPITest):
         indirect=True,
     )
     async def test_delete_product_from_the_cart_another_user_cart(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test delete product from the cart in case cart belongs to another user."""
 
@@ -816,12 +806,12 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS,)],
         indirect=True,
     )
     async def test_delete_product_from_the_cart_product_does_not_exist(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test delete product from the cart in case product does not exist."""
 
@@ -838,7 +828,7 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -848,7 +838,7 @@ class TestCart(BaseAPITest):
         indirect=True,
     )
     async def test_delete_product_from_the_cart_product_is_not_available(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test delete product from the cart in case product is not available."""
 
@@ -865,7 +855,7 @@ class TestCart(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -876,7 +866,7 @@ class TestCart(BaseAPITest):
         indirect=True,
     )
     async def test_delete_product_from_the_cart_product_is_not_added(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test delete product from the cart in case product is not added."""
 

@@ -27,7 +27,7 @@ class TestComment(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -36,9 +36,7 @@ class TestComment(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_get_comment(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
+    async def test_get_comment(self, test_client: AsyncClient, db: None) -> None:
         """Test get comment."""
 
         response = await test_client.get(
@@ -63,7 +61,7 @@ class TestComment(BaseAPITest):
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -73,7 +71,7 @@ class TestComment(BaseAPITest):
         indirect=True,
     )
     async def test_get_comment_no_token(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get comment in case there is no token."""
 
@@ -98,11 +96,9 @@ class TestComment(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_get_comment_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get comment in case user does not have appropriate scope."""
 
@@ -117,12 +113,12 @@ class TestComment(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS,)],
         indirect=True,
     )
     async def test_get_comment_comment_is_not_found(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get comment in case comment is not found."""
 
@@ -139,7 +135,7 @@ class TestComment(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -149,7 +145,7 @@ class TestComment(BaseAPITest):
         indirect=True,
     )
     async def test_create_comment_root_comment(
-        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
+        self, test_client: AsyncClient, db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test create comment in case of root comment."""
 
@@ -180,7 +176,7 @@ class TestComment(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -191,7 +187,7 @@ class TestComment(BaseAPITest):
         indirect=True,
     )
     async def test_create_comment_with_parent(
-        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
+        self, test_client: AsyncClient, db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test create comment in case comment has parent."""
 
@@ -222,7 +218,7 @@ class TestComment(BaseAPITest):
 
     @pytest.mark.asyncio
     async def test_create_comment_no_token(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test create comment in case there is no token."""
 
@@ -240,11 +236,9 @@ class TestComment(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_create_comment_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test create comment in case user does not have appropriate scope."""
 
@@ -263,11 +257,9 @@ class TestComment(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_create_comment_validate_data(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test create comment in case request data is invalid."""
 
@@ -289,11 +281,9 @@ class TestComment(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_create_comment_thread_is_not_found(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test create comment in case thread is not found."""
 
@@ -315,12 +305,12 @@ class TestComment(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.THREADS)],
         indirect=True,
     )
     async def test_create_comment_parent_comment_is_not_found(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test create comment in case parent comment is not found."""
 
@@ -342,7 +332,7 @@ class TestComment(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -353,7 +343,7 @@ class TestComment(BaseAPITest):
         indirect=True,
     )
     async def test_create_comment_parent_comment_is_not_related_to_thread(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """
         Test create comment in case parent comment does not belong to thread.
@@ -379,7 +369,7 @@ class TestComment(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -389,7 +379,7 @@ class TestComment(BaseAPITest):
         indirect=True,
     )
     async def test_update_comment(
-        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
+        self, test_client: AsyncClient, db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test update comment."""
 
@@ -416,7 +406,7 @@ class TestComment(BaseAPITest):
 
     @pytest.mark.asyncio
     async def test_update_comment_no_token(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update comment in case there is no token."""
 
@@ -430,11 +420,9 @@ class TestComment(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_comment_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update comment in case user does not have appropriate scope."""
 
@@ -450,7 +438,7 @@ class TestComment(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -460,7 +448,7 @@ class TestComment(BaseAPITest):
         indirect=True,
     )
     async def test_update_comment_validate_data(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update comment in case request data is invalid."""
 
@@ -481,12 +469,12 @@ class TestComment(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS,)],
         indirect=True,
     )
     async def test_update_comment_comment_is_not_found(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update comment in case comment is not found."""
 
@@ -504,12 +492,12 @@ class TestComment(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.COMMENTS)],
         indirect=True,
     )
     async def test_update_comment_deleted_comment(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update comment in case comment is deleted."""
 
@@ -527,7 +515,7 @@ class TestComment(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -537,7 +525,7 @@ class TestComment(BaseAPITest):
         indirect=True,
     )
     async def test_update_comment_user_updates_comment_of_another_user(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """
         Test update comment in case user tries to update comment of another user.
@@ -557,7 +545,7 @@ class TestComment(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -567,7 +555,7 @@ class TestComment(BaseAPITest):
         indirect=True,
     )
     async def test_delete_comment_client_user_deletes_own_comment(
-        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
+        self, test_client: AsyncClient, db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test delete comment in case client user deletes own comment."""
 
@@ -602,7 +590,7 @@ class TestComment(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -612,7 +600,7 @@ class TestComment(BaseAPITest):
         indirect=True,
     )
     async def test_delete_comment_shop_side_user_deletes_own_comment(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test delete comment in case shop side user deletes own comment."""
 
@@ -626,7 +614,7 @@ class TestComment(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -636,7 +624,7 @@ class TestComment(BaseAPITest):
         indirect=True,
     )
     async def test_delete_comment_client_user_deletes_another_clients_comment(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test delete comment in case client user deletes another client's comment."""
 
@@ -653,7 +641,7 @@ class TestComment(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -663,7 +651,7 @@ class TestComment(BaseAPITest):
         indirect=True,
     )
     async def test_delete_comment_shop_side_user_deletes_clients_comment(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test delete comment in case shop side user deletes client's comment."""
 
@@ -677,7 +665,7 @@ class TestComment(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -687,7 +675,7 @@ class TestComment(BaseAPITest):
         indirect=True,
     )
     async def test_delete_comment_client_user_deletes_shop_side_users_comment(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test delete comment in case client user deletes shop side user's comment."""
 
@@ -704,7 +692,7 @@ class TestComment(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -714,7 +702,7 @@ class TestComment(BaseAPITest):
         indirect=True,
     )
     async def test_delete_comment_shop_side_user_deletes_another_shop_side_user_comment(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """
         Test delete comment in case shop side user deletes another shop side
@@ -730,7 +718,7 @@ class TestComment(BaseAPITest):
 
     @pytest.mark.asyncio
     async def test_delete_comment_no_token(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test delete comment in case there is no token."""
 
@@ -743,11 +731,9 @@ class TestComment(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_delete_comment_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test delete comment in case user does not have appropriate scope."""
 
@@ -762,12 +748,12 @@ class TestComment(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS,)],
         indirect=True,
     )
     async def test_delete_comment_comment_is_not_found(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test delete comment in case comment is not found."""
 
@@ -784,12 +770,12 @@ class TestComment(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.COMMENTS)],
         indirect=True,
     )
     async def test_delete_comment_deleted_comment(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test delete comment in case comment is deleted."""
 
