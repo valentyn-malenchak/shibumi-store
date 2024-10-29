@@ -27,11 +27,9 @@ class TestProduct(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_create_product(
-        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
+        self, test_client: AsyncClient, db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test create product."""
 
@@ -252,11 +250,9 @@ class TestProduct(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_create_product_user_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test create product in case user does not have appropriate scope."""
 
@@ -282,11 +278,9 @@ class TestProduct(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_create_product_validate_data(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test create product in case request data is invalid."""
 
@@ -323,11 +317,9 @@ class TestProduct(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_create_product_category_does_not_exist(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test create product in case request category does not exist."""
 
@@ -358,11 +350,9 @@ class TestProduct(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_create_product_category_is_not_leaf(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test create product in case request category is not a tree leaf."""
 
@@ -391,11 +381,9 @@ class TestProduct(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_create_product_category_validate_product_parameters(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test create product in case product parameters are invalid."""
 
@@ -492,9 +480,7 @@ class TestProduct(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     @patch(
         "app.api.v1.repositories.category.CategoryRepository.calculate_category_parameters",
         Mock(side_effect=ValueError()),
@@ -507,7 +493,7 @@ class TestProduct(BaseAPITest):
         self,
         mongo_transaction_abort_mock: MagicMock,
         test_client: AsyncClient,
-        arrange_db: None,
+        db: None,
         datetime_now_mock: MagicMock,
     ) -> None:
         """
@@ -583,12 +569,12 @@ class TestProduct(BaseAPITest):
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.PRODUCTS,)],
         indirect=True,
     )
     async def test_get_product_no_token(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get product in case there is no token."""
 
@@ -660,12 +646,12 @@ class TestProduct(BaseAPITest):
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.PRODUCTS,)],
         indirect=True,
     )
     async def test_get_product_no_token_unavailable_product(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get product in case there is no token and product is unavailable."""
 
@@ -681,12 +667,12 @@ class TestProduct(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
         indirect=True,
     )
     async def test_get_product_authorized_user(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get product in case user is authorized."""
 
@@ -752,12 +738,12 @@ class TestProduct(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
         indirect=True,
     )
     async def test_get_product_customer_user_unavailable_product(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get product in case user is authorized, but product is unavailable."""
 
@@ -774,12 +760,12 @@ class TestProduct(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
         indirect=True,
     )
     async def test_get_product_shop_side_user_unavailable_product(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """
         Test get product in case user is from shop side and product is unavailable.
@@ -815,11 +801,9 @@ class TestProduct(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_get_product_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get product in case user does not have a scope."""
 
@@ -869,13 +853,11 @@ class TestProduct(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.PRODUCTS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.PRODUCTS,)], indirect=True)
     async def test_get_products_list_no_token(
         self,
         test_client: AsyncClient,
-        arrange_db: None,
+        db: None,
         redis_get_mock: AsyncMock,
         redis_setex_mock: AsyncMock,
     ) -> None:
@@ -928,14 +910,14 @@ class TestProduct(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
         indirect=True,
     )
     async def test_get_products_list_customer_user(
         self,
         test_client: AsyncClient,
-        arrange_db: None,
+        db: None,
         redis_get_mock: AsyncMock,
         redis_setex_mock: AsyncMock,
     ) -> None:
@@ -975,14 +957,14 @@ class TestProduct(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
         indirect=True,
     )
     async def test_get_products_list_shop_side_user(
         self,
         test_client: AsyncClient,
-        arrange_db: None,
+        db: None,
         redis_get_mock: AsyncMock,
         redis_setex_mock: AsyncMock,
     ) -> None:
@@ -1032,13 +1014,11 @@ class TestProduct(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.PRODUCTS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.PRODUCTS,)], indirect=True)
     async def test_get_products_list_with_filters(
         self,
         test_client: AsyncClient,
-        arrange_db: None,
+        db: None,
         redis_get_mock: AsyncMock,
         redis_setex_mock: AsyncMock,
     ) -> None:
@@ -1085,13 +1065,11 @@ class TestProduct(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.PRODUCTS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.PRODUCTS,)], indirect=True)
     async def test_get_products_list_with_filter_by_identifiers(
         self,
         test_client: AsyncClient,
-        arrange_db: None,
+        db: None,
         redis_get_mock: AsyncMock,
         redis_setex_mock: AsyncMock,
     ) -> None:
@@ -1143,13 +1121,11 @@ class TestProduct(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.PRODUCTS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.PRODUCTS,)], indirect=True)
     async def test_get_products_list_with_search(
         self,
         test_client: AsyncClient,
-        arrange_db: None,
+        db: None,
         redis_get_mock: AsyncMock,
         redis_setex_mock: AsyncMock,
     ) -> None:
@@ -1212,13 +1188,11 @@ class TestProduct(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.PRODUCTS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.PRODUCTS,)], indirect=True)
     async def test_get_products_list_with_sorting(
         self,
         test_client: AsyncClient,
-        arrange_db: None,
+        db: None,
         redis_get_mock: AsyncMock,
         redis_setex_mock: AsyncMock,
     ) -> None:
@@ -1278,11 +1252,9 @@ class TestProduct(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_get_products_list_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get products list in case user does not have a scope."""
 
@@ -1390,11 +1362,9 @@ class TestProduct(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_get_products_list_customer_user_not_available_products(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """
         Test get products list in case user is customer and requests not available
@@ -1417,12 +1387,12 @@ class TestProduct(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
         indirect=True,
     )
     async def test_update_product(
-        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
+        self, test_client: AsyncClient, db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test update product."""
 
@@ -1488,7 +1458,7 @@ class TestProduct(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -1499,7 +1469,7 @@ class TestProduct(BaseAPITest):
         indirect=True,
     )
     async def test_update_product_update_category(
-        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
+        self, test_client: AsyncClient, db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test update product in case category field is updated."""
 
@@ -1734,11 +1704,9 @@ class TestProduct(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_product_user_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update product in case user does not have appropriate scope."""
 
@@ -1769,11 +1737,9 @@ class TestProduct(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_product_does_not_exist(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update product in case request product does not exist."""
 
@@ -1806,12 +1772,12 @@ class TestProduct(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
         indirect=True,
     )
     async def test_update_product_validate_data(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update product in case request data is invalid."""
 
@@ -1849,12 +1815,12 @@ class TestProduct(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
         indirect=True,
     )
     async def test_update_product_category_does_not_exist(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update product in case request category does not exist."""
 
@@ -1886,12 +1852,12 @@ class TestProduct(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
         indirect=True,
     )
     async def test_update_product_category_is_not_leaf(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update product in case request category is not a tree leaf."""
 
@@ -1921,12 +1887,12 @@ class TestProduct(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
         indirect=True,
     )
     async def test_update_product_category_validate_product_parameters(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update product in case product parameters are invalid."""
 

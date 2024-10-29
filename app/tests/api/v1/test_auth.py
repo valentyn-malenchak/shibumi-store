@@ -27,12 +27,8 @@ class TestAuth(BaseAPITest):
     """Test class for auth API endpoints in the FastAPI application."""
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
-    async def test_create_tokens(
-        self, test_client: AsyncClient, arrange_db: None
-    ) -> None:
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
+    async def test_create_tokens(self, test_client: AsyncClient, db: None) -> None:
         """Test create auth token."""
 
         response = await test_client.post(
@@ -80,11 +76,9 @@ class TestAuth(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_create_tokens_with_scopes_request(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test create auth token with scopes request."""
 
@@ -117,9 +111,7 @@ class TestAuth(BaseAPITest):
         ]
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     @patch("argon2.PasswordHasher.check_needs_rehash", Mock(return_value=True))
     @patch("app.api.v1.repositories.user.UserRepository.update_password")
     @patch("argon2.PasswordHasher.hash")
@@ -128,7 +120,7 @@ class TestAuth(BaseAPITest):
         hash_mock: Mock,
         update_user_mock: Mock,
         test_client: AsyncClient,
-        arrange_db: None,
+        db: None,
     ) -> None:
         """Test create auth token in case password should be rehashed."""
 
@@ -187,11 +179,9 @@ class TestAuth(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_create_tokens_incorrect_password(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test create auth token in case user's password is incorrect."""
 
@@ -211,11 +201,9 @@ class TestAuth(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_create_tokens_deleted_user(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test create auth token in case user is deleted."""
 
@@ -235,11 +223,9 @@ class TestAuth(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_create_tokens_user_email_is_not_verified(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test create auth token in case user email is not verified."""
 
@@ -256,11 +242,9 @@ class TestAuth(BaseAPITest):
         assert response.status_code == status.HTTP_201_CREATED
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_create_tokens_request_not_permitted_scopes(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test create auth token in case user request not permitted scopes."""
 
@@ -284,12 +268,10 @@ class TestAuth(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     async def test_refresh_access_token(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test refreshing access token."""
 
@@ -348,12 +330,10 @@ class TestAuth(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED}
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     @patch("jwt.decode", Mock(return_value=DELETED_USER))
     async def test_refresh_access_token_deleted_user(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test refreshing access token in case user is deleted."""
 
@@ -366,12 +346,10 @@ class TestAuth(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.NOT_AUTHORIZED}
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     @patch("jwt.decode", Mock(return_value=NOT_VERIFIED_EMAIL_USER))
     async def test_refresh_access_token_user_email_is_not_verified(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test refreshing access token in case user email is not verified."""
 
@@ -387,11 +365,9 @@ class TestAuth(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_refresh_access_token_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """
         Test refreshing access token in case user does not have appropriate scope.

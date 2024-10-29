@@ -73,13 +73,11 @@ class TestRole(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_get_roles_list_authorized_user(
         self,
         test_client: AsyncClient,
-        arrange_db: None,
+        db: None,
         redis_get_mock: AsyncMock,
         redis_setex_mock: AsyncMock,
     ) -> None:

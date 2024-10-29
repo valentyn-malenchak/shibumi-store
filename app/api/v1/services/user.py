@@ -6,12 +6,6 @@ from typing import Any
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
 
-from app.api.v1.constants import (
-    EmailSubjectsEnum,
-    EmailTextEnum,
-    RedisNamesEnum,
-    RedisNamesTTLEnum,
-)
 from app.api.v1.models import Pagination, Search, Sorting
 from app.api.v1.models.cart import CartCreateData
 from app.api.v1.models.user import (
@@ -27,7 +21,9 @@ from app.api.v1.repositories.user import UserRepository
 from app.api.v1.services import BaseService
 from app.exceptions import InvalidVerificationTokenError
 from app.services.mongo.transaction_manager import TransactionManager
+from app.services.redis.constants import RedisNamesEnum, RedisNamesTTLEnum
 from app.services.redis.service import RedisService
+from app.services.send_grid.constants import EmailSubjectsEnum, EmailTextEnum
 from app.services.send_grid.service import SendGridService
 from app.utils.password import Password
 from app.utils.token import VerificationToken

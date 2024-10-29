@@ -27,7 +27,7 @@ class TestThread(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [
             (
                 MongoCollectionsEnum.USERS,
@@ -36,7 +36,7 @@ class TestThread(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_get_thread(self, test_client: AsyncClient, arrange_db: None) -> None:
+    async def test_get_thread(self, test_client: AsyncClient, db: None) -> None:
         """Test get thread."""
 
         response = await test_client.get(
@@ -55,12 +55,12 @@ class TestThread(BaseAPITest):
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.THREADS,)],
         indirect=True,
     )
     async def test_get_thread_no_token(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get thread in case there is no token."""
 
@@ -79,11 +79,9 @@ class TestThread(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_get_thread_user_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get thread in case user does not have appropriate scope."""
 
@@ -97,11 +95,9 @@ class TestThread(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_get_thread_user_thread_is_not_found(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test get thread in case thread is not found."""
 
@@ -118,12 +114,12 @@ class TestThread(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS,)],
         indirect=True,
     )
     async def test_create_thread(
-        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
+        self, test_client: AsyncClient, db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test create thread."""
 
@@ -161,11 +157,9 @@ class TestThread(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_create_thread_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test create thread in case user does not have appropriate scope."""
 
@@ -183,11 +177,9 @@ class TestThread(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_create_thread_validate_data(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test create thread in case request data is invalid."""
 
@@ -209,12 +201,12 @@ class TestThread(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.THREADS)],
         indirect=True,
     )
     async def test_update_thread(
-        self, test_client: AsyncClient, arrange_db: None, datetime_now_mock: MagicMock
+        self, test_client: AsyncClient, db: None, datetime_now_mock: MagicMock
     ) -> None:
         """Test update thread."""
 
@@ -253,11 +245,9 @@ class TestThread(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_thread_no_scope(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update thread in case user does not have appropriate scope."""
 
@@ -276,12 +266,12 @@ class TestThread(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize(
-        "arrange_db",
+        "db",
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.THREADS)],
         indirect=True,
     )
     async def test_update_thread_validate_data(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update thread in case request data is invalid."""
 
@@ -302,11 +292,9 @@ class TestThread(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
-    @pytest.mark.parametrize(
-        "arrange_db", [(MongoCollectionsEnum.USERS,)], indirect=True
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_update_thread_thread_is_not_found(
-        self, test_client: AsyncClient, arrange_db: None
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test update thread in case thread is not found."""
 
