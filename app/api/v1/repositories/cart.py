@@ -238,7 +238,7 @@ class CartRepository(BaseRepository):
         quantity: PositiveInt,
         *,
         session: AsyncIOMotorClientSession | None = None,
-    ) -> Mapping[str, Any]:
+    ) -> Cart:
         """Adds new product to the cart.
 
         Args:
@@ -249,10 +249,11 @@ class CartRepository(BaseRepository):
             if operation is transactional. Defaults to None.
 
         Returns:
-            Mapping[str, Any]: The retrieved cart.
+            Cart: The updated cart.
 
         """
-        return await self._mongo_service.find_one_and_update(
+
+        cart = await self._mongo_service.find_one_and_update(
             collection=self._collection_name,
             filter_={"_id": id_},
             update={
@@ -262,6 +263,8 @@ class CartRepository(BaseRepository):
             session=session,
         )
 
+        return Cart(**cart)
+
     async def update_product(
         self,
         id_: ObjectId,
@@ -269,7 +272,7 @@ class CartRepository(BaseRepository):
         quantity: PositiveInt,
         *,
         session: AsyncIOMotorClientSession | None = None,
-    ) -> Mapping[str, Any]:
+    ) -> Cart:
         """Updates product in the cart.
 
         Args:
@@ -280,10 +283,10 @@ class CartRepository(BaseRepository):
             if operation is transactional. Defaults to None.
 
         Returns:
-            Mapping[str, Any]: The retrieved cart.
+            Cart: The updated cart.
 
         """
-        return await self._mongo_service.find_one_and_update(
+        cart = await self._mongo_service.find_one_and_update(
             collection=self._collection_name,
             filter_={"_id": id_, "products.id": product_id},
             update={
@@ -295,13 +298,15 @@ class CartRepository(BaseRepository):
             session=session,
         )
 
+        return Cart(**cart)
+
     async def delete_product(
         self,
         id_: ObjectId,
         product_id: ObjectId,
         *,
         session: AsyncIOMotorClientSession | None = None,
-    ) -> Mapping[str, Any]:
+    ) -> Cart:
         """Deletes product from the cart.
 
         Args:
@@ -311,10 +316,11 @@ class CartRepository(BaseRepository):
             if operation is transactional. Defaults to None.
 
         Returns:
-            Mapping[str, Any]: The retrieved cart.
+            Cart: The retrieved cart.
 
         """
-        return await self._mongo_service.find_one_and_update(
+
+        cart = await self._mongo_service.find_one_and_update(
             collection=self._collection_name,
             filter_={"_id": id_},
             update={
@@ -323,3 +329,5 @@ class CartRepository(BaseRepository):
             },
             session=session,
         )
+
+        return Cart(**cart)

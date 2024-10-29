@@ -187,14 +187,11 @@ class CartService(BaseService):
             Cart: Updated cart.
 
         """
-
-        cart = await self.repository.add_product(
+        return await self.repository.add_product(
             id_=id_,
             product_id=data.id,
             quantity=data.quantity,
         )
-
-        return Cart(**cart)
 
     async def update_product(
         self,
@@ -213,14 +210,11 @@ class CartService(BaseService):
             Cart: Updated cart.
 
         """
-
-        cart = await self.repository.update_product(
+        return await self.repository.update_product(
             id_=id_,
             product_id=product_id,
             quantity=data.quantity,
         )
-
-        return Cart(**cart)
 
     async def delete_product(self, id_: ObjectId, product_id: ObjectId) -> Cart:
         """Deletes product from the cart.
@@ -233,7 +227,4 @@ class CartService(BaseService):
             Cart: Updated cart.
 
         """
-
-        cart = await self.repository.delete_product(id_=id_, product_id=product_id)
-
-        return Cart(**cart)
+        return await self.repository.delete_product(id_=id_, product_id=product_id)
