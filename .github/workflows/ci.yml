@@ -30,7 +30,7 @@ jobs:
 
     services:
       mongo:
-        image: bitnami/mongodb:8.0
+        image: bitnami/mongodb:8.0.4
         ports:
           - "27017:27017"
         env:
@@ -70,7 +70,7 @@ jobs:
           CI: true
 
       - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@v4.2.1
         env:
           CI: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

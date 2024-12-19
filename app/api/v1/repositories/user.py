@@ -22,22 +22,25 @@ class UserRepository(BaseRepository):
 
     async def get(
         self,
-        filter_: UserFilter,
+        *,
+        filter_: UserFilter | None = None,
         search: Search | None = None,
         sorting: Sorting | None = None,
         pagination: Pagination | None = None,
-        *,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> list[Mapping[str, Any]]:
         """Retrieves a list of users based on parameters.
 
         Args:
-            filter_ (UserFilter): Parameters for list filtering.
+            filter_ (UserFilter | None): Parameters for list filtering.
+            Defaults to None.
             search (Search | None): Parameters for list searching. Defaults to None.
             sorting (Sorting | None): Parameters for sorting. Defaults to None.
             pagination (Pagination | None): Parameters for pagination. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword arguments.
 
         Returns:
             list[Mapping[str, Any]]: The retrieved list of users.
@@ -52,7 +55,7 @@ class UserRepository(BaseRepository):
         )
 
     async def _get_list_query_filter(
-        self, filter_: UserFilter, search: Search | None
+        self, filter_: UserFilter | None, search: Search | None
     ) -> Mapping[str, Any] | None:
         """Returns a query filter for list of users.
 
@@ -68,6 +71,9 @@ class UserRepository(BaseRepository):
         query_filter: dict[str, Any] = {}
 
         self._apply_list_search(query_filter=query_filter, search=search)
+
+        if filter_ is None:
+            return query_filter  # pragma: no cover
 
         if filter_.roles:
             query_filter["roles"] = {"$in": filter_.roles}
@@ -99,18 +105,21 @@ class UserRepository(BaseRepository):
 
     async def count(
         self,
-        filter_: UserFilter,
-        search: Search | None = None,
         *,
+        filter_: UserFilter | None = None,
+        search: Search | None = None,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> int:
         """Counts users based on parameters.
 
         Args:
-            filter_ (UserFilter): Parameters for list filtering.
+            filter_ (UserFilter | None): Parameters for list filtering.
+            Defaults to None.
             search (Search | None): Parameters for list searching. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             int: Count of users.
@@ -231,7 +240,7 @@ class UserRepository(BaseRepository):
         data: Any,
         *,
         session: AsyncIOMotorClientSession | None = None,
-        **fields: Any,
+        **kwargs: Any,
     ) -> None:
         """Updates a user in repository.
 
@@ -240,6 +249,7 @@ class UserRepository(BaseRepository):
             data (Any): Data to update user.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword arguments.
 
         Raises:
             NotImplementedError: This method is not implemented.

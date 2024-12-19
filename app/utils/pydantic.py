@@ -29,7 +29,7 @@ class ObjectIdAnnotation:
     """BSON object identifier annotation."""
 
     @classmethod
-    def _validate(cls, id_: Any, *_: Any) -> ObjectId:
+    def _validate(cls, id_: Any, *args: Any) -> ObjectId:
         """Validates BSON object identifier."""
 
         if isinstance(id_, ObjectId):
@@ -43,7 +43,7 @@ class ObjectIdAnnotation:
         return ObjectId(id_)
 
     @classmethod
-    def __get_pydantic_core_schema__(cls, *_: Any) -> core_schema.CoreSchema:
+    def __get_pydantic_core_schema__(cls, *args: Any) -> core_schema.CoreSchema:
         """Customizes pydantic validation."""
         return core_schema.no_info_wrap_validator_function(
             cls._validate,
@@ -56,7 +56,7 @@ class BaseType(str):
     """Base pydantic type."""
 
     @classmethod
-    def __get_pydantic_core_schema__(cls, *_: Any) -> core_schema.CoreSchema:
+    def __get_pydantic_core_schema__(cls, *args: Any) -> core_schema.CoreSchema:
         """Customizes pydantic validation."""
         return core_schema.with_info_after_validator_function(
             cls._validate,

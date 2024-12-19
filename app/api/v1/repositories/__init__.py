@@ -77,22 +77,16 @@ class BaseRepository(abc.ABC):
 
     async def get(
         self,
-        filter_: Any,
-        search: Search | None = None,
-        sorting: Sorting | None = None,
-        pagination: Pagination | None = None,
         *,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> list[Mapping[str, Any]]:
         """Retrieves a list of documents based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering.
-            search (Search | None): Parameters for list searching. Defaults to None.
-            sorting (Sorting | None): Parameters for sorting. Defaults to None.
-            pagination (Pagination | None): Parameters for pagination. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             list[Mapping[str, Any]]: The retrieved list of documents.
@@ -246,18 +240,16 @@ class BaseRepository(abc.ABC):
 
     async def count(
         self,
-        filter_: Any,
-        search: Search | None = None,
         *,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> int:
         """Counts documents based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering.
-            search (Search | None): Parameters for list searching. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             int: Count of documents.
@@ -398,6 +390,7 @@ class BaseRepository(abc.ABC):
         data: Any,
         *,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> None:
         """Updates a document in repository.
 
@@ -406,6 +399,7 @@ class BaseRepository(abc.ABC):
             data (Any): Data to update document.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword arguments.
 
         Raises:
             NotImplementedError: This method must be implemented by subclasses.

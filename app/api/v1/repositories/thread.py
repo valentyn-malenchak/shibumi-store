@@ -7,7 +7,7 @@ import arrow
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
-from app.api.v1.models import Pagination, Search, Sorting
+from app.api.v1.models import Search
 from app.api.v1.models.thread import Thread, ThreadData
 from app.api.v1.repositories import BaseRepository
 from app.services.mongo.constants import MongoCollectionsEnum
@@ -20,22 +20,16 @@ class ThreadRepository(BaseRepository):
 
     async def get(
         self,
-        filter_: Any,
-        search: Search | None = None,
-        sorting: Sorting | None = None,
-        pagination: Pagination | None = None,
         *,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> list[Mapping[str, Any]]:
         """Retrieves a list of threads based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering.
-            search (Search | None): Parameters for list searching. Defaults to None.
-            sorting (Sorting | None): Parameters for sorting. Defaults to None.
-            pagination (Pagination | None): Parameters for pagination. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             list[Mapping[str, Any]]: The retrieved list of threads.
@@ -92,18 +86,16 @@ class ThreadRepository(BaseRepository):
 
     async def count(
         self,
-        filter_: Any,
-        search: Search | None = None,
         *,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> int:
         """Counts threads based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering.
-            search (Search | None): Parameters for list searching. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             int: Count of threads.
@@ -204,6 +196,7 @@ class ThreadRepository(BaseRepository):
         data: Any,
         *,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> None:
         """Updates a thread in repository.
 
@@ -212,6 +205,7 @@ class ThreadRepository(BaseRepository):
             data (Any): Data to update thread.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword arguments.
 
         Raises:
             NotImplementedError: This method is not implemented.

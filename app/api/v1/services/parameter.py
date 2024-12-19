@@ -6,7 +6,6 @@ from typing import Any
 from bson import ObjectId, json_util
 from fastapi import BackgroundTasks, Depends
 
-from app.api.v1.models import Search
 from app.api.v1.repositories.parameter import ParameterRepository
 from app.api.v1.services import BaseService
 from app.services.mongo.transaction_manager import TransactionManager
@@ -42,11 +41,11 @@ class ParameterService(BaseService):
 
         self.repository = repository
 
-    async def get(self, *_: Any) -> list[Mapping[str, Any]]:
+    async def get(self, **kwargs: Any) -> list[Mapping[str, Any]]:
         """Retrieves a list of parameters based on parameters.
 
         Args:
-            _ (Any): Parameters for list filtering, searching, sorting and pagination.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             list[Mapping[str, Any]]: The retrieved list of parameters.
@@ -60,7 +59,7 @@ class ParameterService(BaseService):
         if cached_parameters is not None:
             return json_util.loads(cached_parameters)  # type: ignore
 
-        parameters = await self.repository.get(filter_=None)
+        parameters = await self.repository.get()
 
         await self.redis_service.set(
             name=RedisNamesEnum.PRODUCT_PARAMETERS_LIST,
@@ -70,12 +69,11 @@ class ParameterService(BaseService):
 
         return parameters
 
-    async def count(self, filter_: Any, search: Search) -> int:
+    async def count(self, **kwargs: Any) -> int:
         """Counts parameters based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering.
-            search (Search): Parameters for list searching.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             int: Count of parameters.

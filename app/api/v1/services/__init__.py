@@ -17,7 +17,6 @@ from typing import Any
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
 
-from app.api.v1.models import Pagination, Search, Sorting
 from app.services.mongo.transaction_manager import TransactionManager
 from app.services.redis.service import RedisService
 
@@ -47,20 +46,11 @@ class BaseService(abc.ABC):
         self.transaction_manager = transaction_manager
 
     @abc.abstractmethod
-    async def get(
-        self,
-        filter_: Any,
-        search: Search,
-        sorting: Sorting,
-        pagination: Pagination,
-    ) -> list[Any]:
+    async def get(self, **kwargs: Any) -> list[Any]:
         """Retrieves a list of items based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering.
-            search (Search): Parameters for list searching.
-            sorting (Sorting): Parameters for sorting.
-            pagination (Pagination): Parameters for pagination.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             list[Any]: The retrieved list of items.
@@ -72,12 +62,11 @@ class BaseService(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def count(self, filter_: Any, search: Search) -> int:
+    async def count(self, **kwargs: Any) -> int:
         """Counts items based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering.
-            search (Search): Parameters for list searching.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             int: Count of items.
