@@ -29,22 +29,25 @@ class ProductRepository(BaseRepository):
 
     async def get(
         self,
-        filter_: ProductFilter,
+        *,
+        filter_: ProductFilter | None = None,
         search: Search | None = None,
         sorting: Sorting | None = None,
         pagination: Pagination | None = None,
-        *,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> list[Mapping[str, Any]]:
         """Retrieves a list of products based on parameters.
 
         Args:
-            filter_ (ProductFilter): Parameters for list filtering.
+            filter_ (ProductFilter | None): Parameters for list filtering.
+            Defaults to None.
             search (Search | None): Parameters for list searching. Defaults to None.
             sorting (Sorting | None): Parameters for sorting. Defaults to None.
             pagination (Pagination | None): Parameters for pagination. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword arguments.
 
         Returns:
             list[Mapping[str, Any]]: The retrieved list of products.
@@ -59,12 +62,12 @@ class ProductRepository(BaseRepository):
         )
 
     async def _get_list_query_filter(
-        self, filter_: ProductFilter, search: Search | None
+        self, filter_: ProductFilter | None, search: Search | None
     ) -> Mapping[str, Any] | None:
         """Returns a query filter for list of products.
 
         Args:
-            filter_ (ProductFilter): Parameters for list filtering.
+            filter_ (ProductFilter | None): Parameters for list filtering.
             search (Search | None): Parameters for list searching.
 
         Returns:
@@ -75,6 +78,9 @@ class ProductRepository(BaseRepository):
         query_filter: dict[str, Any] = {}
 
         self._apply_list_search(query_filter=query_filter, search=search)
+
+        if filter_ is None:
+            return query_filter  # pragma: no cover
 
         if filter_.category_id is not None:
             query_filter["category_id"] = filter_.category_id
@@ -119,18 +125,21 @@ class ProductRepository(BaseRepository):
 
     async def count(
         self,
-        filter_: ProductFilter,
-        search: Search | None = None,
         *,
+        filter_: ProductFilter | None = None,
+        search: Search | None = None,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> int:
         """Counts products based on parameters.
 
         Args:
-            filter_ (ProductFilter): Parameters for list filtering.
+            filter_ (ProductFilter | None): Parameters for list filtering.
+            Defaults to None.
             search (Search | None): Parameters for list searching. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword arguments.
 
         Returns:
             int: Count of products.
@@ -247,6 +256,7 @@ class ProductRepository(BaseRepository):
         data: Any,
         *,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> None:
         """Updates a product in repository.
 
@@ -255,6 +265,7 @@ class ProductRepository(BaseRepository):
             data (Any): Data to update product.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword arguments.
 
         Raises:
             NotImplementedError: This method is not implemented.

@@ -7,7 +7,7 @@ import arrow
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
-from app.api.v1.models import Pagination, Search, Sorting
+from app.api.v1.models import Search
 from app.api.v1.models.cart import Cart, CartCreateData
 from app.api.v1.repositories import BaseRepository
 from app.services.mongo.constants import MongoCollectionsEnum
@@ -21,22 +21,16 @@ class CartRepository(BaseRepository):
 
     async def get(
         self,
-        filter_: Any,
-        search: Search | None = None,
-        sorting: Sorting | None = None,
-        pagination: Pagination | None = None,
         *,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> list[Mapping[str, Any]]:
         """Retrieves a list of carts based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering.
-            search (Search | None): Parameters for list searching. Defaults to None.
-            sorting (Sorting | None): Parameters for sorting. Defaults to None.
-            pagination (Pagination | None): Parameters for pagination. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             list[Mapping[str, Any]]: The retrieved list of carts.
@@ -93,18 +87,16 @@ class CartRepository(BaseRepository):
 
     async def count(
         self,
-        filter_: Any,
-        search: Search | None = None,
         *,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> int:
         """Counts carts based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering.
-            search (Search | None): Parameters for list searching. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             int: Count of carts.
@@ -194,6 +186,7 @@ class CartRepository(BaseRepository):
         data: Any,
         *,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> None:
         """Updates a cart in repository.
 
@@ -202,6 +195,7 @@ class CartRepository(BaseRepository):
             data (Any): Data to update cart.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword arguments.
 
         Raises:
             NotImplementedError: This method is not implemented.

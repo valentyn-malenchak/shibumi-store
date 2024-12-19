@@ -49,14 +49,16 @@ class CategoryService(BaseService):
 
     async def get(
         self,
-        filter_: CategoryFilter,
-        *_: Any,
+        *,
+        filter_: CategoryFilter | None = None,
+        **kwargs: Any,
     ) -> list[Any]:
         """Retrieves a list of categories based on parameters.
 
         Args:
-            filter_ (CategoryFilter): Parameters for list filtering.
-            _ (Any): Parameters for list searching, sorting and pagination.
+            filter_ (CategoryFilter | None): Parameters for list filtering.
+            Defaults to None.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             list[Any]: The retrieved list of categories.
@@ -64,12 +66,15 @@ class CategoryService(BaseService):
         """
         return await self.repository.get(filter_=filter_)
 
-    async def count(self, filter_: CategoryFilter, *_: Any) -> int:
+    async def count(
+        self, *, filter_: CategoryFilter | None = None, **kwargs: Any
+    ) -> int:
         """Counts categories based on parameters.
 
         Args:
-            filter_ (CategoryFilter): Parameters for list filtering.
-            _ (Any): Parameters for list searching.
+            filter_ (CategoryFilter | None): Parameters for list filtering.
+            Defaults to None.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             int: Count of categories.

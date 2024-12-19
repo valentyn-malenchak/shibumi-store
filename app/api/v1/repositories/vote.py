@@ -8,7 +8,7 @@ from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClientSession
 from pymongo.errors import DuplicateKeyError
 
-from app.api.v1.models import Pagination, Search, Sorting
+from app.api.v1.models import Search
 from app.api.v1.models.vote import Vote, VoteCreateData, VoteData
 from app.api.v1.repositories import BaseRepository
 from app.exceptions import EntityDuplicateKeyError
@@ -22,22 +22,16 @@ class VoteRepository(BaseRepository):
 
     async def get(
         self,
-        filter_: Any,
-        search: Search | None = None,
-        sorting: Sorting | None = None,
-        pagination: Pagination | None = None,
         *,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> list[Mapping[str, Any]]:
         """Retrieves a list of votes based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering.
-            search (Search | None): Parameters for list searching. Defaults to None.
-            sorting (Sorting | None): Parameters for sorting. Defaults to None.
-            pagination (Pagination | None): Parameters for pagination. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             list[Mapping[str, Any]]: The retrieved list of votes.
@@ -94,18 +88,16 @@ class VoteRepository(BaseRepository):
 
     async def count(
         self,
-        filter_: Any,
-        search: Search | None = None,
         *,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> int:
         """Counts votes based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering.
-            search (Search | None): Parameters for list searching. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             int: Count of votes.
@@ -208,6 +200,7 @@ class VoteRepository(BaseRepository):
         data: Any,
         *,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> None:
         """Updates a vote in repository.
 
@@ -216,6 +209,7 @@ class VoteRepository(BaseRepository):
             data (Any): Data to update vote.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword arguments.
 
         Raises:
             NotImplementedError: This method is not implemented.

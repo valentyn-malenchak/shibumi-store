@@ -5,7 +5,6 @@ from typing import Any
 from bson import ObjectId
 from fastapi import BackgroundTasks, Depends
 
-from app.api.v1.models import Pagination, Search, Sorting
 from app.api.v1.models.vote import Vote, VoteCreateData, VoteData
 from app.api.v1.repositories.comment import CommentRepository
 from app.api.v1.repositories.vote import VoteRepository
@@ -47,16 +46,11 @@ class VoteService(BaseService):
 
         self.comment_repository = comment_repository
 
-    async def get(
-        self, filter_: Any, search: Search, sorting: Sorting, pagination: Pagination
-    ) -> Any:
+    async def get(self, **kwargs: Any) -> Any:
         """Retrieves a list of votes based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering.
-            search (Search): Parameters for list searching.
-            sorting (Sorting): Parameters for sorting.
-            pagination (Pagination): Parameters for pagination.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             list[Mapping[str, Any]]: The retrieved list of votes.
@@ -67,12 +61,11 @@ class VoteService(BaseService):
         """
         raise NotImplementedError
 
-    async def count(self, filter_: Any, search: Search) -> int:
+    async def count(self, **kwargs: Any) -> int:
         """Counts votes based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering.
-            search (Search): Parameters for list searching.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             int: Count of votes.

@@ -6,7 +6,7 @@ from typing import Any
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClientSession
 
-from app.api.v1.models import Pagination, Search, Sorting
+from app.api.v1.models import Search
 from app.api.v1.models.category import CategoryParameters
 from app.api.v1.repositories import BaseRepository
 from app.services.mongo.constants import MongoCollectionsEnum
@@ -19,22 +19,16 @@ class CategoryParametersRepository(BaseRepository):
 
     async def get(
         self,
-        filter_: Any,
-        search: Search | None = None,
-        sorting: Sorting | None = None,
-        pagination: Pagination | None = None,
         *,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> list[Mapping[str, Any]]:
         """Retrieves a list of category-parameters based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering.
-            search (Search | None): Parameters for list searching. Defaults to None.
-            sorting (Sorting | None): Parameters for sorting. Defaults to None.
-            pagination (Pagination | None): Parameters for pagination. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             list[Mapping[str, Any]]: The retrieved list of category-parameters.
@@ -91,18 +85,16 @@ class CategoryParametersRepository(BaseRepository):
 
     async def count(
         self,
-        filter_: Any,
-        search: Search | None = None,
         *,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> int:
         """Counts category-parameters based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering.
-            search (Search | None): Parameters for list searching. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             int: Count of category-parameters.
@@ -187,6 +179,7 @@ class CategoryParametersRepository(BaseRepository):
         *,
         session: AsyncIOMotorClientSession | None = None,
         upsert: bool = False,
+        **kwargs: Any,
     ) -> None:
         """Updates a category-parameters in repository.
 
@@ -196,6 +189,7 @@ class CategoryParametersRepository(BaseRepository):
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
             upsert (bool): Use update or insert. Defaults to False.
+            kwargs (Any): Keyword arguments.
 
         """
 

@@ -67,18 +67,22 @@ class UserService(BaseService):
 
     async def get(
         self,
-        filter_: UserFilter,
-        search: Search,
-        sorting: Sorting,
-        pagination: Pagination,
+        *,
+        filter_: UserFilter | None = None,
+        search: Search | None = None,
+        sorting: Sorting | None = None,
+        pagination: Pagination | None = None,
+        **kwargs: Any,
     ) -> list[Mapping[str, Any]]:
         """Retrieves a list of users based on parameters.
 
         Args:
-            filter_ (UserFilter): Parameters for list filtering.
-            search (Search): Parameters for list searching.
-            sorting (Sorting): Parameters for sorting.
-            pagination (Pagination): Parameters for pagination.
+            filter_ (UserFilter | None): Parameters for list filtering.
+            Defaults to None.
+            search (Search | None): Parameters for list searching. Defaults to None.
+            sorting (Sorting | None): Parameters for sorting. Defaults to None.
+            pagination (Pagination | None): Parameters for pagination. Defaults to None.
+            kwargs (Any): Keyword arguments.
 
         Returns:
             list[Mapping[str, Any]]: The retrieved list of users.
@@ -91,21 +95,25 @@ class UserService(BaseService):
             pagination=pagination,
         )
 
-    async def count(self, filter_: UserFilter, search: Search) -> int:
+    async def count(
+        self,
+        *,
+        filter_: UserFilter | None = None,
+        search: Search | None = None,
+        **kwargs: Any,
+    ) -> int:
         """Counts users based on parameters.
 
         Args:
-            filter_ (UserFilter): Parameters for list filtering.
-            search (Search): Parameters for list searching.
+            filter_ (UserFilter | None): Parameters for list filtering.
+            search (Search | None): Parameters for list searching.
+            kwargs (Any): Keyword arguments.
 
         Returns:
             int: Count of users.
 
         """
-        return await self.repository.count(
-            filter_=filter_,
-            search=search,
-        )
+        return await self.repository.count(filter_=filter_, search=search)
 
     async def get_by_id(self, id_: ObjectId) -> User:
         """Retrieves a user by its unique identifier.

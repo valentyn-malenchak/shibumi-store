@@ -19,34 +19,26 @@ class RoleRepository(BaseRepository):
 
     async def get(
         self,
-        filter_: Any,
-        search: Search | None = None,
+        *,
         sorting: Sorting | None = None,
         pagination: Pagination | None = None,
-        *,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> list[Mapping[str, Any]]:
         """Retrieves a list of roles based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering.
-            search (Search | None): Parameters for list searching. Defaults to None.
             sorting (Sorting | None): Parameters for sorting. Defaults to None.
             pagination (Pagination | None): Parameters for pagination. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             list[Mapping[str, Any]]: The retrieved list of roles.
 
         """
-        return await self._get(
-            filter_=await self._get_list_query_filter(filter_=filter_, search=search),
-            search=search,
-            sorting=sorting,
-            pagination=pagination,
-            session=session,
-        )
+        return await self._get(sorting=sorting, pagination=pagination, session=session)
 
     async def _get_list_query_filter(
         self, filter_: Any, search: Search | None
@@ -60,7 +52,11 @@ class RoleRepository(BaseRepository):
         Returns:
             Mapping[str, Any] | None: List query filter or None.
 
+        Raises:
+            NotImplementedError: This method is not implemented.
+
         """
+        raise NotImplementedError
 
     @staticmethod
     def _get_list_query_projection() -> Mapping[str, Any] | None:
@@ -84,27 +80,22 @@ class RoleRepository(BaseRepository):
 
     async def count(
         self,
-        filter_: Any,
-        search: Search | None = None,
         *,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> int:
         """Counts roles based on parameters.
 
         Args:
-            filter_ (Any): Parameters for list filtering.
-            search (Search | None): Parameters for list searching. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             int: Count of roles.
 
         """
-        return await self._count(
-            filter_=await self._get_list_query_filter(filter_=filter_, search=search),
-            session=session,
-        )
+        return await self._count(session=session)
 
     async def get_by_id(
         self, id_: ObjectId, *, session: AsyncIOMotorClientSession | None = None
@@ -179,6 +170,7 @@ class RoleRepository(BaseRepository):
         data: Any,
         *,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> None:
         """Updates a role in repository.
 
@@ -187,6 +179,7 @@ class RoleRepository(BaseRepository):
             data (Any): Data to update role.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword arguments.
 
         Raises:
             NotImplementedError: This method is not implemented.

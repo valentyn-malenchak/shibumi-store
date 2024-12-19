@@ -67,18 +67,22 @@ class ProductService(BaseService):
 
     async def get(
         self,
-        filter_: ProductFilter,
-        search: Search,
-        sorting: Sorting,
-        pagination: Pagination,
+        *,
+        filter_: ProductFilter | None = None,
+        search: Search | None = None,
+        sorting: Sorting | None = None,
+        pagination: Pagination | None = None,
+        **kwargs: Any,
     ) -> list[Mapping[str, Any]]:
         """Retrieves a list of products based on parameters.
 
         Args:
-            filter_ (ProductFilter): Parameters for list filtering.
-            search (Search): Parameters for list searching.
-            sorting (Sorting): Parameters for sorting.
-            pagination (Pagination): Parameters for pagination.
+            filter_ (ProductFilter | None): Parameters for list filtering.
+            Defaults to None.
+            search (Search | None): Parameters for list searching. Defaults to None.
+            sorting (Sorting | None): Parameters for sorting. Defaults to None.
+            pagination (Pagination | None): Parameters for pagination. Defaults to None.
+            kwargs (Any): Keyword arguments.
 
         Returns:
             list[Mapping[str, Any]]: The retrieved list of products.
@@ -91,12 +95,20 @@ class ProductService(BaseService):
             pagination=pagination,
         )
 
-    async def count(self, filter_: ProductFilter, search: Search) -> int:
+    async def count(
+        self,
+        *,
+        filter_: ProductFilter | None = None,
+        search: Search | None = None,
+        **kwargs: Any,
+    ) -> int:
         """Counts products based on parameters.
 
         Args:
-            filter_ (ProductFilter): Parameters for list filtering.
-            search (Search): Parameters for list searching.
+            filter_ (ProductFilter | None): Parameters for list filtering.
+            Defaults to None.
+            search (Search | None): Parameters for list searching. Defaults to None.
+            kwargs (Any): Keyword arguments.
 
         Returns:
             int: Count of products.

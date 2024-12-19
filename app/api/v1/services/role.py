@@ -42,11 +42,11 @@ class RoleService(BaseService):
 
         self.repository = repository
 
-    async def get(self, *_: Any) -> list[Mapping[str, Any]]:
+    async def get(self, **kwargs: Any) -> list[Mapping[str, Any]]:
         """Retrieves a list of roles based on parameters.
 
         Args:
-            _ (Any): Parameters for list filtering, searching, sorting and pagination.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             list[Mapping[str, Any]]: The retrieved list of roles.
@@ -58,7 +58,7 @@ class RoleService(BaseService):
         if cached_roles is not None:
             return json_util.loads(cached_roles)  # type: ignore
 
-        roles = await self.repository.get(filter_=None)
+        roles = await self.repository.get()
 
         await self.redis_service.set(
             name=RedisNamesEnum.ROLES_LIST,
@@ -68,11 +68,11 @@ class RoleService(BaseService):
 
         return roles
 
-    async def count(self, *_: Any) -> int:
+    async def count(self, **kwargs: Any) -> int:
         """Counts roles based on parameters.
 
         Args:
-            _ (Any): Parameters for list filtering and searching.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             int: Count of roles.
@@ -84,7 +84,7 @@ class RoleService(BaseService):
         if cached_roles is not None:
             return len(json_util.loads(cached_roles))
 
-        return await self.repository.count(filter_=None)
+        return await self.repository.count()
 
     async def get_by_id(self, id_: ObjectId) -> Any:
         """Retrieves a role by its unique identifier.

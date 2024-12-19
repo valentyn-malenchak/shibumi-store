@@ -25,42 +25,42 @@ class CategoryRepository(BaseRepository):
 
     async def get(
         self,
-        filter_: CategoryFilter,
-        search: Search | None = None,
+        *,
+        filter_: CategoryFilter | None = None,
         sorting: Sorting | None = None,
         pagination: Pagination | None = None,
-        *,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> list[Mapping[str, Any]]:
         """Retrieves a list of categories based on parameters.
 
         Args:
-            filter_ (CategoryFilter): Parameters for list filtering.
-            search (Search | None): Parameters for list searching. Defaults to None.
+            filter_ (CategoryFilter | None): Parameters for list filtering.
+            Defaults to None.
             sorting (Sorting | None): Parameters for sorting. Defaults to None.
             pagination (Pagination | None): Parameters for pagination. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword arguments.
 
         Returns:
             list[Mapping[str, Any]]: The retrieved list of categories.
 
         """
         return await self._get(
-            filter_=await self._get_list_query_filter(filter_=filter_, search=search),
-            search=search,
+            filter_=await self._get_list_query_filter(filter_=filter_, search=None),
             sorting=sorting,
             pagination=pagination,
             session=session,
         )
 
     async def _get_list_query_filter(
-        self, filter_: CategoryFilter, search: Search | None
+        self, filter_: CategoryFilter | None, search: Search | None
     ) -> Mapping[str, Any] | None:
         """Returns a query filter for list of categories.
 
         Args:
-            filter_ (CategoryFilter): Parameters for list filtering.
+            filter_ (CategoryFilter | None): Parameters for list filtering.
             search (Search | None): Parameters for list searching.
 
         Returns:
@@ -69,6 +69,9 @@ class CategoryRepository(BaseRepository):
         """
 
         query_filter: dict[str, Any] = {}
+
+        if filter_ is None:
+            return query_filter  # pragma: no cover
 
         if filter_.path is not None:
             query_filter["path"] = {"$regex": f"^{filter_.path}"}
@@ -104,18 +107,21 @@ class CategoryRepository(BaseRepository):
 
     async def count(
         self,
-        filter_: CategoryFilter,
-        search: Search | None = None,
         *,
+        filter_: CategoryFilter | None = None,
+        search: Search | None = None,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> int:
         """Counts categories based on parameters.
 
         Args:
-            filter_ (CategoryFilter): Parameters for list filtering.
+            filter_ (CategoryFilter | None): Parameters for list filtering.
+            Defaults to None.
             search (Search | None): Parameters for list searching. Defaults to None.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword parameters.
 
         Returns:
             int: Count of categories.
@@ -229,6 +235,7 @@ class CategoryRepository(BaseRepository):
         data: Any,
         *,
         session: AsyncIOMotorClientSession | None = None,
+        **kwargs: Any,
     ) -> None:
         """Updates a category in repository.
 
@@ -237,6 +244,7 @@ class CategoryRepository(BaseRepository):
             data (Any): Data to update category.
             session (AsyncIOMotorClientSession | None): Defines a client session
             if operation is transactional. Defaults to None.
+            kwargs (Any): Keyword arguments.
 
         Raises:
             NotImplementedError: This method is not implemented.
