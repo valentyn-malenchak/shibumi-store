@@ -68,7 +68,7 @@ class BaseProductFilter(BaseModel):
     category_id: Annotated[ObjectId, ObjectIdAnnotation] | None = None
     available: bool | None = None
     ids: list[Annotated[ObjectId, ObjectIdAnnotation]] | None = Field(
-        default_factory=list
+        default_factory=list  # type: ignore[arg-type]
     )
 
 

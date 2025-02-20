@@ -165,7 +165,7 @@ class TestComment(BaseAPITest):
             "thread_id": "6669b5634cef83e11dbc7abf",
             "user_id": "65844f12b6de26578d98c2c8",
             "parent_comment_id": None,
-            "path": f"/{response.json()["id"]}",
+            "path": f"/{response.json()['id']}",
             "upvotes": 0,
             "downvotes": 0,
             "deleted": False,
@@ -208,7 +208,7 @@ class TestComment(BaseAPITest):
             "user_id": "65844f12b6de26578d98c2c8",
             "parent_comment_id": "666af8cb6aba47cfb60efb33",
             "path": f"/666af8ae6aba47cfb60efb31/666af8cb6aba47cfb60efb33/"
-            f"{response.json()["id"]}",
+            f"{response.json()['id']}",
             "upvotes": 0,
             "downvotes": 0,
             "deleted": False,
