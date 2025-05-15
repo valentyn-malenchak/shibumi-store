@@ -44,33 +44,35 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install poetry
-        run: pipx install poetry==1.8.3
-
-      - uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
         with:
-          python-version: 3.12
-          cache: poetry
+          enable-cache: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
 
       - name: Install Python dependencies
-        run: poetry install --no-root
+        run: uv run invoke install
 
       - name: Run Code Formatting
-        run: poetry run invoke format
+        run: uv run invoke format
 
       - name: Run Linting
-        run: poetry run invoke lint
+        run: uv run invoke lint
 
       - name: Run Mypy
-        run: poetry run invoke mypy
+        run: uv run invoke mypy
 
       - name: Run Tests
-        run: poetry run invoke test
+        run: uv run invoke test
         env:
           CI: true
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v4.2.1
+        uses: SonarSource/sonarqube-scan-action@v5.2.0
         env:
           CI: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

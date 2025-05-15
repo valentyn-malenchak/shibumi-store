@@ -17,17 +17,17 @@ def install(ctx: Context, group: str | None = None) -> None:
 
     Args:
         ctx (invoke.Context): The context object representing the current invocation.
-        group (str): Name of poetry group. Defaults to None.
+        group (str): Name of dependency group. Defaults to None.
 
     Example:
         invoke install              # Installs dependencies for default group.
         invoke install --group dev  # Installs dependencies for dev group.
 
     """
-    command = "poetry install"
+    command = "uv sync --frozen"
 
     if group is not None:
-        command += f" --with {group}"
+        command += f" --group {group}"
 
     ctx.run(command)
 
@@ -43,7 +43,21 @@ def outdated_packages(ctx: Context) -> None:
         invoke outdated-packages   # Shows outdated packages.
 
     """
-    ctx.run("poetry show --outdated")
+    ctx.run("uv pip list --outdated")
+
+
+@task
+def update_packages(ctx: Context) -> None:
+    """Updates all packages.
+
+    Args:
+        ctx (invoke.Context): The context object representing the current invocation.
+
+    Example:
+        invoke update-packages   # Updates all packages.
+
+    """
+    ctx.run("uv sync --upgrade")
 
 
 @task
@@ -240,14 +254,28 @@ def build(ctx: Context) -> None:
 
 
 @task
-def compose(ctx: Context) -> None:
-    """Runs a docker-compose.
+def up(ctx: Context) -> None:
+    """Runs a docker-compose up.
 
     Args:
         ctx: The context object representing the current invocation.
 
     Example:
-        invoke compose  # Runs a docker-compose
+        invoke up  # Runs a docker-compose up
 
     """
-    ctx.run("docker-compose up -d")
+    ctx.run("docker-compose up --watch")
+
+
+@task
+def down(ctx: Context) -> None:
+    """Runs a docker-compose down.
+
+    Args:
+        ctx: The context object representing the current invocation.
+
+    Example:
+        invoke down  # Runs a docker-compose down
+
+    """
+    ctx.run("docker-compose down")

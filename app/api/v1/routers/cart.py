@@ -1,7 +1,5 @@
 """Module that contains cart domain routers."""
 
-from typing import Annotated
-
 from bson import ObjectId
 from fastapi import APIRouter, Depends, Security, status
 
@@ -58,9 +56,9 @@ async def get_cart(cart: Cart = Depends(CartByUserGetDependency())) -> Cart:
     ],
 )
 async def add_product_to_the_cart(
-    cart_product_create_data: Annotated[
-        CartProductCreateData, Depends(CartProductDataCreateDependency())
-    ],
+    cart_product_create_data: CartProductCreateData = Depends(
+        CartProductDataCreateDependency()
+    ),
     cart_service: CartService = Depends(),
 ) -> Cart:
     """API which adds product to the cart.

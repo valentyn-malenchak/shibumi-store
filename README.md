@@ -1,7 +1,7 @@
 # Shibumi Store
 
 [![Python Version](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-312/)
-[![FastAPI Version](https://img.shields.io/badge/fastapi-0.115.8-green.svg)](https://fastapi.tiangolo.com/)
+[![FastAPI Version](https://img.shields.io/badge/fastapi-0.115.12-green.svg)](https://fastapi.tiangolo.com/)
 [![MongoDB Version](https://img.shields.io/badge/mongodb-8.0-green.svg)](https://www.mongodb.com/)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=valentyn-malenchak_shibumi-store&metric=coverage)](https://sonarcloud.io/summary/new_code?id=valentyn-malenchak_shibumi-store)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=valentyn-malenchak_shibumi-store&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=valentyn-malenchak_shibumi-store)
@@ -119,14 +119,15 @@ The project is organized with the following directory structure:
 │   ├── 20231231132337_create_users_username_index.py
 │   └── ...
 ├── .gitignore                                 # Gitignore file to specify ignored files and directories
+├── .python-version                            # Python version pin
 ├── docker-compose.yml                         # docker-compose file for application
 ├── Dockerfile                                 # Application Dockerfile
 ├── LICENSE                                    # License information for the project
-├── poetry.lock                                # Poetry lock file specifying exact package versions
 ├── pyproject.toml                             # Project configuration file
 ├── README.md                                  # Project README file
 ├── sonar-project.properties                   # Configuration file for SonarQube code quality analysis
-└── tasks.py                                   # Application cli
+├── tasks.py                                   # Application cli
+└── uv.lock                                    # uv lock file specifying exact package versions
 ```
 
 ## Getting Started
@@ -142,21 +143,13 @@ git clone https://github.com/valentyn-malenchak/shibumi-store.git
 ```bash
 docker build -t shibumi-store:latest .
 ```
-or
-```bash
-invoke build
-```
 
 ### 4. Run the application:
 ```bash
-docker-compose up -d
-```
-or
-```bash
-invoke compose
+docker-compose up --watch
 ```
 
-## Check out useful [cli commands](tasks.py)
+## Check out useful [cli](tasks.py) commands
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
