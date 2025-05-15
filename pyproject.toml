@@ -1,43 +1,49 @@
-[tool.poetry]
+[project]
 name = "shibumi-store"
 version = "0.1.0"
 description = "The 'Shibumi Store' backend project is a small e-commerce solution that provides a seamless and efficient shopping experience."
-authors = ["Valentyn Malenchak <valentyn17@gmail.com>"]
+authors = [{ name = "Valentyn Malenchak", email = "valentyn17@gmail.com" }]
+requires-python = "==3.12.10"
 readme = "README.md"
-packages = [{include = "shibumi_store"}]
+dependencies = [
+    "fastapi==0.115.12",
+    "uvicorn[standard]==0.34.2",
+    "pytest==8.3.5",
+    "invoke==2.2.0",
+    "motor==3.7.1",
+    "arrow==1.3.0",
+    "httpx==0.28.1",
+    "python-multipart==0.0.20",
+    "injector==0.22.0",
+    "pytest-asyncio==0.26.0",
+    "motor-types==1.0.0b4",
+    "pytest-cov==6.1.1",
+    "pydantic[email]==2.11.4",
+    "phonenumbers==9.0.5",
+    "pydantic-extra-types==2.10.4",
+    "mongodb-migrations==1.3.1",
+    "redis==6.1.0",
+    "sendgrid==6.12.2",
+    "tenacity==9.1.2",
+    "pyjwt==2.10.1",
+    "argon2-cffi==23.1.0",
+]
 
-[tool.poetry.dependencies]
-python = "^3.12"
-fastapi = "0.115.8"
-uvicorn = {extras = ["standard"], version = "0.34.0"}
-pytest = "8.3.4"
-invoke = "2.2.0"
-motor = "3.7.0"
-arrow = "1.3.0"
-httpx = "0.28.1"
-python-multipart = "0.0.20"
-injector = "0.22.0"
-pytest-asyncio = "0.25.3"
-motor-types = "1.0.0b4"
-pytest-cov = "6.0.0"
-pydantic = {extras = ["email"], version = "2.10.6"}
-phonenumbers = "8.13.55"
-pydantic-extra-types = "2.10.2"
-mongodb-migrations = "1.3.1"
-redis = "5.2.1"
-sendgrid = "6.11.0"
-tenacity = "9.0.0"
-pyjwt = "2.10.1"
-argon2-cffi = "23.1.0"
+[dependency-groups]
+dev = [
+    "mypy==1.15.0",
+    "ruff==0.11.10",
+]
 
+[tool.hatch.build.targets.sdist]
+include = ["shibumi_store"]
 
-[tool.poetry.group.dev.dependencies]
-mypy = "1.15.0"
-ruff = "0.9.7"
+[tool.hatch.build.targets.wheel]
+include = ["shibumi_store"]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 
 # Ruff configuration
