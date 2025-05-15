@@ -1,5 +1,7 @@
 """Module that contains cart domain routers."""
 
+from typing import Annotated
+
 from bson import ObjectId
 from fastapi import APIRouter, Depends, Security, status
 
@@ -12,13 +14,11 @@ from app.api.v1.dependencies.cart import (
     CartProductDataDeleteDependency,
     CartProductDataUpdateDependency,
 )
-from app.api.v1.dependencies.product import ProductByIdGetDependency
 from app.api.v1.models.cart import (
     Cart,
-    CartProduct,
-    CartProductQuantity,
+    CartProductCreateData,
+    CartProductUpdateData,
 )
-from app.api.v1.models.product import Product
 from app.api.v1.services.cart import CartService
 
 router = APIRouter(prefix="/carts", tags=["carts"])
@@ -58,22 +58,24 @@ async def get_cart(cart: Cart = Depends(CartByUserGetDependency())) -> Cart:
     ],
 )
 async def add_product_to_the_cart(
-    cart_product: CartProduct = Depends(CartProductDataCreateDependency()),
-    cart: Cart = Depends(CartAccessDependency()),
+    cart_product_create_data: Annotated[
+        CartProductCreateData, Depends(CartProductDataCreateDependency())
+    ],
     cart_service: CartService = Depends(),
 ) -> Cart:
     """API which adds product to the cart.
 
     Args:
-        cart_product (CartProduct): Cart product data.
-        cart (Cart): Cart object.
+        cart_product_create_data (CartProductCreateData): Cart product create data.
         cart_service (CartService): Cart service.
 
     Returns:
         Cart: Cart object.
 
     """
-    return await cart_service.add_product(id_=cart.id, data=cart_product)
+    return await cart_service.add_product(
+        id_=cart_product_create_data.cart.id, data=cart_product_create_data.cart_product
+    )
 
 
 @router.patch(
@@ -88,19 +90,15 @@ async def add_product_to_the_cart(
     ],
 )
 async def update_product_in_the_cart(
-    cart_product_quantity: CartProductQuantity = Depends(
+    cart_product_update_data: CartProductUpdateData = Depends(
         CartProductDataUpdateDependency()
     ),
-    cart: Cart = Depends(CartAccessDependency()),
-    product: Product = Depends(ProductByIdGetDependency()),
     cart_service: CartService = Depends(),
 ) -> Cart:
     """API which updates product in the cart.
 
     Args:
-        cart_product_quantity (CartProductQuantity): Cart product quantity data.
-        cart (Cart): Cart object.
-        product (Product): Product object.
+        cart_product_update_data (CartProductUpdateData): Cart product update data.
         cart_service (CartService): Cart service.
 
     Returns:
@@ -108,9 +106,9 @@ async def update_product_in_the_cart(
 
     """
     return await cart_service.update_product(
-        id_=cart.id,
-        product_id=product.id,
-        data=cart_product_quantity,
+        id_=cart_product_update_data.cart.id,
+        product_id=cart_product_update_data.product.id,
+        data=cart_product_update_data.cart_product_quantity,
     )
 
 

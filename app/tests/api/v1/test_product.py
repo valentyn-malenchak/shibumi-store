@@ -140,7 +140,7 @@ class TestProduct(BaseAPITest):
             "updated_at": None,
         }
 
-        thread_id = response.json()["thread_id"]
+        thread_id = response.json().get("thread_id")
 
         # Check if product thread is initialized
         response = await test_client.get(
@@ -302,7 +302,7 @@ class TestProduct(BaseAPITest):
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             ("missing", ["body", "name"], "Field required"),
             ("string_type", ["body", "synopsis"], "Input should be a valid string"),
@@ -318,10 +318,10 @@ class TestProduct(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
-    async def test_create_product_category_does_not_exist(
+    async def test_create_product_category_is_not_found(
         self, test_client: AsyncClient, db: None
     ) -> None:
-        """Test create product in case request category does not exist."""
+        """Test create product in case request category is not found."""
 
         response = await test_client.post(
             f"{SETTINGS.APP_API_V1_PREFIX}/products/",
@@ -439,7 +439,7 @@ class TestProduct(BaseAPITest):
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             (
                 "invalid_type",
@@ -568,11 +568,7 @@ class TestProduct(BaseAPITest):
         assert response.json() is None
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "db",
-        [(MongoCollectionsEnum.PRODUCTS,)],
-        indirect=True,
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.PRODUCTS,)], indirect=True)
     async def test_get_product_no_token(
         self, test_client: AsyncClient, db: None
     ) -> None:
@@ -642,7 +638,7 @@ class TestProduct(BaseAPITest):
             f"{SETTINGS.APP_API_V1_PREFIX}/products/6597f143c064f4099808ad26/"
         )
 
-        assert response.json()["views"] == 1453  # noqa: PLR2004
+        assert response.json().get("views") == 1453  # noqa: PLR2004
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize(
@@ -828,7 +824,7 @@ class TestProduct(BaseAPITest):
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             (
                 "object_id",
@@ -1284,7 +1280,7 @@ class TestProduct(BaseAPITest):
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             (
                 "bool_parsing",
@@ -1304,10 +1300,10 @@ class TestProduct(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_get_products_list_validate_product_parameters_filters(
+    async def test_get_products_list_validate_product_parameter_filters(
         self, test_client: AsyncClient, redis_get_mock: MagicMock
     ) -> None:
-        """Test get products list in case product parameters filter are invalid."""
+        """Test get products list in case product parameter filters are invalid."""
 
         response = await test_client.get(
             f"{SETTINGS.APP_API_V1_PREFIX}/products/",
@@ -1325,7 +1321,7 @@ class TestProduct(BaseAPITest):
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             (
                 "int_parsing",
@@ -1738,10 +1734,10 @@ class TestProduct(BaseAPITest):
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=SHOP_SIDE_USER))
     @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
-    async def test_update_product_does_not_exist(
+    async def test_update_product_product_is_not_found(
         self, test_client: AsyncClient, db: None
     ) -> None:
-        """Test update product in case request product does not exist."""
+        """Test update product in case request product is not found."""
 
         response = await test_client.patch(
             f"{SETTINGS.APP_API_V1_PREFIX}/products/6597f143c064f4099808ad26/",
@@ -1799,7 +1795,7 @@ class TestProduct(BaseAPITest):
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             ("missing", ["body", "name"], "Field required"),
             ("string_type", ["body", "synopsis"], "Input should be a valid string"),
@@ -1819,10 +1815,10 @@ class TestProduct(BaseAPITest):
         [(MongoCollectionsEnum.USERS, MongoCollectionsEnum.PRODUCTS)],
         indirect=True,
     )
-    async def test_update_product_category_does_not_exist(
+    async def test_update_product_category_is_not_found(
         self, test_client: AsyncClient, db: None
     ) -> None:
-        """Test update product in case request category does not exist."""
+        """Test update product in case request category is not found."""
 
         response = await test_client.patch(
             f"{SETTINGS.APP_API_V1_PREFIX}/products/6597f143c064f4099808ad26/",
@@ -1948,7 +1944,7 @@ class TestProduct(BaseAPITest):
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             (
                 "invalid_type",

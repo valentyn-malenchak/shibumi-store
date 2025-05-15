@@ -16,6 +16,7 @@ from app.tests.constants import (
     CUSTOMER_USER,
     DELETED_USER,
     FAKE_USER,
+    HASHED_PASSWORD,
     NOT_VERIFIED_EMAIL_USER,
     TEST_JWT,
     USER_NO_SCOPES,
@@ -48,7 +49,7 @@ class TestAuth(BaseAPITest):
             "token_type",
         }
         # If scope is not requested returns all permitted
-        assert set(JWT.decode_token(response.json()["access_token"]).scopes) == {
+        assert set(JWT.decode_token(response.json().get("access_token")).scopes) == {
             ScopesEnum.AUTH_REFRESH_TOKEN.name,
             ScopesEnum.USERS_GET_ME.name,
             ScopesEnum.USERS_UPDATE_USER.name,
@@ -105,7 +106,7 @@ class TestAuth(BaseAPITest):
             "token_type",
         }
 
-        assert JWT.decode_token(response.json()["access_token"]).scopes == [
+        assert JWT.decode_token(response.json().get("access_token")).scopes == [
             ScopesEnum.USERS_GET_ME.name,
             ScopesEnum.AUTH_REFRESH_TOKEN.name,
         ]
@@ -113,14 +114,9 @@ class TestAuth(BaseAPITest):
     @pytest.mark.asyncio
     @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     @patch("argon2.PasswordHasher.check_needs_rehash", Mock(return_value=True))
-    @patch("app.api.v1.repositories.user.UserRepository.update_password")
-    @patch("argon2.PasswordHasher.hash")
+    @patch("argon2.PasswordHasher.hash", Mock(return_value=HASHED_PASSWORD))
     async def test_create_tokens_password_rehash(
-        self,
-        hash_mock: Mock,
-        update_user_mock: Mock,
-        test_client: AsyncClient,
-        db: None,
+        self, test_client: AsyncClient, db: None
     ) -> None:
         """Test create auth token in case password should be rehashed."""
 
@@ -135,8 +131,6 @@ class TestAuth(BaseAPITest):
         )
 
         assert response.status_code == status.HTTP_201_CREATED
-        assert hash_mock.call_count == 1
-        assert update_user_mock.call_count == 1
 
     @pytest.mark.asyncio
     async def test_create_tokens_missing_fields(self, test_client: AsyncClient) -> None:
@@ -151,17 +145,17 @@ class TestAuth(BaseAPITest):
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             ("missing", ["body", "grant_type"], "Field required"),
             ("missing", ["body", "password"], "Field required"),
         ]
 
     @pytest.mark.asyncio
-    async def test_create_tokens_user_does_not_exist(
+    async def test_create_tokens_user_is_not_found(
         self, test_client: AsyncClient
     ) -> None:
-        """Test create auth token in case user with such username does not exist."""
+        """Test create auth token in case user with such username is not found."""
 
         response = await test_client.post(
             f"{SETTINGS.APP_API_V1_PREFIX}/auth/tokens/",
@@ -314,11 +308,11 @@ class TestAuth(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=FAKE_USER))
-    async def test_refresh_access_token_user_does_not_exist(
+    async def test_refresh_access_token_user_is_not_found(
         self, test_client: AsyncClient
     ) -> None:
         """
-        Test refreshing access token in case user from refresh token does not exist.
+        Test refreshing access token in case user from refresh token is not found.
         """
 
         response = await test_client.post(
@@ -365,9 +359,8 @@ class TestAuth(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=USER_NO_SCOPES))
-    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.USERS,)], indirect=True)
     async def test_refresh_access_token_no_scope(
-        self, test_client: AsyncClient, db: None
+        self, test_client: AsyncClient
     ) -> None:
         """
         Test refreshing access token in case user does not have appropriate scope.

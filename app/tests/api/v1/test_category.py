@@ -43,11 +43,11 @@ class TestCategory(BaseAPITest):
                     "updated_at",
                 }
                 == dictionary.keys()
-                for dictionary in response.json()["data"]
+                for dictionary in response.json().get("data")
             )
             is True
         )
-        assert response.json()["total"] == 31  # noqa: PLR2004
+        assert response.json().get("total") == 31  # noqa: PLR2004
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
@@ -76,11 +76,11 @@ class TestCategory(BaseAPITest):
                     "updated_at",
                 }
                 == dictionary.keys()
-                for dictionary in response.json()["data"]
+                for dictionary in response.json().get("data")
             )
             is True
         )
-        assert response.json()["total"] == 31  # noqa: PLR2004
+        assert response.json().get("total") == 31  # noqa: PLR2004
 
     @pytest.mark.asyncio
     async def test_get_categories_list_with_filters(
@@ -227,7 +227,7 @@ class TestCategory(BaseAPITest):
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             (
                 "object_id",
@@ -404,7 +404,7 @@ class TestCategory(BaseAPITest):
     async def test_get_category_parameters_authorized_user(
         self, test_client: AsyncClient, db: None
     ) -> None:
-        """Test get category parameters in case is authorized."""
+        """Test get category parameters in case user is authorized."""
 
         response = await test_client.get(
             f"{SETTINGS.APP_API_V1_PREFIX}/categories/65d24f2a260fb739c605b2a7/parameters/",
@@ -449,7 +449,7 @@ class TestCategory(BaseAPITest):
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             (
                 "object_id",
