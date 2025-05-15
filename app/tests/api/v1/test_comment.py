@@ -60,16 +60,7 @@ class TestComment(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "db",
-        [
-            (
-                MongoCollectionsEnum.USERS,
-                MongoCollectionsEnum.COMMENTS,
-            )
-        ],
-        indirect=True,
-    )
+    @pytest.mark.parametrize("db", [(MongoCollectionsEnum.COMMENTS,)], indirect=True)
     async def test_get_comment_no_token(
         self, test_client: AsyncClient, db: None
     ) -> None:
@@ -111,20 +102,13 @@ class TestComment(BaseAPITest):
         assert response.json() == {"detail": HTTPErrorMessagesEnum.PERMISSION_DENIED}
 
     @pytest.mark.asyncio
-    @patch("jwt.decode", Mock(return_value=CUSTOMER_USER))
-    @pytest.mark.parametrize(
-        "db",
-        [(MongoCollectionsEnum.USERS,)],
-        indirect=True,
-    )
     async def test_get_comment_comment_is_not_found(
-        self, test_client: AsyncClient, db: None
+        self, test_client: AsyncClient
     ) -> None:
         """Test get comment in case comment is not found."""
 
         response = await test_client.get(
             f"{SETTINGS.APP_API_V1_PREFIX}/comments/666af9246aba47cfb60efb37/",
-            headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -165,7 +149,7 @@ class TestComment(BaseAPITest):
             "thread_id": "6669b5634cef83e11dbc7abf",
             "user_id": "65844f12b6de26578d98c2c8",
             "parent_comment_id": None,
-            "path": f"/{response.json()['id']}",
+            "path": f"/{response.json().get('id')}",
             "upvotes": 0,
             "downvotes": 0,
             "deleted": False,
@@ -208,7 +192,7 @@ class TestComment(BaseAPITest):
             "user_id": "65844f12b6de26578d98c2c8",
             "parent_comment_id": "666af8cb6aba47cfb60efb33",
             "path": f"/666af8ae6aba47cfb60efb31/666af8cb6aba47cfb60efb33/"
-            f"{response.json()['id']}",
+            f"{response.json().get('id')}",
             "upvotes": 0,
             "downvotes": 0,
             "deleted": False,
@@ -217,9 +201,7 @@ class TestComment(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    async def test_create_comment_no_token(
-        self, test_client: AsyncClient, db: None
-    ) -> None:
+    async def test_create_comment_no_token(self, test_client: AsyncClient) -> None:
         """Test create comment in case there is no token."""
 
         response = await test_client.post(
@@ -272,7 +254,7 @@ class TestComment(BaseAPITest):
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             ("missing", ["body", "thread_id"], "Field required"),
             ("missing", ["body", "body"], "Field required"),
@@ -405,9 +387,7 @@ class TestComment(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    async def test_update_comment_no_token(
-        self, test_client: AsyncClient, db: None
-    ) -> None:
+    async def test_update_comment_no_token(self, test_client: AsyncClient) -> None:
         """Test update comment in case there is no token."""
 
         response = await test_client.patch(
@@ -461,7 +441,7 @@ class TestComment(BaseAPITest):
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             ("missing", ["body", "body"], "Field required"),
         ]
@@ -717,9 +697,7 @@ class TestComment(BaseAPITest):
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
     @pytest.mark.asyncio
-    async def test_delete_comment_no_token(
-        self, test_client: AsyncClient, db: None
-    ) -> None:
+    async def test_delete_comment_no_token(self, test_client: AsyncClient) -> None:
         """Test delete comment in case there is no token."""
 
         response = await test_client.delete(

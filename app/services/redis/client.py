@@ -9,7 +9,7 @@ from app.settings import SETTINGS
 class RedisClient(BaseClient):
     """Redis client."""
 
-    _client = StrictRedis(
+    _client: StrictRedis = StrictRedis(
         host=SETTINGS.REDIS_HOST,
         port=SETTINGS.REDIS_PORT,
         password=SETTINGS.REDIS_PASSWORD,

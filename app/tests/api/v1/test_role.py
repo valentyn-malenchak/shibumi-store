@@ -140,12 +140,12 @@ class TestRole(BaseAPITest):
         ],
         indirect=True,
     )
-    async def test_get_roles_from_cache(
+    async def test_get_roles_from_redis_cache(
         self,
         test_client: AsyncClient,
         redis_get_mock: AsyncMock,
     ) -> None:
-        """Test get roles list in roles are cached."""
+        """Test get roles list in roles are cached by Redis."""
 
         response = await test_client.get(f"{SETTINGS.APP_API_V1_PREFIX}/roles/")
 

@@ -192,7 +192,7 @@ class TestThread(BaseAPITest):
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             ("missing", ["body", "name"], "Field required"),
             ("missing", ["body", "body"], "Field required"),
@@ -284,7 +284,7 @@ class TestThread(BaseAPITest):
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             ("missing", ["body", "name"], "Field required"),
             ("missing", ["body", "body"], "Field required"),

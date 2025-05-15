@@ -9,7 +9,9 @@ from app.api.v1.dependencies.product import ProductAccessDependency
 from app.api.v1.models.cart import (
     Cart,
     CartProduct,
+    CartProductCreateData,
     CartProductQuantity,
+    CartProductUpdateData,
 )
 from app.api.v1.models.product import Product
 from app.api.v1.validators.cart import (
@@ -94,18 +96,23 @@ class CartProductDataCreateDependency(metaclass=SingletonMeta):
 
     async def __call__(  # noqa: PLR0913
         self,
+        cart_id: Annotated[ObjectId, ObjectIdAnnotation],
         cart_product: CartProduct,
-        cart: Cart = Depends(CartAccessDependency()),
+        cart_by_id_validator: CartByIdValidator = Depends(),
+        cart_access_validator: CartAccessValidator = Depends(),
         product_by_id_validator: ProductByIdValidator = Depends(),
         product_access_validator: ProductAccessValidator = Depends(),
         product_quantity_validator: ProductQuantityValidator = Depends(),
         cart_product_validator: CartProductValidator = Depends(),
-    ) -> CartProduct:
+    ) -> CartProductCreateData:
         """Validates if cart product data is valid on create.
 
         Args:
+            cart_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
+            identifier of requested cart.
             cart_product (CartProduct): Cart product.
-            cart (Cart): Cart object.
+            cart_by_id_validator (CartByIdValidator): Cart by identifier validator.
+            cart_access_validator (CartAccessValidator): Cart access validator.
             product_by_id_validator (ProductByIdValidator): Product by identifier
             validator.
             product_access_validator (ProductAccessValidator): Product access validator.
@@ -114,9 +121,13 @@ class CartProductDataCreateDependency(metaclass=SingletonMeta):
             cart_product_validator (CartProductValidator): Cart product validator.
 
         Returns:
-            CartProduct: Cart product.
+            CartProductCreateData: Cart product create data.
 
         """
+
+        cart = await cart_by_id_validator.validate(cart_id=cart_id)
+
+        await cart_access_validator.validate(cart=cart)
 
         product = await product_by_id_validator.validate(product_id=cart_product.id)
 
@@ -130,34 +141,53 @@ class CartProductDataCreateDependency(metaclass=SingletonMeta):
             product_id=cart_product.id, cart=cart, negative=True
         )
 
-        return cart_product
+        return CartProductCreateData(cart=cart, cart_product=cart_product)
 
 
 class CartProductDataUpdateDependency(metaclass=SingletonMeta):
     """Cart product data update dependency."""
 
-    async def __call__(
+    async def __call__(  # noqa: PLR0913
         self,
+        cart_id: Annotated[ObjectId, ObjectIdAnnotation],
+        product_id: Annotated[ObjectId, ObjectIdAnnotation],
         cart_product_quantity: CartProductQuantity,
-        product: Product = Depends(ProductAccessDependency()),
-        cart: Cart = Depends(CartAccessDependency()),
+        cart_by_id_validator: CartByIdValidator = Depends(),
+        cart_access_validator: CartAccessValidator = Depends(),
+        product_by_id_validator: ProductByIdValidator = Depends(),
+        product_access_validator: ProductAccessValidator = Depends(),
         product_quantity_validator: ProductQuantityValidator = Depends(),
         cart_product_validator: CartProductValidator = Depends(),
-    ) -> CartProductQuantity:
+    ) -> CartProductUpdateData:
         """Validates if cart product data is valid on update.
 
         Args:
+            cart_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
+            identifier of requested cart.
+            product_id (Annotated[ObjectId, ObjectIdAnnotation]): BSON object
+            identifier of requested product.
             cart_product_quantity (CartProductQuantity): Cart product quantity.
-            product (Product): Product object.
-            cart (Cart): Cart object.
+            cart_by_id_validator (CartByIdValidator): Cart by identifier validator.
+            cart_access_validator (CartAccessValidator): Cart access validator.
+            product_by_id_validator (ProductByIdValidator): Product by identifier
+            validator.
+            product_access_validator (ProductAccessValidator): Product access validator.
             product_quantity_validator (ProductQuantityValidator): Product quantity
             validator.
             cart_product_validator (CartProductValidator): Cart product validator.
 
         Returns:
-            CartProductQuantity: Cart product quantity.
+            CartProductUpdateData: Cart product update data.
 
         """
+
+        cart = await cart_by_id_validator.validate(cart_id=cart_id)
+
+        await cart_access_validator.validate(cart=cart)
+
+        product = await product_by_id_validator.validate(product_id=product_id)
+
+        await product_access_validator.validate(product=product)
 
         await product_quantity_validator.validate(
             product=product, quantity=cart_product_quantity.quantity
@@ -165,7 +195,9 @@ class CartProductDataUpdateDependency(metaclass=SingletonMeta):
 
         await cart_product_validator.validate(product_id=product.id, cart=cart)
 
-        return cart_product_quantity
+        return CartProductUpdateData(
+            cart=cart, product=product, cart_product_quantity=cart_product_quantity
+        )
 
 
 class CartProductDataDeleteDependency(metaclass=SingletonMeta):
@@ -173,8 +205,8 @@ class CartProductDataDeleteDependency(metaclass=SingletonMeta):
 
     async def __call__(
         self,
-        product: Product = Depends(ProductAccessDependency()),
         cart: Cart = Depends(CartAccessDependency()),
+        product: Product = Depends(ProductAccessDependency()),
         cart_product_validator: CartProductValidator = Depends(),
     ) -> ObjectId:
         """Validates if cart product data is valid on delete.

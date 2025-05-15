@@ -212,9 +212,7 @@ class TestVote(BaseAPITest):
         }
 
     @pytest.mark.asyncio
-    async def test_create_vote_no_token(
-        self, test_client: AsyncClient, db: None
-    ) -> None:
+    async def test_create_vote_no_token(self, test_client: AsyncClient) -> None:
         """Test create vote in case there is no token."""
 
         response = await test_client.post(
@@ -259,7 +257,7 @@ class TestVote(BaseAPITest):
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             ("missing", ["body", "comment_id"], "Field required"),
             ("missing", ["body", "value"], "Field required"),
@@ -462,7 +460,7 @@ class TestVote(BaseAPITest):
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             ("missing", ["body", "value"], "Field required"),
         ]

@@ -7,6 +7,7 @@ from bson import ObjectId
 from pydantic import BaseModel
 
 from app.api.v1.models import BSONObjectId
+from app.api.v1.models.product import Product
 from app.utils.pydantic import ObjectIdAnnotation, PositiveInt
 
 
@@ -35,3 +36,18 @@ class CartCreateData(BaseModel):
     """Cart create data model."""
 
     user_id: Annotated[ObjectId, ObjectIdAnnotation]
+
+
+class CartProductCreateData(BaseModel):
+    """Cart product create data."""
+
+    cart: Cart
+    cart_product: CartProduct
+
+
+class CartProductUpdateData(BaseModel):
+    """Cart product update data."""
+
+    cart: Cart
+    product: Product
+    cart_product_quantity: CartProductQuantity

@@ -99,8 +99,8 @@ class TestUser(BaseAPITest):
 
     @pytest.mark.asyncio
     @patch("jwt.decode", Mock(return_value=FAKE_USER))
-    async def test_get_me_user_does_not_exist(self, test_client: AsyncClient) -> None:
-        """Test get me in case user from access token does not exist."""
+    async def test_get_me_user_is_not_found(self, test_client: AsyncClient) -> None:
+        """Test get me in case user from access token is not found."""
 
         response = await test_client.get(
             f"{SETTINGS.APP_API_V1_PREFIX}/users/me/",
@@ -294,7 +294,7 @@ class TestUser(BaseAPITest):
 
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             ("missing", ["body", "username"], "Field required"),
             (
@@ -345,7 +345,7 @@ class TestUser(BaseAPITest):
 
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             (
                 "string_too_short",
@@ -379,7 +379,7 @@ class TestUser(BaseAPITest):
 
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             (
                 "string_without_digit",
@@ -413,7 +413,7 @@ class TestUser(BaseAPITest):
 
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             (
                 "string_without_lowercase_letters",
@@ -447,7 +447,7 @@ class TestUser(BaseAPITest):
 
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             (
                 "string_without_uppercase_letters",
@@ -481,7 +481,7 @@ class TestUser(BaseAPITest):
 
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             (
                 "string_without_special_characters",
@@ -513,7 +513,7 @@ class TestUser(BaseAPITest):
 
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             (
                 "string_too_short",
@@ -545,7 +545,7 @@ class TestUser(BaseAPITest):
 
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             (
                 "string_too_long",
@@ -579,7 +579,7 @@ class TestUser(BaseAPITest):
 
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             (
                 "string_with_not_permitted_characters",
@@ -831,7 +831,7 @@ class TestUser(BaseAPITest):
 
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             (
                 "object_id",
@@ -1203,7 +1203,7 @@ class TestUser(BaseAPITest):
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             (
                 "object_id",
@@ -1281,7 +1281,7 @@ class TestUser(BaseAPITest):
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             (
                 "object_id",
@@ -1510,7 +1510,7 @@ class TestUser(BaseAPITest):
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             ("enum", ["query", "sort_order"], "Input should be 'asc' or 'desc'"),
             ("missing", ["query", "page"], "Field required"),
@@ -1622,7 +1622,7 @@ class TestUser(BaseAPITest):
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             (
                 "object_id",
@@ -1871,7 +1871,7 @@ class TestUser(BaseAPITest):
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             ("missing", ["body", "token"], "Field required"),
             (
@@ -2120,7 +2120,7 @@ class TestUser(BaseAPITest):
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert [
             (error["type"], error["loc"], error["msg"])
-            for error in response.json()["detail"]
+            for error in response.json().get("detail")
         ] == [
             ("missing", ["body", "token"], "Field required"),
         ]
