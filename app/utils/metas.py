@@ -8,7 +8,7 @@ from typing import Any, ClassVar
 class SingletonMeta(type):
     """Metaclass for creating thread-safe singleton classes."""
 
-    _instances: ClassVar[dict["SingletonMeta", Any]] = {}
+    _instances: ClassVar[dict[SingletonMeta, Any]] = {}
 
     _lock: Lock = Lock()
 

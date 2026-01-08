@@ -26,7 +26,7 @@ class Comment(BSONObjectId):
     updated_at: datetime | None
 
     @model_validator(mode="after")
-    def handle_deleted(self) -> "Comment":
+    def handle_deleted(self) -> Comment:
         """Hides body for deleted comments."""
         if self.deleted:
             self.body = PlaceholdersEnum.DELETED_COMMENT

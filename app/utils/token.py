@@ -19,7 +19,7 @@ class VerificationToken:
         self.value = value
 
     @classmethod
-    def generate(cls) -> "VerificationToken":
+    def generate(cls) -> VerificationToken:
         """Generates a verification token."""
         return cls(value=secrets.token_urlsafe(cls._TOKEN_BYTES))
 

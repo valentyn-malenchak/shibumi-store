@@ -24,7 +24,7 @@ class BaseAPITest(BaseTest):
     _APP_BASE_URL = "http://test"
 
     @pytest_asyncio.fixture(loop_scope="session")
-    async def test_client(self) -> AsyncGenerator[AsyncClient, None]:
+    async def test_client(self) -> AsyncGenerator[AsyncClient]:
         """Opens the TestClient generator for the FastAPI application."""
         async with AsyncClient(
             transport=ASGITransport(app), base_url=self._APP_BASE_URL
@@ -32,7 +32,7 @@ class BaseAPITest(BaseTest):
             yield client
 
     @pytest.fixture(scope="session", autouse=True)
-    def event_loop_mock(self) -> Generator[None, None, None]:
+    def event_loop_mock(self) -> Generator[None]:
         """Fixture that sets MongoDB client event loop."""
 
         with patch.object(
@@ -41,7 +41,7 @@ class BaseAPITest(BaseTest):
             yield
 
     @pytest.fixture
-    def datetime_now_mock(self) -> Generator[MagicMock, None, None]:
+    def datetime_now_mock(self) -> Generator[MagicMock]:
         """Arrow datetime now mock."""
 
         with patch("arrow.utcnow") as mock:
@@ -50,9 +50,7 @@ class BaseAPITest(BaseTest):
             yield mock
 
     @pytest.fixture
-    def send_grid_send_mock(
-        self, request: SubRequest
-    ) -> Generator[MagicMock, None, None]:
+    def send_grid_send_mock(self, request: SubRequest) -> Generator[MagicMock]:
         """SendGrid send operation mock."""
 
         with patch("sendgrid.SendGridAPIClient.send") as mock:
@@ -66,14 +64,14 @@ class BaseAPITest(BaseTest):
             yield mock
 
     @pytest.fixture
-    def redis_setex_mock(self) -> Generator[AsyncMock, None, None]:
+    def redis_setex_mock(self) -> Generator[AsyncMock]:
         """Redis setex operation mock."""
 
         with patch("redis.asyncio.Redis.setex", new=AsyncMock()) as mock:
             yield mock
 
     @pytest.fixture
-    def redis_get_mock(self, request: SubRequest) -> Generator[AsyncMock, None, None]:
+    def redis_get_mock(self, request: SubRequest) -> Generator[AsyncMock]:
         """Redis get operation mock."""
 
         with patch("redis.asyncio.Redis.get", new=AsyncMock()) as mock:
@@ -82,7 +80,7 @@ class BaseAPITest(BaseTest):
             yield mock
 
     @pytest.fixture
-    def redis_delete_mock(self) -> Generator[AsyncMock, None, None]:
+    def redis_delete_mock(self) -> Generator[AsyncMock]:
         """Redis delete operation mock."""
 
         with patch("redis.asyncio.Redis.delete", new=AsyncMock()) as mock:
@@ -91,7 +89,7 @@ class BaseAPITest(BaseTest):
     @pytest_asyncio.fixture
     async def db(
         self, request: SubRequest, event_loop_mock: None
-    ) -> AsyncGenerator[None, None]:
+    ) -> AsyncGenerator[None]:
         """Loads and clears data in DB before and after acting unit test.
 
         Args:
