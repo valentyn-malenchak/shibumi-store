@@ -1,5 +1,7 @@
 """Module that contains vote domain routers."""
 
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException, Security, status
 
 from app.api.v1.constants import ScopesEnum
@@ -22,8 +24,7 @@ router = APIRouter(prefix="/votes", tags=["votes"])
 
 
 @router.get(
-    "/{vote_id}/",
-    response_model=Vote,
+    "/{vote_id}/",  # noqa: FAST003
     status_code=status.HTTP_200_OK,
     dependencies=[
         Security(
@@ -31,7 +32,7 @@ router = APIRouter(prefix="/votes", tags=["votes"])
         )
     ],
 )
-async def get_vote(vote: Vote = Depends(VoteAccessDependency())) -> Vote:
+async def get_vote(vote: Annotated[Vote, Depends(VoteAccessDependency())]) -> Vote:
     """API which returns vote.
 
     Args:
@@ -46,7 +47,6 @@ async def get_vote(vote: Vote = Depends(VoteAccessDependency())) -> Vote:
 
 @router.post(
     "/",
-    response_model=Vote,
     status_code=status.HTTP_201_CREATED,
     dependencies=[
         Security(
@@ -55,8 +55,8 @@ async def get_vote(vote: Vote = Depends(VoteAccessDependency())) -> Vote:
     ],
 )
 async def create_vote(
-    vote_data: VoteCreateData = Depends(VoteDataCreateDependency()),
-    vote_service: VoteService = Depends(),
+    vote_data: Annotated[VoteCreateData, Depends(VoteDataCreateDependency())],
+    vote_service: Annotated[VoteService, Depends()],
 ) -> Vote:
     """API which creates vote.
 
@@ -85,7 +85,6 @@ async def create_vote(
 
 @router.patch(
     "/{vote_id}/",
-    response_model=Vote,
     status_code=status.HTTP_200_OK,
     dependencies=[
         Security(
@@ -94,9 +93,9 @@ async def create_vote(
     ],
 )
 async def update_vote(
-    vote_data: VoteData = Depends(VoteDataUpdateDependency()),
-    vote: Vote = Depends(VoteAccessDependency()),
-    vote_service: VoteService = Depends(),
+    vote_data: Annotated[VoteData, Depends(VoteDataUpdateDependency())],
+    vote: Annotated[Vote, Depends(VoteAccessDependency())],
+    vote_service: Annotated[VoteService, Depends()],
 ) -> Vote:
     """API which updates vote.
 
@@ -122,8 +121,8 @@ async def update_vote(
     ],
 )
 async def delete_vote(
-    vote: Vote = Depends(VoteAccessDependency()),
-    vote_service: VoteService = Depends(),
+    vote: Annotated[Vote, Depends(VoteAccessDependency())],
+    vote_service: Annotated[VoteService, Depends()],
 ) -> None:
     """API which deletes vote.
 

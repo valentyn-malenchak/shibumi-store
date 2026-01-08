@@ -1,5 +1,7 @@
 """Module that contains cart domain routers."""
 
+from typing import Annotated
+
 from bson import ObjectId
 from fastapi import APIRouter, Depends, Security, status
 
@@ -24,7 +26,6 @@ router = APIRouter(prefix="/carts", tags=["carts"])
 
 @router.get(
     "/me/",
-    response_model=Cart,
     status_code=status.HTTP_200_OK,
     dependencies=[
         Security(
@@ -32,7 +33,7 @@ router = APIRouter(prefix="/carts", tags=["carts"])
         )
     ],
 )
-async def get_cart(cart: Cart = Depends(CartByUserGetDependency())) -> Cart:
+async def get_cart(cart: Annotated[Cart, Depends(CartByUserGetDependency())]) -> Cart:
     """API which returns cart of current user.
 
     Args:
@@ -47,7 +48,6 @@ async def get_cart(cart: Cart = Depends(CartByUserGetDependency())) -> Cart:
 
 @router.post(
     "/{cart_id}/products/",
-    response_model=Cart,
     status_code=status.HTTP_201_CREATED,
     dependencies=[
         Security(
@@ -56,10 +56,10 @@ async def get_cart(cart: Cart = Depends(CartByUserGetDependency())) -> Cart:
     ],
 )
 async def add_product_to_the_cart(
-    cart_product_create_data: CartProductCreateData = Depends(
-        CartProductDataCreateDependency()
-    ),
-    cart_service: CartService = Depends(),
+    cart_product_create_data: Annotated[
+        CartProductCreateData, Depends(CartProductDataCreateDependency())
+    ],
+    cart_service: Annotated[CartService, Depends()],
 ) -> Cart:
     """API which adds product to the cart.
 
@@ -78,7 +78,6 @@ async def add_product_to_the_cart(
 
 @router.patch(
     "/{cart_id}/products/{product_id}/",
-    response_model=Cart,
     status_code=status.HTTP_200_OK,
     dependencies=[
         Security(
@@ -88,10 +87,10 @@ async def add_product_to_the_cart(
     ],
 )
 async def update_product_in_the_cart(
-    cart_product_update_data: CartProductUpdateData = Depends(
-        CartProductDataUpdateDependency()
-    ),
-    cart_service: CartService = Depends(),
+    cart_product_update_data: Annotated[
+        CartProductUpdateData, Depends(CartProductDataUpdateDependency())
+    ],
+    cart_service: Annotated[CartService, Depends()],
 ) -> Cart:
     """API which updates product in the cart.
 
@@ -112,7 +111,6 @@ async def update_product_in_the_cart(
 
 @router.delete(
     "/{cart_id}/products/{product_id}/",
-    response_model=Cart,
     status_code=status.HTTP_200_OK,
     dependencies=[
         Security(
@@ -122,9 +120,9 @@ async def update_product_in_the_cart(
     ],
 )
 async def delete_product_from_the_cart(
-    product_id: ObjectId = Depends(CartProductDataDeleteDependency()),
-    cart: Cart = Depends(CartAccessDependency()),
-    cart_service: CartService = Depends(),
+    product_id: Annotated[ObjectId, Depends(CartProductDataDeleteDependency())],
+    cart: Annotated[Cart, Depends(CartAccessDependency())],
+    cart_service: Annotated[CartService, Depends()],
 ) -> Cart:
     """API which deletes product from the cart.
 

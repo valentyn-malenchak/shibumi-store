@@ -299,7 +299,7 @@ class TestProduct(BaseAPITest):
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert [
             (error["type"], error["loc"], error["msg"])
             for error in response.json().get("detail")
@@ -821,7 +821,7 @@ class TestProduct(BaseAPITest):
             f"{SETTINGS.APP_API_V1_PREFIX}/products/invalid-group-id/"
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert [
             (error["type"], error["loc"], error["msg"])
             for error in response.json().get("detail")
@@ -1277,7 +1277,7 @@ class TestProduct(BaseAPITest):
             },
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert [
             (error["type"], error["loc"], error["msg"])
             for error in response.json().get("detail")
@@ -1318,7 +1318,7 @@ class TestProduct(BaseAPITest):
 
         assert redis_get_mock.call_count == 1
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert [
             (error["type"], error["loc"], error["msg"])
             for error in response.json().get("detail")
@@ -1792,7 +1792,7 @@ class TestProduct(BaseAPITest):
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert [
             (error["type"], error["loc"], error["msg"])
             for error in response.json().get("detail")

@@ -327,7 +327,7 @@ class UserPasswordUpdateValidator(BaseUserValidator):
             hashed_password=current_user.object.hashed_password,
         ):
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail=HTTPErrorMessagesEnum.PASSWORD_DOES_NOT_MATCH,
             )
 

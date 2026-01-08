@@ -42,9 +42,12 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 @router.get("/me/", response_model=ShortUser, status_code=status.HTTP_200_OK)
 async def get_user_me(
-    current_user: CurrentUser = Security(
-        StrictAuthorizationDependency(), scopes=[ScopesEnum.USERS_GET_ME.name]
-    ),
+    current_user: Annotated[
+        CurrentUser,
+        Security(
+            StrictAuthorizationDependency(), scopes=[ScopesEnum.USERS_GET_ME.name]
+        ),
+    ],
 ) -> User:
     """API which returns current user object.
 
@@ -70,10 +73,10 @@ async def get_user_me(
 )
 async def get_users(
     filter_: Annotated[UserFilter, Query()],
-    search: Search = Depends(),
-    sorting: Sorting = Depends(),
-    pagination: Pagination = Depends(),
-    user_service: UserService = Depends(),
+    search: Annotated[Search, Depends()],
+    sorting: Annotated[Sorting, Depends()],
+    pagination: Annotated[Pagination, Depends()],
+    user_service: Annotated[UserService, Depends()],
 ) -> dict[str, Any]:
     """API which returns users list.
 
@@ -97,7 +100,7 @@ async def get_users(
 
 
 @router.get(
-    "/{user_id}/",
+    "/{user_id}/",  # noqa: FAST003
     response_model=ShortUser,
     status_code=status.HTTP_200_OK,
     dependencies=[
@@ -106,7 +109,7 @@ async def get_users(
         )
     ],
 )
-async def get_user(user: User = Depends(UserByIdGetDependency())) -> User:
+async def get_user(user: Annotated[User, Depends(UserByIdGetDependency())]) -> User:
     """API which returns a specific user.
 
     Args:
@@ -131,8 +134,8 @@ async def get_user(user: User = Depends(UserByIdGetDependency())) -> User:
     ],
 )
 async def create_user(
-    user_data: BaseUserCreateData = Depends(UserDataCreateDependency()),
-    user_service: UserService = Depends(),
+    user_data: Annotated[BaseUserCreateData, Depends(UserDataCreateDependency())],
+    user_service: Annotated[UserService, Depends()],
 ) -> User:
     """API which creates a new user.
 
@@ -161,8 +164,8 @@ async def create_user(
 
 @router.post("/{username}/verify-email/", status_code=status.HTTP_204_NO_CONTENT)
 async def request_verify_user_email(
-    user: User = Depends(UserEmailVerifiedDependency()),
-    user_service: UserService = Depends(),
+    user: Annotated[User, Depends(UserEmailVerifiedDependency())],
+    user_service: Annotated[UserService, Depends()],
 ) -> None:
     """API which requests user's email verification.
 
@@ -177,8 +180,8 @@ async def request_verify_user_email(
 @router.patch("/{username}/verify-email/", status_code=status.HTTP_204_NO_CONTENT)
 async def verify_user_email(
     verify_email: VerificationToken,
-    user: User = Depends(UserEmailVerifiedDependency()),
-    user_service: UserService = Depends(),
+    user: Annotated[User, Depends(UserEmailVerifiedDependency())],
+    user_service: Annotated[UserService, Depends()],
 ) -> None:
     """API which verifies user's email.
 
@@ -212,9 +215,9 @@ async def verify_user_email(
     ],
 )
 async def update_user(
-    user: User = Depends(UserUpdateAccessDependency()),
-    user_data: BaseUserUpdateData = Depends(UserDataUpdateDependency()),
-    user_service: UserService = Depends(),
+    user: Annotated[User, Depends(UserUpdateAccessDependency())],
+    user_data: Annotated[BaseUserUpdateData, Depends(UserDataUpdateDependency())],
+    user_service: Annotated[UserService, Depends()],
 ) -> User:
     """API which updates a user object.
 
@@ -241,9 +244,11 @@ async def update_user(
     ],
 )
 async def update_user_password(
-    user: User = Depends(UserGetAccessDependency()),
-    password: UserPasswordUpdateData = Depends(UserPasswordDataUpdateDependency()),
-    user_service: UserService = Depends(),
+    user: Annotated[User, Depends(UserGetAccessDependency())],
+    password: Annotated[
+        UserPasswordUpdateData, Depends(UserPasswordDataUpdateDependency())
+    ],
+    user_service: Annotated[UserService, Depends()],
 ) -> None:
     """API which updates a user password.
 
@@ -268,8 +273,8 @@ async def update_user_password(
     ],
 )
 async def delete_user(
-    user: User = Depends(UserDeleteAccessDependency()),
-    user_service: UserService = Depends(),
+    user: Annotated[User, Depends(UserDeleteAccessDependency())],
+    user_service: Annotated[UserService, Depends()],
 ) -> None:
     """API which softly deletes a user object.
 
@@ -283,8 +288,8 @@ async def delete_user(
 
 @router.post("/{username}/reset-password/", status_code=status.HTTP_204_NO_CONTENT)
 async def request_reset_user_password(
-    user: User = Depends(UserByUsernameStatusGetDependency()),
-    user_service: UserService = Depends(),
+    user: Annotated[User, Depends(UserByUsernameStatusGetDependency())],
+    user_service: Annotated[UserService, Depends()],
 ) -> None:
     """API which requests reset password.
 
@@ -299,8 +304,8 @@ async def request_reset_user_password(
 @router.patch("/{username}/reset-password/", status_code=status.HTTP_204_NO_CONTENT)
 async def reset_user_password(
     reset_password: UserPasswordResetData,
-    user: User = Depends(UserByUsernameStatusGetDependency()),
-    user_service: UserService = Depends(),
+    user: Annotated[User, Depends(UserByUsernameStatusGetDependency())],
+    user_service: Annotated[UserService, Depends()],
 ) -> None:
     """API which resets password.
 

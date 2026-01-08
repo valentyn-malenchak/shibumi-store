@@ -111,10 +111,12 @@ class BaseAuthorizationDependency(abc.ABC, metaclass=AbstractSingletonMeta):
             user_id=ObjectId(token_data.id)
         )
 
-        # Stores current user in current request object
-        request.state.current_user = CurrentUser(object=user, scopes=token_data.scopes)
+        current_user = CurrentUser(object=user, scopes=token_data.scopes)
 
-        return request.state.current_user
+        # Stores current user in current request object
+        request.state.current_user = current_user
+
+        return current_user
 
     @abc.abstractmethod
     async def __call__(

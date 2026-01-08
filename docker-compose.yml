@@ -1,4 +1,3 @@
-
 services:
 
   shibumi-store:
@@ -46,7 +45,7 @@ services:
       - SEND_GRID_SENDER_EMAIL=  # Add your SendGrid sender email here
 
   mongo:
-    image: bitnami/mongodb:8.0.4
+    image: bitnami/mongodb:latest
     container_name: mongodb
     restart: always
     ports:

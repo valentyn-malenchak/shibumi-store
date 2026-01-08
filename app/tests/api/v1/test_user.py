@@ -290,7 +290,7 @@ class TestUser(BaseAPITest):
             },
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
         assert [
             (error["type"], error["loc"], error["msg"])
@@ -341,7 +341,7 @@ class TestUser(BaseAPITest):
             },
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
         assert [
             (error["type"], error["loc"], error["msg"])
@@ -375,7 +375,7 @@ class TestUser(BaseAPITest):
             },
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
         assert [
             (error["type"], error["loc"], error["msg"])
@@ -409,7 +409,7 @@ class TestUser(BaseAPITest):
             },
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
         assert [
             (error["type"], error["loc"], error["msg"])
@@ -443,7 +443,7 @@ class TestUser(BaseAPITest):
             },
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
         assert [
             (error["type"], error["loc"], error["msg"])
@@ -477,7 +477,7 @@ class TestUser(BaseAPITest):
             },
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
         assert [
             (error["type"], error["loc"], error["msg"])
@@ -509,7 +509,7 @@ class TestUser(BaseAPITest):
             },
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
         assert [
             (error["type"], error["loc"], error["msg"])
@@ -541,7 +541,7 @@ class TestUser(BaseAPITest):
             },
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
         assert [
             (error["type"], error["loc"], error["msg"])
@@ -575,7 +575,7 @@ class TestUser(BaseAPITest):
             },
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
         assert [
             (error["type"], error["loc"], error["msg"])
@@ -1200,7 +1200,7 @@ class TestUser(BaseAPITest):
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert [
             (error["type"], error["loc"], error["msg"])
             for error in response.json().get("detail")
@@ -1278,7 +1278,7 @@ class TestUser(BaseAPITest):
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert [
             (error["type"], error["loc"], error["msg"])
             for error in response.json().get("detail")
@@ -1507,7 +1507,7 @@ class TestUser(BaseAPITest):
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert [
             (error["type"], error["loc"], error["msg"])
             for error in response.json().get("detail")
@@ -1619,7 +1619,7 @@ class TestUser(BaseAPITest):
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert [
             (error["type"], error["loc"], error["msg"])
             for error in response.json().get("detail")
@@ -1706,7 +1706,7 @@ class TestUser(BaseAPITest):
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert response.json() == {
             "detail": HTTPErrorMessagesEnum.PASSWORD_DOES_NOT_MATCH
         }
@@ -1868,7 +1868,7 @@ class TestUser(BaseAPITest):
             json={"new_password": "John1234"},
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert [
             (error["type"], error["loc"], error["msg"])
             for error in response.json().get("detail")
@@ -2117,7 +2117,7 @@ class TestUser(BaseAPITest):
             json={},
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert [
             (error["type"], error["loc"], error["msg"])
             for error in response.json().get("detail")

@@ -1,6 +1,6 @@
 """Module that contains product domain routers."""
 
-from typing import Any
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, Security, status
 
@@ -28,7 +28,6 @@ router = APIRouter(prefix="/products", tags=["products"])
 
 @router.post(
     "/",
-    response_model=Product,
     status_code=status.HTTP_201_CREATED,
     dependencies=[
         Security(
@@ -38,8 +37,8 @@ router = APIRouter(prefix="/products", tags=["products"])
     ],
 )
 async def create_product(
-    product_data: ProductData = Depends(ProductDataDependency()),
-    product_service: ProductService = Depends(),
+    product_data: Annotated[ProductData, Depends(ProductDataDependency())],
+    product_service: Annotated[ProductService, Depends()],
 ) -> Product:
     """API which creates a new product.
 
@@ -66,11 +65,11 @@ async def create_product(
     ],
 )
 async def get_products(
-    filter_: ProductFilter = Depends(ProductsFilterDependency()),
-    search: Search = Depends(),
-    sorting: Sorting = Depends(),
-    pagination: Pagination = Depends(),
-    product_service: ProductService = Depends(),
+    filter_: Annotated[ProductFilter, Depends(ProductsFilterDependency())],
+    search: Annotated[Search, Depends()],
+    sorting: Annotated[Sorting, Depends()],
+    pagination: Annotated[Pagination, Depends()],
+    product_service: Annotated[ProductService, Depends()],
 ) -> dict[str, Any]:
     """API which returns products list.
 
@@ -95,7 +94,6 @@ async def get_products(
 
 @router.get(
     "/{product_id}/",
-    response_model=Product,
     status_code=status.HTTP_200_OK,
     dependencies=[
         Security(
@@ -105,8 +103,8 @@ async def get_products(
     ],
 )
 async def get_product(
-    product: Product = Depends(ProductAccessDependency()),
-    product_service: ProductService = Depends(),
+    product: Annotated[Product, Depends(ProductAccessDependency())],
+    product_service: Annotated[ProductService, Depends()],
 ) -> Product:
     """API which returns a specific product.
 
@@ -126,7 +124,6 @@ async def get_product(
 
 @router.patch(
     "/{product_id}/",
-    response_model=Product,
     status_code=status.HTTP_200_OK,
     dependencies=[
         Security(
@@ -136,9 +133,9 @@ async def get_product(
     ],
 )
 async def update_product(
-    product_data: ProductData = Depends(ProductDataDependency()),
-    product: Product = Depends(ProductAccessDependency()),
-    product_service: ProductService = Depends(),
+    product_data: Annotated[ProductData, Depends(ProductDataDependency())],
+    product: Annotated[Product, Depends(ProductAccessDependency())],
+    product_service: Annotated[ProductService, Depends()],
 ) -> Product:
     """API which updates a product.
 

@@ -10,7 +10,6 @@ router = APIRouter(prefix="/health", tags=["health"])
 
 @router.get(
     "/",
-    response_model=dict[str, str],
     status_code=status.HTTP_200_OK,
     dependencies=[
         Security(
