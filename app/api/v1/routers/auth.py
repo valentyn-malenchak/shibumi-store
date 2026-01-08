@@ -1,5 +1,7 @@
 """Module that contains auth domain routers."""
 
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, Security, status
 
 from app.api.v1.constants import ScopesEnum
@@ -21,7 +23,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/tokens/", response_model=JWTs, status_code=status.HTTP_201_CREATED)
 async def create_tokens(
-    current_user: CurrentUser = Depends(AuthenticationDependency()),
+    current_user: Annotated[CurrentUser, Depends(AuthenticationDependency())],
 ) -> dict[str, str]:
     """API which creates Access and Refresh tokens for user.
 
@@ -44,11 +46,14 @@ async def create_tokens(
     status_code=status.HTTP_201_CREATED,
 )
 async def refresh_access_token(
-    current_user: CurrentUser = Security(
-        RefreshTokenAuthorizationDependency(),
-        scopes=[ScopesEnum.AUTH_REFRESH_TOKEN.name],
-    ),
-    role_service: RoleService = Depends(),
+    current_user: Annotated[
+        CurrentUser,
+        Security(
+            RefreshTokenAuthorizationDependency(),
+            scopes=[ScopesEnum.AUTH_REFRESH_TOKEN.name],
+        ),
+    ],
+    role_service: Annotated[RoleService, Depends()],
 ) -> dict[str, str]:
     """API which refreshes Access token using Refresh token.
 

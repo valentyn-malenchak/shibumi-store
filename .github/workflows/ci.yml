@@ -30,7 +30,7 @@ jobs:
 
     services:
       mongo:
-        image: bitnami/mongodb:8.0.4
+        image: bitnami/mongodb:latest
         ports:
           - "27017:27017"
         env:
@@ -42,15 +42,15 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version-file: .python-version
 
@@ -72,7 +72,7 @@ jobs:
           CI: true
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v5.2.0
+        uses: SonarSource/sonarqube-scan-action@v7.0.0
         env:
           CI: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

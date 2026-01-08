@@ -1,5 +1,7 @@
 """Module that contains comment domain routers."""
 
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, Security, status
 
 from app.api.v1.constants import ScopesEnum
@@ -24,8 +26,7 @@ router = APIRouter(prefix="/comments", tags=["comments"])
 
 
 @router.get(
-    "/{comment_id}/",
-    response_model=Comment,
+    "/{comment_id}/",  # noqa: FAST003
     status_code=status.HTTP_200_OK,
     dependencies=[
         Security(
@@ -35,7 +36,7 @@ router = APIRouter(prefix="/comments", tags=["comments"])
     ],
 )
 async def get_comment(
-    comment: Comment = Depends(CommentByIdGetDependency()),
+    comment: Annotated[Comment, Depends(CommentByIdGetDependency())],
 ) -> Comment:
     """API which returns comment.
 
@@ -51,7 +52,6 @@ async def get_comment(
 
 @router.post(
     "/",
-    response_model=Comment,
     status_code=status.HTTP_201_CREATED,
     dependencies=[
         Security(
@@ -61,8 +61,8 @@ async def get_comment(
     ],
 )
 async def create_comment(
-    comment_data: CommentCreateData = Depends(CommentDataCreateDependency()),
-    comment_service: CommentService = Depends(),
+    comment_data: Annotated[CommentCreateData, Depends(CommentDataCreateDependency())],
+    comment_service: Annotated[CommentService, Depends()],
 ) -> Comment:
     """API which creates comment.
 
@@ -79,7 +79,6 @@ async def create_comment(
 
 @router.patch(
     "/{comment_id}/",
-    response_model=Comment,
     status_code=status.HTTP_200_OK,
     dependencies=[
         Security(
@@ -90,8 +89,8 @@ async def create_comment(
 )
 async def update_comment(
     comment_data: CommentUpdateData,
-    comment: Comment = Depends(CommentUpdateAccessDependency()),
-    comment_service: CommentService = Depends(),
+    comment: Annotated[Comment, Depends(CommentUpdateAccessDependency())],
+    comment_service: Annotated[CommentService, Depends()],
 ) -> Comment:
     """API which updates comment.
 
@@ -118,8 +117,8 @@ async def update_comment(
     ],
 )
 async def delete_comment(
-    comment: Comment = Depends(CommentDeleteAccessDependency()),
-    comment_service: CommentService = Depends(),
+    comment: Annotated[Comment, Depends(CommentDeleteAccessDependency())],
+    comment_service: Annotated[CommentService, Depends()],
 ) -> None:
     """API which softly deletes comment.
 

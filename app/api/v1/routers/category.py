@@ -31,7 +31,7 @@ router = APIRouter(prefix="/categories", tags=["categories"])
 )
 async def get_categories(
     filter_: Annotated[CategoryFilter, Query()],
-    category_service: CategoryService = Depends(),
+    category_service: Annotated[CategoryService, Depends()],
 ) -> dict[str, Any]:
     """API which returns categories list.
 
@@ -50,8 +50,7 @@ async def get_categories(
 
 
 @router.get(
-    "/{category_id}/",
-    response_model=Category,
+    "/{category_id}/",  # noqa: FAST003
     status_code=status.HTTP_200_OK,
     dependencies=[
         Security(
@@ -61,7 +60,7 @@ async def get_categories(
     ],
 )
 async def get_category(
-    category: Category = Depends(CategoryByIdGetDependency()),
+    category: Annotated[Category, Depends(CategoryByIdGetDependency())],
 ) -> Category:
     """API which returns a specific category.
 
@@ -87,8 +86,8 @@ async def get_category(
     ],
 )
 async def get_category_parameters(
-    category: Category = Depends(CategoryByIdGetDependency()),
-    category_service: CategoryService = Depends(),
+    category: Annotated[Category, Depends(CategoryByIdGetDependency())],
+    category_service: Annotated[CategoryService, Depends()],
 ) -> CategoryParameters | None:
     """API which returns category parameters by its identifier.
 

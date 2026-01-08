@@ -1,6 +1,6 @@
 """Module that contains role domain routers."""
 
-from typing import Any
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, Security, status
 
@@ -22,7 +22,7 @@ router = APIRouter(prefix="/roles", tags=["roles"])
         )
     ],
 )
-async def get_roles(role_service: RoleService = Depends()) -> dict[str, Any]:
+async def get_roles(role_service: Annotated[RoleService, Depends()]) -> dict[str, Any]:
     """API which returns roles list.
 
     Args:

@@ -189,7 +189,7 @@ class TestThread(BaseAPITest):
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert [
             (error["type"], error["loc"], error["msg"])
             for error in response.json().get("detail")
@@ -281,7 +281,7 @@ class TestThread(BaseAPITest):
             headers={"Authorization": f"Bearer {TEST_JWT}"},
         )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert [
             (error["type"], error["loc"], error["msg"])
             for error in response.json().get("detail")

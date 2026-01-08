@@ -1,5 +1,7 @@
 """Module that contains thread domain routers."""
 
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, Security, status
 
 from app.api.v1.constants import ScopesEnum
@@ -18,8 +20,7 @@ router = APIRouter(prefix="/threads", tags=["threads"])
 
 
 @router.get(
-    "/{thread_id}/",
-    response_model=Thread,
+    "/{thread_id}/",  # noqa: FAST003
     status_code=status.HTTP_200_OK,
     dependencies=[
         Security(
@@ -28,7 +29,9 @@ router = APIRouter(prefix="/threads", tags=["threads"])
         )
     ],
 )
-async def get_thread(thread: Thread = Depends(ThreadByIdGetDependency())) -> Thread:
+async def get_thread(
+    thread: Annotated[Thread, Depends(ThreadByIdGetDependency())],
+) -> Thread:
     """API which returns a specific thread.
 
     Args:
@@ -43,7 +46,6 @@ async def get_thread(thread: Thread = Depends(ThreadByIdGetDependency())) -> Thr
 
 @router.post(
     "/",
-    response_model=Thread,
     status_code=status.HTTP_201_CREATED,
     dependencies=[
         Security(
@@ -54,7 +56,7 @@ async def get_thread(thread: Thread = Depends(ThreadByIdGetDependency())) -> Thr
 )
 async def create_comment(
     thread_data: ThreadData,
-    thread_service: ThreadService = Depends(),
+    thread_service: Annotated[ThreadService, Depends()],
 ) -> Thread:
     """API which creates thread.
 
@@ -71,7 +73,6 @@ async def create_comment(
 
 @router.patch(
     "/{thread_id}/",
-    response_model=Thread,
     status_code=status.HTTP_200_OK,
     dependencies=[
         Security(
@@ -82,8 +83,8 @@ async def create_comment(
 )
 async def update_thread(
     thread_data: ThreadData,
-    thread: Thread = Depends(ThreadByIdGetDependency()),
-    thread_service: ThreadService = Depends(),
+    thread: Annotated[Thread, Depends(ThreadByIdGetDependency())],
+    thread_service: Annotated[ThreadService, Depends()],
 ) -> Thread:
     """API which updates thread.
 
