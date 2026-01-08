@@ -3,7 +3,7 @@ name = "shibumi-store"
 version = "0.1.0"
 description = "The 'Shibumi Store' backend project is a small e-commerce solution that provides a seamless and efficient shopping experience."
 authors = [{ name = "Valentyn Malenchak", email = "valentyn17@gmail.com" }]
-requires-python = "==3.12.10"
+requires-python = "==3.14.0"
 readme = "README.md"
 dependencies = [
     "fastapi==0.128.0",
@@ -75,8 +75,8 @@ exclude = [
 
 # Same as Black.
 line-length = 88
-# Assume Python 3.12.
-target-version = "py312"
+# Assume Python 3.14.
+target-version = "py314"
 
 [tool.ruff.lint]
 # Enable the pycodestyle (`E`), Pyflakes (`F`), pycodestyle warnings (`W`),
@@ -99,7 +99,7 @@ line-ending = "auto"
 
 # Mypy configuration
 [tool.mypy]
-python_version = 3.12
+python_version = 3.14
 strict = true
 
 [[tool.mypy.overrides]]
